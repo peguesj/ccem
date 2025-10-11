@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sensitive configuration
+**/secrets.json
+**/credentials.json
+**/*-secret-*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Logs
+logs/
+*.log
+
+# Backups (keep template, ignore actual backups)
+backups/*.tar.gz
+!backups/.gitkeep
+
+# User-specific data
+user-data/
+*.local.json
+
+# Claude Code specific (if applicable)
+.claude/sessions/
+.claude/cache/

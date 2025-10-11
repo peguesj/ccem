@@ -1,0 +1,71 @@
+{
+  "template_id": "ongoing-training-template",
+  "version": "1.0.0",
+  "purpose": "Template for capturing training observations with every interaction",
+
+  "usage": "Copy this template and fill in after each interaction",
+
+  "template": {
+    "interaction_id": "int-XXX",
+    "timestamp": "ISO-8601 timestamp",
+    "user_message_number": 0,
+    "user_input": "exact user input",
+    "user_intent": "inferred intent",
+    "assistant_action": "what was done",
+
+    "training_observations": {
+      "what_worked": [
+        "List specific things that worked well"
+      ],
+      "what_could_improve": [
+        "List specific improvements that could be made"
+      ],
+      "patterns_emerged": [
+        "New patterns discovered in this interaction"
+      ],
+      "edge_cases_discovered": [
+        "Edge cases or unexpected scenarios encountered"
+      ],
+      "user_preferences_revealed": [
+        "New preferences or confirmed preferences"
+      ],
+      "decision_rationale": {
+        "key_decision_1": "Why this decision was made",
+        "key_decision_2": "Why this alternative was chosen"
+      },
+      "alternatives_considered": [
+        "Other approaches that were considered but not chosen"
+      ],
+      "technical_learnings": [
+        "New technical knowledge gained"
+      ],
+      "implementation_challenges": [
+        "Challenges encountered during implementation"
+      ]
+    },
+
+    "impact_assessment": {
+      "user_satisfaction": "high|medium|low",
+      "task_completion": "complete|partial|failed",
+      "training_value": "high|medium|low",
+      "reusability": "high|medium|low"
+    },
+
+    "follow_up_actions": [
+      "Actions that should be taken based on this interaction"
+    ]
+  },
+
+  "guidelines": {
+    "when_to_capture": "After EVERY interaction, even simple ones",
+    "level_of_detail": "Enough to reconstruct reasoning later",
+    "focus_areas": [
+      "User preferences and patterns",
+      "Technical discoveries",
+      "Decision rationale",
+      "What worked and what didn't",
+      "Edge cases and challenges"
+    ],
+    "storage": "Save to training-data/interactions/YYYY-MM-DD/int-XXX.json"
+  }
+}
