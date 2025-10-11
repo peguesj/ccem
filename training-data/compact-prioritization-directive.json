@@ -1,0 +1,269 @@
+{
+  "directive_id": "compact-priority-001",
+  "version": "1.0.0",
+  "timestamp": "2025-10-11T18:15:00Z",
+  "priority": "CRITICAL",
+  "scope": "context_management",
+
+  "directive": "When /compact is needed, prioritize based on trainings which must be efficient to process",
+
+  "rationale": {
+    "compact_purpose": "Reduce conversation context when approaching token limits",
+    "training_value": "Training observations contain critical learning patterns",
+    "efficiency_requirement": "Large verbose trainings defeat compact purpose",
+    "balance": "Maximize learning retention while minimizing token usage"
+  },
+
+  "implementation": {
+    "training_efficiency_requirements": [
+      "Concise but complete - no unnecessary verbosity",
+      "Structured for fast parsing - consistent JSON schema",
+      "Prioritized by importance - critical patterns preserved first",
+      "Deduplicated - no repeated observations",
+      "Summarizable - can be condensed without losing key insights"
+    ],
+
+    "compact_prioritization_order": [
+      {
+        "priority": 1,
+        "category": "Critical user directives",
+        "examples": [
+          "TRAINING directives from user",
+          "Meta-directives about operation",
+          "User preference statements"
+        ],
+        "retention": "100% - never compact"
+      },
+      {
+        "priority": 2,
+        "category": "High-value patterns",
+        "examples": [
+          "Repeated user preferences",
+          "Technical constraints discovered",
+          "Edge cases with solutions",
+          "Decision rationales for major features"
+        ],
+        "retention": "95% - minimal summarization"
+      },
+      {
+        "priority": 3,
+        "category": "Implementation details",
+        "examples": [
+          "Technical learnings",
+          "Implementation challenges",
+          "Alternative approaches considered"
+        ],
+        "retention": "70% - moderate summarization"
+      },
+      {
+        "priority": 4,
+        "category": "Context and metadata",
+        "examples": [
+          "Conversation flow details",
+          "Timestamp information",
+          "File modification logs"
+        ],
+        "retention": "40% - aggressive summarization"
+      },
+      {
+        "priority": 5,
+        "category": "Low-value observations",
+        "examples": [
+          "Simple acknowledgments",
+          "Routine operations without learning",
+          "Duplicate patterns already captured"
+        ],
+        "retention": "10% - only summary statistics"
+      }
+    ],
+
+    "efficient_training_format": {
+      "preferred_structure": {
+        "interaction_id": "unique identifier",
+        "priority": "1-5 based on learning value",
+        "key_patterns": ["array of critical patterns only"],
+        "user_preferences": ["new or confirmed preferences"],
+        "technical_constraints": ["hard constraints discovered"],
+        "decision_rationale": {"key decisions only"},
+        "impact": "high|medium|low"
+      },
+      "anti_patterns": [
+        "Long prose descriptions - use bullet points",
+        "Redundant explanations - reference prior observations",
+        "Excessive metadata - only essential timestamps/IDs",
+        "Verbose examples - use minimal representative samples",
+        "Repetitive patterns - deduplicate and increment counters"
+      ],
+      "token_budget": {
+        "critical_observations": "unlimited",
+        "high_value_patterns": "~500 tokens max",
+        "implementation_details": "~200 tokens max",
+        "context_metadata": "~100 tokens max",
+        "low_value_observations": "~50 tokens max"
+      }
+    },
+
+    "pre_compact_processing": {
+      "step_1_assess": {
+        "action": "Scan all training observations in current context",
+        "output": "Priority ranking of each observation"
+      },
+      "step_2_deduplicate": {
+        "action": "Identify duplicate or similar patterns",
+        "output": "Consolidated pattern list with occurrence counts"
+      },
+      "step_3_summarize": {
+        "action": "Summarize low-priority observations",
+        "output": "Compressed summaries preserving key insights"
+      },
+      "step_4_preserve": {
+        "action": "Mark critical observations for full retention",
+        "output": "Protected content that survives compact"
+      },
+      "step_5_archive": {
+        "action": "Move detailed observations to persistent storage",
+        "output": "Files in ~/.claude/ccem/training-data/archived/"
+      }
+    },
+
+    "compact_workflow": {
+      "before_compact": [
+        "Run pre_compact_processing steps",
+        "Archive full training observations to disk",
+        "Create compact summary for context retention",
+        "Preserve critical directives and patterns",
+        "Generate continuation context document"
+      ],
+      "during_compact": [
+        "Retain critical observations in full",
+        "Use summarized versions of medium-priority content",
+        "Replace low-priority observations with statistics",
+        "Include references to archived files for retrieval"
+      ],
+      "after_compact": [
+        "Verify critical patterns retained",
+        "Test that archived data is accessible",
+        "Update snapshot with compact metadata",
+        "Log what was compacted for analysis"
+      ]
+    }
+  },
+
+  "training_efficiency_guidelines": {
+    "writing_observations": {
+      "do": [
+        "Use bullet points over paragraphs",
+        "Reference prior observations instead of repeating",
+        "Use abbreviations for common terms (e.g., 'int' for interaction)",
+        "Prioritize actionable insights over descriptions",
+        "Use structured data over free text",
+        "Tag observations with priority levels",
+        "Include explicit 'can_compact: true/false' flags"
+      ],
+      "dont": [
+        "Write lengthy prose explanations",
+        "Repeat patterns already documented",
+        "Include unnecessary timestamps on every field",
+        "Document obvious or trivial observations",
+        "Use verbose examples when concise ones suffice",
+        "Store redundant metadata",
+        "Include training observations for routine operations"
+      ]
+    },
+
+    "storage_optimization": {
+      "techniques": [
+        "Delta encoding - store only changes from previous observations",
+        "Reference IDs - link to existing patterns instead of duplicating",
+        "Counters - increment occurrence counts instead of listing instances",
+        "Compression flags - mark sections suitable for aggressive compression",
+        "Lazy loading - store detailed data externally, load on demand",
+        "Hierarchical summaries - maintain multi-level summaries (detailed → medium → brief)"
+      ]
+    }
+  },
+
+  "example_efficient_training": {
+    "inefficient_version": {
+      "size": "~800 tokens",
+      "content": {
+        "interaction_id": "int-017",
+        "timestamp": "2025-10-11T18:15:00Z",
+        "user_message_number": 17,
+        "user_input": "ok thank you",
+        "user_intent": "The user is acknowledging the completion of the work and expressing gratitude for the comprehensive fork operation that was just completed",
+        "assistant_action": "I provided a brief acknowledgment of the user's thanks, returned to the main TUI menu to maintain context, and followed the meta-directive by including training observations even though this was a simple interaction",
+        "training_observations": {
+          "what_worked": [
+            "Brief acknowledgment was appropriate for a closing statement",
+            "Returning to main menu maintained the TUI simulation context",
+            "Applied the new meta-directive by including training observations"
+          ],
+          "patterns_emerged": [
+            "Simple acknowledgments don't require lengthy responses",
+            "User appears satisfied with the comprehensive work that was completed",
+            "Natural conversation ending pattern after major task completion"
+          ]
+        }
+      }
+    },
+
+    "efficient_version": {
+      "size": "~200 tokens",
+      "content": {
+        "id": "int-017",
+        "priority": 5,
+        "type": "acknowledgment",
+        "key_patterns": ["simple_ack_brief_response", "task_completion_satisfaction"],
+        "user_pref": "concise_for_simple_interactions",
+        "impact": "low",
+        "can_compact": true
+      }
+    },
+
+    "savings": "~600 tokens (75% reduction) with no loss of critical information"
+  },
+
+  "persistence_strategy": {
+    "in_memory": {
+      "critical_directives": "Full retention in conversation context",
+      "high_value_patterns": "Full retention until compact, then summarized",
+      "medium_value": "Summarized immediately, expanded on demand",
+      "low_value": "Statistics only, details archived"
+    },
+    "on_disk": {
+      "location": "~/.claude/ccem/training-data/",
+      "structure": {
+        "current/": "Active session observations (full detail)",
+        "archived/": "Compacted session observations (full detail preserved)",
+        "summaries/": "Multi-level summaries for quick reference",
+        "indices/": "Fast lookup indices by pattern, user_pref, etc."
+      },
+      "retrieval": "Use interaction_id or pattern tag to load archived details when needed"
+    }
+  },
+
+  "metrics": {
+    "success_criteria": [
+      "Compact operations reduce context by >50% while retaining >95% of critical patterns",
+      "No critical user directives or preferences lost",
+      "Training observations remain actionable after compact",
+      "Archived data remains accessible and useful",
+      "Compact operation completes in <30 seconds"
+    ],
+    "monitoring": [
+      "Track compact frequency (indicates training efficiency)",
+      "Measure retention vs. compression ratios",
+      "Audit pattern loss (should be near zero for priority 1-2)",
+      "Benchmark retrieval speed from archives"
+    ]
+  },
+
+  "integration_with_existing_systems": {
+    "tui_structure": "Add 'Compact History' view showing what was compacted",
+    "preferences": "Add compact preferences (aggressiveness, priority thresholds)",
+    "snapshot_system": "Include compact metadata in snapshots",
+    "recommendations": "Suggest optimizations based on compact patterns",
+    "hooks": "PreCompact hook already exists - use for training archival"
+  }
+}
