@@ -1,0 +1,496 @@
+{
+  "simulation_id": "sim-view-001",
+  "scenario": "View Detailed Operation",
+  "timestamp": "2025-10-11T16:00:00Z",
+  "description": "User selects operation [1.3.1] to view expanded 5-level detail view",
+  "user_action": {
+    "command": "V",
+    "operation_selected": "op-001-3-1",
+    "operation_path": "Consolidate Permissions > Deduplicate and merge permissions > Identify semantic duplicates"
+  },
+  "ui_flow": {
+    "step_1_navigation": {
+      "display": "Operation tree with expandable nodes",
+      "prompt": "Enter operation ID for detailed view (or 'back'): ",
+      "user_input": "1.3.1",
+      "validation": {
+        "valid": true,
+        "operation_found": "op-001-3-1",
+        "depth_level": 3
+      }
+    },
+    "step_2_detailed_view": {
+      "view_mode": "expanded_5_level",
+      "display_format": "hierarchical_with_metadata"
+    }
+  },
+  "detailed_operation_view": {
+    "level_1_identity": {
+      "section": "Operation Identity",
+      "fields": {
+        "operation_id": "op-001-3-1",
+        "name": "Identify semantic duplicates",
+        "type": "analysis",
+        "parent_id": "op-001-3",
+        "depth": 3,
+        "created_at": "2025-10-11T00:00:00Z",
+        "last_modified": "2025-10-11T00:00:00Z"
+      }
+    },
+    "level_2_execution": {
+      "section": "Execution Strategy",
+      "fields": {
+        "execution_strategy": "claude",
+        "reasoning": "E.g., 'Bash(npm install)' vs 'Bash(npm install:*)' - requires context",
+        "parallel_enabled": false,
+        "estimated_duration": "0.8s",
+        "estimated_duration_range": {
+          "min": "0.5s",
+          "max": "1.2s",
+          "confidence": "high"
+        },
+        "risk_level": "low",
+        "complexity_score": 6.5,
+        "requires_user_confirmation": false,
+        "reversible": true,
+        "idempotent": true
+      }
+    },
+    "level_3_dependencies": {
+      "section": "Dependencies & Flow",
+      "fields": {
+        "depends_on": [
+          {
+            "operation_id": "op-001-2",
+            "name": "Parse and extract permissions",
+            "relationship": "data_dependency",
+            "required": true,
+            "reason": "Needs parsed permissions list as input"
+          }
+        ],
+        "blocks": [
+          {
+            "operation_id": "op-001-3-2",
+            "name": "Resolve conflicting patterns",
+            "relationship": "sequential",
+            "reason": "Conflict resolution needs semantic groupings first"
+          },
+          {
+            "operation_id": "op-001-3-3",
+            "name": "Preserve project-specific permissions",
+            "relationship": "data_dependency",
+            "reason": "Needs duplicate identification results"
+          }
+        ],
+        "enables": [
+          {
+            "operation_id": "op-001-4",
+            "name": "Write merged permissions to user settings",
+            "relationship": "indirect",
+            "reason": "Final merge needs all deduplication complete"
+          }
+        ],
+        "dependency_graph_position": {
+          "critical_path": true,
+          "bottleneck": false,
+          "parallel_group": null
+        }
+      }
+    },
+    "level_4_io_specification": {
+      "section": "Inputs & Outputs",
+      "fields": {
+        "inputs": [
+          {
+            "name": "parsed_permissions",
+            "type": "array",
+            "structure": "Permission[]",
+            "source": "op-001-2",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tool": {"type": "string"},
+                  "pattern": {"type": "string"},
+                  "project_source": {"type": "string"},
+                  "confidence": {"type": "number"}
+                }
+              }
+            },
+            "example": [
+              {
+                "tool": "Bash",
+                "pattern": "npm install",
+                "project_source": "lcc",
+                "confidence": 1.0
+              },
+              {
+                "tool": "Bash",
+                "pattern": "npm install:*",
+                "project_source": "strategic-thinking",
+                "confidence": 1.0
+              }
+            ]
+          },
+          {
+            "name": "semantic_model",
+            "type": "object",
+            "structure": "SemanticAnalyzer",
+            "source": "system",
+            "required": false,
+            "description": "LLM context for semantic similarity analysis"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "semantic_groups",
+            "type": "array",
+            "structure": "DuplicateGroup[]",
+            "consumers": ["op-001-3-2", "op-001-3-3"],
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "group_id": {"type": "string"},
+                  "canonical_permission": {
+                    "type": "object",
+                    "properties": {
+                      "tool": {"type": "string"},
+                      "pattern": {"type": "string"}
+                    }
+                  },
+                  "duplicates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "tool": {"type": "string"},
+                        "pattern": {"type": "string"},
+                        "similarity_score": {"type": "number"},
+                        "project_source": {"type": "string"}
+                      }
+                    }
+                  },
+                  "merge_strategy": {"type": "string"}
+                }
+              }
+            },
+            "example": [
+              {
+                "group_id": "dup-001",
+                "canonical_permission": {
+                  "tool": "Bash",
+                  "pattern": "npm install:*"
+                },
+                "duplicates": [
+                  {
+                    "tool": "Bash",
+                    "pattern": "npm install",
+                    "similarity_score": 0.95,
+                    "project_source": "lcc"
+                  },
+                  {
+                    "tool": "Bash",
+                    "pattern": "npm i",
+                    "similarity_score": 0.92,
+                    "project_source": "idfw"
+                  }
+                ],
+                "merge_strategy": "use_most_permissive"
+              }
+            ]
+          }
+        ],
+        "side_effects": [
+          {
+            "type": "log",
+            "description": "Write duplicate analysis to debug log",
+            "target": "~/.claude/ccem/logs/duplicate-analysis.log",
+            "severity": "info"
+          }
+        ]
+      }
+    },
+    "level_5_error_handling": {
+      "section": "Error Scenarios & Recovery",
+      "fields": {
+        "error_scenarios": [
+          {
+            "error_id": "err-001-3-1-001",
+            "name": "Empty input permissions list",
+            "probability": "low",
+            "severity": "medium",
+            "detection": "Check input array length before processing",
+            "handling": {
+              "strategy": "skip_operation",
+              "fallback_value": [],
+              "retry_allowed": false,
+              "user_notification": true,
+              "message": "No permissions to deduplicate. Skipping semantic analysis."
+            },
+            "recovery_steps": [
+              "Log warning about empty input",
+              "Return empty semantic_groups array",
+              "Continue to next operation"
+            ]
+          },
+          {
+            "error_id": "err-001-3-1-002",
+            "name": "LLM service unavailable",
+            "probability": "low",
+            "severity": "high",
+            "detection": "HTTP timeout or error from Claude API",
+            "handling": {
+              "strategy": "fallback_to_simple",
+              "fallback_value": "syntactic_deduplication",
+              "retry_allowed": true,
+              "retry_count": 3,
+              "retry_delay": "exponential_backoff",
+              "user_notification": true,
+              "message": "Semantic analysis unavailable. Using syntactic matching as fallback."
+            },
+            "recovery_steps": [
+              "Attempt simple string similarity comparison",
+              "Use edit distance algorithm for pattern matching",
+              "Mark results with lower confidence scores",
+              "Log degraded mode operation"
+            ]
+          },
+          {
+            "error_id": "err-001-3-1-003",
+            "name": "Invalid permission format in input",
+            "probability": "medium",
+            "severity": "medium",
+            "detection": "Schema validation failure on input array",
+            "handling": {
+              "strategy": "filter_invalid",
+              "fallback_value": null,
+              "retry_allowed": false,
+              "user_notification": true,
+              "message": "Some permissions have invalid format. Skipping invalid entries."
+            },
+            "recovery_steps": [
+              "Filter out invalid permission objects",
+              "Log invalid entries for debugging",
+              "Continue processing valid entries",
+              "Include warning in final report"
+            ]
+          },
+          {
+            "error_id": "err-001-3-1-004",
+            "name": "Ambiguous semantic similarity",
+            "probability": "medium",
+            "severity": "low",
+            "detection": "Multiple candidates with similarity score > 0.85",
+            "handling": {
+              "strategy": "prompt_user",
+              "fallback_value": "keep_separate",
+              "retry_allowed": false,
+              "user_notification": true,
+              "message": "Found ambiguous permission duplicates. Manual review recommended."
+            },
+            "recovery_steps": [
+              "Create separate groups for ambiguous matches",
+              "Flag for manual review",
+              "Provide detailed similarity analysis",
+              "Continue with conservative merge strategy"
+            ]
+          }
+        ],
+        "validation_rules": [
+          {
+            "rule_id": "val-001-3-1-001",
+            "name": "Input schema validation",
+            "type": "pre_execution",
+            "check": "Validate parsed_permissions matches Permission[] schema",
+            "on_failure": "Reject invalid inputs and log error"
+          },
+          {
+            "rule_id": "val-001-3-1-002",
+            "name": "Output completeness validation",
+            "type": "post_execution",
+            "check": "All input permissions are accounted for in output groups",
+            "on_failure": "Log missing permissions and investigate"
+          },
+          {
+            "rule_id": "val-001-3-1-003",
+            "name": "Similarity score validation",
+            "type": "runtime",
+            "check": "All similarity scores are between 0.0 and 1.0",
+            "on_failure": "Reject invalid scores and log error"
+          }
+        ],
+        "rollback_strategy": {
+          "supported": true,
+          "mechanism": "no_state_change",
+          "description": "Operation is read-only analysis, no rollback needed",
+          "cleanup_required": false
+        }
+      }
+    }
+  },
+  "metadata_panel": {
+    "performance_metrics": {
+      "avg_execution_time": "0.75s",
+      "p50_execution_time": "0.70s",
+      "p95_execution_time": "1.10s",
+      "p99_execution_time": "1.35s",
+      "success_rate": "98.5%",
+      "failure_rate": "1.5%",
+      "degraded_mode_rate": "3.2%",
+      "total_executions": 245,
+      "last_execution": "2025-10-11T14:30:22Z"
+    },
+    "resource_usage": {
+      "avg_memory": "45MB",
+      "peak_memory": "120MB",
+      "avg_cpu": "12%",
+      "peak_cpu": "35%",
+      "api_calls": 1,
+      "tokens_used_avg": 1500,
+      "tokens_used_max": 3200
+    },
+    "quality_metrics": {
+      "code_coverage": "92%",
+      "test_pass_rate": "100%",
+      "lint_warnings": 0,
+      "security_issues": 0,
+      "duplicate_detection_accuracy": "96.8%",
+      "false_positive_rate": "2.1%",
+      "false_negative_rate": "1.1%"
+    }
+  },
+  "schema": {
+    "detailed_operation_view": {
+      "type": "object",
+      "required": ["level_1_identity", "level_2_execution", "level_3_dependencies", "level_4_io_specification", "level_5_error_handling"],
+      "properties": {
+        "level_1_identity": {
+          "type": "object",
+          "description": "Basic operation identification and metadata",
+          "required": ["operation_id", "name", "type", "parent_id", "depth"]
+        },
+        "level_2_execution": {
+          "type": "object",
+          "description": "Execution strategy and runtime characteristics",
+          "required": ["execution_strategy", "reasoning", "parallel_enabled", "estimated_duration", "risk_level"]
+        },
+        "level_3_dependencies": {
+          "type": "object",
+          "description": "Operation dependencies and flow control",
+          "required": ["depends_on", "blocks", "enables", "dependency_graph_position"]
+        },
+        "level_4_io_specification": {
+          "type": "object",
+          "description": "Detailed input/output specifications with schemas and examples",
+          "required": ["inputs", "outputs", "side_effects"]
+        },
+        "level_5_error_handling": {
+          "type": "object",
+          "description": "Error scenarios, recovery strategies, and validation rules",
+          "required": ["error_scenarios", "validation_rules", "rollback_strategy"]
+        }
+      }
+    },
+    "error_scenario": {
+      "type": "object",
+      "required": ["error_id", "name", "probability", "severity", "detection", "handling", "recovery_steps"],
+      "properties": {
+        "error_id": {"type": "string", "pattern": "^err-[0-9]{3}(-[0-9]+)*-[0-9]{3}$"},
+        "name": {"type": "string"},
+        "probability": {"type": "string", "enum": ["very_low", "low", "medium", "high", "very_high"]},
+        "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+        "detection": {"type": "string"},
+        "handling": {
+          "type": "object",
+          "required": ["strategy"],
+          "properties": {
+            "strategy": {"type": "string", "enum": ["retry", "fallback", "skip", "abort", "prompt_user"]},
+            "fallback_value": {"type": ["string", "array", "object", "null"]},
+            "retry_allowed": {"type": "boolean"},
+            "retry_count": {"type": "integer"},
+            "retry_delay": {"type": "string"},
+            "user_notification": {"type": "boolean"},
+            "message": {"type": "string"}
+          }
+        },
+        "recovery_steps": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "test_id": "tc-view-001",
+      "name": "View valid operation with full metadata",
+      "input": {
+        "operation_id": "op-001-3-1"
+      },
+      "expected_output": {
+        "success": true,
+        "all_levels_present": true,
+        "metadata_complete": true
+      }
+    },
+    {
+      "test_id": "tc-view-002",
+      "name": "View root operation with no parent",
+      "input": {
+        "operation_id": "root"
+      },
+      "expected_output": {
+        "success": true,
+        "parent_id": null,
+        "shows_all_children": true
+      }
+    },
+    {
+      "test_id": "tc-view-003",
+      "name": "View leaf operation with no children",
+      "input": {
+        "operation_id": "op-008-3"
+      },
+      "expected_output": {
+        "success": true,
+        "children_count": 0,
+        "blocks_list_populated": true
+      }
+    },
+    {
+      "test_id": "tc-view-004",
+      "name": "View operation with error scenarios",
+      "input": {
+        "operation_id": "op-001-3-1"
+      },
+      "expected_output": {
+        "success": true,
+        "error_scenarios_count": 4,
+        "all_scenarios_have_recovery": true
+      }
+    },
+    {
+      "test_id": "tc-view-005",
+      "name": "Invalid operation ID",
+      "input": {
+        "operation_id": "op-999"
+      },
+      "expected_output": {
+        "success": false,
+        "error": "Operation not found",
+        "suggestion": "Use valid operation ID from tree"
+      }
+    }
+  ],
+  "key_learnings": [
+    "5-level view provides comprehensive operation understanding without overwhelming",
+    "Dependency visualization helps understand operation flow and bottlenecks",
+    "I/O specifications with schemas and examples enable better validation",
+    "Error scenario documentation improves resilience and debugging",
+    "Performance metrics inform optimization decisions",
+    "Quality metrics validate operation effectiveness",
+    "Example data in specifications reduces ambiguity",
+    "Validation rules ensure data integrity throughout operation"
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "analysis_id": "migration-lcc-001",
+  "timestamp": "2025-10-11T17:30:00Z",
+  "source_project": {
+    "name": "lcc-marketplace",
+    "path": "/Users/jeremiah/Developer/lcc",
+    "version": "0.5.0",
+    "git_enabled": true,
+    "claude_enabled": true
+  },
+
+  "project_context": {
+    "tech_stack": {
+      "framework": "Next.js 15.5.3",
+      "runtime": "React 18.3.1",
+      "backend": "Supabase",
+      "authentication": "Twilio 2FA",
+      "payments": "Stripe",
+      "language": "TypeScript 5.4.5",
+      "styling": "Tailwind CSS + Radix UI",
+      "testing": ["Jest", "Playwright", "Testing Library"],
+      "deployment": "Vercel"
+    },
+
+    "project_structure": {
+      "app_router": true,
+      "major_sections": [
+        "shop (marketplace)",
+        "admin (dashboard)",
+        "auth (phone verification, 2FA)",
+        "api (routes)"
+      ],
+      "component_library": "Comprehensive Radix UI + custom components",
+      "email_system": "React Email + Resend",
+      "pdf_generation": "@react-pdf/renderer"
+    },
+
+    "git_context": {
+      "current_branch": "staging",
+      "main_branch": "main",
+      "total_branches": 14,
+      "active_branches": [
+        "staging (current)",
+        "main",
+        "feature/admin-dashboard-enhancements",
+        "feature/newsletter-system",
+        "feature/onboarding-modal-tiers",
+        "chore/testing-improvements"
+      ],
+      "workflow": "Feature branches → staging → main",
+      "phase_based_development": [
+        "phase1/peg-1010-core-components",
+        "phase2/peg-1011-feature-components",
+        "phase3/peg-1012-shared-components",
+        "phase4/peg-1013-layout-admin",
+        "phase5/peg-1014-final-integration"
+      ]
+    },
+
+    "claude_configuration": {
+      "commands": ["/ccem (project-specific)"],
+      "hooks": ["memory patterns"],
+      "integrations": ["Linear (cached)", "Vercel MCP"],
+      "permissions": "Inherited from user (83 patterns)",
+      "project_instructions": "CLAUDE.md with deployment, testing, git workflow"
+    },
+
+    "linear_integration": {
+      "project_id": "0f474367-e131-41eb-bf57-8790b7b5b3f6",
+      "team": "Pegues Innovations",
+      "issue_prefix": "PEG-",
+      "cached_data": true
+    },
+
+    "vercel_integration": {
+      "team_id": "team_VjQaLc7lOCABGjL0AogJmthV",
+      "project_id": "prj_YUhaKejXDokxv2iU1plG1yPSop6i",
+      "staging_url": "https://lcc-marketplace-git-staging-luxury-courier-club.vercel.app/",
+      "protection_bypass": "configured"
+    },
+
+    "testing_infrastructure": {
+      "unit_tests": "Jest with coverage",
+      "integration_tests": "API routes",
+      "e2e_tests": [
+        "signup-flow",
+        "shopping-flow",
+        "admin-workflow",
+        "subscription",
+        "cart (comprehensive)",
+        "performance"
+      ],
+      "coverage_goal": "95%"
+    }
+  },
+
+  "potential_fork_points": [
+    {
+      "id": "fork-001",
+      "type": "branch-based",
+      "name": "Feature Branch Fork",
+      "description": "Fork from specific feature branch for isolated development",
+      "use_cases": [
+        "Test feature in isolation",
+        "Create experimental variation",
+        "Parallel feature development"
+      ],
+      "branches_available": [
+        "feature/admin-dashboard-enhancements",
+        "feature/newsletter-system",
+        "feature/onboarding-modal-tiers"
+      ],
+      "complexity": "low",
+      "recommendation": "Good for short-term feature experimentation"
+    },
+
+    {
+      "id": "fork-002",
+      "type": "environment-based",
+      "name": "Environment-Specific Fork",
+      "description": "Create separate project for different environment (dev, staging, prod)",
+      "use_cases": [
+        "Isolated development environment",
+        "Testing environment separate from staging",
+        "Client demo environment"
+      ],
+      "considerations": [
+        "Requires separate Vercel project",
+        "May need separate Supabase instance",
+        "Separate Linear project recommended"
+      ],
+      "complexity": "medium",
+      "recommendation": "Ideal for creating isolated testing/demo environments"
+    },
+
+    {
+      "id": "fork-003",
+      "type": "module-extraction",
+      "name": "Module/Section Extraction",
+      "description": "Extract specific section (admin, shop, auth) as standalone project",
+      "use_cases": [
+        "Reuse admin dashboard in another project",
+        "Create standalone shop module",
+        "Extract auth system for other projects"
+      ],
+      "modules_available": [
+        "admin (dashboard with email templates, audit logs, settings)",
+        "shop (marketplace with products, cart, filters)",
+        "auth (phone verification, 2FA with Twilio)"
+      ],
+      "complexity": "high",
+      "recommendation": "Best for creating reusable modules/templates"
+    },
+
+    {
+      "id": "fork-004",
+      "type": "template-creation",
+      "name": "Project Template Fork",
+      "description": "Create reusable template for similar marketplace projects",
+      "use_cases": [
+        "Start new marketplace project",
+        "Create SaaS boilerplate",
+        "Build client-specific marketplace"
+      ],
+      "includes": [
+        "Full tech stack setup",
+        "Authentication system",
+        "Payment integration",
+        "Admin dashboard",
+        "E2E testing infrastructure"
+      ],
+      "cleanup_required": [
+        "Remove LCC-specific branding",
+        "Clear product data",
+        "Reset Stripe/Twilio/Supabase configs",
+        "Clear Linear cache"
+      ],
+      "complexity": "high",
+      "recommendation": "Excellent for creating production-ready marketplace template"
+    },
+
+    {
+      "id": "fork-005",
+      "type": "client-customization",
+      "name": "Client-Specific Fork",
+      "description": "Fork for customization for different client/brand",
+      "use_cases": [
+        "White-label solution",
+        "Brand-specific marketplace",
+        "Client-specific feature set"
+      ],
+      "preserves": [
+        "Core marketplace functionality",
+        "Testing infrastructure",
+        "CI/CD setup"
+      ],
+      "customizes": [
+        "Branding and styling",
+        "Product catalog",
+        "Business logic",
+        "Subscription tiers"
+      ],
+      "complexity": "medium",
+      "recommendation": "Perfect for white-label marketplace deployments"
+    },
+
+    {
+      "id": "fork-006",
+      "type": "development-sandbox",
+      "name": "Personal Development Sandbox",
+      "description": "Personal copy for experimentation without affecting team",
+      "use_cases": [
+        "Test breaking changes",
+        "Learn codebase",
+        "Prototype features",
+        "Practice workflows"
+      ],
+      "isolation_level": "complete",
+      "team_sync": "optional",
+      "complexity": "low",
+      "recommendation": "Ideal for risk-free experimentation and learning"
+    }
+  ],
+
+  "migration_recommendations": [
+    {
+      "scenario": "Continue LCC development in new location",
+      "recommended_fork_point": "fork-006 (Development Sandbox)",
+      "target_suggestion": "~/Developer/lcc-dev or ~/Developer/sandbox/lcc",
+      "include": ["full codebase", "git history", "claude config", "chat history"],
+      "setup_tasks": ["Update Linear cache", "Configure separate Vercel project", "Update CLAUDE.md paths"]
+    },
+
+    {
+      "scenario": "Create new marketplace project based on LCC",
+      "recommended_fork_point": "fork-004 (Project Template)",
+      "target_suggestion": "~/Developer/<new-project-name>",
+      "include": ["codebase", "claude config", "testing setup"],
+      "exclude": ["git history", "chat history", "linear cache", "client-specific code"],
+      "setup_tasks": ["Rebrand", "Clear product data", "Reset API keys", "Initialize new git repo", "Create new Linear project"]
+    },
+
+    {
+      "scenario": "Extract admin dashboard for another project",
+      "recommended_fork_point": "fork-003 (Module Extraction - admin)",
+      "target_suggestion": "~/Developer/<target-project>/admin-module",
+      "include": ["app/admin/**", "related components", "admin API routes", "admin tests"],
+      "exclude": ["shop", "auth", "product-related code"],
+      "setup_tasks": ["Extract dependencies", "Update imports", "Configure as module", "Adapt to target project"]
+    },
+
+    {
+      "scenario": "Create white-label solution for new client",
+      "recommended_fork_point": "fork-005 (Client Customization)",
+      "target_suggestion": "~/Developer/<client-name>-marketplace",
+      "include": ["full codebase", "claude config", "testing setup"],
+      "preserve": ["core functionality", "testing infrastructure"],
+      "customize": ["branding", "business logic", "integrations"],
+      "setup_tasks": ["Rebrand", "Configure client APIs", "Update deployment", "Create client Linear project"]
+    }
+  ],
+
+  "context_aware_features": {
+    "auto_detect_fork_type": true,
+    "smart_path_suggestions": true,
+    "dependency_analysis": true,
+    "cleanup_recommendations": true,
+    "post_migration_setup_tasks": true
+  }
+}

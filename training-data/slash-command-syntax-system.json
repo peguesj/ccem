@@ -1,0 +1,524 @@
+{
+  "system_id": "slash-cmd-syntax-v2",
+  "version": "2.0.0",
+  "timestamp": "2025-10-11T16:20:00Z",
+  "description": "Comprehensive nested argument syntax system for slash command creation, modification, and augmentation",
+
+  "syntax_specification": {
+    "overview": "Logical and typecast argument nesting with agent prioritization and execution control",
+
+    "basic_syntax": {
+      "command": "/command-name",
+      "with_args": "/command-name <arg1> [optional-arg]",
+      "with_flags": "/command-name --flag value",
+      "with_nested": "/command-name <arg1> --nested(key=value, option=choice)"
+    },
+
+    "nested_argument_syntax": {
+      "basic_nesting": {
+        "format": "--nested(key=value, key2=value2)",
+        "example": "/ccem optimize --scope(level=user, include=[permissions,hooks])",
+        "description": "Parentheses contain comma-separated key-value pairs"
+      },
+
+      "array_arguments": {
+        "format": "--flag [item1, item2, item3]",
+        "example": "/ccem merge --projects [lcc, strategic-thinking, idfw]",
+        "description": "Square brackets for array/list values"
+      },
+
+      "object_arguments": {
+        "format": "--config {key: value, nested: {key: value}}",
+        "example": "/ccem backup --options {format: tar.gz, compression: 9, encrypt: false}",
+        "description": "Curly braces for object/map values"
+      },
+
+      "agent_specification": {
+        "format": "--agent <agent-name|agent-type>",
+        "examples": [
+          "/ccem migrate ~/project --agent orchestrator",
+          "/ccem optimize --agent CCEMAgent",
+          "/custom-command --agent general-purpose"
+        ],
+        "description": "Explicitly specify which agent handles execution"
+      },
+
+      "execution_strategy": {
+        "format": "--execution <strategy>",
+        "strategies": [
+          "ccem",
+          "claude",
+          "ccem>claude",
+          "claude>ccem",
+          "claude>ccem>claude",
+          "CCEMAgent"
+        ],
+        "example": "/ccem merge --execution claude>ccem",
+        "description": "Define execution flow between CCEM and Claude"
+      },
+
+      "priority_specification": {
+        "format": "--priority <level> --agent-priority <agent-name>",
+        "example": "/deploy agents --priority high --agent-priority fix-agent",
+        "description": "Set priority level and prioritize specific agent"
+      },
+
+      "conditional_execution": {
+        "format": "--if <condition> --then <action> --else <action>",
+        "example": "/ccem optimize --if(errors>0) --then(fix-agent) --else(continue)",
+        "description": "Conditional logic within command execution"
+      },
+
+      "multi_agent_coordination": {
+        "format": "--agents [agent1, agent2] --strategy <coordination-type>",
+        "strategies": ["parallel", "sequential", "hierarchical", "pipeline"],
+        "example": "/deploy --agents [fix-agent, test-agent] --strategy pipeline",
+        "description": "Coordinate multiple agents for complex tasks"
+      },
+
+      "callback_specification": {
+        "format": "--on-complete <callback> --on-error <callback>",
+        "example": "/ccem merge --on-complete /ccem inspect --on-error /ccem rollback",
+        "description": "Define callbacks for success/failure scenarios"
+      }
+    },
+
+    "typecast_system": {
+      "supported_types": {
+        "string": {
+          "syntax": "<arg:string>",
+          "example": "/ccem migrate <target:string>",
+          "validation": "Any text value"
+        },
+        "number": {
+          "syntax": "<arg:number>",
+          "example": "/ccem backup --compression <level:number(1-9)>",
+          "validation": "Numeric value, optionally with range"
+        },
+        "boolean": {
+          "syntax": "<arg:boolean>",
+          "example": "/ccem merge --dry-run <enabled:boolean>",
+          "validation": "true/false, yes/no, 1/0"
+        },
+        "enum": {
+          "syntax": "<arg:enum(option1|option2|option3)>",
+          "example": "/ccem inspect <scope:enum(user|project|all)>",
+          "validation": "Must be one of specified options"
+        },
+        "array": {
+          "syntax": "<arg:array[type]>",
+          "example": "/ccem merge --projects <list:array[string]>",
+          "validation": "Comma-separated values of specified type"
+        },
+        "object": {
+          "syntax": "<arg:object{schema}>",
+          "example": "/ccem config --settings <opts:object{format:string,level:number}>",
+          "validation": "Key-value pairs matching schema"
+        },
+        "path": {
+          "syntax": "<arg:path>",
+          "example": "/ccem migrate <target:path(dir)>",
+          "validation": "Valid filesystem path"
+        },
+        "regex": {
+          "syntax": "<arg:regex(pattern)>",
+          "example": "/ccem inspect --filter <pattern:regex(.*\\.json$)>",
+          "validation": "Must match regex pattern"
+        }
+      },
+
+      "type_constraints": {
+        "range": "number(min-max)",
+        "length": "string(minLen-maxLen)",
+        "pattern": "string(regex)",
+        "required": "arg:type!",
+        "optional": "arg:type?",
+        "default": "arg:type=defaultValue"
+      }
+    }
+  },
+
+  "use_cases": {
+    "uc_001": {
+      "id": "uc-001",
+      "title": "Prioritize Specific Agent for Command Execution",
+      "description": "User has multiple agents and wants to ensure a specific agent handles a command",
+      "scenario": "User created /fix command but wants fix-agent to handle it instead of general-purpose agent",
+      "before": "/fix build --target typescript",
+      "after": "/fix build --target typescript --agent fix-agent",
+      "modification_type": "augmentation",
+      "syntax_used": "--agent <agent-name>"
+    },
+
+    "uc_002": {
+      "id": "uc-002",
+      "title": "Override Execution Strategy",
+      "description": "User wants to change how command executes (pure CCEM vs Claude-assisted)",
+      "scenario": "Merge command normally uses claude>ccem but user wants pure CCEM for speed",
+      "before": "/ccem merge recommended",
+      "after": "/ccem merge recommended --execution ccem",
+      "modification_type": "override",
+      "syntax_used": "--execution <strategy>"
+    },
+
+    "uc_003": {
+      "id": "uc-003",
+      "title": "Add Conditional Logic to Existing Command",
+      "description": "User wants command to behave differently based on conditions",
+      "scenario": "Deploy command should run tests only if in production mode",
+      "before": "/deploy staging",
+      "after": "/deploy <env:enum(staging|production)> --if(env=production) --then(run-tests)",
+      "modification_type": "enhancement",
+      "syntax_used": "--if <condition> --then <action>"
+    },
+
+    "uc_004": {
+      "id": "uc-004",
+      "title": "Coordinate Multiple Agents for Complex Task",
+      "description": "User wants multiple specialized agents to work together",
+      "scenario": "Quality check requires fix-agent, test-agent, and monitor-agent",
+      "before": "/quality-check",
+      "after": "/quality-check --agents [fix-agent, test-agent, monitor-agent] --strategy pipeline",
+      "modification_type": "augmentation",
+      "syntax_used": "--agents [list] --strategy <coordination-type>"
+    },
+
+    "uc_005": {
+      "id": "uc-005",
+      "title": "Add Callbacks for Success/Failure",
+      "description": "User wants automatic actions after command completes",
+      "scenario": "After merge, automatically inspect config; on error, rollback",
+      "before": "/ccem merge",
+      "after": "/ccem merge --on-complete '/ccem inspect' --on-error '/ccem rollback'",
+      "modification_type": "augmentation",
+      "syntax_used": "--on-complete <cmd> --on-error <cmd>"
+    },
+
+    "uc_006": {
+      "id": "uc-006",
+      "title": "Specify Agent with Nested Configuration",
+      "description": "User wants to pass configuration to the executing agent",
+      "scenario": "Optimize command should use orchestrator with specific settings",
+      "before": "/ccem optimize",
+      "after": "/ccem optimize --agent orchestrator --agent-config {parallel: true, max_concurrent: 8}",
+      "modification_type": "augmentation",
+      "syntax_used": "--agent <name> --agent-config {object}"
+    },
+
+    "uc_007": {
+      "id": "uc-007",
+      "title": "Update Command to Use Parent/Main Orchestrator",
+      "description": "User wants command to delegate to main orchestrator instead of direct execution",
+      "scenario": "Custom command should use main orchestrator for better coordination",
+      "before": "/my-command <args>",
+      "after": "/my-command <args> --orchestrator main",
+      "modification_type": "delegation",
+      "syntax_used": "--orchestrator <type>"
+    },
+
+    "uc_008": {
+      "id": "uc-008",
+      "title": "Add Type Validation to Command Arguments",
+      "description": "User wants strict type checking on command arguments",
+      "scenario": "Backup command should validate compression level is 1-9",
+      "before": "/ccem backup --compression 15",
+      "after": "/ccem backup --compression <level:number(1-9)!>",
+      "modification_type": "validation",
+      "syntax_used": "Type constraints with validation"
+    },
+
+    "uc_009": {
+      "id": "uc-009",
+      "title": "Chain Multiple Commands with Dependencies",
+      "description": "User wants to run multiple commands in sequence with dependency management",
+      "scenario": "Build, test, then deploy only if all pass",
+      "before": "Manual execution of each command",
+      "after": "/workflow --chain [/build, /test, /deploy] --stop-on-error true",
+      "modification_type": "composition",
+      "syntax_used": "--chain [commands] --stop-on-error <boolean>"
+    },
+
+    "uc_010": {
+      "id": "uc-010",
+      "title": "Dynamic Agent Selection Based on Context",
+      "description": "User wants agent selection to be context-aware",
+      "scenario": "Fix command should use different agents based on error type",
+      "before": "/fix <target>",
+      "after": "/fix <target> --agent-selector(type=error-based, mapping={build:fix-agent, test:test-agent})",
+      "modification_type": "dynamic",
+      "syntax_used": "--agent-selector <config>"
+    }
+  },
+
+  "user_journeys": {
+    "journey_001": {
+      "id": "journey-001",
+      "title": "Creating and Refining a Custom Slash Command",
+      "persona": "Developer wanting to automate workflow",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create basic command",
+          "command": "/ccem create-command my-deploy --description 'Deploy to staging'",
+          "result": "Basic /my-deploy command created"
+        },
+        {
+          "step": 2,
+          "action": "Add argument validation",
+          "command": "/ccem modify-command my-deploy --add-arg <env:enum(staging|production)!>",
+          "result": "Command now requires env argument with validation"
+        },
+        {
+          "step": 3,
+          "action": "Specify agent priority",
+          "command": "/ccem modify-command my-deploy --agent orchestrator --priority high",
+          "result": "Command will use orchestrator agent with high priority"
+        },
+        {
+          "step": 4,
+          "action": "Add conditional logic",
+          "command": "/ccem modify-command my-deploy --add-condition 'if(env=production) then(run-tests)'",
+          "result": "Tests run only for production deployments"
+        },
+        {
+          "step": 5,
+          "action": "Add callbacks",
+          "command": "/ccem modify-command my-deploy --on-complete '/notify-team' --on-error '/rollback'",
+          "result": "Automatic actions after deployment"
+        },
+        {
+          "step": 6,
+          "action": "Test command",
+          "command": "/my-deploy staging --dry-run",
+          "result": "Preview execution without actual deployment"
+        },
+        {
+          "step": 7,
+          "action": "Execute command",
+          "command": "/my-deploy production",
+          "result": "Full deployment with tests, notifications, and error handling"
+        }
+      ],
+      "outcome": "Fully featured custom deployment command with validation, agent control, and error handling"
+    },
+
+    "journey_002": {
+      "id": "journey-002",
+      "title": "Upgrading Existing Command with Agent Orchestration",
+      "persona": "Developer with existing commands wanting better coordination",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Identify existing command",
+          "command": "/ccem list-commands --filter custom",
+          "result": "See list of custom commands"
+        },
+        {
+          "step": 2,
+          "action": "Inspect current command definition",
+          "command": "/ccem inspect-command quality-check",
+          "result": "View current implementation (basic, no agent specification)"
+        },
+        {
+          "step": 3,
+          "action": "Add multi-agent coordination",
+          "command": "/ccem augment-command quality-check --agents [fix-agent, test-agent, monitor-agent] --strategy pipeline",
+          "result": "Command now uses three agents in pipeline"
+        },
+        {
+          "step": 4,
+          "action": "Configure agent communication",
+          "command": "/ccem augment-command quality-check --agent-communication shared-context",
+          "result": "Agents share context during execution"
+        },
+        {
+          "step": 5,
+          "action": "Add progress tracking",
+          "command": "/ccem augment-command quality-check --enable-progress-tracking",
+          "result": "Shows progress through agent pipeline"
+        },
+        {
+          "step": 6,
+          "action": "Test upgraded command",
+          "command": "/quality-check --verbose",
+          "result": "See agent coordination in action"
+        }
+      ],
+      "outcome": "Existing command upgraded with sophisticated multi-agent orchestration"
+    },
+
+    "journey_003": {
+      "id": "journey-003",
+      "title": "Creating Command Family with Shared Logic",
+      "persona": "Developer creating multiple related commands",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create base command template",
+          "command": "/ccem create-template db-operation --base-agent orchestrator",
+          "result": "Template for database operations"
+        },
+        {
+          "step": 2,
+          "action": "Create commands from template",
+          "command": "/ccem create-from-template db-migrate --extends db-operation --add-arg <direction:enum(up|down)>",
+          "result": "db-migrate command inherits orchestrator agent"
+        },
+        {
+          "step": 3,
+          "action": "Add another command",
+          "command": "/ccem create-from-template db-seed --extends db-operation --add-arg <environment:string>",
+          "result": "db-seed command also inherits shared logic"
+        },
+        {
+          "step": 4,
+          "action": "Modify template (updates all children)",
+          "command": "/ccem modify-template db-operation --add-callback --on-error '/notify-dba'",
+          "result": "All database commands now notify DBA on error"
+        }
+      ],
+      "outcome": "Command family with shared agent configuration and error handling"
+    }
+  },
+
+  "modification_operations": {
+    "create": {
+      "command": "/ccem create-command <name> --description <desc>",
+      "options": [
+        "--agent <agent-name>",
+        "--execution <strategy>",
+        "--template <template-name>",
+        "--scope <user|project>"
+      ]
+    },
+    "modify": {
+      "command": "/ccem modify-command <name>",
+      "options": [
+        "--add-arg <arg-spec>",
+        "--remove-arg <arg-name>",
+        "--change-agent <agent-name>",
+        "--change-execution <strategy>",
+        "--add-condition <condition>",
+        "--add-callback <callback>"
+      ]
+    },
+    "augment": {
+      "command": "/ccem augment-command <name>",
+      "options": [
+        "--agents [agent-list]",
+        "--strategy <coordination>",
+        "--priority <level>",
+        "--agent-config <config>",
+        "--orchestrator <type>"
+      ]
+    },
+    "inspect": {
+      "command": "/ccem inspect-command <name>",
+      "shows": [
+        "Current definition",
+        "Agent configuration",
+        "Execution strategy",
+        "Arguments and validation",
+        "Callbacks and conditions",
+        "Usage statistics"
+      ]
+    },
+    "delete": {
+      "command": "/ccem delete-command <name>",
+      "options": [
+        "--backup",
+        "--force"
+      ]
+    }
+  },
+
+  "best_practices": {
+    "agent_selection": [
+      "Use specialized agents for domain-specific tasks",
+      "Use orchestrator for complex multi-step operations",
+      "Use general-purpose for simple, straightforward tasks",
+      "Specify agent explicitly for predictable behavior"
+    ],
+    "execution_strategy": [
+      "Use 'ccem' for deterministic operations",
+      "Use 'claude' for nuanced decision-making",
+      "Use 'claude>ccem' for analysis then execution",
+      "Use 'claude>ccem>claude' for validation loops"
+    ],
+    "argument_design": [
+      "Use enums for limited choice sets",
+      "Add type constraints for safety",
+      "Provide sensible defaults",
+      "Make critical args required (!)",
+      "Document arg purpose in description"
+    ],
+    "error_handling": [
+      "Always provide --on-error callback for critical operations",
+      "Use --rollback for destructive operations",
+      "Add --dry-run for preview",
+      "Include --verbose for debugging"
+    ]
+  },
+
+  "schema_validation": {
+    "command_definition_schema": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "description": {"type": "string", "minLength": 10},
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"enum": ["string", "number", "boolean", "enum", "array", "object", "path", "regex"]},
+              "required": {"type": "boolean", "default": false},
+              "default": {},
+              "validation": {"type": "object"}
+            }
+          }
+        },
+        "agent": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string"},
+            "type": {"enum": ["general-purpose", "orchestrator", "specialized", "CCEMAgent"]},
+            "priority": {"enum": ["low", "medium", "high", "critical"]},
+            "config": {"type": "object"}
+          }
+        },
+        "execution": {
+          "type": "object",
+          "properties": {
+            "strategy": {"enum": ["ccem", "claude", "ccem>claude", "claude>ccem", "claude>ccem>claude", "CCEMAgent"]},
+            "parallel": {"type": "boolean"},
+            "max_concurrent": {"type": "number"}
+          }
+        },
+        "callbacks": {
+          "type": "object",
+          "properties": {
+            "on_complete": {"type": "string"},
+            "on_error": {"type": "string"},
+            "on_progress": {"type": "string"}
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["if", "then"],
+            "properties": {
+              "if": {"type": "string"},
+              "then": {"type": "string"},
+              "else": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

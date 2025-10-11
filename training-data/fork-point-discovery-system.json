@@ -1,0 +1,524 @@
+{
+  "training_id": "fork-discovery-001",
+  "version": "1.0.0",
+  "timestamp": "2025-10-11T17:35:00Z",
+  "purpose": "Enable automatic discovery of fork points from chat history, context, and git worktrees",
+
+  "discovery_sources": {
+    "chat_history_analysis": {
+      "description": "Analyze conversation history to identify fork-worthy contexts",
+      "capabilities": [
+        "Topic clustering and segmentation",
+        "Project identification within conversations",
+        "Context extraction (training data, schemas, documentation)",
+        "Related file tracking",
+        "Conversation thread mapping"
+      ],
+      "detection_patterns": [
+        {
+          "pattern_id": "chat-001",
+          "name": "Project Development Context",
+          "indicators": [
+            "Multiple files created/modified in conversation",
+            "Schema definitions and training data",
+            "Documentation and specifications",
+            "Implementation of features/systems",
+            "Git commits related to specific feature"
+          ],
+          "example": "CCEM TUI development conversation with schemas, examples, commands"
+        },
+        {
+          "pattern_id": "chat-002",
+          "name": "Feature Implementation Thread",
+          "indicators": [
+            "Single feature developed across multiple messages",
+            "Test cases and validation",
+            "Iterative refinement",
+            "User feedback and adjustments"
+          ],
+          "example": "Slash command syntax system with examples and test cases"
+        },
+        {
+          "pattern_id": "chat-003",
+          "name": "Training Data Collection",
+          "indicators": [
+            "Explicit TRAINING directives",
+            "Schema creation",
+            "Example generation",
+            "Test case development",
+            "User memory directives"
+          ],
+          "example": "Nested argument syntax training with use cases and user journeys"
+        },
+        {
+          "pattern_id": "chat-004",
+          "name": "Configuration Evolution",
+          "indicators": [
+            "Settings modifications",
+            "Permission adjustments",
+            "Hook creation/modification",
+            "MCP server configuration"
+          ],
+          "example": "Settings merge with 83 permissions consolidation"
+        }
+      ],
+
+      "extraction_methods": {
+        "conversation_metadata": {
+          "extract": [
+            "Topic/subject identification",
+            "File paths mentioned/created",
+            "Git branches/commits referenced",
+            "External integrations discussed",
+            "User directives and requirements"
+          ]
+        },
+        "content_analysis": {
+          "extract": [
+            "Code snippets and implementations",
+            "Configuration changes",
+            "Schema definitions",
+            "Documentation sections",
+            "Training examples"
+          ]
+        },
+        "relationship_mapping": {
+          "extract": [
+            "File dependencies",
+            "Cross-references between files",
+            "Conversation flow and continuity",
+            "Related issues/tasks",
+            "Integration points"
+          ]
+        }
+      }
+    },
+
+    "chat_file_analysis": {
+      "description": "Analyze saved chat files for fork-worthy content",
+      "locations": [
+        "~/.claude/chats/",
+        "~/.claude/sessions/",
+        "~/.claude/history/",
+        ".claude/manifests/sessions/",
+        "Chat export files (JSON, Markdown)"
+      ],
+      "metadata_extraction": [
+        "Conversation ID and timestamps",
+        "Participants (user, agents)",
+        "Files created/modified",
+        "Commands executed",
+        "Projects referenced",
+        "Git commits made"
+      ],
+      "content_indexing": [
+        "Full-text search capabilities",
+        "Topic categorization",
+        "Entity recognition (files, projects, commands)",
+        "Semantic similarity clustering",
+        "Conversation threading"
+      ]
+    },
+
+    "context_within_chats": {
+      "description": "Extract specific contexts from within conversations",
+      "context_types": [
+        {
+          "type": "project_context",
+          "description": "Project-specific development work",
+          "includes": [
+            "Project files and structure",
+            "Configuration and settings",
+            "Dependencies and integrations",
+            "Git history related to project"
+          ]
+        },
+        {
+          "type": "feature_context",
+          "description": "Specific feature development",
+          "includes": [
+            "Feature implementation files",
+            "Tests and validation",
+            "Documentation",
+            "Related configuration"
+          ]
+        },
+        {
+          "type": "training_context",
+          "description": "Training data and examples",
+          "includes": [
+            "Schema definitions",
+            "Training examples",
+            "Test cases",
+            "Documentation and directives"
+          ]
+        },
+        {
+          "type": "system_context",
+          "description": "System-wide changes and configurations",
+          "includes": [
+            "User-level settings",
+            "Hooks and automation",
+            "Global commands",
+            "MCP configurations"
+          ]
+        }
+      ],
+      "extraction_strategies": [
+        "Message range selection (e.g., messages 1-15)",
+        "Topic-based extraction (all CCEM-related messages)",
+        "File-based extraction (all messages touching specific files)",
+        "Time-based extraction (conversation from specific session)",
+        "Directive-based extraction (all TRAINING directive messages)"
+      ]
+    },
+
+    "git_worktree_analysis": {
+      "description": "Detect and analyze git worktrees for fork opportunities",
+      "detection": {
+        "command": "git worktree list",
+        "output_parsing": [
+          "Worktree path",
+          "Branch name",
+          "Commit hash",
+          "Status (bare, detached)"
+        ]
+      },
+      "use_cases": [
+        {
+          "use_case": "Parallel feature development",
+          "description": "Multiple worktrees for different features",
+          "fork_benefit": "Isolate feature work without branch switching"
+        },
+        {
+          "use_case": "Maintenance branches",
+          "description": "Separate worktrees for different versions",
+          "fork_benefit": "Work on multiple versions simultaneously"
+        },
+        {
+          "use_case": "Review and testing",
+          "description": "Dedicated worktree for PR review or testing",
+          "fork_benefit": "Test changes without affecting main workspace"
+        },
+        {
+          "use_case": "Hot fix isolation",
+          "description": "Emergency fix worktree separate from feature work",
+          "fork_benefit": "Quick fixes without disrupting current work"
+        }
+      ],
+      "fork_recommendations": {
+        "from_worktree": [
+          "Preserve worktree structure in fork",
+          "Maintain branch associations",
+          "Include worktree-specific configuration",
+          "Document worktree purpose and workflow"
+        ]
+      }
+    }
+  },
+
+  "fork_point_types_extended": [
+    {
+      "type": "conversation-based",
+      "id": "fork-007",
+      "name": "Conversation Context Fork",
+      "description": "Fork specific conversation context with all related artifacts",
+      "complexity": "medium",
+      "includes": [
+        "Chat history/transcript",
+        "Files created during conversation",
+        "Configuration changes made",
+        "Training data generated",
+        "Documentation produced",
+        "Related git commits"
+      ],
+      "use_cases": [
+        "Continue development in new location",
+        "Share context with team member",
+        "Create documentation from conversation",
+        "Archive important conversation with artifacts",
+        "Fork for different implementation approach"
+      ],
+      "metadata_preserved": [
+        "Conversation ID and timestamps",
+        "User directives and requirements",
+        "File modification history",
+        "Command execution log",
+        "Decision rationale"
+      ]
+    },
+
+    {
+      "type": "context-extraction",
+      "id": "fork-008",
+      "name": "Context Extraction Fork",
+      "description": "Extract and fork specific context from within larger conversation",
+      "complexity": "low-medium",
+      "extraction_methods": [
+        "Topic-based (e.g., all CCEM-related content)",
+        "File-based (e.g., all schema-related work)",
+        "Time-based (e.g., last 2 hours of work)",
+        "Feature-based (e.g., all slash command work)"
+      ],
+      "use_cases": [
+        "Extract feature for separate development",
+        "Create focused documentation",
+        "Share specific work segment",
+        "Archive feature implementation"
+      ]
+    },
+
+    {
+      "type": "worktree-based",
+      "id": "fork-009",
+      "name": "Git Worktree Fork",
+      "description": "Fork project preserving worktree structure",
+      "complexity": "medium-high",
+      "preserves": [
+        "Multiple worktree directories",
+        "Branch associations per worktree",
+        "Worktree-specific configurations",
+        "Parallel development setup"
+      ],
+      "use_cases": [
+        "Replicate multi-worktree workflow",
+        "Create training environment with worktrees",
+        "Fork for team with worktree structure",
+        "Archive worktree-based development"
+      ]
+    },
+
+    {
+      "type": "training-data",
+      "id": "fork-010",
+      "name": "Training Data Fork",
+      "description": "Fork training data, schemas, and examples for new project",
+      "complexity": "low",
+      "includes": [
+        "All schema definitions",
+        "Training examples and test cases",
+        "Documentation and directives",
+        "Related chat context"
+      ],
+      "excludes": [
+        "Project-specific code",
+        "Sensitive configurations",
+        "API keys and secrets"
+      ],
+      "use_cases": [
+        "Create training dataset for other projects",
+        "Share examples with team",
+        "Build documentation from training data",
+        "Archive learning materials"
+      ]
+    }
+  ],
+
+  "discovery_workflow": {
+    "step_1_analyze": {
+      "description": "Analyze current context for fork opportunities",
+      "methods": [
+        "Parse current conversation",
+        "Identify files created/modified",
+        "Detect training directives",
+        "Map relationships between artifacts",
+        "Check for git worktrees"
+      ]
+    },
+    "step_2_cluster": {
+      "description": "Cluster related content into fork candidates",
+      "clustering_criteria": [
+        "Topical similarity",
+        "File dependency relationships",
+        "Temporal proximity",
+        "User directive alignment",
+        "Project/feature boundaries"
+      ]
+    },
+    "step_3_recommend": {
+      "description": "Generate fork point recommendations",
+      "recommendation_factors": [
+        "Context completeness",
+        "Artifact dependencies",
+        "Use case applicability",
+        "Complexity assessment",
+        "Reusability potential"
+      ]
+    },
+    "step_4_present": {
+      "description": "Present fork options to user",
+      "presentation_includes": [
+        "Fork point type and description",
+        "What will be included/excluded",
+        "Complexity and effort estimate",
+        "Recommended target location",
+        "Post-fork setup tasks"
+      ]
+    }
+  },
+
+  "implementation_requirements": {
+    "chat_analysis_engine": {
+      "capabilities": [
+        "Parse conversation transcripts",
+        "Extract file references and modifications",
+        "Identify user directives (TRAINING, etc.)",
+        "Build conversation graph",
+        "Detect topic boundaries"
+      ],
+      "storage": "~/.claude/ccem/analysis/conversations/"
+    },
+
+    "file_tracking_system": {
+      "capabilities": [
+        "Track files created/modified in conversation",
+        "Maintain file-to-conversation mapping",
+        "Detect file dependencies",
+        "Version file changes by conversation"
+      ],
+      "storage": "~/.claude/ccem/analysis/file-tracking/"
+    },
+
+    "git_integration": {
+      "capabilities": [
+        "Detect worktrees",
+        "Map commits to conversations",
+        "Track branch relationships",
+        "Analyze git history for fork candidates"
+      ],
+      "commands": [
+        "git worktree list",
+        "git log --all --graph",
+        "git branch -vv",
+        "git reflog"
+      ]
+    },
+
+    "context_extraction_engine": {
+      "capabilities": [
+        "Extract message ranges",
+        "Filter by topic/file/time",
+        "Build minimal complete context",
+        "Include necessary dependencies",
+        "Export in various formats"
+      ],
+      "output_formats": [
+        "JSON (structured with metadata)",
+        "Markdown (human-readable)",
+        "Archive (tar.gz with all files)",
+        "Git bundle (code + history)"
+      ]
+    }
+  },
+
+  "example_use_case_ccem": {
+    "scenario": "Fork CCEM development conversation for continued work",
+    "conversation_analysis": {
+      "topic": "CCEM TUI creation and configuration management",
+      "messages_analyzed": "~15 user messages, ~20 assistant responses",
+      "duration": "~2 hours",
+      "files_created": [
+        "~/.claude/ccem/tui-structure.json",
+        "~/.claude/ccem/preferences.json",
+        "~/.claude/ccem/execution-strategy.json",
+        "~/.claude/ccem/merge-analysis.json",
+        "~/.claude/ccem/custom-merge-plan.json",
+        "~/.claude/ccem/merge-consolidated-permissions.json",
+        "~/.claude/ccem/merge-complete.json",
+        "~/.claude/ccem/snapshot-system.json",
+        "~/.claude/ccem/recommendations.json",
+        "~/.claude/ccem/custom-patterns-selection.json",
+        "~/.claude/ccem/migration-analysis-lcc.json",
+        "~/.claude/ccem/training-data/slash-command-syntax-system.json",
+        "~/.claude/ccem/training-data/slash-command-examples.json",
+        "~/.claude/ccem/training-data/USER_MEMORY_DIRECTIVE.md",
+        "~/.claude/commands/ccem.md",
+        "~/.claude/hooks/post_merge_security_audit.py",
+        "~/.claude/hooks/config_reporter.sh",
+        "~/.claude/ccem/handlers/migrate-project.sh"
+      ],
+      "files_modified": [
+        "~/.claude/settings.json",
+        "~/.claude/claude_code_config.json"
+      ],
+      "training_data_generated": "203 KB with 22 test cases, 17 schemas",
+      "git_commits": 0,
+      "key_directives": [
+        "TRAINING: Export in JSON with relational UUID structure",
+        "TRAINING: Multi-select support with nested argument syntax",
+        "TRAINING: Add functionality for chat history fork point discovery"
+      ]
+    },
+
+    "recommended_fork_point": "fork-007 (Conversation Context Fork)",
+    "target_location": "~/Developer/ccem-development",
+    "includes": [
+      "Full conversation transcript with metadata",
+      "All 17+ files created",
+      "Training data (203 KB)",
+      "Schema definitions",
+      "Modified settings (backup + current)",
+      "User directives and requirements",
+      "Implementation notes and decisions"
+    ],
+    "excludes": [
+      "Unrelated project files (lcc, strategic-thinking, etc.)",
+      "Other conversations",
+      "User's personal data outside CCEM scope"
+    ],
+    "post_fork_tasks": [
+      "Create README.md documenting CCEM system",
+      "Initialize git repository",
+      "Create Linear project for CCEM development",
+      "Set up dedicated Claude configuration",
+      "Create development roadmap",
+      "Document conversation-to-implementation mapping"
+    ]
+  },
+
+  "test_cases": [
+    {
+      "test_id": "disc-tc-001",
+      "description": "Discover fork points from current conversation",
+      "input": "Current conversation context",
+      "expected_output": {
+        "fork_points_discovered": 4,
+        "types": ["conversation-based", "context-extraction", "training-data"],
+        "files_identified": 17,
+        "training_data_size": "203 KB"
+      }
+    },
+    {
+      "test_id": "disc-tc-002",
+      "description": "Detect git worktrees in project",
+      "input": "Project with multiple worktrees",
+      "expected_output": {
+        "worktrees_found": 3,
+        "fork_point_recommended": "fork-009 (worktree-based)",
+        "structure_preserved": true
+      }
+    },
+    {
+      "test_id": "disc-tc-003",
+      "description": "Extract specific context from conversation",
+      "input": "Extract all slash command syntax work",
+      "expected_output": {
+        "messages_extracted": 8,
+        "files_included": 3,
+        "context_complete": true,
+        "dependencies_resolved": true
+      }
+    },
+    {
+      "test_id": "disc-tc-004",
+      "description": "Analyze chat history for fork candidates",
+      "input": "Past 7 days of chat history",
+      "expected_output": {
+        "conversations_analyzed": 12,
+        "fork_candidates": 5,
+        "topics_identified": ["CCEM", "LCC", "strategic-thinking", "testing"],
+        "recommended_forks": 2
+      }
+    }
+  ]
+}

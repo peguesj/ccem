@@ -1,0 +1,740 @@
+{
+  "simulation_id": "sim-dryrun-001",
+  "scenario": "Dry-run Execution",
+  "timestamp": "2025-10-11T16:00:00Z",
+  "description": "Execute read-only version of entire merge showing exactly what would change without making changes",
+  "user_action": {
+    "command": "D",
+    "requested_analysis": "full_dry_run_with_diffs"
+  },
+  "execution_mode": {
+    "mode": "dry_run",
+    "read_only": true,
+    "create_temp_files": true,
+    "generate_diffs": true,
+    "validate_changes": true,
+    "rollback_guaranteed": true
+  },
+  "dry_run_process": {
+    "phase_1_preparation": {
+      "step": "Preparation",
+      "actions": [
+        {
+          "action": "create_temp_workspace",
+          "location": "/tmp/ccem-dryrun-20251011-160000",
+          "purpose": "Isolated environment for dry-run execution",
+          "success": true
+        },
+        {
+          "action": "clone_current_state",
+          "source": [
+            "/Users/jeremiah/.claude/settings.json",
+            "/Users/jeremiah/.claude/claude_code_config.json",
+            "/Users/jeremiah/Developer/*/. claude/settings.local.json"
+          ],
+          "destination": "/tmp/ccem-dryrun-20251011-160000/before/",
+          "success": true
+        },
+        {
+          "action": "load_execution_strategy",
+          "file": "/Users/jeremiah/.claude/ccem/execution-strategy.json",
+          "operations_loaded": 30,
+          "success": true
+        }
+      ],
+      "duration": "0.5s",
+      "status": "completed"
+    },
+    "phase_2_simulated_execution": {
+      "step": "Simulated Execution",
+      "operations": [
+        {
+          "operation_id": "op-001",
+          "name": "Consolidate Permissions",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "read_project_settings",
+              "files_read": 6,
+              "permissions_found": 133,
+              "unique_permissions": 87,
+              "success": true
+            },
+            {
+              "action": "simulate_deduplication",
+              "semantic_groups_identified": 12,
+              "conflicts_found": 3,
+              "resolutions": [
+                {
+                  "conflict_id": "conflict-001",
+                  "permissions": ["Bash(npm install)", "Bash(npm install:*)"],
+                  "resolution": "Bash(npm install:*)",
+                  "reasoning": "More permissive pattern encompasses specific pattern"
+                },
+                {
+                  "conflict_id": "conflict-002",
+                  "permissions": ["Read(**/*.json)", "Read(**/*.{json,yaml})"],
+                  "resolution": "Read(**/*.{json,yaml})",
+                  "reasoning": "Superset pattern preferred"
+                },
+                {
+                  "conflict_id": "conflict-003",
+                  "permissions": ["Bash(:*:*)", "Bash(git *)"],
+                  "resolution": "Keep both",
+                  "reasoning": "Distinct purposes: wildcard vs specific tool",
+                  "warning": "Overly permissive Bash(:*:*) flagged for security review"
+                }
+              ],
+              "success": true
+            },
+            {
+              "action": "generate_merged_permissions",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/settings.json",
+              "permissions_count": 87,
+              "success": true
+            }
+          ],
+          "duration": "2.3s",
+          "status": "completed",
+          "changes_preview": {
+            "file": "~/.claude/settings.json",
+            "section": "permissions",
+            "before_count": 0,
+            "after_count": 87,
+            "diff_summary": "Added 87 unique permissions from 6 projects"
+          }
+        },
+        {
+          "operation_id": "op-002",
+          "name": "Consolidate MCP Servers",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "extract_mcp_configs",
+              "projects_scanned": 6,
+              "servers_found": 3,
+              "servers": ["linear", "ruv-swarm", "claude-flow"],
+              "success": true
+            },
+            {
+              "action": "generate_merged_config",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/claude_code_config.json",
+              "servers_count": 3,
+              "success": true
+            }
+          ],
+          "duration": "0.9s",
+          "status": "completed",
+          "changes_preview": {
+            "file": "~/.claude/claude_code_config.json",
+            "section": "mcpServers",
+            "before_count": 2,
+            "after_count": 3,
+            "diff_summary": "Added 1 new MCP server (ruv-swarm)"
+          }
+        },
+        {
+          "operation_id": "op-003",
+          "name": "Move Additional Settings",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "analyze_setting_scope",
+              "settings_analyzed": 3,
+              "recommendations": [
+                {
+                  "setting": "enableAllProjectMcpServers",
+                  "current_scope": "project",
+                  "recommended_scope": "user",
+                  "reasoning": "Should apply globally to all projects"
+                },
+                {
+                  "setting": "enabledMcpjsonServers",
+                  "current_scope": "project",
+                  "recommended_scope": "user",
+                  "reasoning": "Global MCP server list"
+                },
+                {
+                  "setting": "additionalDirectories",
+                  "current_scope": "project",
+                  "recommended_scope": "user",
+                  "reasoning": "User has consistent additional directories across projects"
+                }
+              ],
+              "success": true
+            },
+            {
+              "action": "simulate_setting_move",
+              "settings_moved": 3,
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/settings.json",
+              "success": true
+            }
+          ],
+          "duration": "1.4s",
+          "status": "completed",
+          "changes_preview": {
+            "file": "~/.claude/settings.json",
+            "sections": ["enableAllProjectMcpServers", "enabledMcpjsonServers", "additionalDirectories"],
+            "diff_summary": "Added 3 settings from project to user level"
+          }
+        },
+        {
+          "operation_id": "op-004",
+          "name": "Create Security Audit Hook",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "design_hook_logic",
+              "hook_triggers": ["UserPromptSubmit"],
+              "audit_checks": ["bypassPermissions", "overly_permissive_bash", "unsafe_file_patterns"],
+              "success": true
+            },
+            {
+              "action": "generate_hook_script",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/hooks/security-audit.sh",
+              "script_lines": 87,
+              "success": true
+            },
+            {
+              "action": "simulate_hook_registration",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/settings.json",
+              "success": true
+            }
+          ],
+          "duration": "3.2s",
+          "status": "completed",
+          "changes_preview": {
+            "files": [
+              {
+                "file": "~/.claude/hooks/security-audit.sh",
+                "type": "new_file",
+                "size": "2.4KB",
+                "diff_summary": "New security audit hook script"
+              },
+              {
+                "file": "~/.claude/settings.json",
+                "section": "hooks.UserPromptSubmit",
+                "diff_summary": "Registered security audit hook"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "op-005",
+          "name": "Generate User-Level CCEM Command",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "design_command_interface",
+              "command_name": "ccem",
+              "subcommands": ["inspect", "merge", "scope", "migrate"],
+              "success": true
+            },
+            {
+              "action": "generate_command_file",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/commands/ccem.md",
+              "file_size": "3.2KB",
+              "success": true
+            }
+          ],
+          "duration": "1.8s",
+          "status": "completed",
+          "changes_preview": {
+            "file": "~/.claude/commands/ccem.md",
+            "type": "new_file",
+            "diff_summary": "New user-level CCEM slash command"
+          }
+        },
+        {
+          "operation_id": "op-006",
+          "name": "Generate Project-Level CCEM Commands",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "analyze_projects",
+              "projects_analyzed": 6,
+              "success": true
+            },
+            {
+              "action": "generate_contextual_commands",
+              "commands_generated": 6,
+              "output_locations": [
+                "/tmp/ccem-dryrun-20251011-160000/after/lcc/.claude/commands/ccem.md",
+                "/tmp/ccem-dryrun-20251011-160000/after/strategic-thinking/.claude/commands/ccem.md",
+                "/tmp/ccem-dryrun-20251011-160000/after/idfw/.claude/commands/ccem.md",
+                "/tmp/ccem-dryrun-20251011-160000/after/vantage-iso/.claude/commands/ccem.md",
+                "/tmp/ccem-dryrun-20251011-160000/after/idfwu/.claude/commands/ccem.md",
+                "/tmp/ccem-dryrun-20251011-160000/after/resume-match-maker-pro/.claude/commands/ccem.md"
+              ],
+              "success": true
+            }
+          ],
+          "duration": "4.1s",
+          "status": "completed",
+          "changes_preview": {
+            "files": [
+              {"file": "lcc/.claude/commands/ccem.md", "type": "new_file"},
+              {"file": "strategic-thinking/.claude/commands/ccem.md", "type": "new_file"},
+              {"file": "idfw/.claude/commands/ccem.md", "type": "new_file"},
+              {"file": "vantage-iso/.claude/commands/ccem.md", "type": "new_file"},
+              {"file": "idfwu/.claude/commands/ccem.md", "type": "new_file"},
+              {"file": "resume-match-maker-pro/.claude/commands/ccem.md", "type": "new_file"}
+            ],
+            "diff_summary": "6 new project-specific CCEM commands"
+          }
+        },
+        {
+          "operation_id": "op-007",
+          "name": "Create Configuration Reporter Hook",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "design_reporter_logic",
+              "trigger": "SessionStart",
+              "message_format": "configured",
+              "success": true
+            },
+            {
+              "action": "generate_hook_script",
+              "output_location": "/tmp/ccem-dryrun-20251011-160000/after/hooks/config-reporter.sh",
+              "success": true
+            }
+          ],
+          "duration": "1.7s",
+          "status": "completed",
+          "changes_preview": {
+            "files": [
+              {
+                "file": "~/.claude/hooks/config-reporter.sh",
+                "type": "new_file",
+                "diff_summary": "New session start configuration reporter hook"
+              },
+              {
+                "file": "~/.claude/settings.json",
+                "section": "hooks.SessionStart",
+                "diff_summary": "Registered configuration reporter hook"
+              }
+            ]
+          }
+        },
+        {
+          "operation_id": "op-008",
+          "name": "Create Backups and Delete Old Settings",
+          "execution_type": "simulated",
+          "actions": [
+            {
+              "action": "simulate_backup_creation",
+              "backup_file": "/tmp/ccem-dryrun-20251011-160000/backups/project-settings-20251011-160000.tar.gz",
+              "files_included": 6,
+              "estimated_size": "12.5KB",
+              "compression_ratio": "87%",
+              "success": true
+            },
+            {
+              "action": "simulate_file_deletion",
+              "files_to_delete": [
+                "/Users/jeremiah/Developer/lcc/.claude/settings.local.json",
+                "/Users/jeremiah/Developer/strategic-thinking/.claude/settings.local.json",
+                "/Users/jeremiah/Developer/idfw/.claude/settings.local.json",
+                "/Users/jeremiah/Developer/vantage-iso/.claude/settings.local.json",
+                "/Users/jeremiah/Developer/idfwu/.claude/settings.local.json",
+                "/Users/jeremiah/Developer/resume-match-maker-pro/.claude/settings.local.json"
+              ],
+              "note": "DRY RUN: Files NOT actually deleted",
+              "success": true
+            }
+          ],
+          "duration": "3.8s",
+          "status": "completed",
+          "changes_preview": {
+            "backup": {
+              "file": "~/.claude/backups/project-settings-20251011-160000.tar.gz",
+              "type": "new_file",
+              "size": "12.5KB"
+            },
+            "deletions": {
+              "count": 6,
+              "files": ["lcc/.claude/settings.local.json", "strategic-thinking/.claude/settings.local.json", "idfw/.claude/settings.local.json", "vantage-iso/.claude/settings.local.json", "idfwu/.claude/settings.local.json", "resume-match-maker-pro/.claude/settings.local.json"]
+            }
+          }
+        }
+      ],
+      "total_duration": "19.2s",
+      "status": "completed",
+      "note": "Dry-run took longer due to diff generation and validation"
+    },
+    "phase_3_diff_generation": {
+      "step": "Diff Generation",
+      "diffs": [
+        {
+          "file": "~/.claude/settings.json",
+          "diff_type": "unified",
+          "changes": {
+            "additions": 92,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "--- ~/.claude/settings.json (before)\n+++ ~/.claude/settings.json (after)\n@@ -1,4 +1,96 @@\n {\n+  \"permissions\": [\n+    \"Bash(npm install:*)\",\n+    \"Bash(git *)\",\n+    \"Bash(docker *)\",\n+    \"Bash(supabase *)\",\n+    \"Read(**/*.{js,ts,jsx,tsx})\",\n+    \"Read(**/*.{json,yaml,md})\",\n+    \"Write(**/*.{js,ts,jsx,tsx})\",\n+    \"Edit(**/*.{js,ts,jsx,tsx})\",\n+    \"Glob(**/*)\",\n+    \"Grep(**/*)\",\n+    ... (77 more permissions)\n+  ],\n+  \"enableAllProjectMcpServers\": true,\n+  \"enabledMcpjsonServers\": [\"linear\", \"ruv-swarm\", \"claude-flow\"],\n+  \"additionalDirectories\": [\"/Users/jeremiah/Library/CloudStorage\"],\n+  \"hooks\": {\n+    \"UserPromptSubmit\": [\n+      {\n+        \"name\": \"security-audit\",\n+        \"script\": \"~/.claude/hooks/security-audit.sh\"\n+      }\n+    ],\n+    \"SessionStart\": [\n+      {\n+        \"name\": \"config-reporter\",\n+        \"script\": \"~/.claude/hooks/config-reporter.sh\"\n+      }\n+    ]\n+  },\n   \"version\": \"1.0.0\"\n }",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/settings.json.diff"
+        },
+        {
+          "file": "~/.claude/claude_code_config.json",
+          "diff_type": "unified",
+          "changes": {
+            "additions": 12,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "--- ~/.claude/claude_code_config.json (before)\n+++ ~/.claude/claude_code_config.json (after)\n@@ -18,6 +18,18 @@\n     \"linear\": {\n       \"command\": \"npx\",\n       \"args\": [\"-y\", \"@linear/mcp-server-linear\"]\n+    },\n+    \"ruv-swarm\": {\n+      \"command\": \"node\",\n+      \"args\": [\"/path/to/ruv-swarm/index.js\"]\n+    },\n+    \"claude-flow\": {\n+      \"command\": \"node\",\n+      \"args\": [\n+        \"/Users/jeremiah/.claude/flow/mcp-server.js\",\n+        \"--memory\",\n+        \"~/.claude/flow/memory.db\"\n+      ]\n     }\n   }\n }",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/claude_code_config.json.diff"
+        },
+        {
+          "file": "~/.claude/hooks/security-audit.sh",
+          "diff_type": "new_file",
+          "changes": {
+            "additions": 87,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "New file: security-audit.sh\n\n#!/bin/bash\n# CCEM Security Audit Hook\n# Trigger: UserPromptSubmit\n# Purpose: Audit permissions and flag security risks\n\n# Check for bypassPermissions flag\nif grep -q '\"bypassPermissions\": true' ~/.claude/settings.json; then\n  echo \"⚠️  WARNING: bypassPermissions is enabled\"\nfi\n\n# Check for overly permissive Bash patterns\nif grep -q 'Bash(:*:*)' ~/.claude/settings.json; then\n  echo \"⚠️  WARNING: Overly permissive Bash(:*:*) pattern detected\"\nfi\n\n... (75 more lines)",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/security-audit.sh.diff"
+        },
+        {
+          "file": "~/.claude/hooks/config-reporter.sh",
+          "diff_type": "new_file",
+          "changes": {
+            "additions": 42,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "New file: config-reporter.sh\n\n#!/bin/bash\n# CCEM Configuration Reporter Hook\n# Trigger: SessionStart\n# Purpose: Report configuration updates and available commands\n\necho \"✓ User-level configuration active\"\necho \"✓ 87 permissions consolidated\"\necho \"✓ 3 MCP servers enabled\"\necho \"✓ Security audit hook registered\"\necho \"\"\necho \"New command available: /ccem\"\necho \"Type '/ccem help' for usage information\"\n\n... (30 more lines)",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/config-reporter.sh.diff"
+        },
+        {
+          "file": "~/.claude/commands/ccem.md",
+          "diff_type": "new_file",
+          "changes": {
+            "additions": 124,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "New file: ccem.md\n\n# CCEM - Claude Code Environment Manager\n\nManage your Claude Code configuration across user and project scopes.\n\n## Usage\n\n```\n/ccem [action] [options]\n```\n\n## Actions\n\n- `inspect` - View configuration hierarchy\n- `merge` - Merge project settings to user level\n- `scope` - Move settings between scopes\n- `migrate` - Migrate from old format to new\n\n... (110 more lines)",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/ccem-user.md.diff"
+        },
+        {
+          "file": "lcc/.claude/commands/ccem.md",
+          "diff_type": "new_file",
+          "changes": {
+            "additions": 98,
+            "deletions": 0,
+            "modifications": 0
+          },
+          "preview": "New file: lcc/.claude/commands/ccem.md (project-specific)\n\n# CCEM - Project: lcc\n\n## Context\n\nLuxury Couriers Club (LCC) - Cannabis marketplace platform\n\n## Project-Specific Commands\n\n```\n/ccem inspect --project lcc\n/ccem merge --from lcc --to user\n```\n\n## Configuration\n\nLinear Project ID: 0f474367-e131-41eb-bf57-8790b7b5b3f6\nRepository: https://github.com/peguesi/lcc\n\n... (85 more lines)",
+          "full_diff_location": "/tmp/ccem-dryrun-20251011-160000/diffs/ccem-lcc.md.diff"
+        }
+      ],
+      "total_diffs": 12,
+      "total_additions": 567,
+      "total_deletions": 6,
+      "total_modifications": 2,
+      "duration": "1.2s",
+      "status": "completed"
+    },
+    "phase_4_validation": {
+      "step": "Validation",
+      "validations": [
+        {
+          "validation_id": "val-001",
+          "name": "JSON syntax validation",
+          "files_validated": 2,
+          "results": [
+            {"file": "settings.json", "valid": true},
+            {"file": "claude_code_config.json", "valid": true}
+          ],
+          "status": "passed"
+        },
+        {
+          "validation_id": "val-002",
+          "name": "Permission syntax validation",
+          "permissions_validated": 87,
+          "invalid_permissions": 0,
+          "warnings": [
+            {
+              "permission": "Bash(:*:*)",
+              "warning": "Overly permissive pattern",
+              "severity": "medium",
+              "recommendation": "Consider restricting to specific commands"
+            }
+          ],
+          "status": "passed_with_warnings"
+        },
+        {
+          "validation_id": "val-003",
+          "name": "Hook script syntax validation",
+          "scripts_validated": 2,
+          "results": [
+            {"script": "security-audit.sh", "valid": true, "shellcheck_passed": true},
+            {"script": "config-reporter.sh", "valid": true, "shellcheck_passed": true}
+          ],
+          "status": "passed"
+        },
+        {
+          "validation_id": "val-004",
+          "name": "File path validation",
+          "paths_validated": 18,
+          "invalid_paths": 0,
+          "status": "passed"
+        },
+        {
+          "validation_id": "val-005",
+          "name": "Backup integrity check",
+          "backup_file": "project-settings-20251011-160000.tar.gz",
+          "files_in_backup": 6,
+          "extractable": true,
+          "checksum_valid": true,
+          "status": "passed"
+        }
+      ],
+      "overall_validation": "passed",
+      "warnings_count": 1,
+      "errors_count": 0,
+      "duration": "0.8s",
+      "status": "completed"
+    },
+    "phase_5_reporting": {
+      "step": "Reporting",
+      "summary_report": {
+        "execution_summary": {
+          "total_operations": 8,
+          "successful_operations": 8,
+          "failed_operations": 0,
+          "warnings": 1,
+          "total_duration": "21.5s"
+        },
+        "impact_summary": {
+          "files_created": 10,
+          "files_modified": 2,
+          "files_deleted": 6,
+          "permissions_added": 87,
+          "mcp_servers_added": 1,
+          "hooks_created": 2,
+          "commands_created": 7
+        },
+        "validation_summary": {
+          "validations_passed": 5,
+          "validations_failed": 0,
+          "warnings": 1,
+          "recommendation": "Proceed with execution - all validations passed"
+        },
+        "next_steps": {
+          "if_proceed": [
+            "Review generated diffs in detail",
+            "Confirm security warning about Bash(:*:*) is acceptable",
+            "Execute with 'C' command",
+            "Monitor execution progress",
+            "Verify post-execution state"
+          ],
+          "if_modify": [
+            "Use 'M' to modify execution strategies",
+            "Adjust operation parameters",
+            "Re-run dry-run to see updated changes"
+          ],
+          "if_cancel": [
+            "Clean up temporary dry-run files",
+            "Save strategy for later execution with 'S'"
+          ]
+        }
+      },
+      "detailed_report_location": "/tmp/ccem-dryrun-20251011-160000/report.html",
+      "duration": "0.3s",
+      "status": "completed"
+    }
+  },
+  "diff_previews": {
+    "settings_json": {
+      "before": {
+        "permissions": [],
+        "enableAllProjectMcpServers": false,
+        "hooks": {}
+      },
+      "after": {
+        "permissions": ["Bash(npm install:*)", "Bash(git *)", "...85 more"],
+        "enableAllProjectMcpServers": true,
+        "enabledMcpjsonServers": ["linear", "ruv-swarm", "claude-flow"],
+        "additionalDirectories": ["/Users/jeremiah/Library/CloudStorage"],
+        "hooks": {
+          "UserPromptSubmit": [{"name": "security-audit", "script": "~/.claude/hooks/security-audit.sh"}],
+          "SessionStart": [{"name": "config-reporter", "script": "~/.claude/hooks/config-reporter.sh"}]
+        }
+      },
+      "summary": "Added 87 permissions, 1 MCP server, 3 settings, 2 hooks"
+    },
+    "new_files": {
+      "hooks": [
+        {
+          "path": "~/.claude/hooks/security-audit.sh",
+          "size": "2.4KB",
+          "type": "bash",
+          "purpose": "Security audit on prompt submit"
+        },
+        {
+          "path": "~/.claude/hooks/config-reporter.sh",
+          "size": "1.1KB",
+          "type": "bash",
+          "purpose": "Configuration status on session start"
+        }
+      ],
+      "commands": [
+        {
+          "path": "~/.claude/commands/ccem.md",
+          "size": "3.2KB",
+          "type": "markdown",
+          "purpose": "User-level CCEM command"
+        },
+        {
+          "path": "lcc/.claude/commands/ccem.md",
+          "size": "2.5KB",
+          "type": "markdown",
+          "purpose": "Project-specific CCEM command for lcc"
+        }
+      ]
+    },
+    "deleted_files": [
+      {
+        "path": "lcc/.claude/settings.local.json",
+        "reason": "Consolidated to user level",
+        "backed_up": true
+      },
+      {
+        "path": "strategic-thinking/.claude/settings.local.json",
+        "reason": "Consolidated to user level",
+        "backed_up": true
+      }
+    ]
+  },
+  "validation_results": {
+    "json_validation": {
+      "files_checked": 2,
+      "all_valid": true,
+      "errors": []
+    },
+    "permission_validation": {
+      "permissions_checked": 87,
+      "valid_count": 87,
+      "invalid_count": 0,
+      "warnings": [
+        {
+          "permission": "Bash(:*:*)",
+          "issue": "Overly permissive",
+          "severity": "medium",
+          "recommendation": "Restrict to specific command patterns",
+          "affected_project": "idfwu"
+        }
+      ]
+    },
+    "dependency_validation": {
+      "all_dependencies_met": true,
+      "missing_dependencies": []
+    },
+    "path_validation": {
+      "all_paths_valid": true,
+      "unresolvable_paths": []
+    }
+  },
+  "schema": {
+    "dry_run_result": {
+      "type": "object",
+      "required": ["simulation_id", "execution_mode", "dry_run_process", "diff_previews", "validation_results"],
+      "properties": {
+        "simulation_id": {"type": "string"},
+        "execution_mode": {
+          "type": "object",
+          "required": ["mode", "read_only"],
+          "properties": {
+            "mode": {"type": "string", "enum": ["dry_run", "actual"]},
+            "read_only": {"type": "boolean"},
+            "create_temp_files": {"type": "boolean"},
+            "generate_diffs": {"type": "boolean"},
+            "validate_changes": {"type": "boolean"},
+            "rollback_guaranteed": {"type": "boolean"}
+          }
+        },
+        "dry_run_process": {
+          "type": "object",
+          "required": ["phase_1_preparation", "phase_2_simulated_execution", "phase_3_diff_generation", "phase_4_validation", "phase_5_reporting"]
+        },
+        "diff_previews": {"type": "object"},
+        "validation_results": {"type": "object"}
+      }
+    },
+    "diff_preview": {
+      "type": "object",
+      "required": ["file", "diff_type", "changes", "preview"],
+      "properties": {
+        "file": {"type": "string"},
+        "diff_type": {"type": "string", "enum": ["unified", "new_file", "deleted_file", "modified"]},
+        "changes": {
+          "type": "object",
+          "properties": {
+            "additions": {"type": "integer"},
+            "deletions": {"type": "integer"},
+            "modifications": {"type": "integer"}
+          }
+        },
+        "preview": {"type": "string"},
+        "full_diff_location": {"type": "string"}
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "test_id": "tc-dryrun-001",
+      "name": "Execute full dry-run successfully",
+      "expected_output": {
+        "all_phases_completed": true,
+        "validations_passed": true,
+        "diffs_generated": 12
+      }
+    },
+    {
+      "test_id": "tc-dryrun-002",
+      "name": "Detect validation issues",
+      "input": {
+        "invalid_permission": "Bash(invalid syntax)"
+      },
+      "expected_output": {
+        "validation_failed": true,
+        "error_reported": true,
+        "execution_blocked": true
+      }
+    },
+    {
+      "test_id": "tc-dryrun-003",
+      "name": "Generate accurate diffs",
+      "expected_output": {
+        "diff_format": "unified",
+        "line_numbers_accurate": true,
+        "context_lines_included": true
+      }
+    },
+    {
+      "test_id": "tc-dryrun-004",
+      "name": "Temporary workspace cleanup",
+      "expected_output": {
+        "temp_files_created": true,
+        "temp_files_cleaned_after": true,
+        "no_side_effects": true
+      }
+    }
+  ],
+  "key_learnings": [
+    "Dry-run provides confidence before executing destructive operations",
+    "Diff generation shows exact changes in familiar format",
+    "Validation phase catches issues before they cause problems",
+    "Temporary workspace ensures no accidental modifications",
+    "Detailed reporting helps users make informed decisions",
+    "Warning detection balances safety with usability",
+    "Backup verification ensures recovery capability",
+    "Phase-based execution provides clear progress tracking"
+  ]
+}

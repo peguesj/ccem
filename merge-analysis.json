@@ -1,0 +1,96 @@
+{
+  "analysis_timestamp": "2025-10-11T00:00:00Z",
+  "projects_analyzed": [
+    {
+      "name": "lcc",
+      "path": "/Users/jeremiah/Developer/lcc",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 32,
+      "mcp_servers": ["linear"],
+      "additional_directories": 1
+    },
+    {
+      "name": "strategic-thinking",
+      "path": "/Users/jeremiah/Developer/strategic-thinking",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 50,
+      "mcp_servers": [],
+      "additional_directories": 0
+    },
+    {
+      "name": "idfw",
+      "path": "/Users/jeremiah/Developer/idfw",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 25,
+      "mcp_servers": [],
+      "additional_directories": 0
+    },
+    {
+      "name": "vantage-iso",
+      "path": "/Users/jeremiah/Developer/vantage-iso",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 2,
+      "mcp_servers": ["ruv-swarm", "claude-flow"],
+      "additional_directories": 0
+    },
+    {
+      "name": "idfwu",
+      "path": "/Users/jeremiah/Developer/idfwu",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 21,
+      "mcp_servers": [],
+      "additional_directories": 1,
+      "special_modes": ["bypassPermissions"]
+    },
+    {
+      "name": "resume-match-maker-pro",
+      "path": "/Users/jeremiah/Developer/resume-match-maker-pro",
+      "config_files": [".claude/settings.local.json"],
+      "permissions_count": 3,
+      "mcp_servers": ["ruv-swarm", "claude-flow"],
+      "additional_directories": 0
+    }
+  ],
+  "merge_conflicts": {
+    "permissions": {
+      "conflict_type": "overlapping_and_unique",
+      "total_unique": 87,
+      "overlapping": 12,
+      "project_specific": 75
+    },
+    "mcp_servers": {
+      "conflict_type": "different_servers",
+      "unique_servers": ["linear", "ruv-swarm", "claude-flow"]
+    },
+    "special_settings": {
+      "bypass_permissions_mode": ["idfwu"],
+      "enable_all_mcp": ["lcc", "resume-match-maker-pro"]
+    }
+  },
+  "recommendations": {
+    "common_permissions": [
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run build:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(pkill:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Read(//private/tmp/**)",
+      "Read(//tmp/**)",
+      "Bash(cat:*)"
+    ],
+    "project_specific_keep": [
+      "strategic-thinking: Bash(npx prisma:*), Bash(npx playwright:*)",
+      "lcc: Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(npx supabase:*)",
+      "idfw: Bash(git checkout:*), Bash(python:*), Bash(pip install:*), Bash(gh repo:*)"
+    ],
+    "mcp_consolidation": "Move all MCP server definitions to user-level claude_code_config.json",
+    "security_concerns": [
+      "idfwu has bypassPermissions mode - consider removing for security",
+      "Multiple projects have overly broad permissions like Bash(:*:*)"
+    ]
+  }
+}

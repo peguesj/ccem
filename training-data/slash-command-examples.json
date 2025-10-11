@@ -1,0 +1,370 @@
+{
+  "training_examples_id": "cmd-examples-001",
+  "version": "1.0.0",
+  "timestamp": "2025-10-11T16:22:00Z",
+
+  "example_commands": [
+    {
+      "id": "ex-001",
+      "command": "/ccem merge recommended --projects [lcc, strategic-thinking] --agent orchestrator --execution claude>ccem --dry-run",
+      "parsed": {
+        "base_command": "ccem",
+        "action": "merge",
+        "positional_args": ["recommended"],
+        "flags": {
+          "projects": {
+            "type": "array",
+            "value": ["lcc", "strategic-thinking"]
+          },
+          "agent": {
+            "type": "string",
+            "value": "orchestrator"
+          },
+          "execution": {
+            "type": "enum",
+            "value": "claude>ccem"
+          },
+          "dry-run": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      },
+      "execution_plan": {
+        "step_1": "Claude analyzes merge strategy",
+        "step_2": "CCEM executes merge in dry-run mode",
+        "step_3": "Return results without actual changes"
+      }
+    },
+
+    {
+      "id": "ex-002",
+      "command": "/deploy staging --agents [build-agent, test-agent, deploy-agent] --strategy pipeline --on-error /rollback --if(tests-pass=true) --then(deploy)",
+      "parsed": {
+        "base_command": "deploy",
+        "positional_args": ["staging"],
+        "flags": {
+          "agents": {
+            "type": "array",
+            "value": ["build-agent", "test-agent", "deploy-agent"]
+          },
+          "strategy": {
+            "type": "enum",
+            "value": "pipeline"
+          },
+          "on-error": {
+            "type": "callback",
+            "value": "/rollback"
+          }
+        },
+        "conditions": [
+          {
+            "if": "tests-pass=true",
+            "then": "deploy"
+          }
+        ]
+      },
+      "execution_plan": {
+        "step_1": "build-agent builds project",
+        "step_2": "test-agent runs tests",
+        "step_3": "IF tests pass THEN deploy-agent deploys",
+        "step_4": "IF error at any step THEN execute /rollback"
+      }
+    },
+
+    {
+      "id": "ex-003",
+      "command": "/ccem optimize --scope {level: user, include: [permissions, hooks]} --agent CCEMAgent --auto-apply --backup-first",
+      "parsed": {
+        "base_command": "ccem",
+        "action": "optimize",
+        "flags": {
+          "scope": {
+            "type": "object",
+            "value": {
+              "level": "user",
+              "include": ["permissions", "hooks"]
+            }
+          },
+          "agent": {
+            "type": "string",
+            "value": "CCEMAgent"
+          },
+          "auto-apply": {
+            "type": "boolean",
+            "value": true
+          },
+          "backup-first": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      },
+      "execution_plan": {
+        "step_1": "Create backup",
+        "step_2": "CCEMAgent analyzes user-level permissions and hooks",
+        "step_3": "Apply optimizations automatically",
+        "step_4": "Report changes"
+      }
+    },
+
+    {
+      "id": "ex-004",
+      "command": "/fix <target:enum(build|tests|lint)!> --agent-selector(type=error-based, mapping={typescript:fix-agent, jest:test-agent}) --priority high",
+      "parsed": {
+        "base_command": "fix",
+        "args": [
+          {
+            "name": "target",
+            "type": "enum",
+            "options": ["build", "tests", "lint"],
+            "required": true
+          }
+        ],
+        "flags": {
+          "agent-selector": {
+            "type": "object",
+            "value": {
+              "type": "error-based",
+              "mapping": {
+                "typescript": "fix-agent",
+                "jest": "test-agent"
+              }
+            }
+          },
+          "priority": {
+            "type": "enum",
+            "value": "high"
+          }
+        }
+      },
+      "execution_plan": {
+        "step_1": "Detect error type",
+        "step_2": "Select appropriate agent based on mapping",
+        "step_3": "Execute fix with high priority",
+        "step_4": "Validate fix"
+      }
+    },
+
+    {
+      "id": "ex-005",
+      "command": "/workflow --chain [/build, /test --coverage, /deploy --if(coverage>80)] --stop-on-error --parallel-when-possible",
+      "parsed": {
+        "base_command": "workflow",
+        "flags": {
+          "chain": {
+            "type": "array",
+            "value": [
+              "/build",
+              "/test --coverage",
+              "/deploy --if(coverage>80)"
+            ]
+          },
+          "stop-on-error": {
+            "type": "boolean",
+            "value": true
+          },
+          "parallel-when-possible": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      },
+      "execution_plan": {
+        "step_1": "/build (must complete first)",
+        "step_2": "/test --coverage (after build)",
+        "step_3": "Check coverage > 80%",
+        "step_4": "IF coverage sufficient THEN /deploy",
+        "step_5": "Stop entire workflow if any step fails"
+      },
+      "dependency_graph": {
+        "build": {"depends_on": [], "can_run_parallel": false},
+        "test": {"depends_on": ["build"], "can_run_parallel": false},
+        "deploy": {"depends_on": ["test"], "conditional": "coverage>80"}
+      }
+    }
+  ],
+
+  "test_cases": [
+    {
+      "test_id": "tc-001",
+      "description": "Valid command with nested object",
+      "input": "/ccem backup --options {format: tar.gz, compression: 9}",
+      "expected_output": {
+        "valid": true,
+        "parsed_options": {
+          "format": "tar.gz",
+          "compression": 9
+        }
+      }
+    },
+    {
+      "test_id": "tc-002",
+      "description": "Invalid enum value",
+      "input": "/ccem inspect <scope:enum(user|project)> invalid-scope",
+      "expected_output": {
+        "valid": false,
+        "error": "Invalid enum value 'invalid-scope'. Expected one of: user, project"
+      }
+    },
+    {
+      "test_id": "tc-003",
+      "description": "Missing required argument",
+      "input": "/fix --priority high",
+      "expected_output": {
+        "valid": false,
+        "error": "Missing required argument: target"
+      }
+    },
+    {
+      "test_id": "tc-004",
+      "description": "Type constraint violation",
+      "input": "/ccem backup --compression 15",
+      "expected_output": {
+        "valid": false,
+        "error": "Compression level must be between 1-9, got 15"
+      }
+    },
+    {
+      "test_id": "tc-005",
+      "description": "Valid multi-agent coordination",
+      "input": "/deploy --agents [agent1, agent2] --strategy parallel",
+      "expected_output": {
+        "valid": true,
+        "agents": ["agent1", "agent2"],
+        "coordination": "parallel"
+      }
+    },
+    {
+      "test_id": "tc-006",
+      "description": "Valid conditional execution",
+      "input": "/deploy staging --if(tests-pass) --then(notify-team)",
+      "expected_output": {
+        "valid": true,
+        "condition": {
+          "if": "tests-pass",
+          "then": "notify-team"
+        }
+      }
+    },
+    {
+      "test_id": "tc-007",
+      "description": "Complex nested structure",
+      "input": "/ccem optimize --config {scope: {level: user, targets: [permissions, hooks]}, strategy: aggressive, backup: true}",
+      "expected_output": {
+        "valid": true,
+        "config": {
+          "scope": {
+            "level": "user",
+            "targets": ["permissions", "hooks"]
+          },
+          "strategy": "aggressive",
+          "backup": true
+        }
+      }
+    },
+    {
+      "test_id": "tc-008",
+      "description": "Agent priority override",
+      "input": "/quality-check --agent fix-agent --agent-priority high --override-orchestrator",
+      "expected_output": {
+        "valid": true,
+        "agent": "fix-agent",
+        "priority": "high",
+        "override": true
+      }
+    }
+  ],
+
+  "error_scenarios": [
+    {
+      "scenario_id": "err-001",
+      "description": "Agent not found",
+      "input": "/ccem merge --agent non-existent-agent",
+      "error": {
+        "code": "AGENT_NOT_FOUND",
+        "message": "Agent 'non-existent-agent' not found",
+        "suggestion": "Available agents: orchestrator, general-purpose, fix-agent, test-agent, monitor-agent, issue-tracker, CCEMAgent"
+      },
+      "recovery": "List available agents and prompt user to select"
+    },
+    {
+      "scenario_id": "err-002",
+      "description": "Invalid execution strategy",
+      "input": "/ccem merge --execution invalid-strategy",
+      "error": {
+        "code": "INVALID_EXECUTION_STRATEGY",
+        "message": "Invalid execution strategy 'invalid-strategy'",
+        "suggestion": "Valid strategies: ccem, claude, ccem>claude, claude>ccem, claude>ccem>claude, CCEMAgent"
+      },
+      "recovery": "Display valid strategies and prompt user to select"
+    },
+    {
+      "scenario_id": "err-003",
+      "description": "Circular dependency in workflow",
+      "input": "/workflow --chain [/a --depends(/b), /b --depends(/a)]",
+      "error": {
+        "code": "CIRCULAR_DEPENDENCY",
+        "message": "Circular dependency detected: a → b → a",
+        "suggestion": "Review workflow dependencies and remove circular references"
+      },
+      "recovery": "Display dependency graph and highlight circular path"
+    },
+    {
+      "scenario_id": "err-004",
+      "description": "Incompatible agent and strategy",
+      "input": "/ccem optimize --agent general-purpose --execution CCEMAgent",
+      "error": {
+        "code": "INCOMPATIBLE_CONFIG",
+        "message": "Cannot use execution strategy 'CCEMAgent' with agent 'general-purpose'",
+        "suggestion": "Either remove --agent flag or change --execution strategy"
+      },
+      "recovery": "Prompt user to choose which to keep"
+    }
+  ],
+
+  "migration_patterns": [
+    {
+      "pattern_id": "mig-001",
+      "description": "Upgrade simple command to agent-aware",
+      "before": "/my-command arg1 arg2",
+      "after": "/my-command arg1 arg2 --agent orchestrator",
+      "migration_steps": [
+        "Add --agent flag",
+        "Specify orchestrator for complex coordination",
+        "Test command behavior",
+        "Update command documentation"
+      ]
+    },
+    {
+      "pattern_id": "mig-002",
+      "description": "Add type validation to existing args",
+      "before": "/deploy <env>",
+      "after": "/deploy <env:enum(staging|production)!>",
+      "migration_steps": [
+        "Identify valid env values",
+        "Add enum type constraint",
+        "Mark as required with !",
+        "Test with valid/invalid inputs",
+        "Update help text"
+      ]
+    },
+    {
+      "pattern_id": "mig-003",
+      "description": "Convert sequential commands to workflow",
+      "before": [
+        "/build",
+        "/test",
+        "/deploy"
+      ],
+      "after": "/workflow --chain [/build, /test, /deploy] --stop-on-error",
+      "migration_steps": [
+        "Identify command sequence",
+        "Create workflow command",
+        "Add error handling",
+        "Test complete flow",
+        "Replace manual sequence"
+      ]
+    }
+  ]
+}

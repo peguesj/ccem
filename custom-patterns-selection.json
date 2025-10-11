@@ -1,0 +1,120 @@
+{
+  "selection_id": "pattern-custom-001",
+  "timestamp": "2025-10-11T16:20:00Z",
+  "user_selections": {
+    "recommended_patterns": {
+      "selected": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "patterns": [
+        "Bash(rm -rf node_modules)",
+        "Bash(rm -rf .next)",
+        "Bash(rm -rf dist)",
+        "Bash(rm -rf build)",
+        "Bash(rm -rf coverage)",
+        "Bash(rm -rf .turbo)",
+        "Bash(rm -rf out)",
+        "Bash(rm package-lock.json)",
+        "Bash(rm yarn.lock)"
+      ]
+    },
+    "suggested_patterns": {
+      "selected": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      "patterns": [
+        "Bash(rm -rf .cache)",
+        "Bash(rm -rf tmp)",
+        "Bash(rm -rf .pytest_cache)",
+        "Bash(rm -rf __pycache__)",
+        "Bash(rm -rf .venv)",
+        "Bash(rm -rf .DS_Store)",
+        "Bash(rm -rf *.log)",
+        "Bash(rm -rf .vercel)",
+        "Bash(rm -rf .supabase/.temp)",
+        "Bash(rm -rf prisma/migrations/migration_lock.toml)"
+      ]
+    },
+    "custom_patterns": {
+      "direct_commands": [
+        {
+          "command": "npm run dev",
+          "pattern": "Bash(pkill -f \"npm run dev\")",
+          "rationale": "Kill dev server processes safely",
+          "risk_level": "low"
+        },
+        {
+          "command": "npx vercel",
+          "pattern": "Bash(rm -rf .vercel/cache)",
+          "rationale": "Clean Vercel deployment cache",
+          "risk_level": "low"
+        },
+        {
+          "command": "npx supabase",
+          "pattern": "Bash(rm -rf .supabase/.temp)",
+          "rationale": "Clean Supabase temporary files (already in suggested)",
+          "risk_level": "low",
+          "note": "Already covered by pattern I"
+        }
+      ],
+      "dynamic_patterns": [
+        {
+          "description": "All npm scripts in package.json",
+          "pattern": "Bash(npm run *)",
+          "implementation": "Read package.json scripts, generate permission per script",
+          "generated_patterns": [
+            "Bash(npm run build:*)",
+            "Bash(npm run dev:*)",
+            "Bash(npm run test:*)",
+            "Bash(npm run lint:*)",
+            "Note: Would require parsing package.json to generate complete list"
+          ],
+          "risk_level": "low",
+          "note": "Most npm run commands already covered by existing patterns"
+        }
+      ],
+      "piped_commands": [
+        {
+          "description": "Commands with pipe filters",
+          "examples": [
+            "npm install | grep 'idfwu'",
+            "npm list | sort",
+            "npm outdated | grep -v 'latest'"
+          ],
+          "patterns": [
+            "Bash(npm install:* | grep:*)",
+            "Bash(npm list:* | sort:*)",
+            "Bash(npm list:* | grep:*)",
+            "Bash(npm outdated:* | grep:*)",
+            "Bash(npx:* | grep:*)",
+            "Bash(git log:* | grep:*)"
+          ],
+          "risk_level": "low",
+          "implementation_note": "Pipe operations are part of single bash command, covered by individual command permissions",
+          "actual_coverage": "Already covered by existing Bash(npm install:*), Bash(grep:*) etc."
+        }
+      ]
+    }
+  },
+  "analysis": {
+    "total_patterns_selected": 19,
+    "breakdown": {
+      "recommended": 9,
+      "suggested": 10,
+      "custom_new": 2,
+      "custom_redundant": 1
+    },
+    "patterns_to_remove": [
+      "Bash(rm:*)"
+    ],
+    "patterns_to_add": 21,
+    "net_change": "+20 permissions"
+  },
+  "security_review": {
+    "all_patterns_safe": true,
+    "high_risk_patterns": 0,
+    "medium_risk_patterns": 0,
+    "low_risk_patterns": 21,
+    "notes": [
+      "All patterns target regeneratable or cache files",
+      "No patterns allow deletion of source code or configuration",
+      "Piped commands already covered by existing permissions"
+    ]
+  }
+}

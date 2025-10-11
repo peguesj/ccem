@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "snapshot_id": "snapshot-001",
+  "timestamp": "2025-10-11T00:00:00Z",
+  "description": "Initial CCEM snapshot after merge consolidation",
+  "type": "full",
+  "state": {
+    "user_settings": {
+      "path": "~/.claude/settings.json",
+      "checksum": "sha256:placeholder",
+      "size_bytes": 8192,
+      "permissions_count": 83,
+      "hooks_count": 6,
+      "modifications": [
+        "Added consolidated permissions from 6 projects",
+        "Added enableAllProjectMcpServers: true",
+        "Added enabledMcpjsonServers array"
+      ]
+    },
+    "user_mcp_config": {
+      "path": "~/.claude/claude_code_config.json",
+      "checksum": "sha256:placeholder",
+      "size_bytes": 512,
+      "mcp_servers_count": 4,
+      "modifications": [
+        "Added ruv-swarm MCP server",
+        "Added claude-flow MCP server"
+      ]
+    },
+    "ccem_commands": {
+      "user_level": {
+        "path": "~/.claude/commands/ccem.md",
+        "created": true,
+        "size_bytes": 6659
+      },
+      "project_level": [
+        {
+          "project": "lcc",
+          "path": "~/Developer/lcc/.claude/commands/ccem.md",
+          "created": true
+        },
+        {
+          "project": "strategic-thinking",
+          "path": "~/Developer/strategic-thinking/.claude/commands/ccem.md",
+          "created": true
+        },
+        {
+          "project": "idfw",
+          "path": "~/Developer/idfw/.claude/commands/ccem.md",
+          "created": true
+        },
+        {
+          "project": "vantage-iso",
+          "path": "~/Developer/vantage-iso/.claude/commands/ccem.md",
+          "created": true
+        },
+        {
+          "project": "idfwu",
+          "path": "~/Developer/idfwu/.claude/commands/ccem.md",
+          "created": true
+        },
+        {
+          "project": "resume-match-maker-pro",
+          "path": "~/Developer/resume-match-maker-pro/.claude/commands/ccem.md",
+          "created": true
+        }
+      ]
+    },
+    "hooks_created": [
+      {
+        "path": "~/.claude/hooks/post_merge_security_audit.py",
+        "type": "security_audit",
+        "trigger": "once_per_project"
+      },
+      {
+        "path": "~/.claude/hooks/config_reporter.sh",
+        "type": "SessionStart",
+        "trigger": "session_start"
+      }
+    ],
+    "backups": [
+      {
+        "path": "~/.claude/ccem/backups/project-settings-backup-*.tar.gz",
+        "size_bytes": 1536,
+        "format": "tar.gz",
+        "compression_level": 9,
+        "files_count": 6,
+        "verified": true
+      }
+    ],
+    "project_settings_status": [
+      {
+        "project": "lcc",
+        "path": "~/Developer/lcc/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      },
+      {
+        "project": "strategic-thinking",
+        "path": "~/Developer/strategic-thinking/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      },
+      {
+        "project": "idfw",
+        "path": "~/Developer/idfw/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      },
+      {
+        "project": "vantage-iso",
+        "path": "~/Developer/vantage-iso/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      },
+      {
+        "project": "idfwu",
+        "path": "~/Developer/idfwu/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      },
+      {
+        "project": "resume-match-maker-pro",
+        "path": "~/Developer/resume-match-maker-pro/.claude/settings.local.json",
+        "status": "pending_deletion",
+        "backed_up": true
+      }
+    ]
+  },
+  "incremental_updates_enabled": true,
+  "next_snapshot_trigger": "configuration_change",
+  "retention_policy": {
+    "keep_full_snapshots": 10,
+    "keep_incremental_snapshots": 30,
+    "auto_cleanup": true
+  }
+}
