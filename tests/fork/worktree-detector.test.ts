@@ -5,7 +5,7 @@ import {
   mapBranchesToPhases,
   Worktree,
   WorktreeAnalysis,
-  BranchMapping
+  BranchMapping,
 } from '@/fork/worktree-detector';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -64,7 +64,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const worktrees = await detectWorktrees(cwd);
 
-      const mainWorktree = worktrees.find(w => w.isMain);
+      const mainWorktree = worktrees.find((w) => w.isMain);
       expect(mainWorktree).toBeDefined();
     });
 
@@ -86,7 +86,7 @@ describe('Git Worktree Detector', () => {
       const worktrees = await detectWorktrees(cwd);
 
       // Bare worktrees have isBare flag
-      worktrees.forEach(w => {
+      worktrees.forEach((w) => {
         expect(w).toHaveProperty('isBare');
         expect(typeof w.isBare).toBe('boolean');
       });
@@ -97,7 +97,7 @@ describe('Git Worktree Detector', () => {
       const worktrees = await detectWorktrees(cwd);
 
       // Should handle detached state gracefully
-      worktrees.forEach(w => {
+      worktrees.forEach((w) => {
         expect(w).toHaveProperty('isDetached');
         expect(typeof w.isDetached).toBe('boolean');
       });
@@ -175,7 +175,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      patterns.forEach(pattern => {
+      patterns.forEach((pattern) => {
         expect(pattern).toHaveProperty('type');
         expect(pattern).toHaveProperty('worktrees');
         expect(pattern).toHaveProperty('description');
@@ -197,7 +197,7 @@ describe('Git Worktree Detector', () => {
       const patterns = await identifyParallelDevelopment(cwd);
 
       const validTypes = ['feature', 'maintenance', 'review', 'hotfix'];
-      patterns.forEach(pattern => {
+      patterns.forEach((pattern) => {
         expect(validTypes).toContain(pattern.type);
       });
     });
@@ -206,9 +206,9 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      patterns.forEach(pattern => {
+      patterns.forEach((pattern) => {
         expect(Array.isArray(pattern.worktrees)).toBe(true);
-        pattern.worktrees.forEach(wt => {
+        pattern.worktrees.forEach((wt) => {
           expect(typeof wt).toBe('string');
         });
       });
@@ -227,7 +227,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const mapping = await mapBranchesToPhases(cwd);
 
-      mapping.forEach(m => {
+      mapping.forEach((m) => {
         expect(m).toHaveProperty('branch');
         expect(m).toHaveProperty('worktreePath');
         expect(typeof m.branch).toBe('string');
@@ -238,7 +238,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const mapping = await mapBranchesToPhases(cwd);
 
-      mapping.forEach(m => {
+      mapping.forEach((m) => {
         expect(m).toHaveProperty('phase');
         // Phase can be null if not detectable
         if (m.phase !== null) {
@@ -252,11 +252,11 @@ describe('Git Worktree Detector', () => {
       const mapping = await mapBranchesToPhases(cwd);
 
       // Feature branches might have 'feature' in name
-      const featureBranches = mapping.filter(m =>
-        m.branch.includes('feature') || m.branch.includes('feat')
+      const featureBranches = mapping.filter(
+        (m) => m.branch.includes('feature') || m.branch.includes('feat')
       );
 
-      featureBranches.forEach(fb => {
+      featureBranches.forEach((fb) => {
         expect(fb.phase).toBeTruthy();
       });
     });
@@ -265,9 +265,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const mapping = await mapBranchesToPhases(cwd);
 
-      const mainBranch = mapping.find(m =>
-        m.branch === 'main' || m.branch === 'master'
-      );
+      const mainBranch = mapping.find((m) => m.branch === 'main' || m.branch === 'master');
 
       expect(mainBranch).toBeDefined();
     });
@@ -276,7 +274,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const mapping = await mapBranchesToPhases(cwd);
 
-      mapping.forEach(m => {
+      mapping.forEach((m) => {
         expect(m).toHaveProperty('commit');
         expect(typeof m.commit).toBe('string');
       });
@@ -286,7 +284,7 @@ describe('Git Worktree Detector', () => {
       const cwd = process.cwd();
       const mapping = await mapBranchesToPhases(cwd);
 
-      mapping.forEach(m => {
+      mapping.forEach((m) => {
         expect(m).toHaveProperty('divergedFromMain');
         expect(typeof m.divergedFromMain).toBe('boolean');
       });

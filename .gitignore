@@ -55,3 +55,5 @@ user-data/
 # Claude Code specific (if applicable)
 .claude/sessions/
 .claude/cache/
+*.tgz
+ccem-*.tgz

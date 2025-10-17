@@ -5,20 +5,20 @@ import {
   hybridMerge,
   customMerge,
   MergeConfig,
-  MergeResult
+  MergeResult,
 } from '@/merge/strategies';
 
 describe('Merge Strategies', () => {
   const config1: MergeConfig = {
     permissions: ['Read(*)', 'Write(src/*)', 'Bash(npm test)'],
     mcpServers: { linear: { enabled: true } },
-    settings: { theme: 'dark', autoSave: true }
+    settings: { theme: 'dark', autoSave: true },
   };
 
   const config2: MergeConfig = {
     permissions: ['Read(*)', 'Write(tests/*)', 'Bash(npm run lint)'],
     mcpServers: { github: { enabled: true } },
-    settings: { theme: 'light', tabSize: 2 }
+    settings: { theme: 'light', tabSize: 2 },
   };
 
   describe('Recommended Strategy', () => {
@@ -100,7 +100,7 @@ describe('Merge Strategies', () => {
       const result = await defaultMerge([config1, config2]);
 
       expect(result.conflicts.length).toBeGreaterThan(0);
-      expect(result.conflicts.every(c => !c.requiresManualReview)).toBe(true);
+      expect(result.conflicts.every((c) => !c.requiresManualReview)).toBe(true);
     });
   });
 
@@ -115,7 +115,7 @@ describe('Merge Strategies', () => {
       const result = await conservativeMerge([config1, config2]);
 
       expect(result.conflicts.length).toBeGreaterThan(0);
-      result.conflicts.forEach(conflict => {
+      result.conflicts.forEach((conflict) => {
         expect(conflict.requiresManualReview).toBe(true);
       });
     });
@@ -124,7 +124,7 @@ describe('Merge Strategies', () => {
       const result = await conservativeMerge([config1, config2]);
 
       // Both theme values should be preserved as conflict
-      const themeConflict = result.conflicts.find(c => c.field === 'settings.theme');
+      const themeConflict = result.conflicts.find((c) => c.field === 'settings.theme');
       expect(themeConflict).toBeDefined();
       expect(themeConflict?.values).toContain('dark');
       expect(themeConflict?.values).toContain('light');
@@ -149,14 +149,14 @@ describe('Merge Strategies', () => {
     it('should auto-resolve non-critical conflicts', async () => {
       const result = await hybridMerge([config1, config2]);
 
-      const autoResolved = result.conflicts.filter(c => !c.requiresManualReview);
+      const autoResolved = result.conflicts.filter((c) => !c.requiresManualReview);
       expect(autoResolved.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should flag critical conflicts for manual review', async () => {
       const result = await hybridMerge([config1, config2]);
 
-      const manualReview = result.conflicts.filter(c => c.requiresManualReview);
+      const manualReview = result.conflicts.filter((c) => c.requiresManualReview);
       expect(manualReview.length).toBeGreaterThan(0);
     });
   });
@@ -166,12 +166,12 @@ describe('Merge Strategies', () => {
       const customRules = {
         permissions: {
           deduplication: 'strict' as const,
-          conflictResolution: 'union' as const
+          conflictResolution: 'union' as const,
         },
         settings: {
           theme: 'prefer-first' as const,
-          tabSize: 'prefer-last' as const
-        }
+          tabSize: 'prefer-last' as const,
+        },
       };
 
       const result = await customMerge([config1, config2], customRules);
@@ -184,9 +184,9 @@ describe('Merge Strategies', () => {
       const customRules = {
         permissions: {
           deduplication: 'pattern-match' as const,
-          patterns: ['Write(*)']
+          patterns: ['Write(*)'],
         },
-        settings: {}
+        settings: {},
       };
 
       const result = await customMerge([config1, config2], customRules);
@@ -197,12 +197,12 @@ describe('Merge Strategies', () => {
     it('should provide suggestions for unhandled conflicts', async () => {
       const customRules = {
         permissions: {},
-        settings: {}
+        settings: {},
       };
 
       const result = await customMerge([config1, config2], customRules);
 
-      result.conflicts.forEach(conflict => {
+      result.conflicts.forEach((conflict) => {
         expect(conflict).toHaveProperty('suggestion');
       });
     });
@@ -213,7 +213,7 @@ describe('Merge Strategies', () => {
       const configWithGlobs = {
         permissions: ['Read(**/*.ts)', 'Write(src/**/*.tsx)'],
         mcpServers: {},
-        settings: {}
+        settings: {},
       };
 
       const result = await recommendedMerge([config1, configWithGlobs]);
@@ -225,13 +225,13 @@ describe('Merge Strategies', () => {
       const nestedConfig1 = {
         permissions: [],
         mcpServers: {},
-        settings: { editor: { fontSize: 14, tabSize: 2 } }
+        settings: { editor: { fontSize: 14, tabSize: 2 } },
       };
 
       const nestedConfig2 = {
         permissions: [],
         mcpServers: {},
-        settings: { editor: { fontSize: 16, lineHeight: 1.5 } }
+        settings: { editor: { fontSize: 16, lineHeight: 1.5 } },
       };
 
       const result = await recommendedMerge([nestedConfig1, nestedConfig2]);
@@ -246,10 +246,10 @@ describe('Merge Strategies', () => {
           linear: {
             enabled: true,
             apiKey: 'key1',
-            config: { projectId: 'proj1' }
-          }
+            config: { projectId: 'proj1' },
+          },
         },
-        settings: {}
+        settings: {},
       };
 
       const complexMcp2 = {
@@ -258,16 +258,16 @@ describe('Merge Strategies', () => {
           linear: {
             enabled: true,
             apiKey: 'key2',
-            config: { projectId: 'proj2' }
-          }
+            config: { projectId: 'proj2' },
+          },
         },
-        settings: {}
+        settings: {},
       };
 
       const result = await conservativeMerge([complexMcp1, complexMcp2]);
 
       expect(result.mcpServers.linear).toBeDefined();
-      const linearConflict = result.conflicts.find(c => c.field.startsWith('mcpServers.linear'));
+      const linearConflict = result.conflicts.find((c) => c.field.startsWith('mcpServers.linear'));
       expect(linearConflict).toBeDefined();
     });
   });

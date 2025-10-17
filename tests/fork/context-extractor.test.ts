@@ -5,7 +5,7 @@ import {
   buildDependencyGraph,
   Context,
   DependencyGraph,
-  DependencyNode
+  DependencyNode,
 } from '@/fork/context-extractor';
 import { Conversation, Message } from '@/fork/chat-analyzer';
 
@@ -15,12 +15,16 @@ describe('Context Extraction Engine', () => {
       { role: 'user', content: 'Create TUI menu system', timestamp: '2025-10-17T00:00:00Z' },
       { role: 'assistant', content: 'Creating Menu.tsx', timestamp: '2025-10-17T00:01:00Z' },
       { role: 'user', content: 'Add tests for Menu', timestamp: '2025-10-17T00:05:00Z' },
-      { role: 'assistant', content: 'Creating tests/Menu.test.tsx', timestamp: '2025-10-17T00:06:00Z' },
+      {
+        role: 'assistant',
+        content: 'Creating tests/Menu.test.tsx',
+        timestamp: '2025-10-17T00:06:00Z',
+      },
       { role: 'user', content: 'Create schema validator', timestamp: '2025-10-17T00:10:00Z' },
-      { role: 'assistant', content: 'Creating validator.ts', timestamp: '2025-10-17T00:11:00Z' }
+      { role: 'assistant', content: 'Creating validator.ts', timestamp: '2025-10-17T00:11:00Z' },
     ],
     files: ['Menu.tsx', 'tests/Menu.test.tsx', 'validator.ts', 'tests/validator.test.ts'],
-    timestamp: '2025-10-17T00:00:00Z'
+    timestamp: '2025-10-17T00:00:00Z',
   };
 
   describe('extractByTopic', () => {
@@ -28,13 +32,13 @@ describe('Context Extraction Engine', () => {
       const context = extractByTopic(sampleConversation, 'menu');
 
       expect(context.messages.length).toBeGreaterThan(0);
-      expect(context.messages.some(m => m.content.toLowerCase().includes('menu'))).toBe(true);
+      expect(context.messages.some((m) => m.content.toLowerCase().includes('menu'))).toBe(true);
     });
 
     it('should include related files', () => {
       const context = extractByTopic(sampleConversation, 'menu');
 
-      expect(context.files.some(f => f.includes('Menu'))).toBe(true);
+      expect(context.files.some((f) => f.includes('Menu'))).toBe(true);
     });
 
     it('should preserve message order', () => {
@@ -92,14 +96,14 @@ describe('Context Extraction Engine', () => {
     it('should include messages mentioning the file', () => {
       const context = extractByFile(sampleConversation, 'Menu.tsx');
 
-      expect(context.messages.some(m => m.content.includes('Menu'))).toBe(true);
+      expect(context.messages.some((m) => m.content.includes('Menu'))).toBe(true);
     });
 
     it('should include related files', () => {
       const context = extractByFile(sampleConversation, 'Menu.tsx');
 
       // Should include test file for Menu.tsx
-      expect(context.files.some(f => f.includes('test') && f.includes('Menu'))).toBe(true);
+      expect(context.files.some((f) => f.includes('test') && f.includes('Menu'))).toBe(true);
     });
 
     it('should handle file not found', () => {
@@ -113,7 +117,7 @@ describe('Context Extraction Engine', () => {
       const context = extractByFile(sampleConversation, 'validator');
 
       expect(context.messages.length).toBeGreaterThan(0);
-      expect(context.files.some(f => f.includes('validator'))).toBe(true);
+      expect(context.files.some((f) => f.includes('validator'))).toBe(true);
     });
 
     it('should include file metadata', () => {
@@ -139,7 +143,7 @@ describe('Context Extraction Engine', () => {
       const context = extractByTimeRange(sampleConversation, startTime, endTime);
 
       expect(context.messages.length).toBeGreaterThan(0);
-      context.messages.forEach(m => {
+      context.messages.forEach((m) => {
         const msgTime = new Date(m.timestamp).getTime();
         expect(msgTime).toBeGreaterThanOrEqual(new Date(startTime).getTime());
         expect(msgTime).toBeLessThanOrEqual(new Date(endTime).getTime());
@@ -210,15 +214,15 @@ describe('Context Extraction Engine', () => {
       const graph = buildDependencyGraph(sampleConversation);
 
       expect(graph.nodes.length).toBeGreaterThanOrEqual(sampleConversation.files.length);
-      sampleConversation.files.forEach(file => {
-        expect(graph.nodes.some(n => n.id === file)).toBe(true);
+      sampleConversation.files.forEach((file) => {
+        expect(graph.nodes.some((n) => n.id === file)).toBe(true);
       });
     });
 
     it('should identify file types', () => {
       const graph = buildDependencyGraph(sampleConversation);
 
-      graph.nodes.forEach(node => {
+      graph.nodes.forEach((node) => {
         expect(node).toHaveProperty('type');
         expect(['source', 'test', 'config', 'documentation']).toContain(node.type);
       });
@@ -228,9 +232,9 @@ describe('Context Extraction Engine', () => {
       const graph = buildDependencyGraph(sampleConversation);
 
       // Test files should have edges to source files
-      const testNodes = graph.nodes.filter(n => n.type === 'test');
-      testNodes.forEach(testNode => {
-        const hasEdge = graph.edges.some(e => e.from === testNode.id || e.to === testNode.id);
+      const testNodes = graph.nodes.filter((n) => n.type === 'test');
+      testNodes.forEach((testNode) => {
+        const hasEdge = graph.edges.some((e) => e.from === testNode.id || e.to === testNode.id);
         expect(hasEdge).toBe(true);
       });
     });
@@ -239,7 +243,7 @@ describe('Context Extraction Engine', () => {
       const emptyConv: Conversation = {
         messages: [],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const graph = buildDependencyGraph(emptyConv);
@@ -271,8 +275,8 @@ describe('Context Extraction Engine', () => {
       expect(graph).toHaveProperty('orphanedNodes');
       expect(Array.isArray(graph.orphanedNodes)).toBe(true);
       // Orphaned nodes have no edges
-      graph.orphanedNodes.forEach(nodeId => {
-        const hasEdge = graph.edges.some(e => e.from === nodeId || e.to === nodeId);
+      graph.orphanedNodes.forEach((nodeId) => {
+        const hasEdge = graph.edges.some((e) => e.from === nodeId || e.to === nodeId);
         expect(hasEdge).toBe(false);
       });
     });

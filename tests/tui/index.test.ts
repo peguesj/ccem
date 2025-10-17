@@ -12,7 +12,7 @@ describe('TUI Module', () => {
     const item: MenuItem = {
       id: '1',
       title: 'Test',
-      icon: '🔍'
+      icon: '🔍',
     };
     expect(item).toBeDefined();
   });
@@ -20,9 +20,7 @@ describe('TUI Module', () => {
   it('should export MenuProps interface', () => {
     // Type check - will fail at compile time if not exported
     const props: MenuProps = {
-      items: [
-        { id: '1', title: 'Test', icon: '🔍' }
-      ]
+      items: [{ id: '1', title: 'Test', icon: '🔍' }],
     };
     expect(props).toBeDefined();
   });

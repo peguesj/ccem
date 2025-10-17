@@ -2,6 +2,7 @@
   "name": "@ccem/core",
   "version": "1.0.0",
   "description": "Claude Code Environment Manager - TUI-based configuration management system for Claude Code v2.0.10+",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

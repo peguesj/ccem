@@ -8,7 +8,7 @@ import {
   createSnapshot,
   BackupMetadata,
   SnapshotInfo,
-  FileInfo
+  FileInfo,
 } from '@/merge/backup';
 
 describe('Backup System', () => {
@@ -200,10 +200,7 @@ describe('Backup System', () => {
       fs.mkdirSync(restorePath);
 
       // Create conflicting file
-      fs.writeFileSync(
-        path.join(restorePath, 'settings.json'),
-        JSON.stringify({ theme: 'light' })
-      );
+      fs.writeFileSync(path.join(restorePath, 'settings.json'), JSON.stringify({ theme: 'light' }));
 
       await restoreBackup(backupPath, restorePath);
 
@@ -274,10 +271,7 @@ describe('Backup System', () => {
       const snapshot1 = await createSnapshot(configPath);
 
       // Add new file
-      fs.writeFileSync(
-        path.join(configPath, 'new-file.json'),
-        JSON.stringify({ new: true })
-      );
+      fs.writeFileSync(path.join(configPath, 'new-file.json'), JSON.stringify({ new: true }));
 
       const snapshot2 = await createSnapshot(configPath);
 
@@ -294,7 +288,9 @@ describe('Backup System', () => {
       const snapshot2 = await createSnapshot(configPath);
 
       expect(snapshot2.files.length).toBe(snapshot1.files.length - 1);
-      expect(snapshot2.files.some((f: FileInfo) => f.path.endsWith('permissions.json'))).toBe(false);
+      expect(snapshot2.files.some((f: FileInfo) => f.path.endsWith('permissions.json'))).toBe(
+        false
+      );
     });
   });
 

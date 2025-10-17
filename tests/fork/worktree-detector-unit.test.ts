@@ -15,7 +15,7 @@ describe('Git Worktree Detector - Unit Tests', () => {
       const worktrees = await detectWorktrees(cwd);
 
       // All worktrees should have commits
-      worktrees.forEach(wt => {
+      worktrees.forEach((wt) => {
         expect(wt.commit).toBeDefined();
         expect(typeof wt.commit).toBe('string');
       });
@@ -26,7 +26,7 @@ describe('Git Worktree Detector - Unit Tests', () => {
       const worktrees = await detectWorktrees(cwd);
 
       // Branches should not have refs/heads/ prefix
-      worktrees.forEach(wt => {
+      worktrees.forEach((wt) => {
         expect(wt.branch).not.toContain('refs/heads/');
       });
     });
@@ -36,7 +36,7 @@ describe('Git Worktree Detector - Unit Tests', () => {
       const worktrees = await detectWorktrees(cwd);
 
       // Bare property should be boolean
-      worktrees.forEach(wt => {
+      worktrees.forEach((wt) => {
         expect(typeof wt.isBare).toBe('boolean');
       });
     });
@@ -45,31 +45,38 @@ describe('Git Worktree Detector - Unit Tests', () => {
   describe('detectPhaseFromBranch internals', () => {
     it('should detect feature branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
       // Feature branches should be detected
-      const featureMappings = mapping.filter(m =>
-        m.branch.includes('feature') || m.branch.includes('feat')
+      const featureMappings = mapping.filter(
+        (m) => m.branch.includes('feature') || m.branch.includes('feat')
       );
 
-      featureMappings.forEach(fm => {
+      featureMappings.forEach((fm) => {
         if (fm.phase) {
-          expect(['implementation', 'planning', 'research', 'testing', 'deployment', 'refactoring']).toContain(fm.phase);
+          expect([
+            'implementation',
+            'planning',
+            'research',
+            'testing',
+            'deployment',
+            'refactoring',
+          ]).toContain(fm.phase);
         }
       });
     });
 
     it('should detect test branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const testMappings = mapping.filter(m => m.branch.includes('test'));
+      const testMappings = mapping.filter((m) => m.branch.includes('test'));
 
-      testMappings.forEach(tm => {
+      testMappings.forEach((tm) => {
         if (tm.phase) {
           expect(tm.phase).toBe('testing');
         }
@@ -78,15 +85,15 @@ describe('Git Worktree Detector - Unit Tests', () => {
 
     it('should detect fix branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const fixMappings = mapping.filter(m =>
-        m.branch.includes('fix') || m.branch.includes('hotfix')
+      const fixMappings = mapping.filter(
+        (m) => m.branch.includes('fix') || m.branch.includes('hotfix')
       );
 
-      fixMappings.forEach(fm => {
+      fixMappings.forEach((fm) => {
         if (fm.phase) {
           expect(fm.phase).toBe('refactoring');
         }
@@ -95,15 +102,15 @@ describe('Git Worktree Detector - Unit Tests', () => {
 
     it('should detect release branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const releaseMappings = mapping.filter(m =>
-        m.branch.includes('release') || m.branch.includes('deploy')
+      const releaseMappings = mapping.filter(
+        (m) => m.branch.includes('release') || m.branch.includes('deploy')
       );
 
-      releaseMappings.forEach(rm => {
+      releaseMappings.forEach((rm) => {
         if (rm.phase) {
           expect(rm.phase).toBe('deployment');
         }
@@ -112,15 +119,15 @@ describe('Git Worktree Detector - Unit Tests', () => {
 
     it('should detect research branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const researchMappings = mapping.filter(m =>
-        m.branch.includes('research') || m.branch.includes('spike')
+      const researchMappings = mapping.filter(
+        (m) => m.branch.includes('research') || m.branch.includes('spike')
       );
 
-      researchMappings.forEach(rm => {
+      researchMappings.forEach((rm) => {
         if (rm.phase) {
           expect(rm.phase).toBe('research');
         }
@@ -129,15 +136,13 @@ describe('Git Worktree Detector - Unit Tests', () => {
 
     it('should handle main/master branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const mainMappings = mapping.filter(m =>
-        m.branch === 'main' || m.branch === 'master'
-      );
+      const mainMappings = mapping.filter((m) => m.branch === 'main' || m.branch === 'master');
 
-      mainMappings.forEach(mm => {
+      mainMappings.forEach((mm) => {
         if (mm.phase) {
           expect(mm.phase).toBe('planning');
         }
@@ -148,11 +153,11 @@ describe('Git Worktree Detector - Unit Tests', () => {
   describe('checkDivergenceFromMain internals', () => {
     it('should correctly identify main as not diverged', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      const mainMapping = mapping.find(m => m.branch === 'main' || m.branch === 'master');
+      const mainMapping = mapping.find((m) => m.branch === 'main' || m.branch === 'master');
 
       if (mainMapping) {
         expect(mainMapping.divergedFromMain).toBe(false);
@@ -161,11 +166,11 @@ describe('Git Worktree Detector - Unit Tests', () => {
 
     it('should check divergence for feature branches', async () => {
       const cwd = process.cwd();
-      const mapping = await import('@/fork/worktree-detector').then(m =>
+      const mapping = await import('@/fork/worktree-detector').then((m) =>
         m.mapBranchesToPhases(cwd)
       );
 
-      mapping.forEach(m => {
+      mapping.forEach((m) => {
         expect(typeof m.divergedFromMain).toBe('boolean');
       });
     });

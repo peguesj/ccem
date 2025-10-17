@@ -6,6 +6,6 @@
  * @version 0.2.0
  */
 
-export * from './validator';
-export * from './definitions';
-export * from './types';
+export * from './validator.js';
+export * from './definitions.js';
+export * from './types.js';

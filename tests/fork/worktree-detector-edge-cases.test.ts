@@ -12,7 +12,7 @@ import {
   detectWorktrees,
   analyzeWorktreeStructure,
   identifyParallelDevelopment,
-  mapBranchesToPhases
+  mapBranchesToPhases,
 } from '@/fork/worktree-detector';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -52,7 +52,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const worktrees = await detectWorktrees(cwd);
 
-      worktrees.forEach(w => {
+      worktrees.forEach((w) => {
         expect(w).toHaveProperty('isBare');
         expect(typeof w.isBare).toBe('boolean');
       });
@@ -62,7 +62,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const worktrees = await detectWorktrees(cwd);
 
-      worktrees.forEach(w => {
+      worktrees.forEach((w) => {
         expect(w).toHaveProperty('isDetached');
         if (w.isDetached) {
           expect(w.branch).toBe('HEAD (detached)');
@@ -86,12 +86,11 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const mappings = await mapBranchesToPhases(cwd);
 
       // Check if any feature branches are properly mapped
-      const featureMappings = mappings.filter(m =>
-        m.branch.toLowerCase().includes('feature') ||
-        m.branch.toLowerCase().includes('feat')
+      const featureMappings = mappings.filter(
+        (m) => m.branch.toLowerCase().includes('feature') || m.branch.toLowerCase().includes('feat')
       );
 
-      featureMappings.forEach(fm => {
+      featureMappings.forEach((fm) => {
         expect(fm.phase).toBe('implementation');
       });
     });
@@ -100,11 +99,9 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const testMappings = mappings.filter(m =>
-        m.branch.toLowerCase().includes('test')
-      );
+      const testMappings = mappings.filter((m) => m.branch.toLowerCase().includes('test'));
 
-      testMappings.forEach(tm => {
+      testMappings.forEach((tm) => {
         expect(tm.phase).toBe('testing');
       });
     });
@@ -113,12 +110,11 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const fixMappings = mappings.filter(m =>
-        m.branch.toLowerCase().includes('fix') ||
-        m.branch.toLowerCase().includes('hotfix')
+      const fixMappings = mappings.filter(
+        (m) => m.branch.toLowerCase().includes('fix') || m.branch.toLowerCase().includes('hotfix')
       );
 
-      fixMappings.forEach(fm => {
+      fixMappings.forEach((fm) => {
         expect(fm.phase).toBe('refactoring');
       });
     });
@@ -127,12 +123,12 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const releaseMappings = mappings.filter(m =>
-        m.branch.toLowerCase().includes('release') ||
-        m.branch.toLowerCase().includes('deploy')
+      const releaseMappings = mappings.filter(
+        (m) =>
+          m.branch.toLowerCase().includes('release') || m.branch.toLowerCase().includes('deploy')
       );
 
-      releaseMappings.forEach(rm => {
+      releaseMappings.forEach((rm) => {
         expect(rm.phase).toBe('deployment');
       });
     });
@@ -141,12 +137,12 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const researchMappings = mappings.filter(m =>
-        m.branch.toLowerCase().includes('research') ||
-        m.branch.toLowerCase().includes('spike')
+      const researchMappings = mappings.filter(
+        (m) =>
+          m.branch.toLowerCase().includes('research') || m.branch.toLowerCase().includes('spike')
       );
 
-      researchMappings.forEach(rm => {
+      researchMappings.forEach((rm) => {
         expect(rm.phase).toBe('research');
       });
     });
@@ -155,9 +151,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const mainMapping = mappings.find(m =>
-        m.branch === 'main' || m.branch === 'master'
-      );
+      const mainMapping = mappings.find((m) => m.branch === 'main' || m.branch === 'master');
 
       if (mainMapping) {
         expect(mainMapping.phase).toBe('planning');
@@ -169,7 +163,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const mappings = await mapBranchesToPhases(cwd);
 
       // Some branches might not match any pattern
-      mappings.forEach(m => {
+      mappings.forEach((m) => {
         if (m.phase === null) {
           const branch = m.branch.toLowerCase();
           expect(branch).not.toContain('feature');
@@ -190,9 +184,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const mappings = await mapBranchesToPhases(cwd);
 
-      const mainMapping = mappings.find(m =>
-        m.branch === 'main' || m.branch === 'master'
-      );
+      const mainMapping = mappings.find((m) => m.branch === 'main' || m.branch === 'master');
 
       if (mainMapping) {
         expect(mainMapping.divergedFromMain).toBe(false);
@@ -204,11 +196,9 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const mappings = await mapBranchesToPhases(cwd);
 
       // Non-main branches might be diverged
-      const nonMainMappings = mappings.filter(m =>
-        m.branch !== 'main' && m.branch !== 'master'
-      );
+      const nonMainMappings = mappings.filter((m) => m.branch !== 'main' && m.branch !== 'master');
 
-      nonMainMappings.forEach(nm => {
+      nonMainMappings.forEach((nm) => {
         expect(typeof nm.divergedFromMain).toBe('boolean');
       });
     });
@@ -253,7 +243,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const analysis = await analyzeWorktreeStructure(cwd);
       const worktrees = await detectWorktrees(cwd);
 
-      const mainWorktree = worktrees.find(w => w.isMain);
+      const mainWorktree = worktrees.find((w) => w.isMain);
       if (mainWorktree) {
         expect(analysis.divergencePoints).not.toContain(mainWorktree.commit);
       }
@@ -265,7 +255,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      const hotfixPattern = patterns.find(p => p.type === 'hotfix');
+      const hotfixPattern = patterns.find((p) => p.type === 'hotfix');
       if (hotfixPattern) {
         expect(hotfixPattern.description).toContain('Hotfix');
         expect(hotfixPattern.worktrees.length).toBeGreaterThan(0);
@@ -276,7 +266,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      const maintPattern = patterns.find(p => p.type === 'maintenance');
+      const maintPattern = patterns.find((p) => p.type === 'maintenance');
       if (maintPattern) {
         expect(maintPattern.description).toContain('Maintenance');
         expect(maintPattern.worktrees.length).toBeGreaterThan(0);
@@ -287,7 +277,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      const reviewPattern = patterns.find(p => p.type === 'review');
+      const reviewPattern = patterns.find((p) => p.type === 'review');
       if (reviewPattern) {
         expect(reviewPattern.description).toContain('review');
         expect(reviewPattern.worktrees.length).toBeGreaterThan(0);
@@ -298,7 +288,7 @@ describe('Git Worktree Detector - Edge Cases', () => {
       const cwd = process.cwd();
       const patterns = await identifyParallelDevelopment(cwd);
 
-      const featurePattern = patterns.find(p => p.type === 'feature');
+      const featurePattern = patterns.find((p) => p.type === 'feature');
       if (featurePattern) {
         expect(featurePattern.description).toContain('Feature');
         expect(featurePattern.worktrees.length).toBeGreaterThan(0);

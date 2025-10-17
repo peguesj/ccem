@@ -20,7 +20,7 @@ describe('Schema Definitions', () => {
         id: '00000000-0000-0000-0000-000000000000',
         title: 'Root Menu',
         type: 'root' as const,
-        parent_id: null
+        parent_id: null,
       };
 
       expect(() => tuiStructureSchema.parse(schema)).not.toThrow();
@@ -31,7 +31,7 @@ describe('Schema Definitions', () => {
         id: '00000000-0000-0000-0000-000000000000',
         title: 'Menu',
         type: 'root' as const,
-        order: -1
+        order: -1,
       };
 
       expect(() => tuiStructureSchema.parse(schema)).toThrow();

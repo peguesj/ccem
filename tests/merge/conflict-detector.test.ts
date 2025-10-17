@@ -3,7 +3,7 @@ import {
   ConflictReport,
   ConflictType,
   ConflictSeverity,
-  ResolutionStrategy
+  ResolutionStrategy,
 } from '@/merge/conflict-detector';
 import { MergeConfig } from '@/merge/strategies';
 
@@ -11,22 +11,20 @@ describe('Conflict Detector', () => {
   const config1: MergeConfig = {
     permissions: ['Read(*)', 'Write(src/*)'],
     mcpServers: { linear: { enabled: true, apiKey: 'key1' } },
-    settings: { theme: 'dark', tabSize: 2 }
+    settings: { theme: 'dark', tabSize: 2 },
   };
 
   const config2: MergeConfig = {
     permissions: ['Read(src/*)', 'Write(tests/*)'],
     mcpServers: { linear: { enabled: true, apiKey: 'key2' } },
-    settings: { theme: 'light', tabSize: 2 }
+    settings: { theme: 'light', tabSize: 2 },
   };
 
   describe('Permission Conflicts', () => {
     it('should detect permission overlap conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const permissionConflicts = report.conflicts.filter(
-        c => c.type === 'permission-overlap'
-      );
+      const permissionConflicts = report.conflicts.filter((c) => c.type === 'permission-overlap');
       expect(permissionConflicts.length).toBeGreaterThan(0);
     });
 
@@ -34,20 +32,18 @@ describe('Conflict Detector', () => {
       const globalConfig = {
         permissions: ['Read(*)'],
         mcpServers: {},
-        settings: {}
+        settings: {},
       };
 
       const specificConfig = {
         permissions: ['Read(src/*)'],
         mcpServers: {},
-        settings: {}
+        settings: {},
       };
 
       const report = detectConflicts([globalConfig, specificConfig]);
 
-      const hierarchyConflict = report.conflicts.find(
-        c => c.type === 'permission-hierarchy'
-      );
+      const hierarchyConflict = report.conflicts.find((c) => c.type === 'permission-hierarchy');
       expect(hierarchyConflict).toBeDefined();
     });
 
@@ -55,10 +51,10 @@ describe('Conflict Detector', () => {
       const report = detectConflicts([config1, config2]);
 
       const permissionConflicts = report.conflicts.filter(
-        c => c.type === 'permission-overlap' || c.type === 'permission-hierarchy'
+        (c) => c.type === 'permission-overlap' || c.type === 'permission-hierarchy'
       );
 
-      permissionConflicts.forEach(conflict => {
+      permissionConflicts.forEach((conflict) => {
         expect(conflict.resolutionStrategies).toBeDefined();
         expect(conflict.resolutionStrategies.length).toBeGreaterThan(0);
       });
@@ -69,12 +65,10 @@ describe('Conflict Detector', () => {
     it('should detect setting value conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const settingConflicts = report.conflicts.filter(
-        c => c.type === 'setting-value'
-      );
+      const settingConflicts = report.conflicts.filter((c) => c.type === 'setting-value');
       expect(settingConflicts.length).toBeGreaterThan(0);
 
-      const themeConflict = settingConflicts.find(c => c.path === 'settings.theme');
+      const themeConflict = settingConflicts.find((c) => c.path === 'settings.theme');
       expect(themeConflict).toBeDefined();
       expect(themeConflict?.values).toContain('dark');
       expect(themeConflict?.values).toContain('light');
@@ -83,20 +77,16 @@ describe('Conflict Detector', () => {
     it('should not flag identical settings as conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const tabSizeConflict = report.conflicts.find(
-        c => c.path === 'settings.tabSize'
-      );
+      const tabSizeConflict = report.conflicts.find((c) => c.path === 'settings.tabSize');
       expect(tabSizeConflict).toBeUndefined();
     });
 
     it('should provide context for setting conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const settingConflicts = report.conflicts.filter(
-        c => c.type === 'setting-value'
-      );
+      const settingConflicts = report.conflicts.filter((c) => c.type === 'setting-value');
 
-      settingConflicts.forEach(conflict => {
+      settingConflicts.forEach((conflict) => {
         expect(conflict.context).toBeDefined();
         expect(conflict.context.affectedProjects).toBeDefined();
         expect(conflict.context.affectedProjects.length).toBeGreaterThan(0);
@@ -108,9 +98,7 @@ describe('Conflict Detector', () => {
     it('should detect MCP server configuration conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const mcpConflicts = report.conflicts.filter(
-        c => c.type === 'mcp-config'
-      );
+      const mcpConflicts = report.conflicts.filter((c) => c.type === 'mcp-config');
       expect(mcpConflicts.length).toBeGreaterThan(0);
     });
 
@@ -118,7 +106,7 @@ describe('Conflict Detector', () => {
       const report = detectConflicts([config1, config2]);
 
       const linearConflict = report.conflicts.find(
-        c => c.type === 'mcp-config' && c.path.includes('linear')
+        (c) => c.type === 'mcp-config' && c.path.includes('linear')
       );
       expect(linearConflict).toBeDefined();
     });
@@ -126,11 +114,9 @@ describe('Conflict Detector', () => {
     it('should suggest resolution strategies for MCP conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      const mcpConflicts = report.conflicts.filter(
-        c => c.type === 'mcp-config'
-      );
+      const mcpConflicts = report.conflicts.filter((c) => c.type === 'mcp-config');
 
-      mcpConflicts.forEach(conflict => {
+      mcpConflicts.forEach((conflict) => {
         expect(conflict.resolutionStrategies).toBeDefined();
         expect(conflict.resolutionStrategies).toContain('manual-review');
       });
@@ -141,7 +127,7 @@ describe('Conflict Detector', () => {
     it('should provide multiple resolution strategies', () => {
       const report = detectConflicts([config1, config2]);
 
-      report.conflicts.forEach(conflict => {
+      report.conflicts.forEach((conflict) => {
         expect(conflict.resolutionStrategies).toBeInstanceOf(Array);
         expect(conflict.resolutionStrategies.length).toBeGreaterThan(0);
       });
@@ -150,18 +136,16 @@ describe('Conflict Detector', () => {
     it('should include recommended resolution', () => {
       const report = detectConflicts([config1, config2]);
 
-      report.conflicts.forEach(conflict => {
+      report.conflicts.forEach((conflict) => {
         expect(conflict.recommendedResolution).toBeDefined();
-        expect(conflict.resolutionStrategies).toContain(
-          conflict.recommendedResolution
-        );
+        expect(conflict.resolutionStrategies).toContain(conflict.recommendedResolution);
       });
     });
 
     it('should provide resolution rationale', () => {
       const report = detectConflicts([config1, config2]);
 
-      report.conflicts.forEach(conflict => {
+      report.conflicts.forEach((conflict) => {
         expect(conflict.resolutionRationale).toBeDefined();
         expect(typeof conflict.resolutionRationale).toBe('string');
         expect(conflict.resolutionRationale.length).toBeGreaterThan(0);
@@ -173,22 +157,18 @@ describe('Conflict Detector', () => {
     it('should assign severity levels to conflicts', () => {
       const report = detectConflicts([config1, config2]);
 
-      report.conflicts.forEach(conflict => {
+      report.conflicts.forEach((conflict) => {
         expect(conflict.severity).toBeDefined();
-        expect(['low', 'medium', 'high', 'critical']).toContain(
-          conflict.severity
-        );
+        expect(['low', 'medium', 'high', 'critical']).toContain(conflict.severity);
       });
     });
 
     it('should mark MCP conflicts as high severity', () => {
       const report = detectConflicts([config1, config2]);
 
-      const mcpConflicts = report.conflicts.filter(
-        c => c.type === 'mcp-config'
-      );
+      const mcpConflicts = report.conflicts.filter((c) => c.type === 'mcp-config');
 
-      mcpConflicts.forEach(conflict => {
+      mcpConflicts.forEach((conflict) => {
         expect(['high', 'critical']).toContain(conflict.severity);
       });
     });
@@ -196,11 +176,9 @@ describe('Conflict Detector', () => {
     it('should mark permission overlaps as medium severity', () => {
       const report = detectConflicts([config1, config2]);
 
-      const permConflicts = report.conflicts.filter(
-        c => c.type === 'permission-overlap'
-      );
+      const permConflicts = report.conflicts.filter((c) => c.type === 'permission-overlap');
 
-      permConflicts.forEach(conflict => {
+      permConflicts.forEach((conflict) => {
         expect(['medium', 'high']).toContain(conflict.severity);
       });
     });
@@ -223,10 +201,10 @@ describe('Conflict Detector', () => {
         'permission-overlap',
         'permission-hierarchy',
         'setting-value',
-        'mcp-config'
+        'mcp-config',
       ];
 
-      types.forEach(type => {
+      types.forEach((type) => {
         expect(report.summary.conflictsByType[type]).toBeDefined();
         expect(typeof report.summary.conflictsByType[type]).toBe('number');
       });
@@ -237,7 +215,7 @@ describe('Conflict Detector', () => {
 
       const severities: ConflictSeverity[] = ['low', 'medium', 'high', 'critical'];
 
-      severities.forEach(severity => {
+      severities.forEach((severity) => {
         expect(report.summary.conflictsBySeverity[severity]).toBeDefined();
         expect(typeof report.summary.conflictsBySeverity[severity]).toBe('number');
       });
@@ -267,10 +245,10 @@ describe('Conflict Detector', () => {
           editor: {
             formatting: {
               tabSize: 2,
-              insertSpaces: true
-            }
-          }
-        }
+              insertSpaces: true,
+            },
+          },
+        },
       };
 
       const nested2 = {
@@ -280,16 +258,16 @@ describe('Conflict Detector', () => {
           editor: {
             formatting: {
               tabSize: 4,
-              insertSpaces: true
-            }
-          }
-        }
+              insertSpaces: true,
+            },
+          },
+        },
       };
 
       const report = detectConflicts([nested1, nested2]);
 
-      const nestedConflict = report.conflicts.find(
-        c => c.path.includes('editor.formatting.tabSize')
+      const nestedConflict = report.conflicts.find((c) =>
+        c.path.includes('editor.formatting.tabSize')
       );
       expect(nestedConflict).toBeDefined();
     });
@@ -298,13 +276,13 @@ describe('Conflict Detector', () => {
       const withNull = {
         permissions: [],
         mcpServers: {},
-        settings: { theme: null }
+        settings: { theme: null },
       };
 
       const withUndefined = {
         permissions: [],
         mcpServers: {},
-        settings: { theme: undefined }
+        settings: { theme: undefined },
       };
 
       const report = detectConflicts([withNull, withUndefined]);

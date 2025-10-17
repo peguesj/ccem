@@ -15,7 +15,7 @@ import {
   restoreBackup,
   createSnapshot,
   BackupMetadata,
-  SnapshotInfo
+  SnapshotInfo,
 } from '@/merge/backup';
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -42,18 +42,14 @@ describe('Backup System - Edge Cases', () => {
     it('should throw error for non-existent source path', async () => {
       const nonExistent = join(testDir, 'does-not-exist');
 
-      await expect(createBackup(nonExistent)).rejects.toThrow(
-        'Source path does not exist'
-      );
+      await expect(createBackup(nonExistent)).rejects.toThrow('Source path does not exist');
     });
 
     it('should throw error for file instead of directory', async () => {
       const filePath = join(testDir, 'test-file.txt');
       await fs.writeFile(filePath, 'content');
 
-      await expect(createBackup(filePath)).rejects.toThrow(
-        'Source path is not a directory'
-      );
+      await expect(createBackup(filePath)).rejects.toThrow('Source path is not a directory');
     });
 
     it('should handle tar command failure', async () => {
@@ -120,7 +116,7 @@ describe('Backup System - Edge Cases', () => {
       const metadata = await validateBackup(fakeBackup);
 
       expect(metadata.isValid).toBe(false);
-      expect(metadata.errors.some(e => e.includes('Invalid gzip header'))).toBe(true);
+      expect(metadata.errors.some((e) => e.includes('Invalid gzip header'))).toBe(true);
     });
 
     it('should detect corrupted tar archive', async () => {
@@ -132,7 +128,7 @@ describe('Backup System - Edge Cases', () => {
       const metadata = await validateBackup(corruptedBackup);
 
       expect(metadata.isValid).toBe(false);
-      expect(metadata.errors.some(e => e.includes('Corrupted tar archive'))).toBe(true);
+      expect(metadata.errors.some((e) => e.includes('Corrupted tar archive'))).toBe(true);
     });
 
     it('should handle backup without metadata file', async () => {
@@ -191,9 +187,7 @@ describe('Backup System - Edge Cases', () => {
 
       const restorePath = join(testDir, 'restore');
 
-      await expect(restoreBackup(invalidBackup, restorePath)).rejects.toThrow(
-        'Invalid backup'
-      );
+      await expect(restoreBackup(invalidBackup, restorePath)).rejects.toThrow('Invalid backup');
     });
 
     it('should create restore directory if it does not exist', async () => {
@@ -241,7 +235,7 @@ describe('Backup System - Edge Cases', () => {
       const corruptedContent = Buffer.concat([
         originalContent.slice(0, 20),
         Buffer.from('corrupted'),
-        originalContent.slice(29)
+        originalContent.slice(29),
       ]);
       await fs.writeFile(backupPath, corruptedContent);
 
@@ -256,7 +250,7 @@ describe('Backup System - Edge Cases', () => {
           // Could fail at validation or restore step
           expect(
             error.message.includes('Invalid backup') ||
-            error.message.includes('Failed to restore backup')
+              error.message.includes('Failed to restore backup')
           ).toBe(true);
         }
       }
@@ -267,18 +261,14 @@ describe('Backup System - Edge Cases', () => {
     it('should throw error for non-existent source path', async () => {
       const nonExistent = join(testDir, 'does-not-exist');
 
-      await expect(createSnapshot(nonExistent)).rejects.toThrow(
-        'Source path does not exist'
-      );
+      await expect(createSnapshot(nonExistent)).rejects.toThrow('Source path does not exist');
     });
 
     it('should throw error for file instead of directory', async () => {
       const filePath = join(testDir, 'file.txt');
       await fs.writeFile(filePath, 'content');
 
-      await expect(createSnapshot(filePath)).rejects.toThrow(
-        'Source path is not a directory'
-      );
+      await expect(createSnapshot(filePath)).rejects.toThrow('Source path is not a directory');
     });
 
     it('should create snapshot with file checksums', async () => {
@@ -293,7 +283,7 @@ describe('Backup System - Edge Cases', () => {
       expect(snapshot.files.length).toBe(2);
       expect(snapshot.sourcePath).toBe(sourceDir);
 
-      snapshot.files.forEach(file => {
+      snapshot.files.forEach((file) => {
         expect(file).toHaveProperty('path');
         expect(file).toHaveProperty('checksum');
         expect(file).toHaveProperty('size');
@@ -311,7 +301,7 @@ describe('Backup System - Edge Cases', () => {
       const snapshot = await createSnapshot(sourceDir);
 
       expect(snapshot.fileCount).toBe(2);
-      expect(snapshot.files.some(f => f.path.includes('subdir'))).toBe(true);
+      expect(snapshot.files.some((f) => f.path.includes('subdir'))).toBe(true);
     });
 
     it('should include file metadata in snapshot', async () => {
@@ -360,10 +350,7 @@ describe('Backup System - Edge Cases', () => {
       await restoreBackup(backupPath, restorePath);
 
       // Verify content
-      const restoredContent = await fs.readFile(
-        join(restorePath, 'important.txt'),
-        'utf-8'
-      );
+      const restoredContent = await fs.readFile(join(restorePath, 'important.txt'), 'utf-8');
       expect(restoredContent).toBe('important data');
     });
 

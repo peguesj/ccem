@@ -9,7 +9,7 @@
  * @since 0.5.0
  */
 
-import { Conversation, Message } from './chat-analyzer';
+import { Conversation, Message } from './chat-analyzer.js';
 
 /**
  * Extracted context interface.

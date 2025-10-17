@@ -6,5 +6,5 @@
  * @version 0.2.0
  */
 
-export type { TUIStructure } from './definitions';
-export { ValidationError } from './validator';
+export type { TUIStructure } from './definitions.js';
+export { ValidationError } from './validator.js';

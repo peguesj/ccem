@@ -16,7 +16,7 @@ export {
   extractDependencies,
   identifyConversationPhases,
   extractFileReferences
-} from './chat-analyzer';
+} from './chat-analyzer.js';
 
 export type {
   MessageRole,
@@ -28,7 +28,7 @@ export type {
   PhaseType,
   ConversationPhase,
   ParsedConversation
-} from './chat-analyzer';
+} from './chat-analyzer.js';
 
 // Git Worktree Detector
 export {
@@ -36,7 +36,7 @@ export {
   analyzeWorktreeStructure,
   identifyParallelDevelopment,
   mapBranchesToPhases
-} from './worktree-detector';
+} from './worktree-detector.js';
 
 export type {
   Worktree,
@@ -44,7 +44,7 @@ export type {
   DevelopmentPatternType,
   DevelopmentPattern,
   BranchMapping
-} from './worktree-detector';
+} from './worktree-detector.js';
 
 // Context Extraction Engine
 export {
@@ -52,7 +52,7 @@ export {
   extractByFile,
   extractByTimeRange,
   buildDependencyGraph
-} from './context-extractor';
+} from './context-extractor.js';
 
 export type {
   Context,
@@ -60,7 +60,7 @@ export type {
   DependencyNode,
   DependencyEdge,
   DependencyGraph
-} from './context-extractor';
+} from './context-extractor.js';
 
 // Conversation-to-Code Mapper
 export {
@@ -68,7 +68,7 @@ export {
   trackImplementation,
   identifyOrphans,
   generateTraceabilityReport
-} from './conversation-mapper';
+} from './conversation-mapper.js';
 
 export type {
   ImplementationStatusType,
@@ -80,4 +80,4 @@ export type {
   OrphanType,
   OrphanedConversation,
   TraceabilityReport
-} from './conversation-mapper';
+} from './conversation-mapper.js';

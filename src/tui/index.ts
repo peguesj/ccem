@@ -6,4 +6,4 @@
  * @version 0.3.0
  */
 
-export * from './Menu';
+export * from './Menu.js';

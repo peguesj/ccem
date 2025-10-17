@@ -19,7 +19,7 @@ export {
   type MergeStats,
   type MergeResult,
   type CustomMergeRules
-} from './strategies';
+} from './strategies.js';
 
 // Conflict detection
 export {
@@ -31,7 +31,7 @@ export {
   type DetectedConflict,
   type ConflictSummary,
   type ConflictReport
-} from './conflict-detector';
+} from './conflict-detector.js';
 
 // Backup system
 export {
@@ -42,7 +42,7 @@ export {
   type FileInfo,
   type SnapshotInfo,
   type BackupMetadata
-} from './backup';
+} from './backup.js';
 
 // Security audit
 export {
@@ -53,4 +53,4 @@ export {
   type SecurityIssue,
   type AuditSummary,
   type SecurityAuditResult
-} from './security-audit';
+} from './security-audit.js';

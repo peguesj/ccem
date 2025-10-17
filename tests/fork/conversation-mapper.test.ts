@@ -5,7 +5,7 @@ import {
   generateTraceabilityReport,
   ConversationMapping,
   ImplementationStatus,
-  TraceabilityReport
+  TraceabilityReport,
 } from '@/fork/conversation-mapper';
 import { Conversation } from '@/fork/chat-analyzer';
 
@@ -13,16 +13,36 @@ describe('Conversation-to-Code Mapper', () => {
   const sampleConversation: Conversation = {
     messages: [
       { role: 'user', content: 'Create a TUI menu component', timestamp: '2025-10-17T00:00:00Z' },
-      { role: 'assistant', content: 'Creating Menu.tsx with React and Ink', timestamp: '2025-10-17T00:01:00Z' },
-      { role: 'user', content: 'Add keyboard navigation support', timestamp: '2025-10-17T00:05:00Z' },
-      { role: 'assistant', content: 'Adding arrow key navigation to Menu.tsx', timestamp: '2025-10-17T00:06:00Z' },
+      {
+        role: 'assistant',
+        content: 'Creating Menu.tsx with React and Ink',
+        timestamp: '2025-10-17T00:01:00Z',
+      },
+      {
+        role: 'user',
+        content: 'Add keyboard navigation support',
+        timestamp: '2025-10-17T00:05:00Z',
+      },
+      {
+        role: 'assistant',
+        content: 'Adding arrow key navigation to Menu.tsx',
+        timestamp: '2025-10-17T00:06:00Z',
+      },
       { role: 'user', content: 'Create tests for the menu', timestamp: '2025-10-17T00:10:00Z' },
-      { role: 'assistant', content: 'Creating tests/Menu.test.tsx', timestamp: '2025-10-17T00:11:00Z' },
+      {
+        role: 'assistant',
+        content: 'Creating tests/Menu.test.tsx',
+        timestamp: '2025-10-17T00:11:00Z',
+      },
       { role: 'user', content: 'Add schema validation system', timestamp: '2025-10-17T00:15:00Z' },
-      { role: 'assistant', content: 'Implementing validator.ts with Zod', timestamp: '2025-10-17T00:16:00Z' }
+      {
+        role: 'assistant',
+        content: 'Implementing validator.ts with Zod',
+        timestamp: '2025-10-17T00:16:00Z',
+      },
     ],
     files: ['Menu.tsx', 'tests/Menu.test.tsx', 'validator.ts'],
-    timestamp: '2025-10-17T00:00:00Z'
+    timestamp: '2025-10-17T00:00:00Z',
   };
 
   describe('mapConversationToCode', () => {
@@ -38,15 +58,15 @@ describe('Conversation-to-Code Mapper', () => {
     it('should create mappings for each file', () => {
       const mapping = mapConversationToCode(sampleConversation);
 
-      sampleConversation.files.forEach(file => {
-        expect(mapping.mappings.some(m => m.file === file)).toBe(true);
+      sampleConversation.files.forEach((file) => {
+        expect(mapping.mappings.some((m) => m.file === file)).toBe(true);
       });
     });
 
     it('should associate messages with files', () => {
       const mapping = mapConversationToCode(sampleConversation);
 
-      mapping.mappings.forEach(m => {
+      mapping.mappings.forEach((m) => {
         expect(m).toHaveProperty('relatedMessages');
         expect(Array.isArray(m.relatedMessages)).toBe(true);
         if (m.relatedMessages.length > 0) {
@@ -66,7 +86,7 @@ describe('Conversation-to-Code Mapper', () => {
     it('should track implementation status', () => {
       const mapping = mapConversationToCode(sampleConversation);
 
-      mapping.mappings.forEach(m => {
+      mapping.mappings.forEach((m) => {
         expect(m).toHaveProperty('implementationStatus');
         expect(['implemented', 'partial', 'not-implemented']).toContain(m.implementationStatus);
       });
@@ -76,7 +96,7 @@ describe('Conversation-to-Code Mapper', () => {
       const emptyConv: Conversation = {
         messages: [],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const mapping = mapConversationToCode(emptyConv);
@@ -88,7 +108,7 @@ describe('Conversation-to-Code Mapper', () => {
     it('should include timestamps', () => {
       const mapping = mapConversationToCode(sampleConversation);
 
-      mapping.mappings.forEach(m => {
+      mapping.mappings.forEach((m) => {
         expect(m).toHaveProperty('createdAt');
         expect(typeof m.createdAt).toBe('string');
       });
@@ -141,7 +161,7 @@ describe('Conversation-to-Code Mapper', () => {
 
       expect(status).toHaveProperty('details');
       expect(Array.isArray(status.details)).toBe(true);
-      status.details.forEach(detail => {
+      status.details.forEach((detail) => {
         expect(detail).toHaveProperty('request');
         expect(detail).toHaveProperty('status');
         expect(detail).toHaveProperty('files');
@@ -151,10 +171,14 @@ describe('Conversation-to-Code Mapper', () => {
     it('should handle conversation with no requests', () => {
       const conv: Conversation = {
         messages: [
-          { role: 'assistant', content: 'Information about TypeScript', timestamp: '2025-10-17T00:00:00Z' }
+          {
+            role: 'assistant',
+            content: 'Information about TypeScript',
+            timestamp: '2025-10-17T00:00:00Z',
+          },
         ],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const status = trackImplementation(conv);
@@ -174,13 +198,25 @@ describe('Conversation-to-Code Mapper', () => {
     it('should detect discussed but not implemented features', () => {
       const convWithOrphans: Conversation = {
         messages: [
-          { role: 'user', content: 'Create authentication system', timestamp: '2025-10-17T00:00:00Z' },
-          { role: 'assistant', content: 'I will create auth.ts', timestamp: '2025-10-17T00:01:00Z' },
+          {
+            role: 'user',
+            content: 'Create authentication system',
+            timestamp: '2025-10-17T00:00:00Z',
+          },
+          {
+            role: 'assistant',
+            content: 'I will create auth.ts',
+            timestamp: '2025-10-17T00:01:00Z',
+          },
           { role: 'user', content: 'Create validation', timestamp: '2025-10-17T00:05:00Z' },
-          { role: 'assistant', content: 'Creating validator.ts', timestamp: '2025-10-17T00:06:00Z' }
+          {
+            role: 'assistant',
+            content: 'Creating validator.ts',
+            timestamp: '2025-10-17T00:06:00Z',
+          },
         ],
         files: ['validator.ts'], // auth.ts was discussed but not created
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const orphans = identifyOrphans(convWithOrphans);
@@ -191,17 +227,25 @@ describe('Conversation-to-Code Mapper', () => {
     it('should include orphan details', () => {
       const convWithOrphans: Conversation = {
         messages: [
-          { role: 'user', content: 'Create dashboard component', timestamp: '2025-10-17T00:00:00Z' },
-          { role: 'assistant', content: 'Planning Dashboard.tsx', timestamp: '2025-10-17T00:01:00Z' }
+          {
+            role: 'user',
+            content: 'Create dashboard component',
+            timestamp: '2025-10-17T00:00:00Z',
+          },
+          {
+            role: 'assistant',
+            content: 'Planning Dashboard.tsx',
+            timestamp: '2025-10-17T00:01:00Z',
+          },
         ],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const orphans = identifyOrphans(convWithOrphans);
 
       if (orphans.length > 0) {
-        orphans.forEach(orphan => {
+        orphans.forEach((orphan) => {
           expect(orphan).toHaveProperty('type');
           expect(orphan).toHaveProperty('description');
           expect(orphan).toHaveProperty('messageIndex');
@@ -213,10 +257,10 @@ describe('Conversation-to-Code Mapper', () => {
       const conv: Conversation = {
         messages: [
           { role: 'user', content: 'Create Menu.tsx', timestamp: '2025-10-17T00:00:00Z' },
-          { role: 'assistant', content: 'Creating Menu.tsx', timestamp: '2025-10-17T00:01:00Z' }
+          { role: 'assistant', content: 'Creating Menu.tsx', timestamp: '2025-10-17T00:01:00Z' },
         ],
         files: ['Menu.tsx'],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const orphans = identifyOrphans(conv);
@@ -228,7 +272,7 @@ describe('Conversation-to-Code Mapper', () => {
       const orphans = identifyOrphans(sampleConversation);
 
       const validTypes = ['unimplemented', 'partial', 'discussed'];
-      orphans.forEach(orphan => {
+      orphans.forEach((orphan) => {
         expect(validTypes).toContain(orphan.type);
       });
     });
@@ -236,15 +280,15 @@ describe('Conversation-to-Code Mapper', () => {
     it('should include suggested actions', () => {
       const convWithOrphans: Conversation = {
         messages: [
-          { role: 'user', content: 'Add error handling', timestamp: '2025-10-17T00:00:00Z' }
+          { role: 'user', content: 'Add error handling', timestamp: '2025-10-17T00:00:00Z' },
         ],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const orphans = identifyOrphans(convWithOrphans);
 
-      orphans.forEach(orphan => {
+      orphans.forEach((orphan) => {
         expect(orphan).toHaveProperty('suggestedAction');
         expect(typeof orphan.suggestedAction).toBe('string');
       });
@@ -305,7 +349,7 @@ describe('Conversation-to-Code Mapper', () => {
       const emptyConv: Conversation = {
         messages: [],
         files: [],
-        timestamp: '2025-10-17T00:00:00Z'
+        timestamp: '2025-10-17T00:00:00Z',
       };
 
       const report = generateTraceabilityReport(emptyConv);

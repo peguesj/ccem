@@ -5,7 +5,7 @@ describe('Menu Navigation Tests', () => {
   const menuItems: MenuItem[] = [
     { id: '1', title: 'Item 1', icon: '1️⃣' },
     { id: '2', title: 'Item 2', icon: '2️⃣' },
-    { id: '3', title: 'Item 3', icon: '3️⃣' }
+    { id: '3', title: 'Item 3', icon: '3️⃣' },
   ];
 
   describe('Callback invocation', () => {
@@ -13,7 +13,7 @@ describe('Menu Navigation Tests', () => {
       const onSelect = jest.fn();
       const props: MenuProps = {
         items: menuItems,
-        onSelect
+        onSelect,
       };
 
       // Create element
@@ -34,7 +34,7 @@ describe('Menu Navigation Tests', () => {
       const onExit = jest.fn();
       const props: MenuProps = {
         items: menuItems,
-        onExit
+        onExit,
       };
 
       // Create element
@@ -50,7 +50,7 @@ describe('Menu Navigation Tests', () => {
 
     it('should work without callbacks', () => {
       const props: MenuProps = {
-        items: menuItems
+        items: menuItems,
       };
 
       // Should not throw
@@ -64,7 +64,7 @@ describe('Menu Navigation Tests', () => {
       const manyItems: MenuItem[] = Array.from({ length: 50 }, (_, i) => ({
         id: `${i + 1}`,
         title: `Item ${i + 1}`,
-        icon: '📌'
+        icon: '📌',
       }));
 
       const element = <Menu items={manyItems} />;
@@ -75,7 +75,7 @@ describe('Menu Navigation Tests', () => {
       const orderedItems: MenuItem[] = [
         { id: 'a', title: 'First', icon: '1️⃣' },
         { id: 'b', title: 'Second', icon: '2️⃣' },
-        { id: 'c', title: 'Third', icon: '3️⃣' }
+        { id: 'c', title: 'Third', icon: '3️⃣' },
       ];
 
       const element = <Menu items={orderedItems} />;
@@ -90,11 +90,11 @@ describe('Menu Navigation Tests', () => {
       const onSelect = jest.fn();
       const props: MenuProps = {
         items: menuItems,
-        onSelect
+        onSelect,
       };
 
       // Simulate multiple rapid selections
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         if (props.onSelect) {
           props.onSelect(item);
         }

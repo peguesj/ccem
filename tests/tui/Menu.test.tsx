@@ -15,7 +15,7 @@ describe('Menu Component', () => {
     { id: '7', title: 'MCP Servers & Plugins', icon: '🔌' },
     { id: '8', title: 'Migration & Upgrade Tools', icon: '🔄' },
     { id: '9', title: 'Documentation Browser', icon: '📚' },
-    { id: '10', title: 'Recommendations & Optimization', icon: '🎨' }
+    { id: '10', title: 'Recommendations & Optimization', icon: '🎨' },
   ];
 
   describe('MenuItem interface', () => {
@@ -34,16 +34,16 @@ describe('Menu Component', () => {
 
     it('should contain all 10 required menu items', () => {
       expect(menuItems).toHaveLength(10);
-      expect(menuItems.map(i => i.title)).toContain('Inspect Configuration');
-      expect(menuItems.map(i => i.title)).toContain('Slash Commands Manager');
-      expect(menuItems.map(i => i.title)).toContain('Agents & Subagents Manager');
-      expect(menuItems.map(i => i.title)).toContain('Hooks System Manager');
-      expect(menuItems.map(i => i.title)).toContain('Settings & Scopes');
-      expect(menuItems.map(i => i.title)).toContain('Memory & Vector Systems');
-      expect(menuItems.map(i => i.title)).toContain('MCP Servers & Plugins');
-      expect(menuItems.map(i => i.title)).toContain('Migration & Upgrade Tools');
-      expect(menuItems.map(i => i.title)).toContain('Documentation Browser');
-      expect(menuItems.map(i => i.title)).toContain('Recommendations & Optimization');
+      expect(menuItems.map((i) => i.title)).toContain('Inspect Configuration');
+      expect(menuItems.map((i) => i.title)).toContain('Slash Commands Manager');
+      expect(menuItems.map((i) => i.title)).toContain('Agents & Subagents Manager');
+      expect(menuItems.map((i) => i.title)).toContain('Hooks System Manager');
+      expect(menuItems.map((i) => i.title)).toContain('Settings & Scopes');
+      expect(menuItems.map((i) => i.title)).toContain('Memory & Vector Systems');
+      expect(menuItems.map((i) => i.title)).toContain('MCP Servers & Plugins');
+      expect(menuItems.map((i) => i.title)).toContain('Migration & Upgrade Tools');
+      expect(menuItems.map((i) => i.title)).toContain('Documentation Browser');
+      expect(menuItems.map((i) => i.title)).toContain('Recommendations & Optimization');
     });
   });
 
@@ -112,19 +112,19 @@ describe('Menu Component', () => {
     });
 
     it('should have unique ids for all items', () => {
-      const ids = menuItems.map(item => item.id);
+      const ids = menuItems.map((item) => item.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });
 
     it('should have non-empty titles', () => {
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         expect(item.title.length).toBeGreaterThan(0);
       });
     });
 
     it('should have non-empty icons', () => {
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         expect(item.icon.length).toBeGreaterThan(0);
       });
     });
@@ -135,14 +135,14 @@ describe('Menu Component', () => {
       const specialItems: MenuItem[] = [
         { id: '1', title: 'Test & Debug', icon: '🔍' },
         { id: '2', title: 'Copy/Paste', icon: '📋' },
-        { id: '3', title: 'Save "File"', icon: '💾' }
+        { id: '3', title: 'Save "File"', icon: '💾' },
       ];
       const element = <Menu items={specialItems} />;
       expect(element.props.items).toHaveLength(3);
     });
 
     it('should handle items with emoji icons', () => {
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         // Check that icon contains at least one character
         expect(item.icon.length).toBeGreaterThan(0);
       });
@@ -150,9 +150,7 @@ describe('Menu Component', () => {
 
     it('should handle very long titles', () => {
       const longTitle = 'A'.repeat(100);
-      const items: MenuItem[] = [
-        { id: '1', title: longTitle, icon: '🔍' }
-      ];
+      const items: MenuItem[] = [{ id: '1', title: longTitle, icon: '🔍' }];
       const element = <Menu items={items} />;
       expect(element.props.items[0]?.title).toBe(longTitle);
     });

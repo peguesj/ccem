@@ -1,4 +1,4 @@
-import { MergeResult } from './strategies';
+import { MergeResult } from './strategies.js';
 
 /**
  * Security issue severity levels.

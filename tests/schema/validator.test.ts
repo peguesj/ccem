@@ -7,31 +7,28 @@ describe('Schema Validator', () => {
       const validSchema = {
         id: '00000000-0000-0000-0000-000000000000',
         title: 'Test Menu',
-        type: 'root' as const
+        type: 'root' as const,
       };
 
-      expect(() => validateSchema(validSchema, tuiStructureSchema))
-        .not.toThrow();
+      expect(() => validateSchema(validSchema, tuiStructureSchema)).not.toThrow();
     });
 
     it('should reject invalid UUID format', () => {
       const invalidSchema = {
         id: 'not-a-uuid',
         title: 'Test Menu',
-        type: 'root' as const
+        type: 'root' as const,
       };
 
-      expect(() => validateSchema(invalidSchema, tuiStructureSchema))
-        .toThrow(/Invalid UUID/);
+      expect(() => validateSchema(invalidSchema, tuiStructureSchema)).toThrow(/Invalid UUID/);
     });
 
     it('should require mandatory fields', () => {
       const missingFields = {
-        id: '00000000-0000-0000-0000-000000000000'
+        id: '00000000-0000-0000-0000-000000000000',
       };
 
-      expect(() => validateSchema(missingFields, tuiStructureSchema))
-        .toThrow();
+      expect(() => validateSchema(missingFields, tuiStructureSchema)).toThrow();
     });
 
     it('should validate optional fields when present', () => {
@@ -43,11 +40,10 @@ describe('Schema Validator', () => {
         icon: '🎯',
         description: 'Test description',
         shortcut: '1',
-        order: 0
+        order: 0,
       };
 
-      expect(() => validateSchema(withOptional, tuiStructureSchema))
-        .not.toThrow();
+      expect(() => validateSchema(withOptional, tuiStructureSchema)).not.toThrow();
     });
   });
 
@@ -56,7 +52,7 @@ describe('Schema Validator', () => {
       const invalid = {
         id: 'bad-uuid',
         title: '',
-        type: 'invalid'
+        type: 'invalid',
       };
 
       try {
@@ -74,11 +70,10 @@ describe('Schema Validator', () => {
       const throwingSchema = {
         parse: () => {
           throw customError;
-        }
+        },
       } as any;
 
-      expect(() => validateSchema({}, throwingSchema))
-        .toThrow('Custom error');
+      expect(() => validateSchema({}, throwingSchema)).toThrow('Custom error');
     });
   });
 });

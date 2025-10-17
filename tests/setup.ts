@@ -17,4 +17,4 @@ global.console = {
   warn: jest.fn(),
   // Keep error for debugging test failures
   error: console.error,
-}
+};

@@ -274,10 +274,66 @@ MIT © [Jeremiah Pegues](https://github.com/peguesj)
 - Testing with [Jest](https://jestjs.io/)
 - Inspired by real-world Claude Code usage patterns
 
+## Troubleshooting
+
+### Build Errors
+
+**Issue**: `error TS1479: The current file is a CommonJS module`
+
+**Solution**: Ensure `package.json` has `"type": "module"` and `tsconfig.json` uses `"module": "ESNext"` with `"moduleResolution": "bundler"`.
+
+### Import Errors
+
+**Issue**: `Cannot find module` or `Module not found`
+
+**Solution**: Check that all imports use `.js` extensions for relative imports in ES modules, or use path aliases defined in `tsconfig.json`.
+
+### Test Failures
+
+**Issue**: Tests fail with coverage below 95%
+
+**Solution**: Add test cases for uncovered branches and edge cases. Run `npm run test:coverage` to see coverage report.
+
+### Installation Issues
+
+**Issue**: `npm install` fails with peer dependency warnings
+
+**Solution**: Use `npm install --legacy-peer-deps` or update to Node.js >= 18.0.0.
+
+### TUI Not Rendering
+
+**Issue**: Menu components don't display correctly
+
+**Solution**: Ensure your terminal supports ANSI escape codes and Unicode characters. Try a different terminal emulator if issues persist.
+
+## FAQ
+
+**Q: What versions of Node.js are supported?**
+
+A: Node.js >= 18.0.0 is required. Tested on Node.js 18.x, 20.x, and 22.x.
+
+**Q: Can I use CCEM with Claude Code v2.0.9 or earlier?**
+
+A: No, CCEM is specifically designed for Claude Code v2.0.10+. Some features may not work with earlier versions.
+
+**Q: How do I contribute?**
+
+A: See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on setting up your development environment and submitting pull requests.
+
+**Q: Where can I report bugs or request features?**
+
+A: Please use [GitHub Issues](https://github.com/peguesj/ccem/issues) for bug reports and feature requests.
+
 ## Support
 
 - [GitHub Issues](https://github.com/peguesj/ccem/issues)
+- [Discussions](https://github.com/peguesj/ccem/discussions)
 - [Documentation](https://github.com/peguesj/ccem#readme)
+- [Contributing Guide](CONTRIBUTING.md)
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a complete history of changes.
 
 ---
 

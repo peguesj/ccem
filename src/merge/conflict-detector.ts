@@ -1,4 +1,4 @@
-import { MergeConfig } from './strategies';
+import { MergeConfig } from './strategies.js';
 
 /**
  * Conflict type enumeration.
