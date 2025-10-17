@@ -108,30 +108,117 @@ npm run lint
 ```bash
 npm test
 # ✅ Expected: 336 tests passing
+# ✅ Includes: Unit tests, integration tests, TUI tests
 ```
 
-### 7. Run Type Checking
+### 7. Test CLI Commands
+```bash
+# Build first
+npm run build
+
+# Test merge command
+node dist/cli.js merge --strategy recommended --help
+
+# Test backup command
+node dist/cli.js backup --help
+
+# Test audit command
+node dist/cli.js audit --help
+
+# Test validate command
+node dist/cli.js validate --help
+
+# Test fork-discover command
+node dist/cli.js fork-discover --help
+
+# Test restore command
+node dist/cli.js restore --help
+
+# ✅ Expected: All commands display help without errors
+```
+
+### 8. Test TUI Launch (Manual)
+```bash
+# Build first
+npm run build
+
+# Launch TUI (will require Ctrl+C to exit)
+node dist/cli.js tui
+
+# ✅ Expected: TUI launches with main menu
+# ✅ Verify: Navigation works with arrow keys
+# ✅ Verify: All 6 views accessible from menu
+# ✅ Verify: Escape key returns to main menu
+# ✅ Verify: q or Ctrl+C exits cleanly
+```
+
+### 9. Run Type Checking
 ```bash
 npm run typecheck
 # ✅ Expected: No errors
 ```
 
-### 8. Run Coverage Report
+### 10. Run Coverage Report
 ```bash
 npm run test:coverage
 # ✅ Expected: 92.37% coverage
+# ✅ Verify: Coverage report includes:
+#   - Statement coverage: 92%+
+#   - Branch coverage: 81%+
+#   - Function coverage: 80%+
+#   - Line coverage: 92%+
 ```
 
-### 9. Run Production Build
+### 11. Run Production Build
 ```bash
 npm run build
-# ✅ Expected: dist/ directory created with 73 files
+# ✅ Expected: dist/ directory created with 73+ files
+# ✅ Verify: No TypeScript errors
+# ✅ Verify: All .js files have corresponding .d.ts files
 ```
 
-### 10. Test Package Creation
+### 12. Test Package Creation
 ```bash
 npm pack
-# ✅ Expected: ccem-core-1.0.0.tgz created (52.7 kB)
+# ✅ Expected: ccem-core-1.0.0.tgz created (~52.7 kB)
+# ✅ Verify package contents:
+tar -tzf ccem-core-1.0.0.tgz | head -20
+```
+
+### 13. Test Integration Scenarios
+```bash
+# Create test directory
+mkdir -p /tmp/ccem-test-deploy
+cd /tmp/ccem-test-deploy
+
+# Test backup/restore workflow
+echo '{"permissions":["read"]}' > config.json
+node /path/to/ccem/dist/cli.js backup --source . --compress 9
+# ✅ Verify backup created
+
+# Test merge workflow with multiple configs
+mkdir -p config1 config2
+echo '{"permissions":["read"]}' > config1/config.json
+echo '{"permissions":["write"]}' > config2/config.json
+node /path/to/ccem/dist/cli.js merge --strategy recommended --config config1 config2
+# ✅ Verify merge output shows conflicts detected
+
+# Test audit workflow
+node /path/to/ccem/dist/cli.js audit --config config1
+# ✅ Verify audit completes without errors
+
+# Clean up
+cd -
+rm -rf /tmp/ccem-test-deploy
+```
+
+### 14. Test Binary Execution
+```bash
+# Test the binary directly
+./dist/cli.js --version
+./dist/cli.js --help
+
+# ✅ Expected: Version number and help text displayed
 ```
 
 ---
@@ -299,10 +386,60 @@ node -e "const ccem = require('@ccem/core'); console.log(Object.keys(ccem));"
 - Verify release notes are formatted correctly
 - Download and test tarball
 
-### 23. Update Documentation Links
+### 23. Test TUI Features Post-Installation
+```bash
+# Install globally from npm
+npm install -g @ccem/core
+
+# Test each TUI view
+ccem tui
+
+# Manual testing checklist:
+# ✅ Main menu displays with 6 options
+# ✅ Configuration Manager:
+#    - Navigate with arrow keys
+#    - Drill down into nested configs
+#    - Escape returns to parent level
+# ✅ Merge View:
+#    - Strategy selection works
+#    - Configuration picker functions
+#    - Merge executes successfully
+# ✅ Audit View:
+#    - Security scan runs
+#    - Severity filtering works
+#    - Issues display with color coding
+# ✅ Backup/Restore View:
+#    - File browser navigates filesystem
+#    - Backup creation shows progress
+#    - Restore requires confirmation
+# ✅ Fork Discovery View:
+#    - Conversation analysis runs
+#    - Results display correctly
+#    - Export functionality works
+# ✅ Settings View (if implemented):
+#    - Settings load and save correctly
+```
+
+### 24. Test CLI Commands Post-Installation
+```bash
+# Test all CLI commands with real scenarios
+ccem merge --help
+ccem backup --help
+ccem restore --help
+ccem audit --help
+ccem fork-discover --help
+ccem validate --help
+
+# ✅ Verify all commands execute without errors
+# ✅ Verify help text is comprehensive
+# ✅ Verify error messages are clear
+```
+
+### 25. Update Documentation Links
 - Verify npm badge shows v1.0.0
 - Verify CI badge is green
 - Update any "coming soon" references to "available now"
+- Verify TUI screenshots/demos are current (if any)
 
 ---
 

@@ -80,6 +80,8 @@ Branch naming conventions:
 - `refactor/` - Code refactoring
 - `test/` - Test additions or modifications
 - `chore/` - Maintenance tasks
+- `tui/` - TUI component changes
+- `cli/` - CLI command changes
 
 ### 2. Make Your Changes
 
@@ -97,6 +99,11 @@ npm run test:watch
 
 # Run full test suite with coverage
 npm run test:coverage
+
+# Run specific test suites
+npm test -- --testPathPattern=tui  # TUI tests only
+npm test -- --testPathPattern=cli  # CLI tests only
+npm test -- --testPathPattern=integration  # Integration tests only
 ```
 
 ### 4. Commit Your Changes
@@ -174,15 +181,93 @@ describe('Configuration Merge Integration', () => {
 
 ```typescript
 import { render } from 'ink-testing-library';
+import { ConfigManager } from '../src/tui/ConfigManager.js';
 
-describe('Menu Component', () => {
+describe('ConfigManager Component', () => {
+  it('should render configuration tree', () => {
+    const config = {
+      permissions: ['read', 'write'],
+      mcpServers: { server1: { enabled: true } }
+    };
+
+    const { lastFrame } = render(<ConfigManager config={config} />);
+
+    expect(lastFrame()).toContain('Permissions');
+    expect(lastFrame()).toContain('MCP Servers');
+  });
+
   it('should navigate with arrow keys', () => {
-    const { lastFrame, stdin } = render(<Menu items={items} />);
+    const { lastFrame, stdin } = render(<ConfigManager config={testConfig} />);
 
     // Simulate down arrow
     stdin.write('\x1B[B');
 
-    expect(lastFrame()).toContain('> Second Item');
+    expect(lastFrame()).toContain('> MCP Servers');
+  });
+
+  it('should drill down on enter key', () => {
+    const { lastFrame, stdin } = render(<ConfigManager config={testConfig} />);
+
+    // Navigate to MCP Servers
+    stdin.write('\x1B[B');
+    // Press enter
+    stdin.write('\r');
+
+    expect(lastFrame()).toContain('server1');
+  });
+});
+```
+
+#### Integration Tests
+
+Integration tests verify end-to-end workflows and CLI commands:
+
+```typescript
+import { execSync } from 'child_process';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+
+describe('CLI Integration', () => {
+  const testDir = path.join(__dirname, 'fixtures', 'test-configs');
+
+  beforeAll(async () => {
+    // Set up test fixtures
+    await fs.mkdir(testDir, { recursive: true });
+  });
+
+  afterAll(async () => {
+    // Clean up test fixtures
+    await fs.rm(testDir, { recursive: true, force: true });
+  });
+
+  it('should merge configurations via CLI', () => {
+    const output = execSync(
+      `node dist/cli.js merge --strategy recommended --config ${testDir}`,
+      { encoding: 'utf-8' }
+    );
+
+    expect(output).toContain('Merge Result');
+    expect(output).toContain('Projects Analyzed: 2');
+  });
+
+  it('should create and validate backup via CLI', async () => {
+    const backupOutput = execSync(
+      `node dist/cli.js backup --source ${testDir}`,
+      { encoding: 'utf-8' }
+    );
+
+    expect(backupOutput).toContain('Backup created successfully');
+
+    // Extract backup path from output
+    const backupPath = extractBackupPath(backupOutput);
+
+    // Validate the backup
+    const validateOutput = execSync(
+      `node dist/cli.js restore ${backupPath}`,
+      { encoding: 'utf-8' }
+    );
+
+    expect(validateOutput).toContain('Backup is valid');
   });
 });
 ```
@@ -205,6 +290,200 @@ npm test -- backup.test.ts
 # Run tests matching pattern
 npm test -- --testNamePattern="merge"
 ```
+
+## TUI Development
+
+### TUI Architecture
+
+CCEM's TUI is built with React and Ink, providing a terminal-based interface:
+
+```
+src/tui/
+├── App.tsx              # Main TUI application
+├── Menu.tsx             # Main menu component
+├── ConfigManager.tsx    # Configuration browser
+├── MergeView.tsx        # Merge interface
+├── AuditView.tsx        # Security audit view
+├── BackupView.tsx       # Backup/restore view
+├── ForkDiscoveryView.tsx # Fork discovery view
+└── components/          # Shared components
+    ├── Progress.tsx     # Progress indicators
+    ├── Feedback.tsx     # Success/error messages
+    ├── ConfirmDialog.tsx # Confirmation dialogs
+    ├── FileSelector.tsx # File browser
+    └── ...
+```
+
+### Creating TUI Components
+
+#### Basic Component Structure
+
+```typescript
+import React, { useState } from 'react';
+import { Box, Text } from 'ink';
+
+interface MyViewProps {
+  config: MergeConfig;
+  onBack: () => void;
+}
+
+export const MyView: React.FC<MyViewProps> = ({ config, onBack }) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // Handle keyboard input
+  useInput((input, key) => {
+    if (key.upArrow) {
+      setSelectedIndex(Math.max(0, selectedIndex - 1));
+    } else if (key.downArrow) {
+      setSelectedIndex(Math.min(items.length - 1, selectedIndex + 1));
+    } else if (key.return) {
+      // Handle selection
+    } else if (key.escape) {
+      onBack();
+    }
+  });
+
+  return (
+    <Box flexDirection="column">
+      <Text bold>My View Title</Text>
+      {/* Component content */}
+    </Box>
+  );
+};
+```
+
+#### Navigation Patterns
+
+Always implement consistent navigation:
+
+```typescript
+import { useInput } from 'ink';
+
+// Arrow key navigation
+useInput((input, key) => {
+  if (key.upArrow || input === 'k') {  // Support vim keys
+    navigateUp();
+  } else if (key.downArrow || input === 'j') {
+    navigateDown();
+  } else if (key.return) {
+    selectItem();
+  } else if (key.escape) {
+    goBack();
+  }
+});
+```
+
+#### Progress Indicators
+
+Use progress components for long operations:
+
+```typescript
+import { ProgressBar, Spinner } from './components/Progress.js';
+
+// For determinate progress
+<ProgressBar current={50} total={100} label="Processing files" />
+
+// For indeterminate operations
+<Spinner label="Analyzing configuration..." />
+```
+
+#### User Feedback
+
+Provide clear feedback for all actions:
+
+```typescript
+import { Feedback } from './components/Feedback.js';
+
+<Feedback
+  type="success"  // or "error", "warning", "info"
+  message="Configuration merged successfully!"
+/>
+```
+
+### TUI Testing
+
+#### Testing with ink-testing-library
+
+```typescript
+import { render } from 'ink-testing-library';
+
+describe('MyView', () => {
+  it('should render correctly', () => {
+    const { lastFrame } = render(<MyView config={testConfig} onBack={jest.fn()} />);
+
+    expect(lastFrame()).toMatchSnapshot();
+    expect(lastFrame()).toContain('My View Title');
+  });
+
+  it('should handle keyboard navigation', () => {
+    const { stdin, lastFrame } = render(<MyView config={testConfig} onBack={jest.fn()} />);
+
+    // Simulate down arrow
+    stdin.write('\x1B[B');
+
+    expect(lastFrame()).toContain('> Item 2');
+  });
+
+  it('should call onBack when escape is pressed', () => {
+    const onBack = jest.fn();
+    const { stdin } = render(<MyView config={testConfig} onBack={onBack} />);
+
+    // Simulate escape key
+    stdin.write('\x1B');
+
+    expect(onBack).toHaveBeenCalled();
+  });
+});
+```
+
+#### Testing Async Operations
+
+```typescript
+it('should show progress during operation', async () => {
+  const { lastFrame, waitUntilExit } = render(<MyView {...props} />);
+
+  // Initial state
+  expect(lastFrame()).toContain('Processing...');
+
+  // Wait for async operation
+  await waitUntilExit();
+
+  // Final state
+  expect(lastFrame()).toContain('Complete!');
+});
+```
+
+### TUI Best Practices
+
+1. **Keyboard Shortcuts**
+   - Always support arrow keys for navigation
+   - Support vim keys (h, j, k, l) where appropriate
+   - Use escape for back/cancel consistently
+   - Use q for quit in main views
+
+2. **Visual Feedback**
+   - Show loading states for all async operations
+   - Use color coding consistently (red=error, green=success, yellow=warning)
+   - Provide clear selection indicators (>, arrows, highlights)
+   - Show keyboard shortcuts in headers/footers
+
+3. **Error Handling**
+   - Catch and display all errors gracefully
+   - Provide actionable error messages
+   - Allow retry or back navigation on errors
+   - Log errors for debugging
+
+4. **Accessibility**
+   - Use clear, descriptive labels
+   - Provide keyboard alternatives for all actions
+   - Test with screen readers when possible
+   - Support high-contrast mode
+
+5. **Performance**
+   - Debounce rapid input
+   - Virtualize long lists
+   - Lazy load data when possible
+   - Minimize re-renders
 
 ## Code Style Guidelines
 

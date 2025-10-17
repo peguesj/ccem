@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "permissions": [
+    "read:files",
+    "write:files",
+    "execute:shell",
+    "network:http",
+    "network:https"
+  ],
+  "mcpServers": {
+    "linear": {
+      "enabled": true,
+      "url": "http://localhost:3000",
+      "timeout": 5000,
+      "retries": 3
+    },
+    "github": {
+      "enabled": true,
+      "url": "https://api.github.com",
+      "timeout": 10000
+    },
+    "slack": {
+      "enabled": false,
+      "url": "https://slack.com/api",
+      "timeout": 3000
+    }
+  },
+  "settings": {
+    "theme": "dark",
+    "tabSize": 2,
+    "autoSave": true,
+    "fontSize": 14,
+    "lineHeight": 1.5,
+    "fontFamily": "JetBrains Mono",
+    "enableLinting": true,
+    "enableFormatting": true,
+    "formatOnSave": true
+  }
+}

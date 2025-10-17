@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "permissions": [
+    "read:files",
+    "network:http",
+    "execute:docker"
+  ],
+  "mcpServers": {
+    "shared-server": {
+      "enabled": false,
+      "url": "http://localhost:5000",
+      "timeout": 10000,
+      "priority": "low"
+    },
+    "server-b": {
+      "enabled": true,
+      "url": "http://localhost:6000"
+    }
+  },
+  "settings": {
+    "theme": "light",
+    "tabSize": 4,
+    "autoSave": false,
+    "editor": "sublime"
+  }
+}

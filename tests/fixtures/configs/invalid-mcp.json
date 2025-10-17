@@ -1,0 +1,9 @@
+{
+  "permissions": [],
+  "mcpServers": {
+    "bad-server": {
+      "enabled": "not-a-boolean"
+    }
+  },
+  "settings": {}
+}

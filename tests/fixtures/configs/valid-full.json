@@ -1,0 +1,25 @@
+{
+  "permissions": [
+    "read:files",
+    "write:files",
+    "execute:commands"
+  ],
+  "mcpServers": {
+    "test-server": {
+      "enabled": true,
+      "command": "node",
+      "args": ["server.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "disabled-server": {
+      "enabled": false
+    }
+  },
+  "settings": {
+    "theme": "dark",
+    "fontSize": 14,
+    "autoSave": true
+  }
+}

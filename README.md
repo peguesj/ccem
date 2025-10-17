@@ -24,17 +24,40 @@ CCEM (Claude Code Environment Manager) is a powerful configuration management to
 
 ## Installation
 
-```bash
-npm install @ccem/core
-```
-
-Or globally:
+### Global Installation (Recommended)
 
 ```bash
 npm install -g @ccem/core
 ```
 
+### Local Installation
+
+```bash
+npm install @ccem/core
+```
+
 ## Quick Start
+
+### CLI Quick Start
+
+```bash
+# Launch interactive TUI
+ccem tui
+
+# Merge configurations with recommended strategy
+ccem merge --strategy recommended --config ./proj1/.claude ./proj2/.claude
+
+# Create backup with compression
+ccem backup --source ~/.claude --compress 9
+
+# Security audit
+ccem audit --config ~/.claude --severity high
+
+# Validate configuration schema
+ccem validate ~/.claude/config.json
+```
+
+### Programmatic Quick Start
 
 ### Configuration Merging
 
@@ -161,11 +184,280 @@ patterns.forEach(pattern => {
 });
 ```
 
+## CLI Commands
+
+CCEM provides 7 fully functional commands:
+
+### `ccem merge`
+
+Merge multiple Claude Code configurations with intelligent conflict detection.
+
+```bash
+# Merge with recommended strategy (balanced approach)
+ccem merge --strategy recommended --config ./proj1/.claude ./proj2/.claude
+
+# Use conservative strategy (prefer first config on conflicts)
+ccem merge --strategy conservative --config ~/.claude ./.claude
+
+# Output to file
+ccem merge --strategy hybrid --output merged-config.json
+
+# Available strategies:
+# - recommended: Balanced merge with smart conflict resolution (default)
+# - default: Standard merge, keeps all unique values
+# - conservative: Prefer first configuration on conflicts
+# - hybrid: Combines conservative + default approaches
+# - custom: Use custom merge rules (programmatic only)
+```
+
+**Options:**
+- `--strategy <name>` - Merge strategy (required)
+- `--config <paths...>` - Configuration paths to merge (auto-discovers if omitted)
+- `--output <path>` - Output file (stdout if omitted)
+
+### `ccem backup`
+
+Create compressed backups of Claude Code configurations.
+
+```bash
+# Backup with maximum compression
+ccem backup --source ~/.claude --compress 9
+
+# Backup to specific directory
+ccem backup --source ~/.claude --output ./backups
+
+# Quick backup (default compression level 6)
+ccem backup
+```
+
+**Options:**
+- `--source <path>` - Source directory (default: `./.claude`)
+- `--output <path>` - Output directory (default: current directory)
+- `--compress <level>` - Compression level 1-9 (default: 9)
+
+### `ccem restore`
+
+Restore Claude Code configurations from backup.
+
+```bash
+# Restore with confirmation
+ccem restore backup-20251017.tar.gz --target ~/.claude --force
+
+# Validate backup without restoring
+ccem restore backup-20251017.tar.gz
+```
+
+**Options:**
+- `--target <path>` - Restore destination (default: `./.claude`)
+- `--force` - Skip confirmation prompt
+
+### `ccem audit`
+
+Run comprehensive security audits on configurations.
+
+```bash
+# Audit with all severity levels
+ccem audit --config ~/.claude
+
+# Show only high and critical issues
+ccem audit --config ~/.claude --severity high
+
+# Audit current directory
+ccem audit
+```
+
+**Options:**
+- `--config <path>` - Configuration path (default: `./.claude`)
+- `--severity <level>` - Minimum severity: low, medium, high, critical (default: medium)
+
+**Detection Capabilities:**
+- Exposed API keys and credentials
+- Weak passwords and authentication
+- Insecure URLs (HTTP vs HTTPS)
+- Sensitive data in configurations
+- Permission misconfigurations
+
+### `ccem fork-discover`
+
+Analyze conversation history to identify fork points and code mappings.
+
+```bash
+# Analyze conversation file
+ccem fork-discover --chat conversation.json --output analysis.json
+
+# Analyze and display results
+ccem fork-discover --chat ./chats/session-123.json
+```
+
+**Options:**
+- `--chat <path>` - Conversation history file (required)
+- `--output <path>` - Output file (stdout if omitted)
+
+**Identifies:**
+- Conversation fork points
+- Code-to-conversation mappings
+- Development patterns
+- File modification contexts
+
+### `ccem validate`
+
+Validate configuration files against schema.
+
+```bash
+# Validate specific file
+ccem validate ~/.claude/config.json
+
+# Validate with detailed output
+ccem validate ./project/.claude/settings.json
+```
+
+**Features:**
+- Zod schema validation
+- Type checking
+- Structure validation
+- Helpful error messages
+
+### `ccem tui` / `ccem interactive`
+
+Launch the interactive Terminal User Interface.
+
+```bash
+# Launch TUI
+ccem tui
+
+# Or use alias
+ccem interactive
+```
+
+See [Interactive TUI](#interactive-tui) section below for details.
+
+## Interactive TUI
+
+CCEM features a comprehensive interactive TUI built with React and Ink, providing a visual interface for all operations.
+
+### Launching the TUI
+
+```bash
+ccem tui
+```
+
+### TUI Views
+
+#### 1. Configuration Manager
+- Browse and inspect configurations
+- Drill-down navigation for nested structures
+- View permissions, MCP servers, and settings
+- Real-time validation
+
+**Navigation:**
+- `↑↓` - Navigate items
+- `Enter` - Select/expand item
+- `Esc` - Go back
+
+#### 2. Merge View
+- Select merge strategy interactively
+- Choose configuration sources
+- Preview merge results
+- Resolve conflicts with visual diff
+- Save merged configuration
+
+**Features:**
+- Strategy comparison
+- Conflict highlighting
+- Side-by-side comparison
+- Auto-save options
+
+#### 3. Security Audit View
+- Run security scans
+- Filter by severity level
+- View detailed issue information
+- Export audit reports
+- Apply recommendations
+
+**Severity Levels:**
+- 🔴 Critical - Immediate action required
+- 🔴 High - Should fix soon
+- 🟡 Medium - Review recommended
+- 🟢 Low - Minor issues
+
+#### 4. Backup/Restore View
+- Create backups with progress indicator
+- Browse backup files
+- Validate backup integrity
+- Restore with confirmation
+- View backup metadata
+
+**Features:**
+- File browser
+- Compression settings
+- Backup history
+- Integrity validation
+
+#### 5. Fork Discovery View
+- Analyze conversation history
+- Visualize fork points
+- View code mappings
+- Export analysis results
+- Training data extraction
+
+**Analysis Features:**
+- Fork point scoring
+- Context extraction
+- Dependency visualization
+- Pattern recognition
+
+#### 6. Settings View (Planned)
+- Configure default strategies
+- Set compression levels
+- Manage auto-backup
+- Customize TUI theme
+
+### TUI Keyboard Shortcuts
+
+**Global:**
+- `q` or `Ctrl+C` - Quit application
+- `Esc` - Go back/cancel
+- `Tab` - Next field
+- `Shift+Tab` - Previous field
+
+**Navigation:**
+- `↑↓` - Move up/down
+- `←→` - Move left/right (tabs)
+- `Enter` - Select/confirm
+- `Space` - Toggle checkbox
+
+**Lists:**
+- `j/k` - Vim-style navigation
+- `Home` - Jump to top
+- `End` - Jump to bottom
+- `PgUp/PgDn` - Page navigation
+
+### UX Features
+
+#### Progress Indicators
+- **Progress Bars** - Visual feedback for long operations
+- **Spinners** - Loading states
+- **Step Indicators** - Multi-step process tracking
+
+#### Feedback
+- **Success Messages** - Green checkmarks for completed actions
+- **Error Messages** - Red alerts with helpful suggestions
+- **Warning Messages** - Yellow cautions for important info
+
+#### Dialogs
+- **Confirmation Dialogs** - Prevent accidental operations
+- **Input Dialogs** - Collect user input
+- **File Selectors** - Browse filesystem
+
 ## API Documentation
 
 ### Merge System
 
 - `customMerge(configs, rules)` - Merge configurations with custom rules
+- `recommendedMerge(configs)` - Merge with balanced strategy
+- `defaultMerge(configs)` - Merge with standard strategy
+- `conservativeMerge(configs)` - Merge preferring first config
+- `hybridMerge(configs)` - Merge with hybrid strategy
 - `detectConflicts(configs)` - Detect conflicts between configurations
 
 ### Backup System
@@ -177,35 +469,158 @@ patterns.forEach(pattern => {
 
 ### Security Audit
 
-- `runSecurityAudit(configPath)` - Run comprehensive security scan
+- `auditMerge(mergeResult)` - Run comprehensive security scan
 
 ### Fork Discovery
 
-- `parseConversationFile(filePath)` - Parse conversation from file
-- `identifyConversationPhases(conversation)` - Identify conversation phases
+- `parseConversation(data)` - Parse conversation from data
+- `identifyForkPoints(conversation)` - Identify fork points in conversation
 - `detectWorktrees(repoPath)` - Detect git worktrees
 - `analyzeWorktreeStructure(repoPath)` - Analyze worktree structure
-- `extractByTopic(conversation, topic)` - Extract context by topic
-- `extractByFile(conversation, fileName)` - Extract context by file
-- `extractByTimeRange(conversation, start, end)` - Extract context by time
-- `buildDependencyGraph(conversation)` - Build dependency graph
+- `identifyParallelDevelopment(repoPath)` - Identify parallel development patterns
 
 ### Schema Validation
 
-- `validateMergeConfig(data)` - Validate merge configuration
-- `validateConflictReport(data)` - Validate conflict report
-- `validateBackupMetadata(data)` - Validate backup metadata
+- `validateSchema(data, schema)` - Validate data against Zod schema
 
 ## Architecture
 
-CCEM is built with a modular architecture:
+CCEM is built with a modular architecture designed for extensibility and maintainability:
 
-- **`src/merge/`** - Configuration merging and conflict detection
-- **`src/backup/`** - Backup creation, validation, and restoration
-- **`src/security/`** - Security auditing and scanning
-- **`src/fork/`** - Conversation parsing and code mapping
-- **`src/schema/`** - Zod schema definitions and validation
-- **`src/tui/`** - Terminal UI components
+### Core Layers
+
+#### Configuration Layer (`src/config/`)
+- **Discovery** - Auto-detect `.claude` directories at user and project levels
+- **Reader/Writer** - Safe configuration file operations with validation
+- **Validator** - Schema validation using Zod
+- **Compare** - Configuration diff and comparison utilities
+- **Path Resolution** - Handle user-level (`~/.claude`) and project-level (`./.claude`) paths
+
+#### Merge System (`src/merge/`)
+- **Strategies** - 5 merge strategies with conflict resolution:
+  - `recommendedMerge` - Balanced approach with smart defaults
+  - `defaultMerge` - Keep all unique values
+  - `conservativeMerge` - Prefer first configuration
+  - `hybridMerge` - Combine conservative + default
+  - `customMerge` - User-defined rules
+- **Conflict Detection** - Deep inspection of configuration differences
+- **Resolution Engine** - Automatic and manual conflict resolution
+- **Backup Integration** - Auto-backup before merge operations
+
+#### Backup System (`src/backup/`)
+- **Backup Creation** - tar.gz compression with configurable levels
+- **Validation** - Integrity checking with checksums
+- **Restoration** - Safe restore with pre-restore validation
+- **Snapshot System** - Point-in-time configuration snapshots
+- **Metadata Tracking** - Timestamps, file counts, source paths
+
+#### Security System (`src/security/`)
+- **Pattern Detection** - Regex-based credential scanning
+- **Severity Classification** - 4-level severity system (low, medium, high, critical)
+- **Risk Assessment** - Overall security score calculation
+- **Recommendations** - Actionable remediation suggestions
+- **Audit Reports** - Detailed security findings
+
+#### Fork Discovery System (`src/fork/`)
+- **Chat Analyzer** - Parse and analyze conversation history
+- **Worktree Detector** - Identify git worktrees and branches
+- **Context Extraction** - Extract by topic, file, or time range
+- **Dependency Graph** - Build code dependency visualizations
+- **Pattern Recognition** - Identify parallel development patterns
+
+#### Schema System (`src/schema/`)
+- **Zod Schemas** - Type-safe schema definitions
+- **Validation Engine** - Runtime validation with helpful errors
+- **Type Exports** - TypeScript type generation from schemas
+- **Schema Evolution** - Backward compatibility support
+
+#### TUI Layer (`src/tui/`)
+- **Views** - 6 interactive views:
+  - `ConfigManager` - Browse configurations
+  - `MergeView` - Interactive merging
+  - `AuditView` - Security scanning
+  - `BackupView` - Backup/restore operations
+  - `ForkDiscoveryView` - Conversation analysis
+  - `SettingsView` - Configuration (planned)
+- **Components** - Reusable UI components:
+  - `Progress` - Progress bars and spinners
+  - `Feedback` - Success/error/warning messages
+  - `ConfirmDialog` - User confirmations
+  - `FileSelector` - File system browser
+  - `ErrorDisplay` - Error formatting
+  - `StatusMessage` - Status indicators
+- **Navigation** - Keyboard-driven interface with arrow keys
+- **State Management** - React hooks for component state
+
+#### CLI Layer (`src/cli/`)
+- **Command Parser** - Commander.js integration
+- **Command Handlers** - 7 CLI commands
+- **Option Validation** - Input validation and error handling
+- **Output Formatting** - Colorized terminal output
+- **Error Handling** - Graceful error messages
+
+### Integration Points
+
+```
+┌─────────────────────────────────────────────┐
+│              CLI / TUI Entry                │
+└─────────────┬───────────────────────────────┘
+              │
+    ┌─────────┴─────────┐
+    │                   │
+    ▼                   ▼
+┌────────┐         ┌────────┐
+│  CLI   │         │  TUI   │
+│Handler │         │ Views  │
+└───┬────┘         └────┬───┘
+    │                   │
+    └─────────┬─────────┘
+              │
+    ┌─────────┴─────────────┐
+    │                       │
+    ▼                       ▼
+┌──────────┐         ┌──────────┐
+│  Config  │         │  Merge   │
+│  Layer   │────────▶│  System  │
+└────┬─────┘         └─────┬────┘
+     │                     │
+     │    ┌────────────────┘
+     │    │
+     ▼    ▼
+┌──────────────┐
+│   Schema     │
+│  Validation  │
+└──────────────┘
+     │
+     ├──────────┬──────────┬──────────┐
+     ▼          ▼          ▼          ▼
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│Backup  │ │Security│ │  Fork  │ │ Future │
+│System  │ │ Audit  │ │Discovery│ │Modules │
+└────────┘ └────────┘ └────────┘ └────────┘
+```
+
+### Design Principles
+
+1. **Modularity** - Each system is independent and testable
+2. **Type Safety** - TypeScript strict mode with Zod validation
+3. **Extensibility** - Plugin architecture for future enhancements
+4. **Performance** - Efficient algorithms with streaming for large files
+5. **User Experience** - Clear error messages and progress feedback
+6. **Security** - Input validation and safe file operations
+7. **Testing** - Comprehensive test coverage (92%+)
+
+### Technology Stack
+
+- **Language**: TypeScript 5.3+ (ES2022 target)
+- **Runtime**: Node.js 18+ with ES Modules
+- **UI Framework**: React 18 + Ink 4
+- **CLI Framework**: Commander.js
+- **Validation**: Zod 3.x
+- **Testing**: Jest 29 + ink-testing-library
+- **Build**: TypeScript compiler (tsc)
+- **Linting**: ESLint with TypeScript plugin
+- **Formatting**: Prettier
 
 ## Requirements
 

@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "permissions": [
+    "read:files",
+    "write:files",
+    "execute:shell"
+  ],
+  "mcpServers": {
+    "shared-server": {
+      "enabled": true,
+      "url": "http://localhost:3000",
+      "timeout": 5000,
+      "priority": "high"
+    },
+    "server-a": {
+      "enabled": true,
+      "url": "http://localhost:4000"
+    }
+  },
+  "settings": {
+    "theme": "dark",
+    "tabSize": 2,
+    "autoSave": true,
+    "editor": "vscode"
+  }
+}

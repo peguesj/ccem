@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2025-01-15T10:00:00Z",
+    "role": "user",
+    "message": "Create a web application"
+  },
+  {
+    "timestamp": "2025-01-15T10:00:05Z",
+    "role": "assistant",
+    "message": "I'll help create a web application. Starting with Next.js setup..."
+  },
+  {
+    "timestamp": "2025-01-15T10:05:00Z",
+    "role": "user",
+    "message": "Actually, let's use React instead"
+  },
+  {
+    "timestamp": "2025-01-15T10:05:05Z",
+    "role": "assistant",
+    "message": "Sure! Switching to Create React App. This is a fork point in our conversation."
+  },
+  {
+    "timestamp": "2025-01-15T10:10:00Z",
+    "role": "user",
+    "message": "Add TypeScript support"
+  },
+  {
+    "timestamp": "2025-01-15T10:10:05Z",
+    "role": "assistant",
+    "message": "Adding TypeScript configuration..."
+  },
+  {
+    "timestamp": "2025-01-15T10:15:00Z",
+    "role": "user",
+    "message": "Wait, go back to Next.js but keep TypeScript"
+  },
+  {
+    "timestamp": "2025-01-15T10:15:05Z",
+    "role": "assistant",
+    "message": "Another fork point detected. Reverting to Next.js with TypeScript."
+  }
+]

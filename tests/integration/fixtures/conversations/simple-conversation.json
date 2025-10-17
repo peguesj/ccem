@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2025-01-15T10:00:00Z",
+    "role": "user",
+    "message": "Help me set up a new project"
+  },
+  {
+    "timestamp": "2025-01-15T10:00:05Z",
+    "role": "assistant",
+    "message": "I'll help you set up a new project. What kind of project are you creating?"
+  },
+  {
+    "timestamp": "2025-01-15T10:01:00Z",
+    "role": "user",
+    "message": "A TypeScript CLI tool"
+  },
+  {
+    "timestamp": "2025-01-15T10:01:10Z",
+    "role": "assistant",
+    "message": "Great! Let's create a TypeScript CLI tool. I'll set up the project structure."
+  }
+]
