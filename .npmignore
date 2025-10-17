@@ -1,0 +1,58 @@
+# Source files
+src/
+tests/
+training-data/
+docs/
+
+# Configuration files
+.eslintrc.js
+.prettierrc
+tsconfig.json
+tsconfig.eslint.json
+jest.config.js
+babel.config.js
+
+# Development files
+.github/
+.vscode/
+.husky/
+coverage/
+node_modules/
+
+# Documentation
+*.md
+!README.md
+!CHANGELOG.md
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test and coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

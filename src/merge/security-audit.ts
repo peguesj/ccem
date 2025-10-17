@@ -174,7 +174,9 @@ function auditMcpServers(
   const issues: SecurityIssue[] = [];
 
   Object.entries(mcpServers).forEach(([name, config]) => {
-    if (!config.enabled) return;
+    if (!config.enabled) {
+return;
+}
 
     // Check for URL if present
     if (config.url) {
@@ -243,16 +245,24 @@ function auditSettings(settings: Record<string, any>): SecurityIssue[] {
  * @since 0.4.0
  */
 function calculateRiskLevel(issues: SecurityIssue[]): RiskLevel {
-  if (issues.length === 0) return 'low';
+  if (issues.length === 0) {
+return 'low';
+}
 
   const hasCritical = issues.some(i => i.severity === 'critical');
-  if (hasCritical) return 'critical';
+  if (hasCritical) {
+return 'critical';
+}
 
   const hasHigh = issues.some(i => i.severity === 'high');
-  if (hasHigh) return 'high';
+  if (hasHigh) {
+return 'high';
+}
 
   const hasMedium = issues.some(i => i.severity === 'medium');
-  if (hasMedium) return 'medium';
+  if (hasMedium) {
+return 'medium';
+}
 
   return 'low';
 }

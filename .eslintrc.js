@@ -6,7 +6,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    project: './tsconfig.json'
+    project: './tsconfig.eslint.json'
   },
   plugins: ['@typescript-eslint'],
   extends: [
@@ -46,6 +46,21 @@ module.exports = {
     'curly': ['error', 'all'],
     'brace-style': ['error', '1tbs']
   },
+  overrides: [
+    {
+      files: ['tests/**/*.ts', 'tests/**/*.tsx'],
+      rules: {
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off'
+      }
+    }
+  ],
   ignorePatterns: [
     'dist',
     'coverage',

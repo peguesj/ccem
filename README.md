@@ -1,257 +1,284 @@
-# Claude Code Environment Manager (CCEM)
+# CCEM - Claude Code Environment Manager
 
-**Version**: 1.0.0
-**Created**: 2025-10-11
-**Status**: Active Development
+> Comprehensive TUI-based configuration management system for Claude Code v2.0.10+
+
+[![CI](https://github.com/peguesj/ccem/workflows/CI/badge.svg)](https://github.com/peguesj/ccem/actions)
+[![codecov](https://codecov.io/gh/peguesj/ccem/branch/main/graph/badge.svg)](https://codecov.io/gh/peguesj/ccem)
+[![npm version](https://badge.fury.io/js/%40ccem%2Fcore.svg)](https://www.npmjs.com/package/@ccem/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-CCEM (Claude Code Environment Manager) is a comprehensive TUI-based system for managing Claude Code v2.0.10 configurations across user, project, and directory scopes. It provides contextual information, search/filter capabilities, AI-powered recommendations, and powerful migration/fork functionality.
+CCEM (Claude Code Environment Manager) is a powerful configuration management tool designed specifically for Claude Code v2.0.10+. It provides intelligent merging, security auditing, backup/restore capabilities, and conversation-to-code mapping through an intuitive TUI interface.
 
-## Origin
+### Key Features
 
-This project was created through an intensive 2.5-hour collaborative conversation that resulted in:
-- **17 files created** (~320 KB)
-- **218 KB of training data** with schemas, examples, and test cases
-- **83 permissions consolidated** from 6 projects
-- **7 development phases** documented
-- **4 major user directives** guiding development
+- **🔄 Intelligent Configuration Merging** - Deep merge with conflict detection and custom resolution strategies
+- **🔒 Security Auditing** - Comprehensive security scanning for credentials, weak passwords, and insecure URLs
+- **💾 Backup & Restore** - Automated backups with validation and integrity checking
+- **🌳 Fork Discovery** - Map conversations to code with dependency graph analysis
+- **📊 Schema Validation** - Zod-based strict type validation for all configurations
+- **🎨 TUI Interface** - React-based terminal interface using Ink
+- **✅ 92%+ Test Coverage** - Comprehensive test suite with 336 passing tests
+- **📝 Complete Documentation** - TSDoc for all exported functions
 
-The complete conversation history and all artifacts are preserved in this repository.
+## Installation
 
-## Features
-
-### 1. Configuration Inspector
-- View and analyze Claude Code configurations
-- User settings, permissions, hooks, MCP servers
-- Project settings and overrides
-- Directory-specific configurations
-
-### 2. Search & Filter
-- Search across all configuration elements
-- Advanced filters and regex support
-- Permission pattern matching
-
-### 3. Recommendations & Optimization
-- AI-powered configuration analysis
-- Security recommendations
-- Performance optimizations
-- Quick wins for immediate improvements
-
-### 4. Agent & Command Manager
-- Manage subagents and slash commands
-- Refine agent definitions
-- Test agent configurations
-- Nested argument syntax system
-
-### 5. Settings & Scopes Manager
-- Merge project settings across scopes
-- Move objects between scopes
-- Bulk operations
-- Custom merge strategies
-
-### 6. Migration & Version Manager
-- Initialize Claude in new directories
-- Fork projects with chat history
-- Migrate existing projects
-- Version compatibility checks
-- **Chat history-based fork point discovery**
-- **Git worktree analysis and migration**
-
-### 7. Backup & Restore
-- Create snapshots (tar.gz level 9)
-- Restore from backups
-- Scheduled backups
-- Incremental updates
-
-### 8. Security & Compliance
-- Permission audits
-- Security recommendations
-- Compliance reports
-- Post-merge security hooks
-
-## Directory Structure
-
-```
-~/Developer/ccem/
-├── README.md                          # This file
-├── CLAUDE.md                          # Project instructions for Claude
-├── CONVERSATION_HISTORY.md            # Complete conversation transcript
-├── DEVELOPMENT_ROADMAP.md             # Development phases and future work
-├── .claude/
-│   ├── commands/
-│   │   └── ccem.md                    # /ccem slash command
-│   └── hooks/
-│       ├── post_merge_security_audit.py
-│       └── config_reporter.sh
-├── tui-structure.json                 # Complete TUI menu system
-├── preferences.json                   # User preferences
-├── execution-strategy.json            # Operation tree with parallelization
-├── snapshot-system.json               # State tracking
-├── merge-analysis.json                # Project merge analysis
-├── custom-merge-plan.json             # Custom merge strategy
-├── merge-consolidated-permissions.json
-├── merge-complete.json
-├── recommendations.json               # AI recommendations
-├── custom-patterns-selection.json     # Pattern selections
-├── migration-analysis-lcc.json        # LCC fork analysis example
-├── conversation-fork-ccem-001.json    # This fork's analysis
-├── training-data/
-│   ├── slash-command-syntax-system.json  # 14.5 KB syntax system
-│   ├── slash-command-examples.json       # Examples and test cases
-│   ├── USER_MEMORY_DIRECTIVE.md          # Slash command directive
-│   ├── fork-point-discovery-system.json  # Fork discovery capabilities
-│   └── simulations/                      # 203 KB training data
-│       ├── modify-strategy-simulation.json
-│       ├── view-operation-simulation.json
-│       ├── parallelization-simulation.json
-│       ├── dry-run-simulation.json
-│       ├── save-strategy-simulation.json
-│       ├── schemas/
-│       │   └── unified-schemas.json      # 17 schemas
-│       ├── SUMMARY.md
-│       ├── INDEX.json
-│       └── REPORT.md
-├── handlers/
-│   └── migrate-project.sh             # Migration handler
-├── backups/
-│   └── project-settings-backup-*.tar.gz
-└── docs/
-    └── (to be created)
+```bash
+npm install @ccem/core
 ```
 
-## Key Components
+Or globally:
 
-### TUI System
-- **10 main menu items** with hierarchical structure
-- **UUID-based relational schema** for menu navigation
-- **Context-aware displays** based on current state
-- **Interactive workflows** with recursive refinement
+```bash
+npm install -g @ccem/core
+```
+
+## Quick Start
+
+### Configuration Merging
+
+```typescript
+import { customMerge, MergeConfig } from '@ccem/core';
+import { detectConflicts } from '@ccem/core';
+
+const baseConfig: MergeConfig = {
+  permissions: ['read', 'write'],
+  mcpServers: {
+    server1: { enabled: true, url: 'https://api.example.com' }
+  },
+  settings: {
+    theme: 'dark',
+    debug: false
+  }
+};
+
+const userConfig: MergeConfig = {
+  permissions: ['read', 'execute'],
+  mcpServers: {
+    server2: { enabled: true, url: 'https://api.custom.com' }
+  },
+  settings: {
+    debug: true,
+    verbose: true
+  }
+};
+
+// Detect conflicts
+const conflicts = detectConflicts([baseConfig, userConfig]);
+console.log(`Found ${conflicts.summary.total} conflicts`);
+
+// Merge with custom rules
+const mergeRules = {
+  permissions: { conflictResolution: 'union' as const },
+  settings: {}
+};
+
+const merged = await customMerge([baseConfig, userConfig], mergeRules);
+```
+
+### Backup & Restore
+
+```typescript
+import { createBackup, validateBackup, restoreBackup } from '@ccem/core';
+
+// Create backup
+const backupPath = await createBackup('/path/to/config');
+console.log(`Backup created: ${backupPath}`);
+
+// Validate backup
+const metadata = await validateBackup(backupPath);
+if (metadata.isValid) {
+  console.log(`Valid backup with ${metadata.fileCount} files`);
+}
+
+// Restore from backup
+await restoreBackup(backupPath, '/path/to/restore');
+```
+
+### Security Auditing
+
+```typescript
+import { runSecurityAudit } from '@ccem/core';
+
+// Run security scan
+const auditResults = await runSecurityAudit('/path/to/config');
+
+console.log(`Security Status: ${auditResults.isSecure ? 'Secure' : 'Issues Found'}`);
+console.log(`Risk Level: ${auditResults.summary.riskLevel}`);
+
+// Review findings
+auditResults.findings.forEach(finding => {
+  console.log(`- ${finding}`);
+});
+```
+
+### Fork Discovery & Conversation Mapping
+
+```typescript
+import { parseConversationFile, identifyConversationPhases } from '@ccem/core';
+import { buildDependencyGraph, extractByTopic } from '@ccem/core';
+
+// Parse conversation
+const conversation = await parseConversationFile('/path/to/conversation.txt');
+
+// Identify phases
+const phases = identifyConversationPhases(conversation);
+console.log(`Found ${phases.length} conversation phases`);
+
+// Extract context by topic
+const menuContext = extractByTopic(conversation, 'menu');
+console.log(`Found ${menuContext.messages.length} messages about menus`);
+
+// Build dependency graph
+const graph = buildDependencyGraph(conversation);
+console.log(`Graph has ${graph.nodes.length} nodes and ${graph.edges.length} edges`);
+if (graph.hasCircularDependencies) {
+  console.log('Warning: Circular dependencies detected');
+}
+```
+
+### Git Worktree Detection
+
+```typescript
+import { detectWorktrees, analyzeWorktreeStructure } from '@ccem/core';
+import { identifyParallelDevelopment } from '@ccem/core';
+
+// Detect worktrees
+const worktrees = await detectWorktrees('/path/to/repo');
+console.log(`Found ${worktrees.length} worktrees`);
+
+// Analyze structure
+const analysis = await analyzeWorktreeStructure('/path/to/repo');
+if (analysis.hasParallelDevelopment) {
+  console.log('Parallel development detected!');
+}
+
+// Identify patterns
+const patterns = await identifyParallelDevelopment('/path/to/repo');
+patterns.forEach(pattern => {
+  console.log(`${pattern.type}: ${pattern.description}`);
+});
+```
+
+## API Documentation
 
 ### Merge System
-- **Multiple merge strategies**: recommended, default, conservative, hybrid, custom
-- **Before/after preview** with conflict detection
-- **Backup with compression** (tar.gz level 9)
-- **Dry-run mode** for safe testing
-- **Security audit hooks** post-merge
 
-### Training Data
-- **Slash command syntax system** with nested arguments
-- **10 use cases** with before/after examples
-- **3 complete user journeys**
-- **22 test cases** across 8 categories
-- **17 schema definitions** with constraints
-- **4 error scenarios** with recovery strategies
+- `customMerge(configs, rules)` - Merge configurations with custom rules
+- `detectConflicts(configs)` - Detect conflicts between configurations
 
-### Fork Point Discovery
-- **Chat history analysis** for context extraction
-- **Git worktree detection** and migration
-- **Conversation-based forks** with full context
-- **Context extraction** for specific features
-- **Training data forks** for reusability
+### Backup System
 
-## Statistics
+- `createBackup(sourcePath, outputDir?)` - Create tar.gz backup with level 9 compression
+- `validateBackup(backupPath)` - Validate backup integrity
+- `restoreBackup(backupPath, restorePath)` - Restore files from backup
+- `createSnapshot(sourcePath)` - Create snapshot with file checksums
 
-- **Total Files**: 17 core + 10 simulation files
-- **Total Data**: ~320 KB + conversation metadata
-- **Training Data**: 218 KB
-- **Schema Definitions**: 17
-- **Test Cases**: 22
-- **Use Cases**: 10
-- **User Journeys**: 3
-- **Permissions Consolidated**: 83
-- **MCP Servers**: 4
-- **Hooks Created**: 2
-- **Commands Created**: 7
+### Security Audit
 
-## Development Phases
+- `runSecurityAudit(configPath)` - Run comprehensive security scan
 
-1. **Phase 1**: TUI specification and menu design
-2. **Phase 2**: Custom merge specification & backup configuration
-3. **Phase 3**: Execution strategy & parallel simulations
-4. **Phase 4**: Merge execution & file cleanup
-5. **Phase 5**: Recommendations & pattern refinement
-6. **Phase 6**: Slash command syntax training data
-7. **Phase 7**: Migration system & fork point discovery
+### Fork Discovery
 
-## Usage
+- `parseConversationFile(filePath)` - Parse conversation from file
+- `identifyConversationPhases(conversation)` - Identify conversation phases
+- `detectWorktrees(repoPath)` - Detect git worktrees
+- `analyzeWorktreeStructure(repoPath)` - Analyze worktree structure
+- `extractByTopic(conversation, topic)` - Extract context by topic
+- `extractByFile(conversation, fileName)` - Extract context by file
+- `extractByTimeRange(conversation, start, end)` - Extract context by time
+- `buildDependencyGraph(conversation)` - Build dependency graph
 
-### Launch CCEM TUI
+### Schema Validation
+
+- `validateMergeConfig(data)` - Validate merge configuration
+- `validateConflictReport(data)` - Validate conflict report
+- `validateBackupMetadata(data)` - Validate backup metadata
+
+## Architecture
+
+CCEM is built with a modular architecture:
+
+- **`src/merge/`** - Configuration merging and conflict detection
+- **`src/backup/`** - Backup creation, validation, and restoration
+- **`src/security/`** - Security auditing and scanning
+- **`src/fork/`** - Conversation parsing and code mapping
+- **`src/schema/`** - Zod schema definitions and validation
+- **`src/tui/`** - Terminal UI components
+
+## Requirements
+
+- Node.js >= 18.0.0
+- TypeScript 5.3+
+- Claude Code v2.0.10+
+
+## Development
+
 ```bash
-# From Claude Code (when implemented)
-/ccem
+# Install dependencies
+npm install
 
-# Or directly (when CLI tool is built)
-ccem
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run linter
+npm run lint
+
+# Run type checking
+npm run typecheck
+
+# Build project
+npm run build
+
+# Generate documentation
+npm run docs
 ```
 
-### Common Operations
+## Testing
+
+CCEM includes a comprehensive test suite with 336 tests and 92%+ coverage:
+
 ```bash
-# Inspect current configuration
-/ccem inspect
+# Run all tests
+npm test
 
-# Merge project settings
-/ccem merge
+# Run tests in watch mode
+npm run test:watch
 
-# Migrate/fork project
-/ccem migrate <target-dir>
-
-# Generate recommendations
-/ccem optimize
-
-# Create backup
-/ccem backup
-
-# View status
-/ccem status
+# Generate coverage report
+npm run test:coverage
 ```
-
-## Next Steps
-
-See [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) for detailed future plans.
-
-### Immediate Priorities
-1. Implement TUI rendering and navigation
-2. Build menu system with state management
-3. Implement merge functionality
-4. Create test suite
-5. Build CLI interface
-
-### Future Enhancements
-1. Web-based TUI interface
-2. Team collaboration features
-3. Cloud backup integration
-4. AI-powered config generation
-5. Plugin system
-6. Linear/GitHub integration
-7. Real-time collaboration
-
-## Technology Stack
-
-- **Runtime**: Node.js / TypeScript
-- **TUI Framework**: (TBD - ink, blessed, or custom)
-- **Data Storage**: JSON with UUID relations
-- **Backup**: tar.gz with configurable compression
-- **Hooks**: Python/Bash scripts
-- **Testing**: Jest + custom validation
 
 ## Contributing
 
-See [CONTRIBUTING.md](docs/CONTRIBUTING.md) (to be created)
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a PR.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes with conventional commits
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-(To be determined)
+MIT © [Jeremiah Pegues](https://github.com/peguesj)
 
-## Credits
+## Acknowledgments
 
-Created through collaborative AI-assisted development with Claude Code.
+- Built with [Ink](https://github.com/vadimdemedes/ink) for TUI
+- Schema validation with [Zod](https://github.com/colinhacks/zod)
+- Testing with [Jest](https://jestjs.io/)
+- Inspired by real-world Claude Code usage patterns
 
-All artifacts, training data, and conversation history preserved for learning and reference.
+## Support
+
+- [GitHub Issues](https://github.com/peguesj/ccem/issues)
+- [Documentation](https://github.com/peguesj/ccem#readme)
 
 ---
 
-**For more information**:
-- [CONVERSATION_HISTORY.md](CONVERSATION_HISTORY.md) - Complete conversation transcript
-- [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) - Future development plans
-- [docs/CONVERSATION_TO_CODE_MAPPING.md](docs/CONVERSATION_TO_CODE_MAPPING.md) - How conversation led to implementation
+**Made with ❤️ for the Claude Code community**

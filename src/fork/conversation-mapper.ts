@@ -316,9 +316,13 @@ export function trackImplementation(conversation: Conversation): ImplementationS
       files: relatedFiles
     });
 
-    if (status === 'implemented') implemented++;
-    else if (status === 'partial') partial++;
-    else notImplemented++;
+    if (status === 'implemented') {
+implemented++;
+} else if (status === 'partial') {
+partial++;
+} else {
+notImplemented++;
+}
   }
 
   const totalRequests = mapping.userRequests.length;

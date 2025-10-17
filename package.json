@@ -1,12 +1,18 @@
 {
   "name": "@ccem/core",
-  "version": "0.2.0",
-  "description": "Claude Code Environment Manager - TUI-based configuration management system",
+  "version": "1.0.0",
+  "description": "Claude Code Environment Manager - TUI-based configuration management system for Claude Code v2.0.10+",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "ccem": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -34,6 +40,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/peguesj/ccem.git"
+  },
+  "bugs": {
+    "url": "https://github.com/peguesj/ccem/issues"
+  },
+  "homepage": "https://github.com/peguesj/ccem#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",

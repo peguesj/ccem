@@ -375,7 +375,7 @@ export function extractDependencies(conversation: Conversation): Record<string, 
     if (importMatches) {
       for (const match of importMatches) {
         const pathMatch = match.match(/from\s+['"]([^'"]+)['"]/);
-        if (pathMatch && pathMatch[1]) {
+        if (pathMatch?.[1]) {
           const importPath = pathMatch[1];
           // Try to find the importing file from context
           for (const file of conversation.files) {
@@ -516,7 +516,7 @@ export function extractFileReferences(messages: Message[]): string[] {
     if (codeBlockMatches) {
       for (const match of codeBlockMatches) {
         const pathMatch = match.match(/\/\/\s+([\w/-]+\.(?:ts|tsx|js|jsx|json|md))/);
-        if (pathMatch && pathMatch[1]) {
+        if (pathMatch?.[1]) {
           fileRefs.add(pathMatch[1]);
         }
       }
@@ -571,7 +571,9 @@ function calculateForkScore(conversation: Conversation): number {
 
   // Add points for test files
   const hasTests = conversation.files.some(f => f.includes('test') || f.includes('spec'));
-  if (hasTests) score += 10;
+  if (hasTests) {
+score += 10;
+}
 
   return Math.min(score, 100);
 }

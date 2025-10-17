@@ -388,7 +388,9 @@ function calculateCompleteness(messages: Message[], files: string[]): number {
 
   // Test files add 20 points
   const hasTests = files.some(f => f.includes('test') || f.includes('spec'));
-  if (hasTests) score += 20;
+  if (hasTests) {
+score += 20;
+}
 
   return Math.min(score, 100);
 }
@@ -457,7 +459,7 @@ function detectNodeType(fileName: string): NodeType {
  */
 function findSourceFileForTest(testFile: string, allFiles: string[]): string | null {
   // Remove test directory and test suffix
-  let sourceFile = testFile
+  const sourceFile = testFile
     .replace(/tests?\//, '')
     .replace(/\/__tests__\//, '/')
     .replace(/\.test\.(ts|tsx|js|jsx)$/, '.$1')
@@ -515,7 +517,9 @@ function detectCircularDependencies(edges: DependencyEdge[]): boolean {
     const neighbors = adj.get(node) ?? [];
     for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
-        if (hasCycle(neighbor)) return true;
+        if (hasCycle(neighbor)) {
+return true;
+}
       } else if (recStack.has(neighbor)) {
         return true;
       }
@@ -527,7 +531,9 @@ function detectCircularDependencies(edges: DependencyEdge[]): boolean {
 
   for (const node of adj.keys()) {
     if (!visited.has(node)) {
-      if (hasCycle(node)) return true;
+      if (hasCycle(node)) {
+return true;
+}
     }
   }
 

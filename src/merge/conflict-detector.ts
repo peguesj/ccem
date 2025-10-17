@@ -119,14 +119,20 @@ function isMoreGeneral(perm1: string, perm2: string): boolean {
   const match1 = perm1.match(/\((.*?)\)/);
   const match2 = perm2.match(/\((.*?)\)/);
 
-  if (!match1 || !match2 || !match1[1] || !match2[1]) return false;
+  if (!match1 || !match2 || !match1[1] || !match2[1]) {
+return false;
+}
 
   const path1 = match1[1];
   const path2 = match2[1];
 
   // "*" is more general than specific paths
-  if (path1 === '*' && path2 !== '*') return true;
-  if (path1 !== '*' && path2 === '*') return false;
+  if (path1 === '*' && path2 !== '*') {
+return true;
+}
+  if (path1 !== '*' && path2 === '*') {
+return false;
+}
 
   // Shorter paths are more general
   return path1.length < path2.length && path2.startsWith(path1.replace('*', ''));
@@ -153,7 +159,9 @@ function detectPermissionConflicts(configs: MergeConfig[]): DetectedConflict[] {
       const perm1 = allPermissions[i];
       const perm2 = allPermissions[j];
 
-      if (!perm1 || !perm2) continue;
+      if (!perm1 || !perm2) {
+continue;
+}
 
       // Extract action (Read, Write, etc.)
       const action1 = perm1.perm.split('(')[0];
@@ -341,7 +349,9 @@ function detectMcpConflicts(configs: MergeConfig[]): DetectedConflict[] {
 
     if (serverConfigs.length > 1) {
       const firstConfig = serverConfigs[0];
-      if (!firstConfig) return;
+      if (!firstConfig) {
+return;
+}
 
       const hasConflict = serverConfigs.some(
         s => !deepEqual(s.config, firstConfig.config)
