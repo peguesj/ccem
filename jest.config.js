@@ -28,6 +28,8 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^ink$': '<rootDir>/tests/__mocks__/ink.ts'
-  }
+    '^ink$': '<rootDir>/tests/__mocks__/ink.ts',
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
+  extensionsToTreatAsEsm: ['.ts', '.tsx']
 };
