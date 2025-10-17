@@ -1,0 +1,63 @@
+{
+  "name": "@ccem/core",
+  "version": "0.2.0",
+  "description": "Claude Code Environment Manager - TUI-based configuration management system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ccem": "./dist/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src tests --ext .ts,.tsx",
+    "lint:fix": "eslint src tests --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "docs": "typedoc --out docs src",
+    "prepublishOnly": "npm run lint && npm run test:coverage && npm run build"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cli",
+    "tui",
+    "configuration",
+    "management",
+    "developer-tools"
+  ],
+  "author": "Jeremiah Pegues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peguesj/ccem.git"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.0",
+    "@types/react": "^19.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "husky": "^8.0.3",
+    "ink-testing-library": "^3.0.0",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.4",
+    "ts-jest": "^29.1.1",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "ink": "^4.4.1",
+    "react": "^18.2.0",
+    "zod": "^3.22.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
