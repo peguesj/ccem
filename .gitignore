@@ -57,3 +57,6 @@ user-data/
 .claude/cache/
 *.tgz
 ccem-*.tgz
+
+# Development archives
+.archive/
