@@ -1,0 +1,34 @@
+{
+  "servers": {
+    "viki": {
+      "name": "viki",
+      "url": "https://viki.yjos.lgtm.build",
+      "auth": {
+        "type": "bearer",
+        "tokenEnv": "VIKI_API_TOKEN"
+      },
+      "retry": {
+        "maxAttempts": 3,
+        "backoff": "exponential",
+        "initialDelayMs": 1000
+      },
+      "timeoutMs": 5000,
+      "enabled": true
+    },
+    "yjos": {
+      "name": "yjos",
+      "url": "https://yjos.lgtm.build",
+      "auth": {
+        "type": "api-key",
+        "tokenEnv": "YJOS_API_KEY"
+      },
+      "retry": {
+        "maxAttempts": 3,
+        "backoff": "exponential",
+        "initialDelayMs": 1000
+      },
+      "timeoutMs": 5000,
+      "enabled": true
+    }
+  }
+}

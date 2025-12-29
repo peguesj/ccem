@@ -1,0 +1,42 @@
+{
+  "name": "@ccem/ui-server",
+  "version": "1.0.0",
+  "description": "CCEM UI Backend Server - REST API and WebSocket server",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  },
+  "keywords": [
+    "ccem",
+    "api",
+    "websocket",
+    "server"
+  ],
+  "author": "Jeremiah Pegues",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/supertest": "^6.0.3",
+    "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^4.0.16",
+    "supertest": "^7.1.4",
+    "tsx": "^4.21.0",
+    "vitest": "^4.0.16",
+    "ws": "^8.18.3"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "cors": "^2.8.5",
+    "express": "^5.2.1"
+  }
+}
