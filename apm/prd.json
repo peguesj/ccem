@@ -1,0 +1,114 @@
+{
+  "project": "CCEM APM",
+  "branchName": "ralph/apm-v4-multi-project",
+  "description": "APM v4 - Multi-project support with project router, landing page, schema-driven config, and backward-compatible APIs",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add v4 config loader with multi-project support",
+      "description": "As a developer, I need monitor.py to load the v4 multi-project config schema so it can serve multiple projects simultaneously.",
+      "acceptanceCriteria": [
+        "load_config() detects v4 format (version: 4.0.0) and loads projects array",
+        "load_config() falls back to v3 single-project format for backward compat (wraps in projects array)",
+        "CFG['projects'] is always a list of project dicts",
+        "CFG['active_project'] names the default project",
+        "get_project(name) returns a specific project's config or None",
+        "get_active_project() returns the active project config",
+        "reload_config() updates all globals from disk",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add per-project data isolation in registries",
+      "description": "As a developer, I need agents, tasks, notifications, and Ralph data scoped per project so they don't bleed between projects.",
+      "acceptanceCriteria": [
+        "AGENTS dict keyed by project name: PROJECTS_DATA[name]['agents']",
+        "TASKS list keyed by project name: PROJECTS_DATA[name]['tasks']",
+        "SLASH_COMMANDS and PLANE_PM per project",
+        "register_agent() takes project_name parameter",
+        "discover_agents() scans the correct tasks_dir per project",
+        "get_ralph_data() reads prd_json from project config",
+        "get_api_data() accepts optional project_name parameter",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add project-scoped API routes to handler",
+      "description": "As a developer, I need the HTTP handler to support /project/{name}/api/* routes for project-scoped data access.",
+      "acceptanceCriteria": [
+        "GET /project/{name}/api/data returns data for that project",
+        "GET /project/{name}/api/ralph/flowchart returns Ralph flowchart for that project",
+        "POST /project/{name}/api/agents/register registers agent for that project",
+        "GET /project/{name}/api/agents/discover discovers agents for that project",
+        "GET /api/projects returns list of all projects with metadata",
+        "Existing /api/data still works using active_project (backward compat)",
+        "404 returned for unknown project names",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Add project selector landing page",
+      "description": "As a user, I want the root URL (/) to show all registered projects with status cards so I can navigate to any project's dashboard.",
+      "acceptanceCriteria": [
+        "GET / returns HTML landing page listing all projects from config",
+        "Each project card shows: name, status, session count, agent count, Ralph progress",
+        "Clicking a project card navigates to /project/{name}/",
+        "Active project is highlighted",
+        "Landing page auto-refreshes every 5 seconds",
+        "Consistent styling with existing APM dashboard (dark theme, monospace)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add project-scoped dashboard at /project/{name}/",
+      "description": "As a user, I want /project/{name}/ to render the full APM dashboard scoped to that specific project.",
+      "acceptanceCriteria": [
+        "GET /project/{name}/ returns the full dashboard HTML",
+        "Dashboard JS fetches from /project/{name}/api/data instead of /api/data",
+        "Project name displayed in header",
+        "Back link to landing page (/) in header",
+        "All existing dashboard features work (graph, agents, ralph, commands, todos)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Update /health endpoint for multi-project",
+      "description": "As a developer, I need /health to report on all projects, not just one.",
+      "acceptanceCriteria": [
+        "/health returns status:ok, uptime, total_projects count, active_project name",
+        "/health includes projects array with name, status, agent_count, session_count per project",
+        "Backward compat: project and session_id fields still present (from active project)",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
