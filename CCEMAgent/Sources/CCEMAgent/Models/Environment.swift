@@ -47,10 +47,12 @@ struct APMEnvironment: Identifiable, Hashable {
     let id: String
     let project: APMProject
     var driftStatus: DriftStatus
+    var agentCount: Int = 0
 
     var name: String { project.name }
     var sessionCount: Int { project.sessionCount ?? 0 }
     var lastActivity: Date? { project.lastActivity }
+    var isActive: Bool { sessionCount > 0 }
 }
 
 enum DriftStatus: Hashable {

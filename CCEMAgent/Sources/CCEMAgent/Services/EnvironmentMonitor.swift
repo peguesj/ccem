@@ -2,6 +2,11 @@ import Foundation
 import Observation
 import AppKit
 
+enum EnvironmentFilter: String, CaseIterable {
+    case all = "All"
+    case active = "Active"
+}
+
 @MainActor
 @Observable
 final class EnvironmentMonitor {
@@ -10,6 +15,18 @@ final class EnvironmentMonitor {
     var healthStatus: HealthStatus?
     var lastError: String?
     var lastRefresh: Date?
+    var filter: EnvironmentFilter = .all
+
+    var filteredEnvironments: [APMEnvironment] {
+        switch filter {
+        case .all: return environments
+        case .active: return environments.filter { $0.sessionCount > 0 }
+        }
+    }
+
+    var activeCount: Int {
+        environments.filter { $0.sessionCount > 0 }.count
+    }
 
     private let client = APMClient()
     private let driftDetector = DriftDetector()
@@ -34,7 +51,6 @@ final class EnvironmentMonitor {
     func refresh() async {
         connectionState = .connecting
 
-        // Check health
         do {
             let health = try await client.checkHealth()
             healthStatus = health
@@ -46,39 +62,37 @@ final class EnvironmentMonitor {
             return
         }
 
-        // Fetch environments/projects
+        // Build environments from health projects (most reliable source)
         do {
-            var projects: [APMProject] = []
-
-            // Try environments endpoint first, fall back to projects
-            if let envs = try? await client.fetchEnvironments(), !envs.isEmpty {
-                projects = envs
-            } else {
-                projects = try await client.fetchProjects()
-            }
-
+            let healthProjects = healthStatus?.projects ?? []
             var updatedEnvironments: [APMEnvironment] = []
-            for project in projects {
+
+            for hp in healthProjects {
+                let project = APMProject(
+                    id: hp.name,
+                    name: hp.name,
+                    projectRoot: nil,
+                    sessionCount: hp.sessionCount,
+                    lastActivity: nil,
+                    status: hp.status
+                )
                 let drift = await driftDetector.detectDrift(for: project)
                 updatedEnvironments.append(APMEnvironment(
-                    id: project.id,
+                    id: hp.name,
                     project: project,
-                    driftStatus: drift
+                    driftStatus: drift,
+                    agentCount: hp.agentCount
                 ))
             }
 
-            environments = updatedEnvironments
+            environments = updatedEnvironments.sorted { ($0.sessionCount, $0.name) > ($1.sessionCount, $1.name) }
             lastRefresh = Date()
             lastError = nil
-        } catch {
-            lastError = error.localizedDescription
         }
     }
 
     func openDashboard() {
         guard let url = URL(string: "http://localhost:3031") else { return }
-        #if canImport(AppKit)
         NSWorkspace.shared.open(url)
-        #endif
     }
 }

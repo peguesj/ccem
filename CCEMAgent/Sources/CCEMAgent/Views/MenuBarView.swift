@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MenuBarView: View {
-    let monitor: EnvironmentMonitor
+    @Bindable var monitor: EnvironmentMonitor
     @Bindable var launchManager: LaunchManager
 
     var body: some View {
@@ -13,20 +13,33 @@ struct MenuBarView: View {
             refreshLabel
             actionsSection
         }
-        .frame(width: 320)
+        .frame(width: 340)
     }
 
     // MARK: - Extracted Subviews
 
     private var headerSection: some View {
-        HStack {
-            Text("CCEM APM")
-                .font(.system(.headline, design: .monospaced))
-            Spacer()
-            StatusIndicator(state: monitor.connectionState)
-            Text(monitor.connectionState.label)
-                .font(.caption)
+        VStack(spacing: 6) {
+            HStack {
+                Text("CCEM APM")
+                    .font(.system(.headline, design: .monospaced))
+                Spacer()
+                StatusIndicator(state: monitor.connectionState)
+                Text(monitor.connectionState.label)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if monitor.connectionState == .connected {
+                HStack(spacing: 12) {
+                    Label("\(monitor.environments.count) projects", systemImage: "folder")
+                    Label("\(monitor.activeCount) active", systemImage: "bolt.fill")
+                        .foregroundStyle(.green)
+                    Spacer()
+                }
+                .font(.caption2)
                 .foregroundStyle(.secondary)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -35,8 +48,19 @@ struct MenuBarView: View {
     @ViewBuilder
     private var contentSection: some View {
         if monitor.connectionState == .connected {
-            if monitor.environments.isEmpty {
-                Text("No active environments")
+            // Filter picker
+            Picker("Filter", selection: $monitor.filter) {
+                ForEach(EnvironmentFilter.allCases, id: \.self) { filter in
+                    Text(filter == .active ? "\(filter.rawValue) (\(monitor.activeCount))" : filter.rawValue)
+                        .tag(filter)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            if monitor.filteredEnvironments.isEmpty {
+                Text(monitor.filter == .active ? "No active sessions" : "No environments")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 12)
@@ -44,7 +68,7 @@ struct MenuBarView: View {
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(monitor.environments) { env in
+                        ForEach(monitor.filteredEnvironments) { env in
                             EnvironmentRow(environment: env)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 4)

@@ -3,14 +3,12 @@ import SwiftUI
 struct EnvironmentRow: View {
     let environment: APMEnvironment
 
-    private static let relativeFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter
-    }()
-
     var body: some View {
         HStack(spacing: 8) {
+            Circle()
+                .fill(environment.isActive ? .green : .gray.opacity(0.4))
+                .frame(width: 6, height: 6)
+
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Text(environment.name)
@@ -19,14 +17,8 @@ struct EnvironmentRow: View {
                 }
 
                 HStack(spacing: 8) {
-                    Label("\(environment.sessionCount)", systemImage: "terminal")
-                    if let date = environment.lastActivity {
-                        Text(Self.relativeFormatter.localizedString(for: date, relativeTo: .now))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("No activity")
-                            .foregroundStyle(.secondary)
-                    }
+                    Label("\(environment.sessionCount) sessions", systemImage: "terminal")
+                    Label("\(environment.agentCount) agents", systemImage: "cpu")
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
