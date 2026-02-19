@@ -51,11 +51,11 @@ dir_hash() {
 # Send notification to APM dashboard
 notify_apm() {
     local title="$1"
-    local message="$2"
-    local severity="${3:-info}"
-    curl -s -X POST "http://localhost:${APM_PORT}/api/notify" \
+    local body="$2"
+    local category="${3:-info}"
+    curl -s -X POST "http://localhost:${APM_PORT}/api/notifications/add" \
         -H "Content-Type: application/json" \
-        -d "{\"title\":\"$title\",\"message\":\"$message\",\"severity\":\"$severity\"}" \
+        -d "{\"title\":\"$title\",\"body\":\"$body\",\"category\":\"$category\"}" \
         >/dev/null 2>&1 || true
 }
 
