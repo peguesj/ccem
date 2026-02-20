@@ -217,17 +217,29 @@ ccem tui
 | `GET /health` | Health check (v3-compatible) |
 | `GET /api/status` | Server status and uptime |
 | `GET /api/agents` | List registered agents |
+| `GET /api/agents/discover` | Trigger agent discovery scan |
 | `POST /api/register` | Register a new session/agent |
+| `POST /api/agents/register` | Register agent (v3-compat alias) |
+| `POST /api/agents/update` | Full agent update (v3-compat) |
 | `POST /api/heartbeat` | Agent heartbeat |
 | `POST /api/notify` | Send a notification |
 | `GET /api/projects` | List all projects |
 | `PATCH /api/projects` | Update project metadata |
 | `GET /api/data` | Dashboard data snapshot (v3-compat) |
 | `GET /api/notifications` | List notifications |
+| `POST /api/notifications/add` | Add notification (v3-compat) |
+| `POST /api/notifications/read-all` | Mark all notifications read |
 | `GET /api/ralph` | Ralph story data |
 | `GET /api/ralph/flowchart` | Ralph flowchart data |
 | `GET /api/commands` | Registered slash commands |
-| `GET /api/agents/discover` | Discover agents |
+| `POST /api/commands` | Register slash commands |
+| `GET /api/input/pending` | Get pending input requests |
+| `POST /api/input/request` | Create input request |
+| `POST /api/input/respond` | Respond to input request |
+| `POST /api/tasks/sync` | Replace project task list |
+| `POST /api/config/reload` | Hot-reload multi-project config |
+| `POST /api/reload` | Alias for config reload |
+| `POST /api/plane/update` | Update Plane PM context |
 | `POST /api/upm/register` | Register a UPM execution |
 | `POST /api/upm/agent` | Register UPM agent |
 | `POST /api/upm/event` | Post a UPM event |
@@ -236,15 +248,29 @@ ccem tui
 | `POST /api/ports/scan` | Scan for active ports |
 | `POST /api/ports/assign` | Assign a port to a project |
 | `GET /api/ports/clashes` | Detect port conflicts |
+| `POST /api/ports/set-primary` | Set primary port for project |
 | `GET /api/skills` | List tracked skills |
 | `POST /api/skills/track` | Track a skill invocation |
 | `GET /api/environments` | List CCEM environments |
+| `GET /api/environments/:name` | Get environment detail |
+| `POST /api/environments/:name/exec` | Execute command in environment |
+| `POST /api/environments/:name/session/start` | Launch Claude Code session |
+| `POST /api/environments/:name/session/stop` | Kill Claude Code session |
 | `GET /api/ag-ui/events` | AG-UI SSE event stream |
-| `GET /api/v2/agents` | v2 agent list |
+| `GET /api/a2ui/components` | A2UI declarative component specs |
+| `GET /api/v2/agents` | v2 agent list (paginated) |
+| `GET /api/v2/agents/:id` | v2 agent detail with metrics |
+| `GET /api/v2/sessions` | v2 session list |
 | `GET /api/v2/metrics` | Fleet metrics |
-| `GET /api/v2/slos` | SLO definitions |
-| `GET /api/v2/alerts` | Active alerts |
+| `GET /api/v2/metrics/:agent_id` | Per-agent metrics |
+| `GET /api/v2/slos` | SLO definitions with error budgets |
+| `GET /api/v2/slos/:name` | Single SLO with history |
+| `GET /api/v2/alerts` | Alert history |
+| `GET /api/v2/alerts/rules` | Alert rules |
+| `POST /api/v2/alerts/rules` | Create alert rule |
 | `GET /api/v2/audit` | Audit log |
+| `GET /api/v2/export` | Export APM data (JSON or CSV) |
+| `POST /api/v2/import` | Import APM data from JSON |
 | `GET /api/v2/openapi.json` | OpenAPI specification |
 
 ---

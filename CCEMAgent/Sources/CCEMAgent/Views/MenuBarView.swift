@@ -146,7 +146,7 @@ struct MenuBarView: View {
 
     private var actionsSection: some View {
         VStack(spacing: 0) {
-            Button(action: monitor.openDashboard) {
+            Button(action: { APMWindowManager.shared.openDashboard() }) {
                 Label("Open Dashboard", systemImage: "globe")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -154,9 +154,7 @@ struct MenuBarView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
 
-            Button(action: {
-                NSWorkspace.shared.open(URL(string: "http://localhost:3031/docs")!)
-            }) {
+            Button(action: { APMWindowManager.shared.openDocs() }) {
                 Label("Help & Docs", systemImage: "book")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

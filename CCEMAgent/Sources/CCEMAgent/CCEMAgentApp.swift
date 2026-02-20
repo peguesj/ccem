@@ -6,6 +6,7 @@ import UserNotifications
 struct CCEMAgentApp: App {
     @State private var monitor = EnvironmentMonitor()
     @State private var launchManager = LaunchManager()
+    @State private var notificationReceiver = APMNotificationReceiver()
 
     init() {
         // Request notification permission early
@@ -16,6 +17,7 @@ struct CCEMAgentApp: App {
         MenuBarExtra {
             MenuBarView(monitor: monitor, launchManager: launchManager)
                 .task {
+                    notificationReceiver.start()
                     monitor.requestNotificationPermission()
                     monitor.start()
                 }

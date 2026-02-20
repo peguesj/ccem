@@ -70,3 +70,22 @@ ccem-*.tgz
 *_INFRASTRUCTURE_*.md
 DEPLOYMENT_CHECKLIST.md
 SETUP_COMPLETE.md
+
+# APM runtime artifacts
+apm/sessions/
+apm/apm_config.json
+apm/.apm.pid
+apm/__pycache__/
+apm/bridges/.orchestrator.pid
+apm/bridges/.orchestrator_state.json
+apm/.claude/
+CCEMAgent/.claude/
+
+# Hook reports and data
+.claude/hooks/reports/
+.claude/hooks/data/
+
+# Scripts generated at runtime
+scripts/
+ui/capture-apm-screenshots.ts
+CCEMAgent/ccem-agent-watchdog.sh
