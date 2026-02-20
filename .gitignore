@@ -60,3 +60,13 @@ ccem-*.tgz
 
 # Development archives
 .archive/
+
+# Claude session artifact docs (implementation reports, test results, setup logs)
+*_IMPLEMENTATION.md
+*_COMPLETE.md
+*_RESULTS.md
+*_REPORT.md
+*_VERIFICATION.md
+*_INFRASTRUCTURE_*.md
+DEPLOYMENT_CHECKLIST.md
+SETUP_COMPLETE.md
