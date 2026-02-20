@@ -10,6 +10,30 @@
 
 ---
 
+## Screenshots
+
+### APM Dashboard
+![APM Dashboard](ui/screenshots/apm-dashboard.png)
+
+### Documentation Wiki
+![Docs Index](ui/screenshots/apm-docs-index.png)
+![Getting Started](ui/screenshots/apm-docs-getting-started.png)
+![Architecture](ui/screenshots/apm-docs-architecture.png)
+
+### Other Views
+| Formation | Ports | Skills |
+|-----------|-------|--------|
+| ![Formation](ui/screenshots/apm-formation.png) | ![Ports](ui/screenshots/apm-ports.png) | ![Skills](ui/screenshots/apm-skills.png) |
+
+| Ralph | Timeline |
+|-------|----------|
+| ![Ralph](ui/screenshots/apm-ralph.png) | ![Timeline](ui/screenshots/apm-timeline.png) |
+
+### CCEM Menubar Agent
+![CCEM Menubar Agent](ui/screenshots/ccem-agent-menubar.svg)
+
+---
+
 ## What is CCEM?
 
 CCEM is a three-component system for managing Claude Code environments at scale:
@@ -227,6 +251,8 @@ ccem tui
 
 ## SwiftUI Menubar Agent
 
+![CCEM Menubar Agent](ui/screenshots/ccem-agent-menubar.svg)
+
 The CCEM Agent is a native macOS application (Swift/SwiftUI) that lives in the menu bar and polls the APM server.
 
 **Location**: `CCEMAgent/` (Xcode project)
@@ -252,6 +278,8 @@ xcodebuild -scheme CCEMAgent -configuration Release build
 ---
 
 ## Documentation Wiki
+
+![Docs Index](ui/screenshots/apm-docs-index.png)
 
 The APM v4 server hosts a built-in documentation wiki at `http://localhost:3031/docs`.
 
