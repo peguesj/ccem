@@ -53,6 +53,38 @@ actor APMClient {
         return []
     }
 
+    func fetchUPMStatus() async throws -> UPMStatus {
+        let url = baseURL.appendingPathComponent("api/upm/status")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        return try decoder.decode(UPMStatus.self, from: data)
+    }
+
+    func fetchNotifications(
+        since: String? = nil,
+        category: String? = nil,
+        project: String? = nil,
+        limit: Int = 20
+    ) async throws -> [APMNotification] {
+        var components = URLComponents(string: "\(baseURL.absoluteString)/api/notifications")!
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+        if let since { queryItems.append(URLQueryItem(name: "since", value: since)) }
+        if let category { queryItems.append(URLQueryItem(name: "category", value: category)) }
+        if let project { queryItems.append(URLQueryItem(name: "project", value: project)) }
+        components.queryItems = queryItems
+
+        let (data, response) = try await session.data(from: components.url!)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let result = try decoder.decode(NotificationsResponse.self, from: data)
+        return result.notifications
+    }
+
     func fetchData() async throws -> APMDataResponse {
         let url = baseURL.appendingPathComponent("api/data")
         let (data, response) = try await session.data(from: url)

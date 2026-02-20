@@ -39,6 +39,28 @@ struct MenuBarView: View {
                 }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+
+                if let upm = monitor.upmStatus, upm.active, let session = upm.session {
+                    HStack(spacing: 6) {
+                        Image(systemName: "waveform.path")
+                            .foregroundStyle(.blue)
+                        Text("UPM Wave \(session.currentWave)/\(session.totalWaves)")
+                            .fontWeight(.medium)
+                        Spacer()
+                        Text(session.status)
+                            .foregroundStyle(upmStatusColor(session.status))
+                    }
+                    .font(.caption2)
+
+                    if let stories = session.stories, !stories.isEmpty {
+                        let passed = stories.filter { $0.status == "passed" }.count
+                        ProgressView(value: Double(passed), total: Double(stories.count))
+                            .tint(.green)
+                        Text("\(passed)/\(stories.count) stories passed")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
         }
         .padding(.horizontal, 12)
@@ -113,10 +135,29 @@ struct MenuBarView: View {
         }
     }
 
+    private func upmStatusColor(_ status: String) -> Color {
+        switch status {
+        case "running": return .blue
+        case "verifying": return .orange
+        case "verified", "shipped": return .green
+        default: return .secondary
+        }
+    }
+
     private var actionsSection: some View {
         VStack(spacing: 0) {
             Button(action: monitor.openDashboard) {
                 Label("Open Dashboard", systemImage: "globe")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            Button(action: {
+                NSWorkspace.shared.open(URL(string: "http://localhost:3031/docs")!)
+            }) {
+                Label("Help & Docs", systemImage: "book")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
