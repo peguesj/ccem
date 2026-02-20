@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2026-02-20
+
+### Changed
+- Updated version identifiers across package.json, apm-v4/mix.exs, and CCEMAgent Info.plist to 2.2.1
+
+### Added
+- APM v4 documentation updates
+- Port manager for multi-project APM server coordination
+- Elixir-architect principles documentation and enforcement in apm-v4
+
+---
+
+## [2.2.0] - 2026-02-01
+
+### Added
+- APM v4 gap closure: browser notifications, D3.js graph hierarchy improvements
+- Toast notification system in APM dashboard
+- Improved project status display in CCEM menubar agent
+
+---
+
+## [2.1.0] - 2025-12-01
+
+### Added
+- SwiftUI CCEM menubar agent (CCEMAgent) for macOS
+- All/Active filter toggle in menubar project list
+- Plane PM backfill for project tracking
+- Wiki and documentation updates
+
+---
+
+## [2.0.0] - 2025-11-01
+
+### Added
+- CCEM APM v4 as git submodule (peguesj/ccem-apm-v4)
+- Phoenix/Elixir real-time dashboard on port 3031
+- D3.js dependency graph visualization
+- Ralph methodology display in APM dashboard
+- Multi-session token tracking
+
+---
+
+## [0.1.0] - 2025-09-01
+
+### Added
+- Initial TypeScript project scaffold
+- Commander CLI entrypoint
+- Ink-based TUI skeleton
+- Basic project structure and build pipeline
+
+---
+
 ## [1.0.0] - 2025-10-17
 
 ### Added
@@ -374,3 +426,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Local-only operations
 
 [1.0.0]: https://github.com/peguesj/ccem/releases/tag/v1.0.0
+[2.2.1]: https://github.com/peguesj/ccem/releases/tag/v2.2.1
+[2.2.0]: https://github.com/peguesj/ccem/releases/tag/v2.2.0
+[2.1.0]: https://github.com/peguesj/ccem/releases/tag/v2.1.0
+[2.0.0]: https://github.com/peguesj/ccem/releases/tag/v2.0.0
+[0.1.0]: https://github.com/peguesj/ccem/releases/tag/v0.1.0
