@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "pre-execution": [
+      {
+        "name": "analyze-message",
+        "enabled": true,
+        "handler": "./pre-execution/analyze-message.js",
+        "servers": ["viki"],
+        "async": true,
+        "type": "pre-execution"
+      }
+    ],
+    "post-execution": [
+      {
+        "name": "store-conversation",
+        "enabled": true,
+        "handler": "./post-execution/store-conversation.js",
+        "servers": ["viki"],
+        "async": true,
+        "type": "post-execution"
+      }
+    ],
+    "tools": [],
+    "errors": []
+  }
+}

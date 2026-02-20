@@ -1,0 +1,65 @@
+{
+  "bridge_id": "lfg-devdrive-bridge",
+  "created": "2026-02-17T05:30:00Z",
+  "description": "Cross-session bridge: LFG suite (consumer) <-> yj-devdrive (source)",
+  "status": "active",
+  "sessions": {
+    "lfg": {
+      "session_id": "4cf5b607-cb86-4a54-8158-3e5218c131fd",
+      "project_name": "LFG - Local File Guardian",
+      "project_root": "/Users/jeremiah/tools/@yj/lfg",
+      "role": "consumer",
+      "modules": ["wtfs", "dtf", "btau"]
+    },
+    "yj-devdrive": {
+      "session_id": null,
+      "project_name": "yj-devdrive",
+      "project_root": "/Users/jeremiah/tools/yj-devdrive",
+      "role": "source",
+      "modules": ["dtf", "btau", "devdrive", "tui", "native_ui"]
+    }
+  },
+  "shared_resources": {
+    "btau_core": {
+      "source_path": "/Users/jeremiah/tools/yj-devdrive/btau/",
+      "consumer_bridge": "/Users/jeremiah/tools/@yj/lfg/lib/btau.sh",
+      "watch_patterns": ["btau/cli.py", "btau/core/*.py"],
+      "conflict_policy": "source_wins"
+    },
+    "dtf_core": {
+      "source_path": "/Users/jeremiah/tools/yj-devdrive/dtf/",
+      "consumer_bridge": "/Users/jeremiah/tools/@yj/lfg/lib/clean.sh",
+      "watch_patterns": ["dtf/categories/*.yaml", "dtf/core/*.py"],
+      "conflict_policy": "source_wins"
+    },
+    "ccem_integration": {
+      "source_path": "/Users/jeremiah/tools/yj-devdrive/btau/integrations/ccem.py",
+      "consumer_bridge": "apm:3031",
+      "watch_patterns": ["btau/integrations/*.py"],
+      "conflict_policy": "source_wins"
+    }
+  },
+  "orchestrator": {
+    "script": "/Users/jeremiah/Developer/ccem/apm/bridges/orchestrator.sh",
+    "poll_interval_seconds": 30,
+    "log_file": "/Users/jeremiah/Developer/ccem/apm/bridges/orchestrator.log",
+    "pid_file": "/Users/jeremiah/Developer/ccem/apm/bridges/.orchestrator.pid"
+  },
+  "sync_rules": [
+    {
+      "trigger": "btau CLI interface changes",
+      "action": "Update lfg btau.sh wrapper to match new commands",
+      "severity": "high"
+    },
+    {
+      "trigger": "dtf category schema changes",
+      "action": "Verify lfg clean.sh cache list matches dtf categories",
+      "severity": "medium"
+    },
+    {
+      "trigger": "New yj-devdrive module added",
+      "action": "Evaluate for LFG integration",
+      "severity": "low"
+    }
+  ]
+}

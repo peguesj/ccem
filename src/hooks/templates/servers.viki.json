@@ -1,0 +1,19 @@
+{
+  "servers": {
+    "viki": {
+      "name": "viki",
+      "url": "https://viki.yjos.lgtm.build",
+      "auth": {
+        "type": "bearer",
+        "tokenEnv": "VIKI_API_TOKEN"
+      },
+      "retry": {
+        "maxAttempts": 3,
+        "backoff": "exponential",
+        "initialDelayMs": 1000
+      },
+      "timeoutMs": 5000,
+      "enabled": true
+    }
+  }
+}

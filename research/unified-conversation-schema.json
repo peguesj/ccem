@@ -1,0 +1,502 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ccem.dev/schemas/unified-conversation/v1.0.0",
+  "title": "Unified AI Coding Assistant Conversation Schema",
+  "description": "A unified schema for representing conversations across multiple AI coding assistant platforms including Claude Code, GitHub Copilot, ChatGPT, Continue.dev, Roo Code, and Azure OpenAI",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "conversation_id",
+    "platform",
+    "created_at",
+    "messages"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this unified schema specification",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "examples": ["1.0.0"]
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "Unique identifier for this conversation",
+      "format": "uuid"
+    },
+    "platform": {
+      "type": "object",
+      "description": "Source platform information",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "claude_code",
+            "github_copilot",
+            "chatgpt",
+            "continue_dev",
+            "roo_code",
+            "azure_openai",
+            "cursor",
+            "windsurf",
+            "aider",
+            "other"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the platform software"
+        },
+        "model": {
+          "type": "string",
+          "description": "AI model used (e.g., claude-sonnet-4-5, gpt-4, etc.)"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Platform-specific metadata",
+          "additionalProperties": true
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "description": "Session-level information",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Session identifier if different from conversation_id"
+        },
+        "parent_conversation_id": {
+          "type": ["string", "null"],
+          "description": "Reference to parent conversation if this is a continuation"
+        },
+        "fork_point": {
+          "type": ["string", "null"],
+          "description": "Message ID where this conversation forked from parent"
+        },
+        "is_sidechain": {
+          "type": "boolean",
+          "description": "Indicates if this is a side conversation branch",
+          "default": false
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Environmental and project context",
+      "properties": {
+        "workspace": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Working directory path"
+            },
+            "git_branch": {
+              "type": ["string", "null"],
+              "description": "Active git branch"
+            },
+            "git_commit": {
+              "type": ["string", "null"],
+              "description": "Current git commit hash"
+            }
+          }
+        },
+        "environment": {
+          "type": "object",
+          "properties": {
+            "os": {
+              "type": "string",
+              "description": "Operating system"
+            },
+            "shell": {
+              "type": "string",
+              "description": "Shell environment"
+            },
+            "editor": {
+              "type": "string",
+              "description": "Code editor/IDE being used"
+            },
+            "language": {
+              "type": "string",
+              "description": "Primary programming language"
+            }
+          }
+        },
+        "custom": {
+          "type": "object",
+          "description": "Platform-specific or user-defined context",
+          "additionalProperties": true
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Conversation creation timestamp in ISO 8601 format"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp in ISO 8601 format"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "archived", "error"],
+      "default": "active"
+    },
+    "messages": {
+      "type": "array",
+      "description": "Array of conversation messages",
+      "items": {
+        "$ref": "#/definitions/message"
+      }
+    },
+    "summaries": {
+      "type": "array",
+      "description": "Array of conversation summaries for long conversations",
+      "items": {
+        "$ref": "#/definitions/summary"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Aggregated conversation metrics",
+      "properties": {
+        "total_messages": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_tokens": {
+          "type": "object",
+          "properties": {
+            "input": {"type": "integer", "minimum": 0},
+            "output": {"type": "integer", "minimum": 0},
+            "cache_read": {"type": "integer", "minimum": 0},
+            "cache_write": {"type": "integer", "minimum": 0}
+          }
+        },
+        "total_cost": {
+          "type": "object",
+          "properties": {
+            "amount": {"type": "number", "minimum": 0},
+            "currency": {"type": "string", "default": "USD"}
+          }
+        },
+        "tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total conversation duration in milliseconds"
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "User or system-defined tags for categorization",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rating": {
+      "type": "object",
+      "description": "User feedback and rating",
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "feedback": {
+          "type": "string"
+        },
+        "rated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "message": {
+      "type": "object",
+      "required": ["message_id", "role", "timestamp", "content"],
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "description": "Unique identifier for this message"
+        },
+        "parent_message_id": {
+          "type": ["string", "null"],
+          "description": "Reference to parent message in conversation thread"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "assistant", "system", "tool", "function"],
+          "description": "Role of the message sender"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Message creation timestamp"
+        },
+        "content": {
+          "type": "array",
+          "description": "Array of content blocks in the message",
+          "items": {
+            "oneOf": [
+              {"$ref": "#/definitions/text_content"},
+              {"$ref": "#/definitions/tool_use_content"},
+              {"$ref": "#/definitions/tool_result_content"},
+              {"$ref": "#/definitions/image_content"},
+              {"$ref": "#/definitions/code_content"},
+              {"$ref": "#/definitions/thinking_content"}
+            ]
+          }
+        },
+        "tokens": {
+          "type": "object",
+          "description": "Token usage for this specific message",
+          "properties": {
+            "input_tokens": {"type": "integer", "minimum": 0},
+            "output_tokens": {"type": "integer", "minimum": 0},
+            "cache_creation_input_tokens": {"type": "integer", "minimum": 0},
+            "cache_read_input_tokens": {"type": "integer", "minimum": 0},
+            "cache_creation": {
+              "type": "object",
+              "properties": {
+                "ephemeral_5m_input_tokens": {"type": "integer", "minimum": 0},
+                "ephemeral_1h_input_tokens": {"type": "integer", "minimum": 0}
+              }
+            },
+            "service_tier": {
+              "type": "string",
+              "enum": ["standard", "premium"]
+            }
+          }
+        },
+        "cost": {
+          "type": "object",
+          "description": "Cost for this message",
+          "properties": {
+            "amount": {"type": "number", "minimum": 0},
+            "currency": {"type": "string", "default": "USD"}
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional message-level metadata",
+          "properties": {
+            "user_type": {
+              "type": "string",
+              "description": "Type of user (human, agent, system)"
+            },
+            "edit_count": {
+              "type": "integer",
+              "description": "Number of times message was edited"
+            },
+            "model_override": {
+              "type": "string",
+              "description": "If a different model was used for this message"
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "text_content": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "text"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content of the message"
+        }
+      }
+    },
+    "tool_use_content": {
+      "type": "object",
+      "required": ["type", "id", "name", "input"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "tool_use"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this tool use"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the tool being invoked"
+        },
+        "input": {
+          "type": "object",
+          "description": "Input parameters for the tool",
+          "additionalProperties": true
+        }
+      }
+    },
+    "tool_result_content": {
+      "type": "object",
+      "required": ["type", "tool_use_id"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "tool_result"
+        },
+        "tool_use_id": {
+          "type": "string",
+          "description": "Reference to the tool_use this is responding to"
+        },
+        "content": {
+          "oneOf": [
+            {"type": "string"},
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {"type": "string"},
+                  "text": {"type": "string"}
+                }
+              }
+            }
+          ],
+          "description": "Result content from tool execution"
+        },
+        "is_error": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates if the tool execution resulted in an error"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "duration_ms": {
+              "type": "integer",
+              "description": "Tool execution duration"
+            },
+            "exit_code": {
+              "type": "integer",
+              "description": "Exit code for command-line tools"
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "image_content": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "image"
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["base64", "url"]
+            },
+            "media_type": {
+              "type": "string",
+              "examples": ["image/png", "image/jpeg", "image/webp", "image/gif"]
+            },
+            "data": {
+              "type": "string",
+              "description": "Base64-encoded image data or URL"
+            }
+          }
+        },
+        "alt_text": {
+          "type": "string",
+          "description": "Alternative text description"
+        }
+      }
+    },
+    "code_content": {
+      "type": "object",
+      "required": ["type", "code"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "code"
+        },
+        "code": {
+          "type": "string",
+          "description": "Code snippet"
+        },
+        "language": {
+          "type": "string",
+          "description": "Programming language"
+        },
+        "file_path": {
+          "type": "string",
+          "description": "File path if code is from a file"
+        },
+        "line_range": {
+          "type": "object",
+          "properties": {
+            "start": {"type": "integer", "minimum": 1},
+            "end": {"type": "integer", "minimum": 1}
+          }
+        }
+      }
+    },
+    "thinking_content": {
+      "type": "object",
+      "required": ["type", "thinking"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "thinking"
+        },
+        "thinking": {
+          "type": "string",
+          "description": "Internal reasoning or thought process"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["summary_id", "type", "text", "timestamp"],
+      "properties": {
+        "summary_id": {
+          "type": "string",
+          "description": "Unique identifier for this summary"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["automatic", "user_generated", "system"],
+          "description": "How the summary was created"
+        },
+        "text": {
+          "type": "string",
+          "description": "Summary text"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "covers_messages": {
+          "type": "array",
+          "description": "Message IDs covered by this summary",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
