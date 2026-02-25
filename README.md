@@ -1,8 +1,8 @@
-# CCEM v2.2.1 - Claude Code Environment Manager
+# CCEM v2.3.3 - Claude Code Environment Manager
 
 [![CI](https://github.com/peguesj/ccem/workflows/CI/badge.svg)](https://github.com/peguesj/ccem/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.2.1-blue.svg)](https://github.com/peguesj/ccem/blob/main/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.3-blue.svg)](https://github.com/peguesj/ccem/blob/main/CHANGELOG.md)
 [![Elixir](https://img.shields.io/badge/elixir-1.15+-purple.svg)](https://elixir-lang.org)
 [![Node](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
 

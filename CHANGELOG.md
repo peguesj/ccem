@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.3] - 2026-02-21
+
+### Fixed
+- Reduced test failures from 193 to 14 by patching 15 test files with `ensure_processes_alive` helper
+- Updated ConnCase to prevent process restart cascades in test suite
+
+---
+
+## [2.3.2] - 2026-02-21
+
+### Fixed
+- Added `GenServerHelpers` module to apm-v4 test suite to prevent OTP restart intensity cascades
+
+---
+
+## [2.3.1] - 2026-02-21
+
+### Changed
+- Updated apm-v4 submodule to latest (docs, port manager, elixir-architect improvements)
+
+---
+
+## [2.3.0] - 2026-02-21
+
+### Added
+- WebKit APM window: WKWebView in-app dashboard via `APMWindowManager` singleton
+- Native macOS notifications via `UNUserNotificationCenter` with `APMNotificationReceiver`
+- `APMBrowserView` with back/forward/reload toolbar and URL bar
+- "Help & Docs" menu item in CCEMAgent menubar opens `/docs` in APM window
+
+---
+
+## [2.2.4] - 2026-02-20
+
+### Changed
+- Removed session artifact documentation files from repository
+- Added gitignore patterns for sessions, configs, and temp doc files
+
+---
+
+## [2.2.3] - 2026-02-20
+
+### Changed
+- Rewrote README with live screenshots and SVG menubar graphic
+- Added vectorized CCEMAgent menubar SVG with anonymized project data
+
+---
+
+## [2.2.2] - 2026-02-20
+
+### Changed
+- Cleaned up artifact documentation files from working sessions
+- Improved gitignore patterns for runtime artifacts
+
+---
+
 ## [2.2.1] - 2026-02-20
 
 ### Changed
