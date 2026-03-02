@@ -93,6 +93,15 @@ actor APMClient {
         }
         return try decoder.decode(APMDataResponse.self, from: data)
     }
+
+    func fetchTelemetry() async throws -> TelemetryResponse {
+        let url = baseURL.appendingPathComponent("api/telemetry")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        return try decoder.decode(TelemetryResponse.self, from: data)
+    }
 }
 
 enum APMClientError: Error, LocalizedError {

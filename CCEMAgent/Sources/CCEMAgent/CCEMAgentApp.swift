@@ -7,6 +7,7 @@ struct CCEMAgentApp: App {
     @State private var monitor = EnvironmentMonitor()
     @State private var launchManager = LaunchManager()
     @State private var notificationReceiver = APMNotificationReceiver()
+    @State private var serverManager = APMServerManager()
 
     init() {
         // Request notification permission early
@@ -15,16 +16,19 @@ struct CCEMAgentApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView(monitor: monitor, launchManager: launchManager)
+            MenuBarView(monitor: monitor, launchManager: launchManager, serverManager: serverManager)
                 .task {
                     notificationReceiver.start()
                     monitor.requestNotificationPermission()
+                    serverManager.checkRunning()
                     monitor.start()
                 }
                 .onChange(of: monitor.connectionState) { oldValue, newValue in
                     if oldValue == .connected && newValue == .disconnected {
+                        serverManager.checkRunning()
                         postSystemNotification(title: "CCEM APM", body: "APM server disconnected", type: "warning")
                     } else if oldValue == .disconnected && newValue == .connected {
+                        serverManager.checkRunning()
                         postSystemNotification(title: "CCEM APM", body: "APM server connected", type: "success")
                     }
                 }

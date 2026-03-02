@@ -19,6 +19,7 @@ final class EnvironmentMonitor {
     var filter: EnvironmentFilter = .all
     var upmStatus: UPMStatus?
     var recentNotifications: [APMNotification] = []
+    var agentTelemetry: TelemetryResponse?
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
@@ -133,6 +134,13 @@ final class EnvironmentMonitor {
             upmStatus = try await client.fetchUPMStatus()
         } catch {
             upmStatus = nil
+        }
+
+        // Fetch agent telemetry (non-blocking, best-effort)
+        do {
+            agentTelemetry = try await client.fetchTelemetry()
+        } catch {
+            agentTelemetry = nil
         }
     }
 
