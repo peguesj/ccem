@@ -107,6 +107,37 @@ struct NotificationsResponse: Codable {
     let limit: Int
 }
 
+// MARK: - Background Tasks
+
+struct BackgroundTask: Codable, Identifiable {
+    let id: String
+    let label: String
+    let status: String
+    let agentName: String?
+    let agentDefinition: String?
+    let invokingProcess: String?
+    let logPath: String?
+    let runtimeMs: Int?
+    let osPid: Int?
+    let startedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, label, status
+        case agentName = "agent_name"
+        case agentDefinition = "agent_definition"
+        case invokingProcess = "invoking_process"
+        case logPath = "log_path"
+        case runtimeMs = "runtime_ms"
+        case osPid = "os_pid"
+        case startedAt = "started_at"
+    }
+}
+
+struct BackgroundTasksResponse: Codable {
+    let tasks: [BackgroundTask]
+    let count: Int
+}
+
 // MARK: - Connection State
 
 enum ConnectionState: Equatable {

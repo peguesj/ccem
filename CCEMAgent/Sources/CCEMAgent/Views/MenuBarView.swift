@@ -5,12 +5,27 @@ struct MenuBarView: View {
     @Bindable var monitor: EnvironmentMonitor
     @Bindable var launchManager: LaunchManager
     @Bindable var serverManager: APMServerManager
+    @Bindable var formationMonitor: FormationMonitor
+    @Bindable var upmMonitor: UPMMonitor
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             headerSection
             Divider()
             contentSection
+            if !formationMonitor.activeFormations.isEmpty {
+                Divider()
+                formationSection
+            }
+            let runningTasks = monitor.backgroundTasks.filter { $0.status == "running" }
+            if !runningTasks.isEmpty {
+                Divider()
+                backgroundTasksSection(runningTasks)
+            }
+            if upmMonitor.projectCount > 0 || upmMonitor.driftedCount > 0 {
+                Divider()
+                upmSection
+            }
             Divider()
             refreshLabel
             actionsSection
@@ -26,6 +41,11 @@ struct MenuBarView: View {
                 Text("CCEM APM")
                     .font(.system(.headline, design: .monospaced))
                 Spacer()
+                if let version = monitor.healthStatus?.serverVersion {
+                    Text("v\(version)")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
                 StatusIndicator(state: monitor.connectionState)
                 Text(monitor.connectionState.label)
                     .font(.caption)
@@ -125,12 +145,12 @@ struct MenuBarView: View {
     private func telemetrySection(_ telemetry: TelemetryResponse) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text("Agent Activity")
+                Label("Agent Activity", systemImage: "chart.line.uptrend.xyaxis")
                     .font(.caption2)
                     .fontWeight(.medium)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text("last hour")
+                Text("last 24h")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -194,6 +214,152 @@ struct MenuBarView: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 6)
         }
+    }
+
+    // MARK: - Formation Monitor Section
+
+    private var formationSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Formations", systemImage: "square.grid.3x3")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if formationMonitor.pendingRestart {
+                    Label("Restarting APM…", systemImage: "arrow.clockwise")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                } else if formationMonitor.pendingRebuild {
+                    Label("Rebuilding Agent…", systemImage: "hammer")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            ForEach(formationMonitor.activeFormations) { formation in
+                HStack(spacing: 6) {
+                    formationStatusDot(formation.status)
+                    Text(formation.id)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                    Spacer()
+                    Text(formation.status)
+                        .font(.caption2)
+                        .foregroundStyle(formationStatusColor(formation.status))
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 2)
+            }
+
+            if let action = formationMonitor.lastLifecycleAction {
+                Text(action)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 4)
+                    .lineLimit(1)
+            }
+        }
+        .padding(.bottom, 4)
+    }
+
+    @ViewBuilder
+    private func formationStatusDot(_ status: String) -> some View {
+        Circle()
+            .fill(formationStatusColor(status))
+            .frame(width: 6, height: 6)
+    }
+
+    private func formationStatusColor(_ status: String) -> Color {
+        switch status {
+        case "complete", "done", "shipped": return .green
+        case "active", "running", "registered": return .blue
+        case "failed", "error": return .red
+        case "pending", "queued": return .secondary
+        default: return .secondary
+        }
+    }
+
+    // MARK: - UPM Section
+
+    private var upmSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("UPM", systemImage: "cylinder.split.1x2")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if let lastPoll = upmMonitor.lastPollAt {
+                    HStack(spacing: 2) {
+                        Text("Last sync:")
+                            .foregroundStyle(.tertiary)
+                        Text(lastPoll, style: .relative)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .font(.caption2)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            HStack(spacing: 12) {
+                HStack(spacing: 4) {
+                    Image(systemName: "folder")
+                        .foregroundStyle(.secondary)
+                    Text("\(upmMonitor.projectCount) projects")
+                }
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle")
+                        .foregroundStyle(.green)
+                    Text("\(upmMonitor.syncedCount) synced")
+                }
+                if upmMonitor.driftedCount > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                        Text("\(upmMonitor.driftedCount) drifted")
+                    }
+                    .foregroundStyle(.orange)
+                }
+                Spacer()
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 12)
+
+            // Recent syncs (last 3)
+            ForEach(Array(upmMonitor.recentSyncs.prefix(3)), id: \.projectId) { result in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(result.errors.isEmpty ? Color.green : Color.orange)
+                        .frame(width: 5, height: 5)
+                    Text(result.projectId)
+                        .font(.caption2)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Spacer()
+                    Text("\(result.syncedCount) items")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 1)
+            }
+
+            if let error = upmMonitor.error {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundStyle(.red)
+                    .lineLimit(1)
+                    .padding(.horizontal, 12)
+            }
+        }
+        .padding(.bottom, 6)
     }
 
     // MARK: - Disconnected
@@ -265,6 +431,27 @@ struct MenuBarView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
 
+            Button(action: { APMWindowManager.shared.openDashboard(path: "/upm") }) {
+                Label("Open UPM", systemImage: "cylinder.split.1x2")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            Button {
+                Task {
+                    try? await APMClient().triggerUPMSync()
+                    await upmMonitor.refresh()
+                }
+            } label: {
+                Label("Sync All Projects", systemImage: "arrow.triangle.2.circlepath")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
             Button(action: { APMWindowManager.shared.openDocs() }) {
                 Label("Help & Docs", systemImage: "book")
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -282,6 +469,9 @@ struct MenuBarView: View {
             .buttonStyle(.plain)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
+
+            // Docker Socket Repair
+            dockerSocketItem
 
             Divider()
 
@@ -347,7 +537,106 @@ struct MenuBarView: View {
         }
     }
 
+    // MARK: - Docker Socket
+
+    @State private var dockerStatus: DockerSocketStatus = .ok
+    @State private var isRepairingDocker = false
+
+    private var dockerSocketItem: some View {
+        Group {
+            if dockerStatus == .ok {
+                Label("Docker: OK", systemImage: "checkmark.circle")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+            } else {
+                Button {
+                    isRepairingDocker = true
+                    Task {
+                        let success = await DockerSocketRepair.repair()
+                        dockerStatus = success ? .ok : DockerSocketRepair.status()
+                        isRepairingDocker = false
+                    }
+                } label: {
+                    if isRepairingDocker {
+                        Label("Repairing Docker…", systemImage: "wrench.and.screwdriver")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        Label("Repair Docker Socket", systemImage: "wrench.and.screwdriver")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.orange)
+                .disabled(isRepairingDocker)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+            }
+        }
+        .onAppear { dockerStatus = DockerSocketRepair.status() }
+    }
+
+    // MARK: - Background Tasks Section
+
+    @ViewBuilder
+    private func backgroundTasksSection(_ tasks: [BackgroundTask]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Background Tasks", systemImage: "gearshape.2")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(tasks.count) running")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            ForEach(tasks.prefix(5)) { task in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(Color.blue)
+                        .frame(width: 5, height: 5)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(task.agentName ?? task.label)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                        if let definition = task.agentDefinition {
+                            Text(definition)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    Spacer()
+                    if let ms = task.runtimeMs {
+                        Text(formatRuntime(ms))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 2)
+            }
+        }
+        .padding(.bottom, 4)
+    }
+
     // MARK: - Helpers
+
+    private func formatRuntime(_ ms: Int) -> String {
+        if ms < 1000 { return "\(ms)ms" }
+        let seconds = ms / 1000
+        if seconds < 60 { return "\(seconds)s" }
+        let minutes = seconds / 60
+        let remaining = seconds % 60
+        return remaining == 0 ? "\(minutes)m" : "\(minutes)m \(remaining)s"
+    }
 
     private func upmStatusColor(_ status: String) -> Color {
         switch status {

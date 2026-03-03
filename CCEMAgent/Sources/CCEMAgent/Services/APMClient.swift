@@ -102,6 +102,73 @@ actor APMClient {
         }
         return try decoder.decode(TelemetryResponse.self, from: data)
     }
+
+    func fetchBackgroundTasks() async throws -> [BackgroundTask] {
+        let url = baseURL.appendingPathComponent("api/bg-tasks")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        if let wrapper = try? decoder.decode(BackgroundTasksResponse.self, from: data) {
+            return wrapper.tasks
+        }
+        return (try? decoder.decode([BackgroundTask].self, from: data)) ?? []
+    }
+
+    // MARK: - UPM Module
+
+    func fetchUPMProjects() async throws -> [UPMProject] {
+        let url = baseURL.appendingPathComponent("api/upm/projects")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let wrapper = try decoder.decode(UPMProjectsResponse.self, from: data)
+        return wrapper.data
+    }
+
+    func fetchUPMSyncStatus() async throws -> UPMSyncStatusData {
+        let url = baseURL.appendingPathComponent("api/upm/sync/status")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let wrapper = try decoder.decode(UPMSyncStatusResponse.self, from: data)
+        return wrapper.data
+    }
+
+    func fetchUPMDrift() async throws -> UPMDriftSummary {
+        let url = baseURL.appendingPathComponent("api/upm/work_items/drift")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        struct DriftWrapper: Codable { let data: UPMDriftSummary }
+        let wrapper = try decoder.decode(DriftWrapper.self, from: data)
+        return wrapper.data
+    }
+
+    func triggerUPMSync() async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/upm/sync"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = "{}".data(using: .utf8)
+        let (_, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    func triggerUPMScan() async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/upm/projects/scan"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = "{}".data(using: .utf8)
+        let (_, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+    }
 }
 
 enum APMClientError: Error, LocalizedError {

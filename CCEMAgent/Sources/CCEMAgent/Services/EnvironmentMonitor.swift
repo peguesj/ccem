@@ -20,6 +20,7 @@ final class EnvironmentMonitor {
     var upmStatus: UPMStatus?
     var recentNotifications: [APMNotification] = []
     var agentTelemetry: TelemetryResponse?
+    var backgroundTasks: [BackgroundTask] = []
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
@@ -141,6 +142,13 @@ final class EnvironmentMonitor {
             agentTelemetry = try await client.fetchTelemetry()
         } catch {
             agentTelemetry = nil
+        }
+
+        // Fetch background tasks (non-blocking, best-effort)
+        do {
+            backgroundTasks = try await client.fetchBackgroundTasks()
+        } catch {
+            backgroundTasks = []
         }
     }
 

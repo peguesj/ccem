@@ -94,7 +94,31 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3031/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3031/api/openapi.json` (v1 alias)
 
-## Current Version: v4.0.0
+## Current Version: v4.2.0
+
+## Implementation Checkpoints — ralph/upm-module-ccem-apm
+
+### Wave 1: Foundation (Independent)
+- [x] **CP-35**: UPM.ProjectRegistry GenServer + ETS + scan_and_sync (US-001)
+- [x] **CP-36**: UPM.PMIntegrationStore + adapter_for/1 test_connection delegation (US-002)
+- [x] **CP-37**: UPM.VCSIntegrationStore + sync_type enum (US-003)
+- [x] **CP-38**: UPM.WorkItemStore + detect_drift/1 + detect_drift_all/0 (US-004)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: Adapters + Sync (depends on Wave 1)
+- [x] **CP-39**: PM Adapters — PMAdapter behaviour + Plane/Linear/Jira/Monday/MSProject (US-005, US-006)
+- [x] **CP-40**: VCS Adapters — VCSAdapter behaviour + GitHub/AzureDevOps (US-007)
+- [x] **CP-41**: UPM.SyncEngine GenServer — 5-min scheduled sync + drift detection (US-008)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: REST + LiveView + CCEMAgent (depends on Wave 2)
+- [x] **CP-42**: UpmController — 22 REST endpoints at /api/upm/* (US-009)
+- [x] **CP-43**: Router — browser + API routes for UPM (US-009)
+- [x] **CP-44**: UpmLive — /upm, /upm/:id, /upm/:id/board + Kanban board (US-010)
+- [x] **CP-45**: UPM nav item added to all 19 LiveViews (US-010)
+- [x] **CP-46**: CCEMAgent UPMMonitor + UPMModels + MenuBar UPM section (US-011)
+- [x] **CP-47**: v4.1.0 CHANGELOG + mix.exs version bump (US-012)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
 
 ## Implementation Checkpoints — ralph/apm-v4-formation-ux-integration
 
@@ -123,6 +147,27 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - [x] **CP-16**: Update ccem-apm SKILL.md + command reference (US-016)
 - [x] **CP-17**: Bump to v2.4.0 — mix.exs, CHANGELOG, CCEMAgent rebuild (US-017)
 - After Wave 3: `/upm verify` — integration tests against http://localhost:3031 ✓ PASS (compile EXIT:0)
+
+## DRTW — Don't Reinvent The Wheel
+
+This project enforces the DRTW principle via `~/.claude/skills/drtw/SKILL.md`.
+
+Before implementing any new feature or utility in CCEM:
+1. Check `package.json` (Node packages already installed)
+2. Check `mix.exs` in `apm-v4/` (Elixir deps already installed)
+3. Run `/drtw <description>` to discover existing solutions
+4. Check https://www.aitmpl.com/skills for community skills
+5. Only build custom after exhausting L1–L4
+
+**For CCEM-specific patterns**:
+- APM notifications: use existing `POST /api/notify` endpoint
+- Agent heartbeats: use existing `POST /api/heartbeat` endpoint
+- Formation tracking: use existing `POST /api/upm/register` endpoint
+- Background tasks: use existing `BackgroundTasksStore` GenServer
+- Project scanning: use existing `ProjectScanner` GenServer
+
+**Hook integration**: DRTW discovery hook fires on Write/Edit operations
+automatically from user-scope settings.json.
 
 ## Implementation Checkpoints — ralph/ccem-v2-5-expanded-features
 
@@ -154,3 +199,54 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 ### Wave 4: Release (depends on Wave 3)
 - [x] **CP-34**: APM v4 bump to v2.5.0, CHANGELOG, OpenAPI spec (US-017) [WT: apm-actions]
 - After Wave 4: merge all worktrees → main; `mix compile`; `swift build`
+
+## Implementation Checkpoints — ralph/upm-module-ccem-apm
+
+### Wave 1: GenServers (Independent — 4 worktrees parallel)
+- [ ] **CP-35**: UPM ProjectRegistry GenServer (US-001) [CCEM-35]
+- [ ] **CP-36**: UPM PMIntegrationStore GenServer (US-002) [CCEM-36]
+- [ ] **CP-37**: UPM VCSIntegrationStore GenServer (US-003) [CCEM-37]
+- [ ] **CP-38**: UPM WorkItemStore GenServer (US-004) [CCEM-38]
+- After Wave 1: `mix compile --warnings-as-errors` must pass (0 warnings)
+
+### Wave 2: Adapters + SyncEngine (depends on Wave 1)
+- [ ] **CP-39**: Plane + Linear PM adapters (US-005) [CCEM-39]
+- [ ] **CP-40**: Jira + Monday + MSProject stub adapters (US-006) [CCEM-40]
+- [ ] **CP-41**: GitHub + AzureDevOps VCS adapters (US-007) [CCEM-41]
+- [ ] **CP-42**: UPM SyncEngine GenServer (US-008) [CCEM-42]
+- After Wave 2: `mix compile --warnings-as-errors` must pass
+
+### Wave 3: API + LiveView + CCEMAgent (depends on Wave 2)
+- [ ] **CP-43**: UPM REST API 22 endpoints in UpmController (US-009) [CCEM-43]
+- [ ] **CP-44**: UPMLive LiveView /upm dashboard (US-010) [CCEM-44]
+- [ ] **CP-45**: CCEMAgent UPMMonitor.swift + UPMModels.swift (US-011) [CCEM-45]
+- [ ] **CP-46**: UPM nav wiring + v2.6.0 bump (US-012) [CCEM-46]
+- After Wave 3: `mix compile` + `swift build -c release` must pass; verify /upm loads in browser
+
+## Implementation Checkpoints — ralph/ccem-dynamic-apm-v4-2
+
+### Wave 1: Foundation (Independent)
+- [x] **CP-48**: SkillsRegistryStore GenServer — health scoring, ETS cache, list_skills/health_score (US-001)
+- [x] **CP-49**: BackgroundTasksStore enhanced — agent_name/definition/invoking_process/log_path/runtime_ms + PubSub (US-002)
+- [x] **CP-50**: ProjectScanner scan_claude_native/1 — hooks, MCPs, active ports, CLAUDE.md sections (US-003)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: API (depends on Wave 1)
+- [x] **CP-51**: SkillsController REST API — GET /api/skills/registry, /:name, /:name/health, POST /api/skills/audit (US-004)
+- [x] **CP-52**: Enhanced Tasks API — GET /tasks/:id/logs, POST /tasks/:id/stop, PATCH /tasks/:id (US-005)
+- [x] **CP-53**: ActionEngine skill-audit — fix_skill_frontmatter, complete_skill_description, add_skill_triggers, backfill_project_memory, update_hooks (US-006)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: UI + Release (depends on Wave 2)
+- [x] **CP-54**: SkillsLive health dashboard — three-tier health view, Audit All, Fix buttons, detail panel (US-007)
+- [x] **CP-55**: CCEMAgent UI consistency pass — telemetry chart, task runtime/logs, Start/Stop APM (US-008)
+- [x] **CP-56**: v4.2.0 CHANGELOG + mix.exs bump (US-009)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+## CCEM APM Integration
+
+- **APM Dashboard**: http://localhost:3031
+- **APM Config**: /Users/jeremiah/Developer/ccem/apm/apm_config.json
+- **APM Port**: 3031
+- **Skills Path**: ~/.claude/skills/
+- **APM Log**: ~/Developer/ccem/apm/hooks/apm_server.log
