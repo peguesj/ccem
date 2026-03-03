@@ -37,7 +37,7 @@ open -a CCEMAgent
 
 **Formation agent registration rule:** Every formation agent MUST register with APM on spawn using fire-and-forget curl to `/api/register` with full `upm_context` metadata. No exceptions -- this applies to orchestrators, squadron leads, swarm agents, cluster agents, and individual leaf agents. Pattern:
 ```bash
-curl -s -X POST http://localhost:3031/api/register \
+curl -s -X POST http://localhost:3032/api/register \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "<agent_id>",
@@ -91,8 +91,8 @@ pkill -9 -f "mix phx.server"
 ## OpenAPI Endpoints
 
 Both serve the full 56-path OpenAPI 3.0.3 spec:
-- `GET http://localhost:3031/api/v2/openapi.json` (canonical)
-- `GET http://localhost:3031/api/openapi.json` (v1 alias)
+- `GET http://localhost:3032/api/v2/openapi.json` (canonical)
+- `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
 ## Current Version: v4.2.0
 
@@ -146,7 +146,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - [x] **CP-15**: deploy:agents-v2 APM hook support — wave tracking + toasts (US-015)
 - [x] **CP-16**: Update ccem-apm SKILL.md + command reference (US-016)
 - [x] **CP-17**: Bump to v2.4.0 — mix.exs, CHANGELOG, CCEMAgent rebuild (US-017)
-- After Wave 3: `/upm verify` — integration tests against http://localhost:3031 ✓ PASS (compile EXIT:0)
+- After Wave 3: `/upm verify` — integration tests against http://localhost:3032 ✓ PASS (compile EXIT:0)
 
 ## DRTW — Don't Reinvent The Wheel
 
@@ -245,7 +245,7 @@ automatically from user-scope settings.json.
 
 ## CCEM APM Integration
 
-- **APM Dashboard**: http://localhost:3031
+- **APM Dashboard**: http://localhost:3032
 - **APM Config**: /Users/jeremiah/Developer/ccem/apm/apm_config.json
 - **APM Port**: 3031
 - **Skills Path**: ~/.claude/skills/

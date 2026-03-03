@@ -134,6 +134,129 @@ program
     }
   });
 
+program
+  .command('docksock [action]')
+  .description('Docker socket repair utility (macOS)')
+  .option('--force', 'Skip confirmation prompts')
+  .option('--verbose', 'Show diagnostic detail')
+  .option('--no-restart', 'Repair socket only, skip Docker restart')
+  .action(async (action: string | undefined, options: { force?: boolean; verbose?: boolean; restart?: boolean }) => {
+    const { execSync } = await import('child_process');
+    const { existsSync } = await import('fs');
+    const os = await import('os');
+    const path = await import('path');
+
+    const home = os.homedir();
+    const symlinkPath = path.join(home, '.docker', 'run', 'docker.sock');
+    const rawSocketPath = path.join(home, 'Library', 'Containers', 'com.docker.docker', 'Data', 'docker.raw.sock');
+
+    const run = (cmd: string): string | null => {
+      try { return execSync(cmd, { timeout: 10000, encoding: 'utf-8' }).trim(); }
+      catch { return null; }
+    };
+
+    const isSocket = (p: string) => existsSync(p);
+    const dockerWorks = () => run('docker info') !== null;
+
+    const verbose = (msg: string) => { if (options.verbose) console.log(`  [dbg] ${msg}`); };
+
+    const getStatus = (): string => {
+      verbose(`symlink: ${symlinkPath} exists=${isSocket(symlinkPath)}`);
+      verbose(`raw: ${rawSocketPath} exists=${isSocket(rawSocketPath)}`);
+      if (isSocket(symlinkPath) && dockerWorks()) return 'ok';
+      if (!isSocket(rawSocketPath)) {
+        const dockerRunning = run('pgrep -f "Docker Desktop"');
+        return dockerRunning ? 'missing_raw_socket' : 'docker_not_running';
+      }
+      return 'missing_symlink';
+    };
+
+    const repair = (): boolean => {
+      execSync(`mkdir -p "${path.dirname(symlinkPath)}"`);
+      try { execSync(`rm -f "${symlinkPath}"`); } catch {}
+      try {
+        execSync(`ln -sf "${rawSocketPath}" "${symlinkPath}"`);
+        console.log(`  Symlink: ${symlinkPath} -> ${rawSocketPath}`);
+        return true;
+      } catch (e) {
+        console.error(`  Failed to create symlink: ${e}`);
+        return false;
+      }
+    };
+
+    switch (action || 'status') {
+      case 'status': {
+        const s = getStatus();
+        console.log(`Docker socket: ${s}`);
+        if (s === 'ok') { run('docker info')?.split('\n').filter(l => /Server Version|Containers|Images/.test(l)).forEach(l => console.log(`  ${l.trim()}`)); }
+        process.exit(s === 'ok' ? 0 : 1);
+        break;
+      }
+      case 'repair': {
+        const s = getStatus();
+        if (s === 'ok') { console.log('Docker socket: OK (no repair needed)'); process.exit(0); }
+        if (s === 'missing_symlink') {
+          if (repair() && dockerWorks()) { console.log('Docker socket repaired'); process.exit(0); }
+        }
+        if ((s === 'missing_raw_socket' || s === 'docker_not_running') && options.restart !== false) {
+          console.log('Raw socket missing — restarting Docker Desktop...');
+          run('pkill -f "Docker Desktop"'); run('pkill -f "com.docker"');
+          execSync('sleep 2');
+          run('open -a Docker');
+          console.log('Waiting for Docker engine...');
+          for (let i = 0; i < 30; i++) {
+            execSync('sleep 2');
+            if (isSocket(rawSocketPath)) { repair(); break; }
+          }
+          if (dockerWorks()) { console.log('Docker socket repaired after restart'); process.exit(0); }
+        }
+        console.error('Repair failed');
+        process.exit(1);
+        break;
+      }
+      case 'restart': {
+        console.log('Restarting Docker Desktop...');
+        run('pkill -f "Docker Desktop"'); run('pkill -f "com.docker"');
+        execSync('sleep 3');
+        try { execSync(`rm -f "${symlinkPath}"`); } catch {}
+        run('open -a Docker');
+        console.log('Waiting for Docker engine...');
+        for (let i = 0; i < 30; i++) {
+          execSync('sleep 2');
+          if (isSocket(rawSocketPath)) { repair(); break; }
+        }
+        if (dockerWorks()) { console.log('Docker fully operational'); process.exit(0); }
+        console.log('Docker started but daemon not yet responding');
+        process.exit(1);
+        break;
+      }
+      case 'nuke': {
+        if (!options.force) {
+          console.log('WARNING: This removes all Docker containers, images, and volumes.');
+          console.log('Use --force to confirm.');
+          process.exit(1);
+        }
+        console.log('Nuking Docker VM state...');
+        run('pkill -f "Docker Desktop"'); run('pkill -f "com.docker"');
+        execSync('sleep 3');
+        execSync(`rm -rf "${path.join(home, 'Library/Containers/com.docker.docker/Data/vms')}"`, { stdio: 'ignore' });
+        execSync(`rm -f "${rawSocketPath}"`, { stdio: 'ignore' });
+        execSync(`rm -f "${symlinkPath}"`, { stdio: 'ignore' });
+        run('open -a Docker');
+        console.log('Docker VM data cleared. Restarting...');
+        for (let i = 0; i < 30; i++) {
+          execSync('sleep 2');
+          if (isSocket(rawSocketPath)) { repair(); break; }
+        }
+        process.exit(0);
+        break;
+      }
+      default:
+        console.error(`Unknown action: ${action}. Use: status, repair, restart, nuke`);
+        process.exit(1);
+    }
+  });
+
 // Default action: show interactive TUI
 program.action(() => {
   program.help();

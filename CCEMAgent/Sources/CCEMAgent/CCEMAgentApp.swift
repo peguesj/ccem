@@ -8,6 +8,8 @@ struct CCEMAgentApp: App {
     @State private var launchManager = LaunchManager()
     @State private var notificationReceiver = APMNotificationReceiver()
     @State private var serverManager = APMServerManager()
+    @State private var formationMonitor = FormationMonitor()
+    @State private var upmMonitor = UPMMonitor()
 
     init() {
         // Request notification permission early
@@ -16,12 +18,20 @@ struct CCEMAgentApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView(monitor: monitor, launchManager: launchManager, serverManager: serverManager)
+            MenuBarView(
+                monitor: monitor,
+                launchManager: launchManager,
+                serverManager: serverManager,
+                formationMonitor: formationMonitor,
+                upmMonitor: upmMonitor
+            )
                 .task {
                     notificationReceiver.start()
                     monitor.requestNotificationPermission()
                     serverManager.checkRunning()
                     monitor.start()
+                    formationMonitor.start()
+                    upmMonitor.start()
                 }
                 .onChange(of: monitor.connectionState) { oldValue, newValue in
                     if oldValue == .connected && newValue == .disconnected {

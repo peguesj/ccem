@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>io.pegues.agent-j.labs.ccem.apm-server</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>cd __CCEM_HOME__/apm-v4 &amp;&amp; exec mix phx.server</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>__HOME__</string>
+    <key>PATH</key>
+    <string>__PATH__</string>
+    <key>MIX_ENV</key>
+    <string>dev</string>
+    <key>PORT</key>
+    <string>__PORT__</string>
+    <key>PHX_HOST</key>
+    <string>localhost</string>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>__CCEM_HOME__/apm-v4</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>__CCEM_HOME__/apm/hooks/apm_server.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>__CCEM_HOME__/apm/hooks/apm_server.log</string>
+
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+</dict>
+</plist>

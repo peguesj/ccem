@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccem.peguesinnovations.com/schemas/apm_config_v4.json",
+  "title": "CCEM APM v4 Configuration",
+  "description": "Multi-project configuration schema for CCEM Agentic Performance Monitor v4",
+  "type": "object",
+  "required": ["version", "port", "projects"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "const": "4.0.0",
+      "description": "Config schema version"
+    },
+    "port": {
+      "type": "integer",
+      "default": 3031,
+      "minimum": 1024,
+      "maximum": 65535,
+      "description": "APM server port"
+    },
+    "active_project": {
+      "type": "string",
+      "description": "Name of the currently focused project (used for backward-compat single-project APIs)"
+    },
+    "projects": {
+      "type": "array",
+      "description": "All registered projects",
+      "items": {
+        "$ref": "#/$defs/project"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "project": {
+      "type": "object",
+      "required": ["name", "root"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Project identifier (derived from directory basename)"
+        },
+        "root": {
+          "type": "string",
+          "description": "Absolute path to project root directory"
+        },
+        "tasks_dir": {
+          "type": "string",
+          "description": "Path to Claude Code tasks output directory"
+        },
+        "prd_json": {
+          "type": "string",
+          "description": "Path to Ralph prd.json for this project"
+        },
+        "todo_md": {
+          "type": "string",
+          "description": "Path to project TODO file"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive", "archived"],
+          "default": "active",
+          "description": "Project lifecycle status"
+        },
+        "registered_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this project was first registered"
+        },
+        "primary_port": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "Preferred port for this project's dev server"
+        },
+        "port_ownership": {
+          "type": "string",
+          "enum": ["exclusive", "shared", "reserved"],
+          "default": "shared",
+          "description": "Port ownership mode: exclusive (only this project), shared (multiple OK), reserved (claimed but not actively used)"
+        },
+        "sessions": {
+          "type": "array",
+          "description": "All sessions associated with this project",
+          "items": {
+            "$ref": "#/$defs/session"
+          }
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Claude Code session UUID"
+        },
+        "session_jsonl": {
+          "type": "string",
+          "description": "Path to session JSONL transcript"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session start timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed", "stale"],
+          "default": "active"
+        }
+      }
+    }
+  }
+}

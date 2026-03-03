@@ -8,6 +8,7 @@ Welcome to the CCEM (Claude Code Environment Manager) wiki. CCEM is a configurat
 - **[APM Dashboard](APM-Dashboard.md)** -- Using the Agentic Performance Monitor dashboard
 - **[Multi-Project Support](Multi-Project-Support.md)** -- How CCEM monitors multiple projects simultaneously
 - **[Ralph Methodology](Ralph-Methodology.md)** -- How the Ralph autonomous agent works with CCEM
+- **[Docker Socket Repair](Docker-Socket-Repair.md)** -- Diagnosing and fixing broken Docker Desktop sockets on macOS
 
 ## Documentation
 

@@ -1,0 +1,350 @@
+#!/bin/bash
+# ============================================================================
+# CCEM v4.0.0 Cross-Platform Installer
+# ============================================================================
+# Installs: APM v4 Phoenix Server, TypeScript CLI, Claude Code Hooks,
+#           CCEMAgent (macOS), and launchd/systemd service.
+#
+# Usage:
+#   ./install.sh [OPTIONS]
+#
+# Options:
+#   --prefix <path>   Set CCEM_HOME (default: $HOME/Developer/ccem)
+#   --skip-service    Don't install launchd/systemd service
+#   --skip-hooks      Don't patch Claude Code settings.json
+#   --skip-agent      Don't build CCEMAgent (macOS only)
+#   --skip-cli        Don't build TypeScript CLI
+#   --verbose         Show debug output
+#   --dry-run         Print what would be done without executing
+#   --yes             Skip all confirmation prompts
+#   --help            Show this help message
+# ============================================================================
+
+set -euo pipefail
+
+# Resolve installer directory (where this script lives)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALLER_DIR="$SCRIPT_DIR/installer"
+
+# ---- Source configuration and library modules ----
+
+if [[ ! -d "$INSTALLER_DIR/lib" ]]; then
+  echo "ERROR: installer/lib/ not found. Run this script from the CCEM repository root." >&2
+  exit 1
+fi
+
+source "$INSTALLER_DIR/defaults.conf"
+source "$INSTALLER_DIR/lib/ui.sh"
+source "$INSTALLER_DIR/lib/detect.sh"
+source "$INSTALLER_DIR/lib/deps.sh"
+source "$INSTALLER_DIR/lib/build.sh"
+source "$INSTALLER_DIR/lib/hooks.sh"
+source "$INSTALLER_DIR/lib/service.sh"
+
+# ---- Parse command-line flags ----
+
+SKIP_SERVICE=0
+SKIP_HOOKS=0
+SKIP_AGENT=0
+SKIP_CLI=0
+VERBOSE=0
+DRY_RUN=0
+AUTO_YES=0
+CUSTOM_PREFIX=""
+
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --prefix)
+        CUSTOM_PREFIX="$2"
+        shift 2
+        ;;
+      --skip-service) SKIP_SERVICE=1; shift ;;
+      --skip-hooks)   SKIP_HOOKS=1; shift ;;
+      --skip-agent)   SKIP_AGENT=1; shift ;;
+      --skip-cli)     SKIP_CLI=1; shift ;;
+      --verbose)      VERBOSE=1; shift ;;
+      --dry-run)      DRY_RUN=1; VERBOSE=1; shift ;;
+      --yes|-y)       AUTO_YES=1; shift ;;
+      --help|-h)
+        cat << 'HELPEOF'
+CCEM v4.0.0 Cross-Platform Installer
+
+Usage: ./install.sh [OPTIONS]
+
+Options:
+  --prefix <path>   Set CCEM_HOME (default: $HOME/Developer/ccem)
+  --skip-service    Don't install launchd/systemd service
+  --skip-hooks      Don't patch Claude Code settings.json
+  --skip-agent      Don't build CCEMAgent (macOS only)
+  --skip-cli        Don't build TypeScript CLI
+  --verbose         Show debug output
+  --dry-run         Print what would be done without executing
+  --yes             Skip all confirmation prompts
+  --help            Show this help message
+HELPEOF
+        exit 0
+        ;;
+      *)
+        error "Unknown option: $1"
+        echo "Use --help for usage information."
+        exit 1
+        ;;
+    esac
+  done
+}
+
+# ---- Phase 0: Pre-Flight ----
+
+preflight() {
+  header "Phase 0: Pre-Flight Checks"
+
+  detect_platform
+  detect_shell
+  detect_package_manager
+
+  # Resolve CCEM_HOME: --prefix > $CCEM_HOME env > default
+  if [[ -n "$CUSTOM_PREFIX" ]]; then
+    CCEM_HOME="$CUSTOM_PREFIX"
+  elif [[ -n "${CCEM_HOME:-}" ]]; then
+    : # Use environment variable as-is
+  else
+    CCEM_HOME="$CCEM_DEFAULT_HOME"
+  fi
+  export CCEM_HOME
+
+  verbose "CCEM_HOME resolved to: $CCEM_HOME"
+
+  # Check if CCEM_HOME exists; if not, offer to clone
+  if [[ ! -d "$CCEM_HOME" ]]; then
+    warn "CCEM directory not found at $CCEM_HOME"
+    if confirm "Clone peguesj/ccem to $CCEM_HOME?"; then
+      info "Cloning repository..."
+      if [[ "${DRY_RUN:-0}" == "1" ]]; then
+        step "[dry-run] git clone --recurse-submodules $CCEM_REPO_URL $CCEM_HOME"
+      else
+        git clone --recurse-submodules "$CCEM_REPO_URL" "$CCEM_HOME"
+        success "Repository cloned to $CCEM_HOME"
+      fi
+    else
+      fatal "Cannot proceed without CCEM repository. Clone it first or use --prefix."
+    fi
+  fi
+
+  # Verify it looks like a CCEM repo
+  if [[ ! -f "$CCEM_HOME/package.json" || ! -d "$CCEM_HOME/apm" ]]; then
+    fatal "$CCEM_HOME does not appear to be a CCEM repository (missing package.json or apm/)"
+  fi
+
+  # Verify apm-v4 submodule is present
+  if [[ ! -f "$CCEM_HOME/apm-v4/mix.exs" ]]; then
+    warn "apm-v4 submodule not initialized"
+    if [[ "${DRY_RUN:-0}" != "1" ]]; then
+      info "Initializing submodules..."
+      (cd "$CCEM_HOME" && git submodule update --init --recursive)
+    fi
+  fi
+
+  success "Pre-flight checks passed"
+}
+
+# ---- Phase 2: Path Setup ----
+
+setup_paths() {
+  header "Phase 2: Path Setup"
+
+  if [[ "${DRY_RUN:-0}" == "1" ]]; then
+    step "[dry-run] Would create ~/.ccem/env and source it from $SHELL_RC"
+    return 0
+  fi
+
+  # Create ~/.ccem/env
+  mkdir -p "$HOME/.ccem"
+  cat > "$HOME/.ccem/env" << ENVEOF
+# CCEM Environment — auto-generated by install.sh
+export CCEM_HOME="${CCEM_HOME}"
+export PATH="\${CCEM_HOME}/apm-v4:\${CCEM_HOME}/node_modules/.bin:\${PATH}"
+ENVEOF
+  step "Created ~/.ccem/env"
+
+  # Source from shell RC (idempotent)
+  local source_line='[ -f "$HOME/.ccem/env" ] && source "$HOME/.ccem/env"'
+  if [[ -f "$SHELL_RC" ]] && grep -qF '.ccem/env' "$SHELL_RC"; then
+    verbose "Shell RC already sources ~/.ccem/env"
+  else
+    echo "" >> "$SHELL_RC"
+    echo "# CCEM Environment" >> "$SHELL_RC"
+    echo "$source_line" >> "$SHELL_RC"
+    step "Added source line to $SHELL_RC"
+  fi
+
+  # Source it now for this session
+  source "$HOME/.ccem/env"
+
+  # Patch hook paths if CCEM_HOME differs from default
+  patch_hook_paths
+
+  success "Path setup complete"
+}
+
+# ---- Phase 9: Verification ----
+
+verify_installation() {
+  header "Phase 9: Verification"
+
+  if [[ "${DRY_RUN:-0}" == "1" ]]; then
+    step "[dry-run] Would verify all components"
+    summary_add "APM Server (${CCEM_APM_PORT})" "SKIPPED"
+    summary_add "TypeScript CLI" "SKIPPED"
+    summary_add "Claude Code Hooks" "SKIPPED"
+    summary_add "CCEMAgent" "SKIPPED"
+    summary_add "Service" "SKIPPED"
+    summary_print
+    return 0
+  fi
+
+  # APM Server check
+  if curl -sf --max-time 3 "http://localhost:${CCEM_APM_PORT}/health" &>/dev/null || \
+     lsof -ti:${CCEM_APM_PORT} &>/dev/null 2>&1; then
+    summary_add "APM Server (${CCEM_APM_PORT})" "OK"
+  else
+    summary_add "APM Server (${CCEM_APM_PORT})" "FAILED"
+  fi
+
+  # TypeScript CLI check
+  if [[ "${SKIP_CLI:-0}" == "1" ]]; then
+    summary_add "TypeScript CLI" "SKIPPED"
+  elif [[ -f "$CCEM_HOME/dist/cli.js" ]]; then
+    summary_add "TypeScript CLI" "OK"
+  else
+    summary_add "TypeScript CLI" "FAILED"
+  fi
+
+  # Claude Code Hooks check
+  if [[ "${SKIP_HOOKS:-0}" == "1" ]]; then
+    summary_add "Claude Code Hooks" "SKIPPED"
+  elif [[ -f "$CLAUDE_SETTINGS" ]] && jq -e '.hooks.SessionStart' "$CLAUDE_SETTINGS" &>/dev/null; then
+    summary_add "Claude Code Hooks" "OK"
+  else
+    summary_add "Claude Code Hooks" "FAILED"
+  fi
+
+  # CCEMAgent check
+  if [[ "$PLATFORM" != "darwin" ]]; then
+    summary_add "CCEMAgent" "SKIPPED"
+  elif [[ "${SKIP_AGENT:-0}" == "1" ]]; then
+    summary_add "CCEMAgent" "SKIPPED"
+  elif [[ -x "$CCEM_HOME/CCEMAgent/.build/CCEMAgent.app/Contents/MacOS/CCEMAgent" ]]; then
+    summary_add "CCEMAgent" "OK"
+  else
+    summary_add "CCEMAgent" "FAILED"
+  fi
+
+  # Service check
+  if [[ "${SKIP_SERVICE:-0}" == "1" ]]; then
+    summary_add "Service" "SKIPPED"
+  else
+    case "$PLATFORM" in
+      darwin)
+        if launchctl print "gui/$(id -u)/${LAUNCHD_SERVER_LABEL}" &>/dev/null; then
+          summary_add "Service" "OK"
+        else
+          summary_add "Service" "FAILED"
+        fi
+        ;;
+      linux)
+        if systemctl --user is-enabled "$SYSTEMD_UNIT" &>/dev/null; then
+          summary_add "Service" "OK"
+        else
+          summary_add "Service" "FAILED"
+        fi
+        ;;
+    esac
+  fi
+
+  summary_print
+}
+
+# ---- Main ----
+
+main() {
+  parse_args "$@"
+
+  echo -e "\n${BOLD}CCEM v4.0.0 Installer${RESET}\n"
+
+  # Phase 0: Pre-flight
+  preflight
+
+  # Show plan and confirm
+  print_plan
+  if ! confirm "Proceed with installation?"; then
+    echo "Aborted."
+    exit 0
+  fi
+
+  # Phase 1: System dependencies
+  if ! validate_dependencies; then
+    warn "Some dependencies are missing"
+    if confirm "Attempt to install missing dependencies?"; then
+      install_dependencies
+      # Re-validate after install
+      if ! validate_dependencies; then
+        fatal "Dependencies still not satisfied after install attempt. Check errors above."
+      fi
+    else
+      fatal "Cannot proceed without required dependencies."
+    fi
+  fi
+
+  # Phase 2: Path setup
+  setup_paths
+
+  # Phase 3: Build APM v4 Phoenix Server
+  if build_apm_server; then
+    BUILD_APM=OK
+  else
+    BUILD_APM=FAILED
+    warn "APM server build failed — continuing with remaining phases"
+  fi
+
+  # Phase 4: Build TypeScript CLI
+  if build_typescript_cli; then
+    BUILD_CLI=OK
+  else
+    BUILD_CLI=FAILED
+    warn "TypeScript CLI build failed — continuing with remaining phases"
+  fi
+
+  # Phase 5: Build CCEMAgent
+  if build_ccem_agent; then
+    BUILD_AGENT=OK
+  else
+    BUILD_AGENT=FAILED
+    warn "CCEMAgent build failed — continuing with remaining phases"
+  fi
+
+  # Phase 6: Initialize config & state
+  init_config_and_state
+
+  # Phase 7: Configure Claude Code hooks
+  configure_hooks
+
+  # Phase 8: Install service
+  install_service
+
+  # Phase 9: Verification
+  verify_installation
+
+  echo -e "${BOLD}Installation complete.${RESET}"
+  echo ""
+  echo "  Dashboard: http://localhost:${CCEM_APM_PORT}"
+  echo "  Config:    $CCEM_HOME/apm/apm_config.json"
+  echo "  Logs:      $CCEM_HOME/apm/hooks/apm_server.log"
+  echo ""
+  if [[ "$SHELL_RC" != "" ]]; then
+    echo "  Run 'source $SHELL_RC' to update your current shell, or open a new terminal."
+  fi
+  echo ""
+}
+
+main "$@"

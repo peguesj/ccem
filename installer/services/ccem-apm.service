@@ -1,0 +1,21 @@
+[Unit]
+Description=CCEM APM v4 Phoenix Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=__CCEM_HOME__/apm-v4
+Environment=HOME=__HOME__
+Environment=PATH=__PATH__
+Environment=MIX_ENV=dev
+Environment=PORT=__PORT__
+Environment=PHX_HOST=localhost
+ExecStart=/usr/bin/env mix phx.server
+Restart=on-failure
+RestartSec=10
+
+StandardOutput=append:__CCEM_HOME__/apm/hooks/apm_server.log
+StandardError=append:__CCEM_HOME__/apm/hooks/apm_server.log
+
+[Install]
+WantedBy=default.target

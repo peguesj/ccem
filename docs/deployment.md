@@ -237,6 +237,38 @@ cat ~/Developer/ccem/apm/apm_config.json | jq '.projects | length'
 curl -X POST http://localhost:3031/api/config/reload
 ```
 
+### Docker Socket Repair
+
+Docker Desktop on macOS can lose its socket symlink after crashes. CCEM includes built-in repair tools.
+
+**Symptoms:**
+- `docker info` returns "Cannot connect to the Docker daemon"
+- Docker Desktop shows "Engine running" but containers show errors
+- `ls ~/.docker/run/docker.sock` returns "No such file"
+
+**Fix via Claude Code skill:**
+```bash
+/docksock              # Auto-detect and repair
+/docksock status       # Check socket health
+/docksock restart      # Full Docker restart + repair
+```
+
+**Fix via CLI:**
+```bash
+ccem docksock status   # Check health
+ccem docksock repair   # Auto-repair
+ccem docksock restart  # Full restart
+```
+
+**Fix via CCEMAgent:** The menubar app shows "Repair Docker Socket" when the socket is broken. Click to auto-repair.
+
+**Manual fix:**
+```bash
+ln -sf ~/Library/Containers/com.docker.docker/Data/docker.raw.sock ~/.docker/run/docker.sock
+```
+
+See [Docker Socket Repair wiki page](../wiki/Docker-Socket-Repair.md) for full details.
+
 ### APM commands
 
 The `/ccem apm` slash command provides management operations:
