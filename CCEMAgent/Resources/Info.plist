@@ -5,11 +5,11 @@
     <key>CFBundleName</key>
     <string>CCEM Agent</string>
     <key>CFBundleIdentifier</key>
-    <string>com.ccem.agent</string>
+    <string>io.pegues.agent-j.labs.ccem.agent</string>
     <key>CFBundleVersion</key>
-    <string>2.2.1</string>
+    <string>3.0.0</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.2.1</string>
+    <string>3.0.0</string>
     <key>LSUIElement</key>
     <true/>
     <key>CFBundlePackageType</key>

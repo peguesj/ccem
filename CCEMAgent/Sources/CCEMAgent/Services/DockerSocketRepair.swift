@@ -1,3 +1,13 @@
+/// DockerSocketRepair — native macOS Docker socket repair service.
+///
+/// Docker Desktop's `desktop-linux` context expects `~/.docker/run/docker.sock` to symlink
+/// to `~/Library/Containers/com.docker.docker/Data/docker.raw.sock`. After crashes, this
+/// symlink disappears while the raw socket remains valid. This service automates detection
+/// and repair of the broken symlink, including full Docker Desktop restart when needed.
+///
+/// Invoked from the CCEMAgent menu bar ("Repair Docker Socket" item) and from the
+/// `/docksock` Claude Code skill.
+
 import AppKit
 import Foundation
 

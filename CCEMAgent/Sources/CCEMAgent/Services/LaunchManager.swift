@@ -6,7 +6,7 @@ import ServiceManagement
 final class LaunchManager {
     var isLoginItemEnabled: Bool = false
 
-    private let launchAgentLabel = "com.ccem.agent"
+    private let launchAgentLabel = "io.pegues.agent-j.labs.ccem.agent"
     private var launchAgentURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/LaunchAgents/\(launchAgentLabel).plist")

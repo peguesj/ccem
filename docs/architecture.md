@@ -2,22 +2,25 @@
 
 ## System Overview
 
-CCEM (Claude Code Environment Manager) is a multi-component system that provides configuration management, real-time agent monitoring, and environment orchestration for Claude Code sessions. The system consists of four layers that communicate through hooks, REST APIs, and shared configuration files.
+CCEM (Claude Code Environment Manager) is a multi-component system that provides configuration management, real-time agent monitoring, and environment orchestration for Claude Code sessions. As of v5, the system also implements the AG-UI (Agent-User Interaction) protocol for standardized event streaming. The system consists of five layers that communicate through hooks, REST APIs, AG-UI events, and shared configuration files.
 
 ```
 +-------------------------------------------------------------------+
 |                        Browser / Dashboard                         |
-|   Phoenix LiveView (port 3031)    |    Python v3 fallback          |
+|   Phoenix LiveView (port 3032)    |    Python v3 fallback          |
 +-----------------------------------+-------------------------------+
 |                          REST API Layer                             |
 |   /health  /api/data  /api/agents  /api/ralph  /api/environments   |
+|   /api/v2/ag-ui/emit  /api/v2/ag-ui/events  /api/v2/ag-ui/state   |
 +-------------------------------------------------------------------+
-|                       APM Server (v4 Phoenix)                      |
+|                    APM Server (v4/v5 Phoenix)                       |
 |   GenServers: ConfigLoader, AgentRegistry, AgentDiscovery,         |
 |               NotificationServer, ProjectStore, EnvironmentScanner,|
-|               CommandRunner                                        |
+|               CommandRunner, BackgroundTasksStore, ProjectScanner,  |
+|               ActionEngine, AG-UI EventRouter, AG-UI HookBridge,   |
+|               AG-UI StateManager  (30+ total)                      |
 |   ETS: apm_agents, apm_sessions, apm_tasks, apm_commands,         |
-|        apm_notifications, apm_environments                         |
+|        apm_notifications, apm_environments, ag_ui_state            |
 +-------------------------------------------------------------------+
 |                        Hooks & Integration                         |
 |   session_init.sh -> start server -> register session -> reload    |
@@ -73,17 +76,17 @@ The original Agentic Performance Monitor, a single-file Python HTTP server that 
 - Project-scoped dashboard at `/project/{name}/`
 - Landing page with project selector at `/`
 
-**Runtime**: Standalone HTTP server on port 3031.
+**Runtime**: Standalone HTTP server on port 3032.
 
-### 3. APM v4 (Elixir/Phoenix)
+### 3. APM v4/v5 (Elixir/Phoenix)
 
-The production replacement for the Python v3 monitor. A full Phoenix LiveView application with GenServer-based architecture, ETS storage, and PubSub real-time updates.
+The production replacement for the Python v3 monitor. A full Phoenix LiveView application with GenServer-based architecture, ETS storage, and PubSub real-time updates. v5 adds AG-UI protocol integration.
 
 **Location**: `/apm-v4/` (git submodule from `peguesj/ccem-apm-v4`)
 
 **Stack**: Elixir, Phoenix 1.7+, Phoenix LiveView, Bandit, Jason, daisyUI/Tailwind
 
-**GenServers** (supervised):
+**GenServers** (supervised, 30+ total):
 
 | GenServer | Purpose |
 |-----------|---------|
@@ -94,6 +97,12 @@ The production replacement for the Python v3 monitor. A full Phoenix LiveView ap
 | `ProjectStore` | ETS tables for tasks, commands, plane context, input requests per project |
 | `EnvironmentScanner` | Discovers `.claude/` directories, reads CLAUDE.md, hooks, sessions |
 | `CommandRunner` | Executes shell commands in project directories with timeout and streaming |
+| `BackgroundTasksStore` | Tracks background tasks/processes with logs and runtime |
+| `ProjectScanner` | Scans developer directories for project configs, stack, ports |
+| `ActionEngine` | Action catalog with async execution |
+| `ApmV4.AgUi.EventRouter` | Routes AG-UI events to AgentRegistry, FormationStore, Dashboard, MetricsCollector |
+| `ApmV4.AgUi.HookBridge` | Translates legacy hook payloads to AG-UI events for backward compatibility |
+| `ApmV4.AgUi.StateManager` | ETS-backed per-agent state with snapshot/delta (RFC 6902 JSON Patch) |
 
 **LiveView Pages**:
 - `/` -- Main dashboard with agent fleet, dependency graph, Ralph, commands, TODOs
@@ -101,10 +110,33 @@ The production replacement for the Python v3 monitor. A full Phoenix LiveView ap
 - `/ralph` -- Ralph flowchart view
 - `/skills` -- Skills tracking
 - `/timeline` -- Session timeline
+- `/tasks` -- Background task monitor
+- `/scanner` -- Project scanner
+- `/actions` -- Action catalog
 
-**API**: 40+ REST endpoints (see [apm-v4-api.md](./apm-v4-api.md))
+**API**: 60+ REST endpoints including AG-UI v2 (see [apm-v4-api.md](./apm-v4-api.md))
 
 **Tests**: 233 passing (including v3 backward-compatibility test suite).
+
+### 3a. AG-UI Elixir SDK
+
+A standalone Elixir library implementing the AG-UI (Agent-User Interaction) protocol. Used by APM v5 but published as an independent package.
+
+**Location**: `~/Developer/ag-ui-elixir/ag_ui/`
+
+**Modules**:
+- `AgUi.Core` -- 15 type structs (Message, RunConfig, Tool, ToolResult, Context, etc.)
+- `AgUi.Events` -- 30 event structs across 7 categories (lifecycle, text, tool call, state, activity, reasoning, special)
+- `AgUi.Encoder` -- SSE and JSON encoding for all event types
+- `AgUi.Transport.SSE` -- Server-Sent Events transport layer
+- `AgUi.Transport.Channel` -- Phoenix Channel (WebSocket) transport
+- `AgUi.Middleware` -- Composable event processing pipeline
+- `AgUi.State` -- RFC 6902 JSON Patch state management (snapshot + delta)
+- `AgUi.Client` -- HTTP agent client
+
+**Dependencies**: `jason`, `plug` (optional), `phoenix` (optional), `phoenix_pubsub` (optional)
+
+**Tests**: 75 passing, 0 failures.
 
 ### 4. Bridge Orchestrator
 
@@ -125,15 +157,17 @@ The SessionStart hook is the glue that connects Claude Code sessions to the APM 
 1. Claude Code starts a new session
 2. `session_init.sh` receives hook payload (JSON with `session_id`, `cwd`)
 3. Derives project name from `cwd` basename
-4. Checks if APM v4 Phoenix is running on port 3031; starts it if not (`mix phx.server`)
+4. Checks if APM v4 Phoenix is running on port 3032; starts it if not (`mix phx.server`)
 5. Writes session file to `/apm/sessions/{session_id}.json`
 6. Upserts project into `apm_config.json` (v4 multi-project format): adds new projects, appends sessions to existing ones, never overwrites
 7. POSTs `/api/config/reload` to notify the running APM server
 8. Returns JSON success payload to Claude Code hook system
 
-### 6. Planned: SwiftUI Agent
+### 6. CCEMAgent (SwiftUI)
 
-A macOS menubar application for monitoring agent activity without a browser window. Currently at the specification stage within the APM v4 submodule (`apm-v4/swift-wrapper/`).
+A native macOS menubar application for monitoring agent activity without a browser window. Polls the APM server for telemetry, project data, and background task status.
+
+**Location**: `/CCEMAgent/`
 
 ## Data Flow
 
@@ -149,16 +183,20 @@ session_init.sh
         |-- starts --> APM v4 Phoenix (if not running)
         |-- POST --> /api/config/reload
         v
-APM v4 Phoenix Server (port 3031)
+APM v4/v5 Phoenix Server (port 3032)
         |
         |-- ConfigLoader reads apm_config.json
         |-- AgentDiscovery polls tasks_dir/*.output
         |-- EnvironmentScanner discovers .claude/ dirs
         |-- PubSub broadcasts state changes
+        |-- AG-UI HookBridge translates legacy payloads to events
+        |-- AG-UI EventRouter dispatches events to subscribers
+        |-- AG-UI StateManager tracks per-agent state
         v
-LiveView Dashboard (browser)
+LiveView Dashboard (browser) / AG-UI SSE Clients
         |
         |-- WebSocket (Phoenix channels)
+        |-- SSE (/api/v2/ag-ui/events)
         |-- Real-time agent status, tokens, Ralph progress
 ```
 

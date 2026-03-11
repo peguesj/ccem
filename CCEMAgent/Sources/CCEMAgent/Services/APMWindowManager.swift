@@ -10,7 +10,7 @@ final class APMWindowManager: NSObject {
 
     static let shared = APMWindowManager()
 
-    private static let baseURL = "http://localhost:3031"
+    private static let baseURL = "http://localhost:3032"
     private static let windowTitle = "CCEM APM"
     private static let initialSize = CGSize(width: 1200, height: 800)
     private static let minSize = CGSize(width: 800, height: 600)

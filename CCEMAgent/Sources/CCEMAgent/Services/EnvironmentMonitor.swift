@@ -27,8 +27,8 @@ final class EnvironmentMonitor {
     private var notificationPollTask: Task<Void, Never>?
     private let notificationPollInterval: TimeInterval = 5
 
-    static let agentLifecycleCategory = "com.ccem.agent.lifecycle"
-    static let formationLifecycleCategory = "com.ccem.formation.lifecycle"
+    static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.agent.lifecycle"
+    static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
 
     var filteredEnvironments: [APMEnvironment] {
         switch filter {
@@ -236,7 +236,7 @@ final class EnvironmentMonitor {
     }
 
     func openDashboard() {
-        guard let url = URL(string: "http://localhost:3031") else { return }
+        guard let url = URL(string: "http://localhost:3032") else { return }
         NSWorkspace.shared.open(url)
     }
 }

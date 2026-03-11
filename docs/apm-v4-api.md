@@ -1,11 +1,13 @@
 # APM v4 API Reference
 
-All endpoints are served by the APM v4 Phoenix server on port 3031. CORS headers (`Access-Control-Allow-Origin: *`) are included on all API responses. API authentication is enforced via the `ApiAuth` plug using bearer tokens from `apm_config.json`.
+All endpoints are served by the APM v4/v5 Phoenix server on port 3032. CORS headers (`Access-Control-Allow-Origin: *`) are included on all API responses. API authentication is enforced via the `ApiAuth` plug using bearer tokens from `apm_config.json`.
+
+> **v5 Addition**: AG-UI protocol endpoints are available under `/api/v2/ag-ui/*`. See the [AG-UI v2 Endpoints](#ag-ui-v2-endpoints) section below.
 
 ## Base URL
 
 ```
-http://localhost:3031
+http://localhost:3032
 ```
 
 ## Project Scoping
@@ -494,13 +496,84 @@ Advanced endpoints under `/api/v2/`:
 
 ---
 
+## AG-UI v2 Endpoints
+
+The AG-UI (Agent-User Interaction) protocol endpoints enable standardized, transport-agnostic event streaming for agent activity. These are served by `ApmV4Web.V2.AgUiV2Controller` and backed by three GenServers: `EventRouter`, `HookBridge`, and `StateManager`.
+
+### POST /api/v2/ag-ui/emit
+
+Emit one or more AG-UI events into the router. Events are dispatched to AgentRegistry, FormationStore, Dashboard, and MetricsCollector.
+
+**Body**:
+```json
+{
+  "type": "RUN_STARTED",
+  "thread_id": "thread-123",
+  "run_id": "run-456",
+  "timestamp": 1710100000000
+}
+```
+
+### GET /api/v2/ag-ui/events
+
+SSE stream of all AG-UI events. Clients receive events as `text/event-stream`. Supports `?types=RUN_STARTED,TEXT_MESSAGE_CONTENT` for type filtering.
+
+### GET /api/v2/ag-ui/events/:agent_id
+
+SSE stream filtered to events for a single agent.
+
+### GET /api/v2/ag-ui/state/:agent_id
+
+Get the current state snapshot for an agent.
+
+**Response**:
+```json
+{
+  "agent_id": "agent-abc",
+  "state": {"status": "running", "tokens_in": 5000},
+  "version": 3,
+  "updated_at": "2026-03-11T10:00:00Z"
+}
+```
+
+### PUT /api/v2/ag-ui/state/:agent_id
+
+Replace agent state with a full snapshot (STATE_SNAPSHOT).
+
+**Body**:
+```json
+{
+  "state": {"status": "completed", "tokens_in": 12000, "tokens_out": 3500}
+}
+```
+
+### PATCH /api/v2/ag-ui/state/:agent_id
+
+Apply an RFC 6902 JSON Patch delta to agent state (STATE_DELTA).
+
+**Body**:
+```json
+{
+  "delta": [
+    {"op": "replace", "path": "/status", "value": "completed"},
+    {"op": "add", "path": "/tokens_out", "value": 3500}
+  ]
+}
+```
+
+### GET /api/v2/ag-ui/router/stats
+
+Routing statistics: total events processed, subscriber count, events by type.
+
+---
+
 ## Other Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/v2/export` | Export all data |
 | POST | `/api/v2/import` | Import data |
-| GET | `/api/ag-ui/events` | AG-UI SSE event stream |
+| GET | `/api/ag-ui/events` | AG-UI SSE event stream (v1, pre-existing) |
 | GET | `/api/a2ui/components` | A2UI component listing |
 
 ---

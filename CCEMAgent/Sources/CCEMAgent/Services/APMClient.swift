@@ -1,7 +1,7 @@
 import Foundation
 
 actor APMClient {
-    private let baseURL = URL(string: "http://localhost:3031")!
+    private let baseURL = URL(string: "http://localhost:3032")!
     private let session: URLSession
     private let decoder: JSONDecoder
 
@@ -14,7 +14,7 @@ actor APMClient {
     }
 
     func checkHealth() async throws -> HealthStatus {
-        let url = baseURL.appendingPathComponent("health")
+        let url = baseURL.appendingPathComponent("api/status")
         let (data, response) = try await session.data(from: url)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             throw APMClientError.badResponse

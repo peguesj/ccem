@@ -8,18 +8,35 @@ LOG="$LOG_DIR/apm_hook.log"
 STATE_DIR="$HOME/Developer/ccem/apm/.hook_state"
 mkdir -p "$STATE_DIR"
 
+# Check jq availability once; set HAS_JQ for callers
+if command -v jq >/dev/null 2>&1; then
+  HAS_JQ=1
+else
+  HAS_JQ=0
+fi
+
+# Safe jq wrapper: returns fallback if jq is not installed
+_jq() {
+  local fallback="$1"; shift
+  if [ "$HAS_JQ" = "1" ]; then
+    jq "$@" 2>/dev/null || echo "$fallback"
+  else
+    echo "$fallback"
+  fi
+}
+
 # Load session state file; sets globals: TRACE_ID, FORMATION_ID, FORMATION_ROLE,
 # AGENT_LEVEL, PARENT_SPAN_ID, PARENT_SESSION_ID
 load_state() {
   local session_id="$1"
   local state_file="$STATE_DIR/${session_id}.json"
   if [ -f "$state_file" ]; then
-    TRACE_ID=$(jq -r '.trace_id // ""' "$state_file" 2>/dev/null || echo "")
-    FORMATION_ID=$(jq -r '.formation_id // ""' "$state_file" 2>/dev/null || echo "")
-    FORMATION_ROLE=$(jq -r '.formation_role // "solo"' "$state_file" 2>/dev/null || echo "solo")
-    AGENT_LEVEL=$(jq -r '.agent_level // 0' "$state_file" 2>/dev/null || echo "0")
-    PARENT_SPAN_ID=$(jq -r '.parent_span_id // ""' "$state_file" 2>/dev/null || echo "")
-    PARENT_SESSION_ID=$(jq -r '.parent_session_id // ""' "$state_file" 2>/dev/null || echo "")
+    TRACE_ID=$(_jq "" -r '.trace_id // ""' "$state_file")
+    FORMATION_ID=$(_jq "" -r '.formation_id // ""' "$state_file")
+    FORMATION_ROLE=$(_jq "solo" -r '.formation_role // "solo"' "$state_file")
+    AGENT_LEVEL=$(_jq "0" -r '.agent_level // 0' "$state_file")
+    PARENT_SPAN_ID=$(_jq "" -r '.parent_span_id // ""' "$state_file")
+    PARENT_SESSION_ID=$(_jq "" -r '.parent_session_id // ""' "$state_file")
   else
     TRACE_ID=$(openssl rand -hex 16)
     FORMATION_ID=""

@@ -1,3 +1,11 @@
+/// APMServerManager — manages the CCEM APM v4 Phoenix server lifecycle.
+///
+/// Supports two start/stop mechanisms:
+/// 1. launchd service (`io.pegues.agent-j.labs.ccem.apm-server`) — preferred
+/// 2. PID file fallback for manually-started instances via `mix phx.server`
+///
+/// Health check polls `GET /api/status` on port 3032.
+
 import Foundation
 import Observation
 import Darwin
@@ -13,7 +21,7 @@ final class APMServerManager {
     private let apmDir: String
     private let pidFile: String
     private let logFile: String
-    private let launchLabel = "com.ccem.apm-server"
+    private let launchLabel = "io.pegues.agent-j.labs.ccem.apm-server"
     private let plistPath: String
 
     init() {
@@ -21,7 +29,7 @@ final class APMServerManager {
         self.apmDir    = "\(home)/Developer/ccem/apm-v4"
         self.pidFile   = "\(home)/Developer/ccem/apm-v4/.apm.pid"
         self.logFile   = "\(home)/Developer/ccem/apm/hooks/apm_server.log"
-        self.plistPath = "\(home)/Library/LaunchAgents/com.ccem.apm-server.plist"
+        self.plistPath = "\(home)/Library/LaunchAgents/io.pegues.agent-j.labs.ccem.apm-server.plist"
     }
 
     // MARK: - Status
@@ -148,7 +156,7 @@ final class APMServerManager {
     // MARK: - HTTP health check
 
     func httpHealthCheck() async -> Bool {
-        guard let url = URL(string: "http://localhost:3031/api/status") else { return false }
+        guard let url = URL(string: "http://localhost:3032/api/status") else { return false }
         var req = URLRequest(url: url)
         req.timeoutInterval = 3
         do {

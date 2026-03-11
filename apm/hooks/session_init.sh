@@ -40,18 +40,45 @@ PROJECT_NAME=$(basename "$CWD" 2>/dev/null || echo "unknown")
 
 # Check if APM server is already running on the configured port
 is_apm_running() {
+    # 1. PID file check — validate the process is actually BEAM/mix, not a reused PID
     if [ -f "$PID_FILE" ]; then
         local pid
         pid=$(cat "$PID_FILE" 2>/dev/null || echo "")
         if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
-            return 0
+            # Verify it's actually a BEAM/Elixir process, not a stale PID reused by the OS
+            if ps -p "$pid" -o command= 2>/dev/null | grep -qE "beam|elixir|mix"; then
+                return 0
+            else
+                log "WARN: PID $pid exists but is not BEAM — removing stale PID file"
+                rm -f "$PID_FILE"
+            fi
+        else
+            # PID file exists but process is dead — clean up
+            log "WARN: Stale PID file (PID $pid dead) — removing"
+            rm -f "$PID_FILE"
         fi
     fi
-    # Fallback: check if port is in use (use netstat - lsof hangs with many connections)
+    # 2. Fallback: check if port is in use (use netstat — lsof hangs with many connections)
     if netstat -anp tcp 2>/dev/null | grep -q "\.${APM_PORT} .*LISTEN"; then
         return 0
     fi
     return 1
+}
+
+# Kill zombie or wedged BEAM processes that may hold the port
+cleanup_stale_beam() {
+    # Find BEAM processes listening on our port that are stuck (state T or D)
+    local stale_pids
+    stale_pids=$(ps aux | grep "beam.smp" | grep -v grep | awk '{print $2, $8}' | while read pid state; do
+        if [ "$state" = "T" ] || [ "$state" = "U" ] || [ "$state" = "D" ]; then
+            echo "$pid"
+        fi
+    done)
+    if [ -n "$stale_pids" ]; then
+        log "WARN: Found stale BEAM processes: $stale_pids — sending SIGKILL"
+        echo "$stale_pids" | xargs kill -9 2>/dev/null || true
+        sleep 1
+    fi
 }
 
 # Start APM v4 Phoenix server if not running
@@ -61,21 +88,54 @@ start_apm() {
         return 1
     fi
 
+    # Pre-flight: clean up any zombie BEAM processes holding the port
+    cleanup_stale_beam
+
+    # Pre-flight: check if port is already occupied by something else
+    if netstat -anp tcp 2>/dev/null | grep -q "\.${APM_PORT} .*LISTEN"; then
+        log "WARN: Port $APM_PORT already occupied (not by our PID) — attempting to reclaim"
+        # Find the PID holding the port via netstat + ps
+        local blocking_pid
+        blocking_pid=$(netstat -anv -p tcp 2>/dev/null | grep "\.${APM_PORT} .*LISTEN" | awk '{print $9}' | head -1)
+        if [ -n "$blocking_pid" ] && [ "$blocking_pid" != "0" ]; then
+            log "Killing blocking process PID $blocking_pid on port $APM_PORT"
+            kill -9 "$blocking_pid" 2>/dev/null || true
+            sleep 2
+        fi
+    fi
+
     log "Starting APM v4 Phoenix on port $APM_PORT..."
     (cd "$APM_V4_DIR" && PORT=$APM_PORT nohup mix phx.server > "$APM_DIR/hooks/apm_server.log" 2>&1) &
     local pid=$!
     echo "$pid" > "$PID_FILE"
     log "APM v4 Phoenix started (PID: $pid)"
 
-    # Wait for server to initialize (use netstat - lsof hangs with many connections)
-    sleep 4
+    # Wait for server to initialize with timeout (max 10s)
+    local attempts=0
+    local max_attempts=5
+    while [ $attempts -lt $max_attempts ]; do
+        sleep 2
+        attempts=$((attempts + 1))
+        if netstat -anp tcp 2>/dev/null | grep -q "\.${APM_PORT} .*LISTEN"; then
+            log "APM v4 Phoenix confirmed running on port $APM_PORT (after ${attempts}x2s)"
+            return 0
+        fi
+        # Check if the process died during startup
+        if ! kill -0 "$pid" 2>/dev/null; then
+            log "ERROR: APM process (PID $pid) died during startup — check $APM_DIR/hooks/apm_server.log"
+            rm -f "$PID_FILE"
+            return 1
+        fi
+    done
 
-    if netstat -anp tcp 2>/dev/null | grep -q "\.${APM_PORT} .*LISTEN"; then
-        log "APM v4 Phoenix confirmed running on port $APM_PORT"
+    # Final check — process alive but port not confirmed
+    if kill -0 "$pid" 2>/dev/null; then
+        log "WARN: APM process running (PID $pid) but port $APM_PORT not confirmed after ${max_attempts}x2s — may still be compiling"
         return 0
     else
-        log "WARN: Could not confirm port $APM_PORT via netstat; proceeding"
-        return 0
+        log "ERROR: APM process died — check logs"
+        rm -f "$PID_FILE"
+        return 1
     fi
 }
 
@@ -270,10 +330,34 @@ main() {
     register_session
     update_apm_config
 
-    # Notify running APM server to reload config
+    # Notify running APM server to reload config and register the session agent
     if is_apm_running; then
         curl -s -X POST "http://localhost:${APM_PORT}/api/config/reload" >/dev/null 2>&1 || true
         log "Sent config reload to APM server"
+
+        # Register this session as an agent in the AgentRegistry so that
+        # subsequent heartbeats from PreToolUse/PostToolUse hooks are accepted.
+        # Without this, POST /api/heartbeat returns 404 (agent not found).
+        local register_payload
+        register_payload=$(jq -n \
+          --arg agent_id "session-${SESSION_ID}" \
+          --arg project "$PROJECT_NAME" \
+          --arg role "$FORMATION_ROLE" \
+          --arg status "active" \
+          --arg formation_id "$FORMATION_ID" \
+          --arg session_id "$SESSION_ID" \
+          '{
+            agent_id: $agent_id,
+            project: $project,
+            role: $role,
+            status: $status,
+            formation_id: $formation_id,
+            session_id: $session_id
+          }' 2>/dev/null)
+        curl -s -X POST "http://localhost:${APM_PORT}/api/register" \
+          -H "Content-Type: application/json" \
+          -d "$register_payload" >/dev/null 2>&1 || true
+        log "Registered session agent: session-${SESSION_ID}"
     fi
 
     # Output success for hook system

@@ -14,7 +14,7 @@ This is the central configuration file that the APM server reads on startup and 
 |-------|------|----------|-------------|
 | `$schema` | string | No | JSON Schema reference |
 | `version` | string | Yes | Must be `"4.0.0"` |
-| `port` | integer | Yes | APM server port (default: 3031, range: 1024-65535) |
+| `port` | integer | Yes | APM server port (default: 3032, range: 1024-65535) |
 | `active_project` | string | No | Name of the currently focused project |
 | `projects` | array | Yes | All registered projects |
 | `api_auth` | object | No | API authentication keys |
@@ -53,7 +53,7 @@ Each entry in a project's `sessions` array:
 {
   "$schema": "./apm_config_v4.schema.json",
   "version": "4.0.0",
-  "port": 3031,
+  "port": 3032,
   "active_project": "ccem",
   "projects": [
     {
@@ -126,10 +126,10 @@ Each project can have its own `CLAUDE.md` that takes precedence over the user-le
 {
   "success": true,
   "apm_running": true,
-  "apm_port": 3031,
+  "apm_port": 3032,
   "session_id": "uuid-here",
   "project_name": "project-name",
-  "apm_url": "http://localhost:3031"
+  "apm_url": "http://localhost:3032"
 }
 ```
 
@@ -147,7 +147,7 @@ The APM system uses file-based configuration rather than environment variables. 
 |----------------------|-------|-------------|
 | `APM_DIR` | `~/Developer/ccem/apm` | APM root directory |
 | `APM_V4_DIR` | `~/Developer/ccem/apm-v4` | Phoenix application root |
-| `APM_PORT` | `3031` | Server port |
+| `APM_PORT` | `3032` | Server port |
 | `SESSIONS_DIR` | `~/Developer/ccem/apm/sessions` | Per-session JSON files |
 | `CONFIG_FILE` | `~/Developer/ccem/apm/apm_config.json` | Multi-project config |
 | `PID_FILE` | `~/Developer/ccem/apm-v4/.apm.pid` | Server process ID |
@@ -176,7 +176,7 @@ Contents:
   "tasks_dir": "/private/tmp/claude-503/-Users-jeremiah-Developer-ccem/tasks",
   "prd_json": "",
   "todo_md": "",
-  "apm_port": 3031
+  "apm_port": 3032
 }
 ```
 

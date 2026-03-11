@@ -5,7 +5,7 @@
 AGENT_ID="${CLAUDE_AGENT_ID:-session-unknown}"
 TOOL_NAME="${CLAUDE_TOOL_NAME:-unknown}"
 
-curl -s -X POST http://localhost:3031/api/heartbeat \
+curl -s -X POST http://localhost:3032/api/heartbeat \
   -H "Content-Type: application/json" \
   -d "{
     \"agent_id\": \"$AGENT_ID\",

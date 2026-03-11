@@ -15,10 +15,12 @@ PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
   --arg status "done" \
   --arg message "Session ended: ${REASON}" \
+  --arg formation_id "$FORMATION_ID" \
   '{
     agent_id: $agent_id,
     status: $status,
-    message: $message
+    message: $message,
+    formation_id: $formation_id
   }' 2>/dev/null)
 
 curl -s -X POST "$APM_URL/api/heartbeat" \

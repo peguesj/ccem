@@ -1,12 +1,12 @@
-# CCEM v2.3.3 - Claude Code Environment Manager
+# CCEM v5.0.0 - Claude Code Environment Manager
 
 [![CI](https://github.com/peguesj/ccem/workflows/CI/badge.svg)](https://github.com/peguesj/ccem/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.3.3-blue.svg)](https://github.com/peguesj/ccem/blob/main/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](https://github.com/peguesj/ccem/blob/main/CHANGELOG.md)
 [![Elixir](https://img.shields.io/badge/elixir-1.15+-purple.svg)](https://elixir-lang.org)
 [![Node](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
 
-> Configuration management and real-time agent monitoring platform for Claude Code
+> Configuration management and real-time agent monitoring platform for Claude Code, with AG-UI protocol support
 
 ---
 
@@ -40,9 +40,11 @@ CCEM is a three-component system for managing Claude Code environments at scale:
 
 1. **TypeScript CLI/TUI** (`@ccem/core`) - Merge configurations across projects, audit for security issues, back up and restore settings, discover forks in conversation history, and validate schemas. Includes a full interactive terminal UI.
 
-2. **APM v4** (Phoenix/Elixir) - A persistent real-time dashboard server running on port 3031 that tracks Claude Code agent activity across multiple projects simultaneously. Provides token usage tracking, D3.js dependency graphs, Ralph methodology visualization, toast notifications, UPM execution tracking, port management, and a built-in documentation wiki.
+2. **APM v4/v5** (Phoenix/Elixir) - A persistent real-time dashboard server running on port 3032 that tracks Claude Code agent activity across multiple projects simultaneously. Provides token usage tracking, D3.js dependency graphs, Ralph methodology visualization, toast notifications, UPM execution tracking, port management, AG-UI protocol event streaming, and a built-in documentation wiki.
 
 3. **CCEM Agent** (SwiftUI/macOS) - A native macOS menubar application that surfaces APM data at a glance: project count, active sessions, UPM wave progress, story pass rates, and quick links to the dashboard and docs.
+
+4. **AG-UI Elixir SDK** (`ag_ui`) - A standalone Elixir library implementing the AG-UI (Agent-User Interaction) protocol. Provides 15 core type structs, 30 event structs, SSE and JSON encoding, Phoenix Channel transport, middleware pipeline, RFC 6902 JSON Patch state management, and an HTTP agent client. 75 tests, 0 failures. Source at `~/Developer/ag-ui-elixir/ag_ui/`.
 
 ---
 
@@ -68,7 +70,10 @@ CCEM is a three-component system for managing Claude Code environments at scale:
 | Port manager (clash detection, assignment) | APM v4 | Stable |
 | Skills tracking (`/skills`) | APM v4 | Stable |
 | Session timeline (`/timeline`) | APM v4 | Stable |
-| AG-UI SSE event stream | APM v4 | Stable |
+| AG-UI SSE event stream (v1) | APM v4 | Stable |
+| AG-UI v2 protocol integration (EventRouter, HookBridge, StateManager) | APM v5 | Dev |
+| AG-UI v2 REST + SSE endpoints (`/api/v2/ag-ui/*`) | APM v5 | Dev |
+| AG-UI Elixir SDK (standalone library) | ag_ui | Stable |
 | v2 REST API (SLOs, alerts, audit log, OpenAPI spec) | APM v4 | Stable |
 | v3 backward-compatible API endpoints (19 legacy routes) | APM v4 | Stable |
 | SwiftUI macOS menubar agent | CCEM Agent | Stable |
@@ -85,7 +90,7 @@ CCEM is a three-component system for managing Claude Code environments at scale:
 │  ┌─────────────────────┐     ┌──────────────────────────────┐   │
 │  │  CCEM CLI/TUI        │     │  CCEM Agent (SwiftUI)         │   │
 │  │  @ccem/core v2.2.1   │     │  macOS menubar               │   │
-│  │  TypeScript/Node 18  │     │  polling :3031/api/...        │   │
+│  │  TypeScript/Node 18  │     │  polling :3032/api/...        │   │
 │  │                      │     │  - project count              │   │
 │  │  ccem merge          │     │  - active sessions            │   │
 │  │  ccem backup         │     │  - UPM wave/story progress    │   │
@@ -99,7 +104,7 @@ CCEM is a three-component system for managing Claude Code environments at scale:
 │             │ session_init.sh hook           │                   │
 │             ▼                                ▼                   │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                   APM v4  :3031                           │   │
+│  │                APM v4/v5  :3032                            │   │
 │  │              Phoenix 1.8 / Elixir 1.15                    │   │
 │  │                                                           │   │
 │  │  OTP Supervision Tree                                     │   │
@@ -111,13 +116,16 @@ CCEM is a three-component system for managing Claude Code environments at scale:
 │  │  ├── SloEngine          ├── EventStream                   │   │
 │  │  ├── AgentDiscovery     ├── EnvironmentScanner            │   │
 │  │  ├── CommandRunner      ├── DocsStore                     │   │
-│  │  └── PortManager                                          │   │
+│  │  ├── PortManager        ├── AG-UI EventRouter             │   │
+│  │  ├── AG-UI HookBridge   ├── AG-UI StateManager            │   │
+│  │  └── ...30+ GenServers total                              │   │
 │  │                                                           │   │
 │  │  LiveViews: Dashboard, AllProjects, RalphFlowchart,       │   │
 │  │            Skills, SessionTimeline, Docs, Formation,      │   │
 │  │            Ports                                          │   │
 │  │                                                           │   │
 │  │  REST API: /api (v3-compat + v4), /api/v2 (SLO/alerts)   │   │
+│  │  AG-UI API: /api/v2/ag-ui/* (emit, SSE, state, stats)    │   │
 │  │  ETS tables: agents, sessions, tasks, notifications       │   │
 │  │  PubSub: real-time LiveView updates                       │   │
 │  └──────────────────────────────────────────────────────────┘   │
@@ -149,10 +157,10 @@ npm run build
 cd apm-v4
 mix setup
 mix phx.server
-# Dashboard available at http://localhost:3031
+# Dashboard available at http://localhost:3032
 ```
 
-The APM server also starts automatically when Claude Code sessions begin, via the `~/Developer/ccem/apm/hooks/session_init.sh` hook. The hook starts the server on port 3031 if it is not already running, then registers the current session.
+The APM server also starts automatically when Claude Code sessions begin, via the `~/Developer/ccem/apm/hooks/session_init.sh` hook. The hook starts the server on port 3032 if it is not already running, then registers the current session.
 
 ### CLI Usage
 
@@ -256,8 +264,15 @@ ccem tui
 | `POST /api/environments/:name/exec` | Execute command in environment |
 | `POST /api/environments/:name/session/start` | Launch Claude Code session |
 | `POST /api/environments/:name/session/stop` | Kill Claude Code session |
-| `GET /api/ag-ui/events` | AG-UI SSE event stream |
+| `GET /api/ag-ui/events` | AG-UI SSE event stream (v1) |
 | `GET /api/a2ui/components` | A2UI declarative component specs |
+| `POST /api/v2/ag-ui/emit` | Emit AG-UI events |
+| `GET /api/v2/ag-ui/events` | AG-UI v2 SSE stream (all events) |
+| `GET /api/v2/ag-ui/events/:agent_id` | AG-UI v2 SSE stream (per-agent) |
+| `GET /api/v2/ag-ui/state/:agent_id` | Get agent state snapshot |
+| `PUT /api/v2/ag-ui/state/:agent_id` | Set agent state (full snapshot) |
+| `PATCH /api/v2/ag-ui/state/:agent_id` | Patch agent state (RFC 6902 delta) |
+| `GET /api/v2/ag-ui/router/stats` | AG-UI routing statistics |
 | `GET /api/v2/agents` | v2 agent list (paginated) |
 | `GET /api/v2/agents/:id` | v2 agent detail with metrics |
 | `GET /api/v2/sessions` | v2 session list |
@@ -275,6 +290,55 @@ ccem tui
 
 ---
 
+## AG-UI Protocol Integration
+
+CCEM APM v5 introduces the [AG-UI (Agent-User Interaction) protocol](https://github.com/ag-ui-protocol/ag-ui) as a parallel event layer alongside the existing REST API and PubSub infrastructure. This enables any AG-UI-compliant frontend or agent framework to observe CCEM agent activity in real time.
+
+### AG-UI Elixir SDK
+
+A standalone Elixir library at `~/Developer/ag-ui-elixir/ag_ui/` (Plane project: AGUI `3e16b3ea`). Modules:
+
+| Module | Description |
+|---|---|
+| Core Types | 15 structs: Message, RunConfig, Tool, ToolResult, Context, etc. |
+| Core Events | 30 event structs across 7 categories (lifecycle, text, tool call, state, activity, reasoning, special) |
+| EventEncoder | SSE and JSON encoding for all event types |
+| SSE Transport | Server-Sent Events transport layer |
+| Phoenix Channel Transport | WebSocket transport via Phoenix Channels |
+| Middleware Pipeline | Composable event processing middleware |
+| State Manager | RFC 6902 JSON Patch state sync (snapshot + delta) |
+| HTTP Agent Client | Client for communicating with AG-UI agents |
+
+**Tests**: 75 passing, 0 failures.
+
+### APM v5 GenServers
+
+Three new GenServers under `lib/apm_v4/ag_ui/` (Plane project: CCEM5 `a898419a`):
+
+| GenServer | Description |
+|---|---|
+| `ApmV4.AgUi.EventRouter` | Routes AG-UI events to AgentRegistry, FormationStore, Dashboard, MetricsCollector |
+| `ApmV4.AgUi.HookBridge` | Translates legacy hook payloads (register, heartbeat, notify, tool-use) to AG-UI events |
+| `ApmV4.AgUi.StateManager` | ETS-backed per-agent state with snapshot/delta pattern |
+
+### AG-UI v2 Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/v2/ag-ui/emit` | Emit AG-UI events into the router |
+| GET | `/api/v2/ag-ui/events` | SSE stream of all AG-UI events |
+| GET | `/api/v2/ag-ui/events/:agent_id` | SSE stream filtered to a single agent |
+| GET | `/api/v2/ag-ui/state/:agent_id` | Get current agent state snapshot |
+| PUT | `/api/v2/ag-ui/state/:agent_id` | Replace agent state (full snapshot) |
+| PATCH | `/api/v2/ag-ui/state/:agent_id` | Apply JSON Patch delta to agent state |
+| GET | `/api/v2/ag-ui/router/stats` | Routing statistics (event counts, subscribers) |
+
+### Backward Compatibility
+
+All existing v4 endpoints, hooks, and CCEMAgent polling continue to work unchanged. The HookBridge automatically translates legacy `POST /api/register`, `POST /api/heartbeat`, `POST /api/notify`, and tool-use payloads into AG-UI events, so existing integrations get AG-UI event emission for free.
+
+---
+
 ## SwiftUI Menubar Agent
 
 ![CCEM Menubar Agent](ui/screenshots/ccem-agent-menubar.svg)
@@ -289,8 +353,8 @@ The CCEM Agent is a native macOS application (Swift/SwiftUI) that lives in the m
 - UPM wave progress bar with story pass rate when a UPM execution is active
 - All/Active filter for environment rows
 - Per-environment status rows with session details
-- "Open Dashboard" button linking to `http://localhost:3031`
-- "Help & Docs" button linking to `http://localhost:3031/docs`
+- "Open Dashboard" button linking to `http://localhost:3032`
+- "Help & Docs" button linking to `http://localhost:3032/docs`
 - Manual refresh
 - "Launch at Login" toggle (ServiceManagement framework)
 - Graceful degraded view when the APM server is unreachable
@@ -307,7 +371,7 @@ xcodebuild -scheme CCEMAgent -configuration Release build
 
 ![Docs Index](ui/screenshots/apm-docs-index.png)
 
-The APM v4 server hosts a built-in documentation wiki at `http://localhost:3031/docs`.
+The APM v4 server hosts a built-in documentation wiki at `http://localhost:3032/docs`.
 
 The wiki content is served from `apm-v4/priv/docs/` and rendered via the `DocsStore` GenServer and `DocsLive` LiveView. Markdown files are parsed with Earmark at startup.
 
@@ -392,7 +456,7 @@ cd apm-v4
 mix setup             # deps.get + assets.setup + assets.build
 mix compile --warnings-as-errors
 mix test              # 233 tests
-mix phx.server        # start dev server on :3031
+mix phx.server        # start dev server on :3032
 ```
 
 **Pre-commit hook** (runs automatically):
@@ -416,6 +480,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 | Version | Notes |
 |---|---|
+| 5.0.0-dev | AG-UI protocol integration: Elixir SDK, EventRouter/HookBridge/StateManager GenServers, 7 new v2 endpoints, backward-compatible with all v4 APIs |
+| 4.3.0 | Skills registry, background tasks, project scanner, action engine, CCEMAgent UI consistency |
 | 2.2.1 | Multi-project awareness, port manager, formation system, docs wiki, AG-UI SSE, v2 API (SLOs, alerts, audit, OpenAPI) |
 | 2.x | APM v4 (Phoenix/Elixir) with LiveView dashboard, UPM tracking, SwiftUI menubar agent |
 | 1.0.0 | Initial CLI/TUI release - 7 commands, 867 tests, 96.89% coverage |

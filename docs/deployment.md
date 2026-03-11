@@ -24,14 +24,14 @@ cd ~/Developer/ccem/apm-v4
 mix phx.server
 ```
 
-The server starts on port 3031. Open `http://localhost:3031` to access the dashboard.
+The server starts on port 3032. Open `http://localhost:3032` to access the dashboard.
 
 ### Automatic Startup via Hooks
 
 In normal operation, you do not need to start the server manually. The `session_init.sh` hook automatically starts it when a Claude Code session begins:
 
 1. Claude Code fires the SessionStart hook
-2. `session_init.sh` checks if port 3031 is occupied
+2. `session_init.sh` checks if port 3032 is occupied
 3. If not, it runs `mix phx.server` in the background with output redirected to `~/Developer/ccem/apm/hooks/apm_server.log`
 4. PID is written to `~/Developer/ccem/apm-v4/.apm.pid`
 5. The hook waits 3 seconds for the server to initialize, then confirms via port check
@@ -43,7 +43,7 @@ In normal operation, you do not need to start the server manually. The `session_
 kill $(cat ~/Developer/ccem/apm-v4/.apm.pid)
 
 # Or find the process
-lsof -ti:3031 | xargs kill
+lsof -ti:3032 | xargs kill
 ```
 
 ### Running Tests
@@ -81,7 +81,7 @@ When a new Claude Code session starts:
    - If new project: add to projects array with session
    - Updates active_project to current project name
          |
-8. POST http://localhost:3031/api/config/reload
+8. POST http://localhost:3032/api/config/reload
          |
 9. APM server re-reads config, discovers new session
          |
@@ -104,9 +104,9 @@ Projects are registered automatically when a Claude Code session starts in their
 
 ### Viewing Projects
 
-- **Landing page** (`http://localhost:3031`): Shows a card grid of all registered projects with session counts, agent counts, and Ralph progress.
-- **Project dashboard** (`http://localhost:3031/project/{name}/`): Shows the full dashboard scoped to a single project (v3 Python server route).
-- **All Projects LiveView** (`http://localhost:3031/apm-all`): Phoenix LiveView overview of all projects (v4).
+- **Landing page** (`http://localhost:3032`): Shows a card grid of all registered projects with session counts, agent counts, and Ralph progress.
+- **Project dashboard** (`http://localhost:3032/project/{name}/`): Shows the full dashboard scoped to a single project (v3 Python server route).
+- **All Projects LiveView** (`http://localhost:3032/apm-all`): Phoenix LiveView overview of all projects (v4).
 
 ### Switching Active Project
 
@@ -114,12 +114,12 @@ The `active_project` field in `apm_config.json` determines which project is show
 
 ```bash
 # Via API
-curl -X POST http://localhost:3031/api/config/reload
+curl -X POST http://localhost:3032/api/config/reload
 
 # Or edit apm_config.json directly and reload
 jq '.active_project = "my-project"' ~/Developer/ccem/apm/apm_config.json > /tmp/cfg.json && \
   mv /tmp/cfg.json ~/Developer/ccem/apm/apm_config.json && \
-  curl -X POST http://localhost:3031/api/config/reload
+  curl -X POST http://localhost:3032/api/config/reload
 ```
 
 ### Project Scoping in API Calls
@@ -128,10 +128,10 @@ Most API endpoints accept `?project=<name>` to scope data to a specific project:
 
 ```bash
 # Get data for a specific project
-curl http://localhost:3031/api/data?project=ccem
+curl http://localhost:3032/api/data?project=ccem
 
 # Discover agents for a specific project
-curl http://localhost:3031/api/agents/discover?project=lfg
+curl http://localhost:3032/api/agents/discover?project=lfg
 ```
 
 ---
@@ -182,7 +182,7 @@ cd ~/Developer/ccem/apm
 python3 monitor.py
 ```
 
-This serves the same dashboard on port 3031 with identical API endpoints. The v3 server reads the same `apm_config.json` and supports the v4 multi-project format with backward compatibility for the v3 flat format.
+This serves the same dashboard on port 3032 with identical API endpoints. The v3 server reads the same `apm_config.json` and supports the v4 multi-project format with backward compatibility for the v3 flat format.
 
 ---
 
@@ -197,15 +197,24 @@ npm run ui:test     # Run UI tests
 
 ---
 
-## SwiftUI Agent (Planned)
+## CCEMAgent (SwiftUI)
 
-A macOS menubar application for monitoring agent activity. Specification files are in `~/Developer/ccem/apm-v4/swift-wrapper/`. This component is not yet implemented.
+A native macOS menubar application at `~/Developer/ccem/CCEMAgent/`. Build and launch:
 
-Planned features:
-- Menubar icon with agent status indicators
-- Dropdown showing active agents and their status
-- Notification forwarding from APM server
-- Quick actions (open dashboard, start/stop sessions)
+```bash
+cd ~/Developer/ccem/CCEMAgent
+swift build -c release
+open -a CCEMAgent
+```
+
+Features:
+- Connection state indicator (connected / connecting / disconnected)
+- Project count and active session display
+- Start/Stop APM server from disconnected state
+- Telemetry usage chart
+- Background task monitor with logs
+- Docker socket repair
+- Launch at login toggle
 
 ---
 
@@ -215,7 +224,7 @@ Planned features:
 
 ```bash
 # Check if port is in use
-lsof -ti:3031
+lsof -ti:3032
 
 # Check the log
 tail -50 ~/Developer/ccem/apm/hooks/apm_server.log
@@ -234,7 +243,7 @@ tail -20 ~/Developer/ccem/apm/hooks/apm_hook.log
 cat ~/Developer/ccem/apm/apm_config.json | jq '.projects | length'
 
 # Manually trigger reload
-curl -X POST http://localhost:3031/api/config/reload
+curl -X POST http://localhost:3032/api/config/reload
 ```
 
 ### Docker Socket Repair

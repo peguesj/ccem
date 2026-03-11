@@ -55,7 +55,7 @@ curl -s -X POST http://localhost:3032/api/register \
 
 **Force kill APM when stalled:**
 ```bash
-lsof -ti:3031 | xargs kill -9 2>/dev/null
+lsof -ti:3032 | xargs kill -9 2>/dev/null
 pkill -9 -f "mix phx.server"
 ```
 
@@ -88,13 +88,26 @@ pkill -9 -f "mix phx.server"
   - Done: `9bab16dd-4834-4a2a-a00c-3f25516535e1`
   - Cancelled: `80645a72-1150-4fc1-af9c-b1e85c30cd86`
 
+## Related Plane Projects
+
+### AG-UI Elixir SDK (AGUI)
+- **Project ID**: `3e16b3ea-6aa8-46c2-8517-b130f6743236`
+- **URL**: `https://plane.lgtm.build/lgtm/projects/3e16b3ea-6aa8-46c2-8517-b130f6743236/`
+- **Path**: `~/Developer/ag-ui-elixir/ag_ui/`
+- **Description**: Port of AG-UI protocol to Phoenix/Elixir (community SDK)
+
+### CCEM APM v5 — AG-UI Integration (CCEM5)
+- **Project ID**: `a898419a-b097-496f-994a-c4a8ea54904c`
+- **URL**: `https://plane.lgtm.build/lgtm/projects/a898419a-b097-496f-994a-c4a8ea54904c/`
+- **Description**: Major version upgrade integrating AG-UI protocol into CCEM APM
+
 ## OpenAPI Endpoints
 
 Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v4.2.0
+## Current Version: v5.0.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -247,6 +260,6 @@ automatically from user-scope settings.json.
 
 - **APM Dashboard**: http://localhost:3032
 - **APM Config**: /Users/jeremiah/Developer/ccem/apm/apm_config.json
-- **APM Port**: 3031
+- **APM Port**: 3032
 - **Skills Path**: ~/.claude/skills/
 - **APM Log**: ~/Developer/ccem/apm/hooks/apm_server.log
