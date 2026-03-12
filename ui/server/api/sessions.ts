@@ -1,7 +1,11 @@
 /**
  * Session Management API Endpoints
+ *
+ * Proxies to CCEM APM server via @ccem/apm client SDK for session listing.
+ * Maintains local session store for UI-created sessions.
  */
 import { Router, Request, Response } from 'express';
+import { APMClient } from '@ccem/apm';
 import type {
   Session,
   SessionDetail,
@@ -14,7 +18,10 @@ import type {
 
 const router = Router();
 
-// Mock data store (replace with actual CCEM integration later)
+// APM client for proxying to real APM server
+const apm = new APMClient({ baseUrl: 'http://localhost:3032' });
+
+// Local session store (for UI-created sessions)
 const sessions = new Map<string, SessionDetail>();
 const sseClients = new Map<string, Set<Response>>();
 
@@ -60,19 +67,42 @@ function createMockSession(req: CreateSessionRequest): SessionDetail {
 
 /**
  * GET /api/sessions
- * List all active and historical sessions
+ * List all sessions — merges APM sessions with local UI sessions
  */
-router.get('/', (req: Request, res: Response) => {
-  const sessionList: Session[] = Array.from(sessions.values()).map(
+router.get('/', async (req: Request, res: Response) => {
+  // Start with local sessions
+  const localSessions: Session[] = Array.from(sessions.values()).map(
     ({ agents, tasks, files_modified, logs, ...session }) => session
   );
 
-  const response: ListSessionsResponse = {
-    sessions: sessionList,
-    total: sessionList.length,
-  };
+  try {
+    // Try to merge APM sessions
+    const apmSessions = await apm.sessions.list();
+    const apmMapped: Session[] = (apmSessions.data ?? []).map((s) => ({
+      id: s.id,
+      status: 'running' as const,
+      created_at: s.started_at ?? new Date().toISOString(),
+      updated_at: s.ended_at ?? new Date().toISOString(),
+      agents_count: 0,
+      tasks_completed: 0,
+      tasks_total: 0,
+      progress: 0,
+    }));
 
-  res.json(response);
+    const allSessions = [...localSessions, ...apmMapped];
+    const response: ListSessionsResponse = {
+      sessions: allSessions,
+      total: allSessions.length,
+    };
+    res.json(response);
+  } catch {
+    // Fallback to local only
+    const response: ListSessionsResponse = {
+      sessions: localSessions,
+      total: localSessions.length,
+    };
+    res.json(response);
+  }
 });
 
 /**

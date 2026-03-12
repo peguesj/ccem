@@ -1,6 +1,38 @@
 /**
  * Type definitions for CCEM UI Server
+ *
+ * Re-exports compatible types from @ccem/apm where available.
+ * UI-specific types (WebSocket messages, SSE events, etc.) remain local.
  */
+
+// Re-export shared types from @ccem/apm
+export type {
+  Agent as APMAgent,
+  Notification as APMNotification,
+  BackgroundTask,
+  Skill,
+  SkillRegistry,
+  Project,
+  Port,
+  Environment,
+  FleetMetrics,
+  AgentMetrics as APMAgentMetrics,
+  SLO,
+  Alert,
+  AlertRule,
+  AuditEntry,
+  Formation,
+  Workflow,
+  AgUiEvent,
+  ToolCall,
+  ChatMessage,
+  A2AEnvelope,
+  A2AStats,
+  TelemetryResponse,
+} from '@ccem/apm';
+
+// Re-export APMClient for use in API routes
+export { APMClient } from '@ccem/apm';
 
 // Session Types
 export type SessionStatus = 'running' | 'paused' | 'complete' | 'error' | 'initializing';

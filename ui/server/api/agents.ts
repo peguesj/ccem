@@ -1,7 +1,11 @@
 /**
  * Agent Management API Endpoints
+ *
+ * Proxies to CCEM APM server via @ccem/apm client SDK.
+ * Falls back to local mock data if APM is unavailable.
  */
 import { Router, Request, Response } from 'express';
+import { APMClient } from '@ccem/apm';
 import type {
   Agent,
   AgentDetail,
@@ -13,64 +17,56 @@ import type {
 
 const router = Router();
 
-// Mock data store (replace with actual CCEM integration later)
-const agents = new Map<string, AgentDetail>();
+// APM client for proxying to real APM server
+const apm = new APMClient({ baseUrl: 'http://localhost:3032' });
 
-// Helper to create mock agent
-function createMockAgent(id: string, type: string, sessionId?: string): AgentDetail {
-  const now = new Date().toISOString();
-
-  return {
-    id,
-    type,
-    status: 'idle',
-    session_id: sessionId,
-    tasks_completed: 0,
-    uptime_seconds: 0,
-    performance: {
-      avg_task_duration: 0,
-      success_rate: 1.0,
-    },
-    completed_tasks: [],
-    metrics: {
-      total_tasks: 0,
-      success_count: 0,
-      error_count: 0,
-      avg_duration: 0,
-      cpu_usage: 0,
-      memory_mb: 64,
-    },
-  };
-}
-
-// Initialize some mock agents
-agents.set('agent_001', createMockAgent('agent_001', 'task-analyzer'));
-agents.set('agent_002', createMockAgent('agent_002', 'test-runner'));
-agents.set('agent_003', createMockAgent('agent_003', 'build-fixer'));
+// Local fallback data store (used when APM is unavailable)
+const localAgents = new Map<string, AgentDetail>();
 
 /**
  * GET /api/agents
- * List all available and running agents
+ * List all agents — proxies to APM server, falls back to local data
  */
-router.get('/', (req: Request, res: Response) => {
-  const agentList: Agent[] = Array.from(agents.values()).map(
-    ({ completed_tasks, metrics, current_task, ...agent }) => ({
-      ...agent,
-      current_task: current_task?.description,
-    })
-  );
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    // Try real APM first
+    const apmAgents = await apm.agents.list();
+    const agentList: Agent[] = apmAgents.map((a) => ({
+      id: a.id,
+      type: a.role ?? 'agent',
+      status: a.status === 'active' ? 'running' : a.status === 'error' ? 'error' : 'idle',
+      current_task: a.task_subject,
+    }));
 
-  const running = agentList.filter((a) => a.status === 'running').length;
-  const idle = agentList.filter((a) => a.status === 'idle').length;
+    const running = agentList.filter((a) => a.status === 'running').length;
+    const idle = agentList.filter((a) => a.status === 'idle').length;
 
-  const response: ListAgentsResponse = {
-    agents: agentList,
-    total: agentList.length,
-    running,
-    idle,
-  };
+    const response: ListAgentsResponse = {
+      agents: agentList,
+      total: agentList.length,
+      running,
+      idle,
+    };
 
-  res.json(response);
+    res.json(response);
+  } catch {
+    // Fallback to local data
+    const agentList: Agent[] = Array.from(localAgents.values()).map(
+      ({ completed_tasks, metrics, current_task, ...agent }) => ({
+        ...agent,
+        current_task: current_task?.description,
+      })
+    );
+
+    const response: ListAgentsResponse = {
+      agents: agentList,
+      total: agentList.length,
+      running: agentList.filter((a) => a.status === 'running').length,
+      idle: agentList.filter((a) => a.status === 'idle').length,
+    };
+
+    res.json(response);
+  }
 });
 
 /**
@@ -79,7 +75,7 @@ router.get('/', (req: Request, res: Response) => {
  */
 router.get('/:id/status', (req: Request, res: Response) => {
   const { id } = req.params;
-  const agent = agents.get(id);
+  const agent = localAgents.get(id);
 
   if (!agent) {
     const error: ErrorResponse = {
@@ -103,7 +99,7 @@ router.post('/:id/task', (req: Request, res: Response) => {
   const { id } = req.params;
   const body = req.body as AssignTaskRequest;
 
-  const agent = agents.get(id);
+  const agent = localAgents.get(id);
 
   if (!agent) {
     const error: ErrorResponse = {
