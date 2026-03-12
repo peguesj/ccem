@@ -138,6 +138,24 @@ struct BackgroundTasksResponse: Codable {
     let count: Int
 }
 
+// MARK: - Chat Messages (US-007)
+
+struct ChatMessage: Codable {
+    let id: String
+    let role: String
+    let content: String
+    let scope: String
+    let timestamp: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, role, content, scope, timestamp
+    }
+}
+
+struct ChatMessagesResponse: Codable {
+    let messages: [ChatMessage]
+}
+
 // MARK: - Connection State
 
 enum ConnectionState: Equatable {
