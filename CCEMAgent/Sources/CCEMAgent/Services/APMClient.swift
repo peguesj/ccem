@@ -1,16 +1,32 @@
 import Foundation
 
 actor APMClient {
-    private let baseURL = URL(string: "http://localhost:3032")!
+    private var baseURL: URL
     private let session: URLSession
     private let decoder: JSONDecoder
 
-    init() {
+    static let portKey = "apmPort"
+    static let defaultPort = 3032
+
+    var currentPort: Int {
+        Int(baseURL.port ?? Self.defaultPort)
+    }
+
+    init(port: Int? = nil) {
+        let resolvedPort = port ?? UserDefaults.standard.integer(forKey: Self.portKey)
+        let effectivePort = resolvedPort > 0 ? resolvedPort : Self.defaultPort
+        self.baseURL = URL(string: "http://localhost:\(effectivePort)")!
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 5
         config.timeoutIntervalForResource = 10
         self.session = URLSession(configuration: config)
         self.decoder = JSONDecoder()
+    }
+
+    /// Update the port without restarting the client
+    func updatePort(_ port: Int) {
+        UserDefaults.standard.set(port, forKey: Self.portKey)
+        self.baseURL = URL(string: "http://localhost:\(port)")!
     }
 
     func checkHealth() async throws -> HealthStatus {
@@ -158,6 +174,63 @@ actor APMClient {
             throw APMClientError.badResponse
         }
     }
+
+    // MARK: - Agent Control (US-006)
+
+    func controlAgent(id: String, action: String) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/agents/\(id)/control"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = try JSONSerialization.data(withJSONObject: ["action": action])
+        request.httpBody = body
+        let (_, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    func controlFormation(id: String, action: String) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/formations/\(id)/control"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = try JSONSerialization.data(withJSONObject: ["action": action])
+        request.httpBody = body
+        let (_, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    // MARK: - Chat (US-007)
+
+    func fetchChatMessages(scope: String) async -> [MiniChatMessage] {
+        let url = baseURL.appendingPathComponent("api/v2/chat/\(scope)")
+        do {
+            let (data, response) = try await session.data(from: url)
+            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else { return [] }
+            let wrapper = try decoder.decode(ChatMessagesResponse.self, from: data)
+            return wrapper.messages.suffix(5).map { msg in
+                MiniChatMessage(
+                    role: msg.role,
+                    content: msg.content,
+                    timestamp: ISO8601DateFormatter().date(from: msg.timestamp) ?? Date()
+                )
+            }
+        } catch {
+            return []
+        }
+    }
+
+    func sendChatMessage(scope: String, content: String) async {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/chat/\(scope)/send"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = ["content": content, "role": "user"]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        _ = try? await session.data(for: request)
+    }
+
+    // MARK: - UPM Scan
 
     func triggerUPMScan() async throws {
         var request = URLRequest(url: baseURL.appendingPathComponent("api/upm/projects/scan"))

@@ -8,6 +8,10 @@ struct MenuBarView: View {
     @Bindable var formationMonitor: FormationMonitor
     @Bindable var upmMonitor: UPMMonitor
 
+    @State private var agentActions = AgentActionsManager()
+    @State private var multiServer = MultiServerManager()
+    @State private var showServerSettings = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             headerSection
@@ -22,15 +26,27 @@ struct MenuBarView: View {
                 Divider()
                 backgroundTasksSection(runningTasks)
             }
+            if agentActions.hasAgents {
+                Divider()
+                agentActionsSection
+            }
             if upmMonitor.projectCount > 0 || upmMonitor.driftedCount > 0 {
                 Divider()
                 upmSection
             }
             Divider()
+            miniChatSection
+            Divider()
             refreshLabel
             actionsSection
         }
         .frame(width: 340)
+        .task {
+            await agentActions.refresh(from: monitor)
+        }
+        .onChange(of: monitor.environments) {
+            Task { await agentActions.refresh(from: monitor) }
+        }
     }
 
     // MARK: - Header
@@ -362,6 +378,337 @@ struct MenuBarView: View {
         .padding(.bottom, 6)
     }
 
+    // MARK: - Agent Actions (US-006)
+
+    private var agentActionsSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Agent Actions", systemImage: "cpu")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(agentActions.agents.count) agents")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            ForEach(agentActions.agents.prefix(5)) { agent in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(agentStatusColor(agent.status))
+                        .frame(width: 5, height: 5)
+                    Text(agent.displayName)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                    Spacer()
+
+                    if agent.status == "active" || agent.status == "running" {
+                        Button {
+                            Task { await agentActions.controlAgent(agent.id, action: "disconnect") }
+                        } label: {
+                            Image(systemName: "stop.circle")
+                                .font(.caption2)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.orange)
+                        .help("Disconnect")
+                    } else {
+                        Button {
+                            Task { await agentActions.controlAgent(agent.id, action: "connect") }
+                        } label: {
+                            Image(systemName: "play.circle")
+                                .font(.caption2)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.green)
+                        .help("Connect")
+                    }
+
+                    Button {
+                        Task { await agentActions.controlAgent(agent.id, action: "restart") }
+                    } label: {
+                        Image(systemName: "arrow.clockwise.circle")
+                            .font(.caption2)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                    .help("Restart")
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 2)
+            }
+
+            // Formation quick actions
+            if !formationMonitor.activeFormations.isEmpty {
+                Divider().padding(.horizontal, 12)
+                ForEach(formationMonitor.activeFormations.prefix(2)) { formation in
+                    HStack(spacing: 6) {
+                        Image(systemName: "square.grid.3x3")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Text(formation.id)
+                            .font(.caption2)
+                            .lineLimit(1)
+                        Spacer()
+
+                        if formation.status == "active" || formation.status == "running" {
+                            Button {
+                                Task { await agentActions.controlFormation(formation.id, action: "cancel") }
+                            } label: {
+                                Image(systemName: "xmark.circle")
+                                    .font(.caption2)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.red)
+                            .help("Cancel Formation")
+                        }
+
+                        Button {
+                            Task { await agentActions.controlFormation(formation.id, action: "restart") }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.caption2)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.blue)
+                        .help("Restart Formation")
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 2)
+                }
+            }
+
+            if let error = agentActions.lastError {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundStyle(.red)
+                    .lineLimit(1)
+                    .padding(.horizontal, 12)
+            }
+        }
+        .padding(.bottom, 4)
+    }
+
+    private func agentStatusColor(_ status: String) -> Color {
+        switch status {
+        case "active", "running": return .green
+        case "idle", "disconnected": return .secondary
+        case "failed", "error": return .red
+        default: return .secondary
+        }
+    }
+
+    // MARK: - Mini Chat (US-007)
+
+    @State private var miniChatInput = ""
+    @State private var miniChatMessages: [MiniChatMessage] = []
+    @State private var miniChatSubscription: Task<Void, Never>?
+
+    private var miniChatSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Chat", systemImage: "bubble.left.and.bubble.right")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    APMWindowManager.shared.openDashboard(path: "/?tab=chat")
+                } label: {
+                    Label("Full Chat", systemImage: "arrow.up.right.square")
+                        .font(.caption2)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            // Last 5 messages
+            if miniChatMessages.isEmpty {
+                Text("No messages yet")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(miniChatMessages.suffix(5)) { msg in
+                            HStack(alignment: .top, spacing: 4) {
+                                Image(systemName: msg.role == "agent" ? "cpu" : "person")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(msg.role == "agent" ? .blue : .green)
+                                    .frame(width: 10)
+                                Text(msg.content)
+                                    .font(.caption2)
+                                    .lineLimit(2)
+                                Spacer()
+                                Text(msg.relativeTime)
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
+                }
+                .frame(maxHeight: 80)
+                .padding(.horizontal, 12)
+            }
+
+            // Input field
+            HStack(spacing: 4) {
+                TextField("Send message...", text: $miniChatInput)
+                    .textFieldStyle(.plain)
+                    .font(.caption2)
+                    .onSubmit { sendMiniChatMessage() }
+
+                Button {
+                    sendMiniChatMessage()
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .foregroundStyle(.blue)
+                }
+                .buttonStyle(.plain)
+                .disabled(miniChatInput.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 6)
+        }
+        .task {
+            await loadMiniChatMessages()
+        }
+    }
+
+    private func sendMiniChatMessage() {
+        let text = miniChatInput.trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return }
+        miniChatInput = ""
+
+        let msg = MiniChatMessage(role: "user", content: text, timestamp: Date())
+        miniChatMessages.append(msg)
+
+        Task {
+            let client = APMClient()
+            await client.sendChatMessage(scope: "global", content: text)
+        }
+    }
+
+    private func loadMiniChatMessages() async {
+        let client = APMClient()
+        let messages = await client.fetchChatMessages(scope: "global")
+        if !messages.isEmpty {
+            miniChatMessages = messages
+        }
+    }
+
+    // MARK: - Server Settings (US-008)
+
+    @State private var newServerLabel = ""
+    @State private var newServerPort = ""
+
+    private var serverSettingsView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("APM Servers")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            ForEach(multiServer.servers) { server in
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(serverHealthColor(for: server.id))
+                        .frame(width: 8, height: 8)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(server.label)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                        Text("localhost:\(server.port)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    if server.isDefault {
+                        Text("Default")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(.secondary.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                    } else {
+                        Button {
+                            multiServer.removeServer(server)
+                        } label: {
+                            Image(systemName: "minus.circle")
+                                .foregroundStyle(.red)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            Divider()
+
+            // Port field for default server
+            if let defaultServer = multiServer.servers.first(where: { $0.isDefault }) {
+                HStack {
+                    Text("Port:")
+                        .font(.caption)
+                    TextField("3032", value: Binding(
+                        get: { defaultServer.port },
+                        set: { multiServer.updatePort(for: defaultServer.id, port: $0) }
+                    ), format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 80)
+                    .font(.caption)
+                }
+            }
+
+            Divider()
+
+            // Add server
+            HStack(spacing: 4) {
+                TextField("Label", text: $newServerLabel)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.caption)
+                    .frame(width: 80)
+                TextField("Port", text: $newServerPort)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.caption)
+                    .frame(width: 60)
+                Button("Add") {
+                    if let port = Int(newServerPort), port > 0, !newServerLabel.isEmpty {
+                        multiServer.addServer(label: newServerLabel, port: port)
+                        newServerLabel = ""
+                        newServerPort = ""
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(newServerLabel.isEmpty || Int(newServerPort) == nil)
+            }
+
+            Button("Check All") {
+                Task { await multiServer.checkHealth() }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .padding(12)
+        .frame(width: 280)
+    }
+
+    private func serverHealthColor(for id: UUID) -> Color {
+        guard let health = multiServer.serverHealth[id] else { return .secondary }
+        return health.isHealthy ? .green : .red
+    }
+
     // MARK: - Disconnected
 
     private var disconnectedView: some View {
@@ -459,6 +806,17 @@ struct MenuBarView: View {
             .buttonStyle(.plain)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
+
+            Button { showServerSettings.toggle() } label: {
+                Label("Server Settings", systemImage: "gearshape")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .popover(isPresented: $showServerSettings) {
+                serverSettingsView
+            }
 
             Button {
                 Task { await monitor.refresh() }

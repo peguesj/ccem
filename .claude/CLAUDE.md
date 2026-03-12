@@ -70,6 +70,8 @@ pkill -9 -f "mix phx.server"
 | CCEMAgent source | `~/Developer/ccem/CCEMAgent/` |
 | ccem-apm skill | `~/.claude/skills/ccem-apm/SKILL.md` |
 | ccem-apm command | `~/.claude/commands/ccem-apm.md` |
+| Showcase skill | `~/.claude/skills/showcase/` |
+| Showcase viewer | `~/.claude/skills/showcase/client/index.html` |
 
 ## Plane Project
 
@@ -213,29 +215,6 @@ automatically from user-scope settings.json.
 - [x] **CP-34**: APM v4 bump to v2.5.0, CHANGELOG, OpenAPI spec (US-017) [WT: apm-actions]
 - After Wave 4: merge all worktrees → main; `mix compile`; `swift build`
 
-## Implementation Checkpoints — ralph/upm-module-ccem-apm
-
-### Wave 1: GenServers (Independent — 4 worktrees parallel)
-- [ ] **CP-35**: UPM ProjectRegistry GenServer (US-001) [CCEM-35]
-- [ ] **CP-36**: UPM PMIntegrationStore GenServer (US-002) [CCEM-36]
-- [ ] **CP-37**: UPM VCSIntegrationStore GenServer (US-003) [CCEM-37]
-- [ ] **CP-38**: UPM WorkItemStore GenServer (US-004) [CCEM-38]
-- After Wave 1: `mix compile --warnings-as-errors` must pass (0 warnings)
-
-### Wave 2: Adapters + SyncEngine (depends on Wave 1)
-- [ ] **CP-39**: Plane + Linear PM adapters (US-005) [CCEM-39]
-- [ ] **CP-40**: Jira + Monday + MSProject stub adapters (US-006) [CCEM-40]
-- [ ] **CP-41**: GitHub + AzureDevOps VCS adapters (US-007) [CCEM-41]
-- [ ] **CP-42**: UPM SyncEngine GenServer (US-008) [CCEM-42]
-- After Wave 2: `mix compile --warnings-as-errors` must pass
-
-### Wave 3: API + LiveView + CCEMAgent (depends on Wave 2)
-- [ ] **CP-43**: UPM REST API 22 endpoints in UpmController (US-009) [CCEM-43]
-- [ ] **CP-44**: UPMLive LiveView /upm dashboard (US-010) [CCEM-44]
-- [ ] **CP-45**: CCEMAgent UPMMonitor.swift + UPMModels.swift (US-011) [CCEM-45]
-- [ ] **CP-46**: UPM nav wiring + v2.6.0 bump (US-012) [CCEM-46]
-- After Wave 3: `mix compile` + `swift build -c release` must pass; verify /upm loads in browser
-
 ## Implementation Checkpoints — ralph/ccem-dynamic-apm-v4-2
 
 ### Wave 1: Foundation (Independent)
@@ -255,6 +234,39 @@ automatically from user-scope settings.json.
 - [x] **CP-55**: CCEMAgent UI consistency pass — telemetry chart, task runtime/logs, Start/Stop APM (US-008)
 - [x] **CP-56**: v4.2.0 CHANGELOG + mix.exs bump (US-009)
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+## Implementation Checkpoints — ralph/ccem-v5-1-management-suite
+
+### Wave 1: Foundation (Independent)
+- [ ] **CP-57**: GettingStartedWizard modal slideshow (US-009) [CCEM-152]
+- [ ] **CP-58**: Showcase SVG diagrams in wizard slides (US-010) [CCEM-153]
+- [ ] **CP-59**: TooltipOverlay JS hook — guided tour (US-011) [CCEM-154]
+- [ ] **CP-60**: Agent control REST endpoints (US-012) [CCEM-155]
+- [ ] **CP-61**: ChatStore GenServer — message persistence (US-013) [CCEM-156]
+- After Wave 1: `mix compile --warnings-as-errors` must pass
+
+### Wave 2: Interactive Inspector + CCEMAgent SSE (depends on Wave 1)
+- [ ] **CP-62**: InspectorChatLive — contextual AG-UI chat (US-001) [CCEM-144]
+- [ ] **CP-63**: AgentControlPanel — connect/disconnect/restart (US-002) [CCEM-145]
+- [ ] **CP-64**: SSE LiveView hook — inspector_chat.js (US-003) [CCEM-146]
+- [ ] **CP-65**: Scope breadcrumb navigation (US-004) [CCEM-147]
+- [ ] **CP-66**: APMClient v2 — configurable port + SSE (US-005) [CCEM-148]
+- After Wave 2: `mix compile --warnings-as-errors` + `swift build -c release` must pass
+
+### Wave 3: CCEMAgent Management + Release (depends on Wave 2)
+- [ ] **CP-67**: Agent management actions in MenuBarView (US-006) [CCEM-149]
+- [ ] **CP-68**: CCEMAgent mini-chat view (US-007) [CCEM-150]
+- [ ] **CP-69**: Dynamic port config + multi-server (US-008) [CCEM-151]
+- [ ] **CP-70**: v5.1.0 bump — CHANGELOG, mix.exs, OpenAPI (US-014) [CCEM-157]
+- After Wave 3: `mix compile --warnings-as-errors` + `swift build -c release` must pass
+
+## Showcase
+
+- **Assets**: `~/Developer/ccem/showcase/` (project scope)
+- **Client**: `showcase/client/` — pure SVG diagram engine, WCAG AA, anime.js animations
+- **Data**: `showcase/data/` — design system, narratives, redaction rules, speaker notes
+- **Skill**: `/showcase` at `~/.claude/skills/showcase/SKILL.md` (user-scope skill definition)
+- **Dev Server**: `python3 -m http.server 8080` from `showcase/client/`
 
 ## CCEM APM Integration
 
