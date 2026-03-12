@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-03-12
+
+### Added
+- **@ccem/core v3.0.0**: First npm publish of the core CCEM package (212 files, 145.9kB)
+  - Zod schema validators, configuration management, merge strategies, fork detection
+  - Ink TUI with interactive menus, Commander CLI with 7 subcommands
+  - Docker socket repair utility (docksock)
+- **@ccem/apm v1.0.0**: New TypeScript client SDK for CCEM APM server (134 files, 43.2kB)
+  - 28 namespace API classes covering 100+ REST endpoints
+  - SSEStream with reconnect + exponential backoff (native fetch, no polyfill)
+  - 25 type modules matching APM v5 OpenAPI spec
+  - Utility layer: retry, URL builder, async pagination iterator
+  - 77 tests passing (unit + integration against live APM)
+- CCEMAgent AG-UI event display in menu bar (AgUiModels, fetchAgUiEvents, approval badges)
+
+### Changed
+- Version alignment: package.json, src/index.ts, src/cli.ts all set to 3.0.0
+- UI server refactored to use @ccem/apm client SDK for real APM data proxying
+- ui/server/types/index.ts re-exports 22 shared types from @ccem/apm
+- api/agents.ts and api/sessions.ts proxy to APM server with graceful fallback
+- Simplified prepublishOnly to build-only (lint handled separately in CI)
+
+### Package Details
+- `@ccem/core@3.0.0` — https://www.npmjs.com/package/@ccem/core
+- `@ccem/apm@1.0.0` — https://www.npmjs.com/package/@ccem/apm
+
+---
+
 ## [2.3.3] - 2026-02-21
 
 ### Fixed
