@@ -107,7 +107,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v5.0.0
+## Current Version: v5.3.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -255,6 +255,31 @@ automatically from user-scope settings.json.
 - [x] **CP-55**: CCEMAgent UI consistency pass — telemetry chart, task runtime/logs, Start/Stop APM (US-008)
 - [x] **CP-56**: v4.2.0 CHANGELOG + mix.exs bump (US-009)
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+## Implementation Checkpoints — ralph/ccem-agui-hex-integration
+
+### Wave 1: Foundation
+- [x] **CP-87**: Add ag_ui_ex Hex dependency to mix.exs (US-001)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: Core Module Updates (Independent)
+- [x] **CP-88**: EventStream uses AgUi.Core.Events.EventType constants (US-002)
+- [x] **CP-89**: HookBridge uses EventType constants (US-003)
+- [x] **CP-90**: EventRouter uses compile-time module attributes from EventType (US-004)
+- [x] **CP-91**: ChatStore uses EventType module attributes for pattern matching (US-005)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: Controllers + LiveView (depends on Wave 2)
+- [x] **CP-92**: AgUiController updated (US-006)
+- [x] **CP-93**: AgUiV2Controller adds EventType.valid?/1 validation (US-007)
+- [x] **CP-94**: AgUiLive uses EventType.all/0 for filter list (US-008)
+- [x] **CP-95**: ApiController HookBridge integration verified (US-009)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 4: Tests + Release (depends on Wave 3)
+- [x] **CP-96**: Tests updated + ag_ui_ex integration tests (US-010)
+- [x] **CP-97**: v5.3.0 release — CHANGELOG, version bump, docs (US-011)
+- After Wave 4: `mix compile --warnings-as-errors` ✓ PASS | 13 tests, 0 failures
 
 ## CCEM APM Integration
 
