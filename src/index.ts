@@ -2,7 +2,7 @@
  * CCEM - Claude Code Environment Manager
  *
  * @packageDocumentation
- * @version 0.5.0
+ * @version 3.0.0
  */
 
 export * from './schema/index.js';

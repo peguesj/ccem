@@ -3,8 +3,8 @@
  * Stores complete conversations to VIKI for analytics and retrieval
  */
 
-import { HookContext } from '../../../types.js';
-import { submitToServers } from '../../../utils/submit.js';
+import { HookContext } from '../../types.js';
+import { submitToServers } from '../../utils/submit.js';
 
 interface ConversationSubmission {
   conversation_id: string;
@@ -59,7 +59,7 @@ export default async function handler(context: HookContext) {
     conversation
   );
 
-  const success = results.every((r) => r.success);
+  const success = results.every((r: { success: boolean }) => r.success);
 
   return {
     stored: success,

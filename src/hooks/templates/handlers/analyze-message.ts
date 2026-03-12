@@ -3,8 +3,8 @@
  * Analyzes user messages and submits to VIKI for conversation insights
  */
 
-import { HookContext } from '../../../types.js';
-import { submitToServers } from '../../../utils/submit.js';
+import { HookContext } from '../../types.js';
+import { submitToServers } from '../../utils/submit.js';
 
 interface MessageAnalysis {
   message_id: string;
@@ -88,8 +88,9 @@ function generateSuggestedFiles(categories: string[]): string[] {
 
   const suggested = new Set<string>();
   for (const category of categories) {
-    if (fileMap[category]) {
-      fileMap[category].forEach((file) => suggested.add(file));
+    const files = fileMap[category];
+    if (files) {
+      files.forEach((file) => suggested.add(file));
     }
   }
 
@@ -111,8 +112,9 @@ function generateSuggestedCommands(categories: string[]): string[] {
 
   const suggested = new Set<string>();
   for (const category of categories) {
-    if (commandMap[category]) {
-      commandMap[category].forEach((cmd) => suggested.add(cmd));
+    const cmds = commandMap[category];
+    if (cmds) {
+      cmds.forEach((cmd) => suggested.add(cmd));
     }
   }
 

@@ -51,7 +51,7 @@ describe('Project Setup', () => {
     };
 
     expect(packageJson.name).toBe('@ccem/core');
-    expect(packageJson.version).toBe('1.0.0');
+    expect(packageJson.version).toBe('3.0.0');
     expect(packageJson.description).toContain('Claude Code Environment Manager');
     expect(packageJson.license).toBe('MIT');
   });

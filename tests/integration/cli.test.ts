@@ -50,7 +50,7 @@ describe('CLI Integration Tests', () => {
     it('should display version with --version flag', async () => {
       const result = await execCLIExpectSuccess(['--version']);
 
-      expect(result.stdout).toContain('1.0.0');
+      expect(result.stdout).toContain('3.0.0');
     });
   });
 
@@ -368,7 +368,7 @@ describe('CLI Integration Tests', () => {
 
       results.forEach(result => {
         expect(result.success).toBe(true);
-        expect(result.stdout).toContain('1.0.0');
+        expect(result.stdout).toContain('3.0.0');
       });
     });
   });
