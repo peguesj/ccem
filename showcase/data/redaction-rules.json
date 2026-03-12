@@ -1,0 +1,451 @@
+{
+  "version": "1.0.0",
+  "description": "IP protection redaction rules for CCEM showcase materials. Each category defines transforms across four redaction levels.",
+  "levels": ["maximum", "moderate", "light", "none"],
+  "default_level": "moderate",
+  "categories": {
+    "service_names": {
+      "description": "Internal GenServer, store, and service module names",
+      "transforms": {
+        "maximum": {
+          "strategy": "abstract_label",
+          "mappings": {
+            "AgentRegistry": "Core Service",
+            "ProjectScanner": "Service A",
+            "SkillsRegistryStore": "Service B",
+            "BackgroundTasksStore": "Service C",
+            "ActionEngine": "Service D",
+            "ConfigLoader": "Service E",
+            "UpmStore": "Service F",
+            "PortManager": "Service G",
+            "FormationStore": "Service H",
+            "SyncEngine": "Service I",
+            "WorkItemStore": "Service J",
+            "PMIntegrationStore": "Service K",
+            "VCSIntegrationStore": "Service L",
+            "SkillHookDeployer": "Service M",
+            "WorkflowSchemaStore": "Service N",
+            "ProjectRegistry": "Service O",
+            "APMServerManager": "Service P",
+            "EnvironmentMonitor": "Service Q"
+          },
+          "fallback": "Internal Service"
+        },
+        "moderate": {
+          "strategy": "functional_label",
+          "mappings": {
+            "AgentRegistry": "Agent Registry",
+            "ProjectScanner": "Project Scanner",
+            "SkillsRegistryStore": "Skills Health Monitor",
+            "BackgroundTasksStore": "Task Tracker",
+            "ActionEngine": "Action Executor",
+            "ConfigLoader": "Configuration Loader",
+            "UpmStore": "Project Management Store",
+            "PortManager": "Port Manager",
+            "FormationStore": "Formation Tracker",
+            "SyncEngine": "Sync Engine",
+            "WorkItemStore": "Work Item Store",
+            "PMIntegrationStore": "PM Integration Layer",
+            "VCSIntegrationStore": "VCS Integration Layer",
+            "SkillHookDeployer": "Hook Deployer",
+            "WorkflowSchemaStore": "Workflow Schema Layer",
+            "ProjectRegistry": "Project Registry",
+            "APMServerManager": "Server Manager",
+            "EnvironmentMonitor": "Environment Monitor"
+          },
+          "fallback": "Service Module"
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Actual internal names are acceptable at this level"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "tech_stack": {
+      "description": "Programming languages, frameworks, and runtime technologies",
+      "transforms": {
+        "maximum": {
+          "strategy": "hide",
+          "replacements": {
+            "Elixir": null,
+            "Phoenix": null,
+            "Swift": null,
+            "SwiftUI": null,
+            "TypeScript": null,
+            "Node.js": null,
+            "ETS": null,
+            "OTP": null,
+            "GenServer": null,
+            "LiveView": null,
+            "D3.js": null,
+            "Charts framework": null
+          },
+          "contextual_phrases": {
+            "Elixir/Phoenix backend": "purpose-built backend",
+            "Swift/SwiftUI desktop app": "native desktop companion",
+            "TypeScript CLI": "developer CLI tool",
+            "ETS tables": "in-memory data store",
+            "OTP GenServer": "concurrent service process",
+            "Phoenix LiveView": "real-time server-rendered UI",
+            "D3.js dependency graph": "interactive visualization"
+          }
+        },
+        "moderate": {
+          "strategy": "functional_description",
+          "replacements": {
+            "Elixir/Phoenix": "functional backend (concurrent, fault-tolerant)",
+            "Swift/SwiftUI": "native desktop app",
+            "TypeScript/Node.js": "CLI toolchain",
+            "ETS": "in-memory cache layer",
+            "OTP GenServer": "supervised service process",
+            "Phoenix LiveView": "real-time server-rendered dashboard",
+            "D3.js": "interactive graph library"
+          }
+        },
+        "light": {
+          "strategy": "named",
+          "replacements": {
+            "Elixir/Phoenix": "Elixir/Phoenix",
+            "Swift/SwiftUI": "Swift/SwiftUI",
+            "TypeScript/Node.js": "TypeScript/Node.js",
+            "ETS": "ETS (Erlang Term Storage)",
+            "OTP GenServer": "OTP GenServer",
+            "Phoenix LiveView": "Phoenix LiveView",
+            "D3.js": "D3.js"
+          }
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "vendor_names": {
+      "description": "Third-party platforms and services referenced in the architecture",
+      "transforms": {
+        "maximum": {
+          "strategy": "hide",
+          "replacements": {
+            "Plane": null,
+            "Linear": null,
+            "GitHub": null,
+            "Claude Code": null,
+            "AG-UI": null,
+            "Jira": null,
+            "Monday": null,
+            "Azure DevOps": null,
+            "Anthropic": null
+          },
+          "contextual_phrases": {
+            "Plane integration": "project management integration",
+            "Linear integration": "issue tracking integration",
+            "GitHub integration": "version control integration",
+            "Claude Code": "AI coding assistant",
+            "AG-UI protocol": "open agent interaction protocol",
+            "Anthropic": "AI platform vendor"
+          }
+        },
+        "moderate": {
+          "strategy": "category_label",
+          "replacements": {
+            "Plane": "Project Management Platform",
+            "Linear": "Issue Tracking Platform",
+            "GitHub": "Version Control Platform",
+            "Claude Code": "AI Development Environment",
+            "AG-UI": "AG-UI (open standard)",
+            "Jira": "Enterprise PM Platform",
+            "Monday": "Workflow Management Platform",
+            "Azure DevOps": "Cloud DevOps Platform",
+            "Anthropic": "AI Platform Provider"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Actual vendor names acceptable. AG-UI is open source and always named."
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "protocols": {
+      "description": "Communication protocols, transport layers, and event systems",
+      "transforms": {
+        "maximum": {
+          "strategy": "abstract",
+          "replacements": {
+            "REST API": "API",
+            "WebSocket": "API",
+            "SSE": "API",
+            "PubSub": "API",
+            "HTTP": "API",
+            "AG-UI events": "agent events",
+            "Server-Sent Events": "API"
+          }
+        },
+        "moderate": {
+          "strategy": "functional_description",
+          "replacements": {
+            "REST API": "REST interface",
+            "WebSocket": "real-time connection",
+            "SSE": "real-time event stream",
+            "PubSub": "internal event bus",
+            "HTTP": "web API",
+            "AG-UI events": "standardized agent events",
+            "Server-Sent Events": "real-time event stream"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Full protocol names acceptable"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "metrics": {
+      "description": "Specific counts, quantities, and performance numbers",
+      "transforms": {
+        "maximum": {
+          "strategy": "omit",
+          "rules": [
+            "Never include specific endpoint counts",
+            "Never include GenServer counts",
+            "Never include LiveView counts",
+            "Never include ETS table counts",
+            "Use qualitative language only: 'comprehensive', 'extensive', 'robust'"
+          ],
+          "replacements": {
+            "56 endpoints": null,
+            "30+ GenServers": null,
+            "20+ LiveViews": null,
+            "19 views": null,
+            "22 REST endpoints": null,
+            "12 telemetry buckets": null
+          }
+        },
+        "moderate": {
+          "strategy": "qualitative",
+          "replacements": {
+            "56 endpoints": "comprehensive API surface",
+            "30+ GenServers": "dozens of concurrent service processes",
+            "20+ LiveViews": "multiple real-time monitoring views",
+            "19 views": "full-coverage navigation",
+            "22 REST endpoints": "full CRUD API",
+            "12 telemetry buckets": "granular telemetry windows"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Exact counts are acceptable"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "infrastructure": {
+      "description": "Deployment topology, OS requirements, ports, storage layer",
+      "transforms": {
+        "maximum": {
+          "strategy": "abstract",
+          "replacements": {
+            "localhost:3032": "local deployment",
+            "launchd": "system service manager",
+            "macOS Sonoma 14+": "desktop OS",
+            "no database (ETS)": "zero-dependency storage",
+            "port 3032": "local service",
+            "PID file": "process tracking"
+          }
+        },
+        "moderate": {
+          "strategy": "privacy_first",
+          "replacements": {
+            "localhost:3032": "self-hosted, privacy-first",
+            "launchd": "OS-native service management",
+            "macOS Sonoma 14+": "modern desktop platform",
+            "no database (ETS)": "no external database required",
+            "port 3032": "local service endpoint",
+            "PID file": "process lifecycle management"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Full infrastructure details acceptable, but never expose file paths"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "file_paths": {
+      "description": "Local filesystem paths -- ALWAYS redacted at all levels except none",
+      "transforms": {
+        "maximum": {
+          "strategy": "never_show",
+          "rule": "All file paths are stripped. No exceptions."
+        },
+        "moderate": {
+          "strategy": "never_show",
+          "rule": "All file paths are stripped. No exceptions."
+        },
+        "light": {
+          "strategy": "never_show",
+          "rule": "All file paths are stripped. No exceptions."
+        },
+        "none": {
+          "strategy": "passthrough",
+          "note": "Internal use only. Paths may appear in raw documentation."
+        }
+      }
+    },
+    "api_endpoints": {
+      "description": "Specific REST routes and endpoint paths",
+      "transforms": {
+        "maximum": {
+          "strategy": "never_show",
+          "rule": "No route paths exposed. Reference only as 'API' or 'endpoints'."
+        },
+        "moderate": {
+          "strategy": "category_only",
+          "replacements": {
+            "/api/register": "RESTful registration endpoint",
+            "/api/heartbeat": "health check endpoint",
+            "/api/v2/ag-ui/emit": "event emission endpoint",
+            "/api/notify": "notification endpoint",
+            "/api/telemetry": "telemetry endpoint",
+            "/api/upm/*": "project management endpoints",
+            "/api/skills/*": "skills management endpoints",
+            "/api/bg-tasks": "task management endpoints",
+            "/api/scanner/*": "scanner endpoints",
+            "/api/actions/*": "action engine endpoints"
+          }
+        },
+        "light": {
+          "strategy": "route_categories",
+          "note": "Route category prefixes OK (e.g., '/api/v2/...'), but not full parameterized paths"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "algorithms": {
+      "description": "Internal architectural patterns, data flow strategies, concurrency models",
+      "transforms": {
+        "maximum": {
+          "strategy": "abstract",
+          "replacements": {
+            "fire-and-forget hooks": "proprietary pipeline",
+            "ETS lookup": "proprietary data layer",
+            "PubSub broadcast": "proprietary event system",
+            "GenServer supervision tree": "proprietary fault-tolerance layer",
+            "OpenAPI-first validation": "proprietary schema validation"
+          }
+        },
+        "moderate": {
+          "strategy": "pattern_level",
+          "replacements": {
+            "fire-and-forget hooks": "non-blocking event hooks",
+            "ETS lookup": "in-memory key-value lookup",
+            "PubSub broadcast": "event-driven broadcast",
+            "GenServer supervision tree": "supervised process hierarchy",
+            "OpenAPI-first validation": "schema-driven API validation"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Pattern names are acceptable"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "team_org": {
+      "description": "People, organizations, and identifying information",
+      "transforms": {
+        "maximum": {
+          "strategy": "abstract",
+          "replacements": {
+            "Jeremiah Pegues": "founding team",
+            "pegues.io": "founding team",
+            "io.pegues.agent-j.labs": "internal identifier",
+            "Agent-J Labs": "founding team"
+          }
+        },
+        "moderate": {
+          "strategy": "role_based",
+          "replacements": {
+            "Jeremiah Pegues": "solo founder",
+            "pegues.io": "founder's organization",
+            "io.pegues.agent-j.labs": "internal namespace",
+            "Agent-J Labs": "solo founder's lab"
+          }
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Acceptable with founder consent"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    },
+    "pricing": {
+      "description": "Revenue, pricing, and business model details",
+      "transforms": {
+        "maximum": {
+          "strategy": "hide",
+          "rule": "No pricing or revenue information disclosed"
+        },
+        "moderate": {
+          "strategy": "qualitative",
+          "replacement": "Pre-revenue, exploring monetization models"
+        },
+        "light": {
+          "strategy": "passthrough",
+          "note": "Full details acceptable in appropriate context"
+        },
+        "none": {
+          "strategy": "passthrough"
+        }
+      }
+    }
+  },
+  "global_rules": [
+    {
+      "id": "GR-01",
+      "rule": "File paths are NEVER shown at maximum, moderate, or light levels",
+      "applies_to": "all_audiences"
+    },
+    {
+      "id": "GR-02",
+      "rule": "API endpoint paths are NEVER shown at maximum level",
+      "applies_to": "investor"
+    },
+    {
+      "id": "GR-03",
+      "rule": "AG-UI is always referred to by name as it is an open-source protocol",
+      "applies_to": "all_audiences"
+    },
+    {
+      "id": "GR-04",
+      "rule": "When redaction removes context needed for comprehension, substitute with the functional equivalent, never leave a gap",
+      "applies_to": "all_audiences"
+    },
+    {
+      "id": "GR-05",
+      "rule": "Diagrams should reference C4 component names from the showcase Mermaid files, not internal module names, at maximum and moderate levels",
+      "applies_to": "all_audiences"
+    }
+  ],
+  "audience_defaults": {
+    "investor": "maximum",
+    "partner": "moderate",
+    "demo": "light"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-03-11",
+  "description": "DRTW-compliant versioned resource manifest. Each resource has a pinned version, CDN URL, and local cache path. The update checker compares pinned versions against latest releases.",
+
+  "cache_root": "~/.claude/skills/showcase/cache",
+  "check_interval_hours": 168,
+  "last_checked": null,
+
+  "resources": {
+    "mermaid": {
+      "name": "Mermaid.js",
+      "type": "diagram_renderer",
+      "pinned_version": "11.4.0",
+      "cdn": "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs",
+      "cdn_versioned": "https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs",
+      "npm_package": "mermaid",
+      "github_repo": "mermaid-js/mermaid",
+      "latest_check_url": "https://registry.npmjs.org/mermaid/latest",
+      "cache_path": "cache/mermaid/mermaid.esm.min.mjs",
+      "license": "MIT"
+    },
+    "anime_js": {
+      "name": "anime.js",
+      "type": "svg_animator",
+      "pinned_version": "4.0.0",
+      "cdn": "https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.min.js",
+      "cdn_versioned": "https://cdn.jsdelivr.net/npm/animejs@4.0.0/lib/anime.min.js",
+      "npm_package": "animejs",
+      "github_repo": "juliangarnier/anime",
+      "latest_check_url": "https://registry.npmjs.org/animejs/latest",
+      "cache_path": "cache/animejs/anime.min.js",
+      "license": "MIT"
+    },
+    "lottie_player": {
+      "name": "Lottie Player Web Component",
+      "type": "animation_player",
+      "pinned_version": "2.0.8",
+      "cdn": "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js",
+      "cdn_versioned": "https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js",
+      "npm_package": "@lottiefiles/lottie-player",
+      "github_repo": "LottieFiles/lottie-player",
+      "latest_check_url": "https://registry.npmjs.org/@lottiefiles/lottie-player/latest",
+      "cache_path": "cache/lottie/lottie-player.js",
+      "license": "MIT"
+    },
+    "rough_notation": {
+      "name": "Rough Notation",
+      "type": "annotation_animator",
+      "pinned_version": "0.5.1",
+      "cdn": "https://cdn.jsdelivr.net/npm/rough-notation@0.5/lib/rough-notation.iife.min.js",
+      "cdn_versioned": "https://cdn.jsdelivr.net/npm/rough-notation@0.5.1/lib/rough-notation.iife.min.js",
+      "npm_package": "rough-notation",
+      "github_repo": "rough-stuff/rough-notation",
+      "latest_check_url": "https://registry.npmjs.org/rough-notation/latest",
+      "cache_path": "cache/rough-notation/rough-notation.iife.min.js",
+      "license": "MIT"
+    },
+    "c4_plantuml": {
+      "name": "C4-PlantUML Templates",
+      "type": "diagram_template",
+      "pinned_version": "2.12.0",
+      "base_url": "https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/v2.12.0",
+      "github_repo": "plantuml-stdlib/C4-PlantUML",
+      "latest_check_url": "https://api.github.com/repos/plantuml-stdlib/C4-PlantUML/releases/latest",
+      "files": [
+        "C4_Context.puml",
+        "C4_Container.puml",
+        "C4_Component.puml",
+        "C4_Deployment.puml",
+        "C4_Dynamic.puml",
+        "C4_Sequence.puml"
+      ],
+      "cache_path": "cache/c4-plantuml/",
+      "license": "MIT"
+    },
+    "simple_icons": {
+      "name": "Simple Icons",
+      "type": "icon_kit",
+      "pinned_version": "16.11.0",
+      "cdn": "https://cdn.jsdelivr.net/npm/simple-icons@16/icons/",
+      "cdn_colored": "https://cdn.simpleicons.org/",
+      "npm_package": "simple-icons",
+      "github_repo": "simple-icons/simple-icons",
+      "latest_check_url": "https://registry.npmjs.org/simple-icons/latest",
+      "cache_path": "cache/simple-icons/",
+      "pinned_icons": [
+        "elixir", "phoenix", "swift", "apple", "docker", "github",
+        "javascript", "typescript", "postgresql", "sqlite", "d3dotjs"
+      ],
+      "license": "CC0-1.0"
+    },
+    "heroicons": {
+      "name": "Heroicons",
+      "type": "ui_icon_kit",
+      "pinned_version": "2.1.5",
+      "cdn": "https://cdn.jsdelivr.net/npm/heroicons@2/24/outline/",
+      "npm_package": "heroicons",
+      "github_repo": "tailwindlabs/heroicons",
+      "latest_check_url": "https://registry.npmjs.org/heroicons/latest",
+      "cache_path": "cache/heroicons/",
+      "pinned_icons": [
+        "server.svg", "cpu-chip.svg", "chart-bar.svg", "bell-alert.svg",
+        "command-line.svg", "cog-6-tooth.svg", "eye.svg", "shield-check.svg",
+        "arrow-path.svg", "cube-transparent.svg", "squares-2x2.svg"
+      ],
+      "license": "MIT"
+    },
+    "devicon": {
+      "name": "Devicon",
+      "type": "tech_icon_kit",
+      "pinned_version": "2.17.0",
+      "cdn": "https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/icons/",
+      "css_cdn": "https://cdn.jsdelivr.net/gh/devicons/devicon@v2.17.0/devicon.min.css",
+      "github_repo": "devicons/devicon",
+      "latest_check_url": "https://api.github.com/repos/devicons/devicon/releases/latest",
+      "cache_path": "cache/devicon/",
+      "license": "MIT"
+    },
+    "drawio_libs": {
+      "name": "draw.io Stencil Libraries",
+      "type": "stencil_library",
+      "pinned_version": "rolling",
+      "github_repo": "jgraph/drawio-libs",
+      "gallery_url": "http://jgraph.github.io/drawio-libs/",
+      "cache_path": "cache/drawio-libs/",
+      "license": "Apache-2.0",
+      "note": "Rolling release — check commit hash for cache validation"
+    }
+  },
+
+  "update_check_script": "#!/bin/bash\n# Usage: ./check-updates.sh\n# Checks pinned versions against npm/GitHub latest\n# Returns JSON with { resource: { pinned, latest, needs_update } }\nfor pkg in mermaid animejs @lottiefiles/lottie-player rough-notation simple-icons heroicons; do\n  latest=$(curl -s \"https://registry.npmjs.org/$pkg/latest\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('version','?'))\" 2>/dev/null)\n  echo \"$pkg: $latest\"\ndone"
+}

@@ -1,0 +1,603 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-03-11",
+  "theme": {
+    "background": "#0a0a0f",
+    "accent": "#6366f1",
+    "text": "#e2e8f0",
+    "success": "#34d399",
+    "warning": "#fbbf24",
+    "highlight": "#818cf8",
+    "font_heading": "Inter, system-ui, sans-serif",
+    "font_body": "Inter, system-ui, sans-serif",
+    "font_mono": "JetBrains Mono, monospace"
+  },
+  "narratives": {
+    "investor": {
+      "title": "CCEM — Agentic Performance Monitoring",
+      "subtitle": "The Observability Layer for AI-Assisted Development",
+      "total_duration_minutes": 15,
+      "slides": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "The AI Development Explosion",
+          "content": {
+            "headline": "70% of developers use AI assistants daily",
+            "stat_primary": "70%",
+            "stat_label": "AI Assistant Adoption",
+            "stat_secondary": "46%",
+            "stat_secondary_label": "of new code is AI-generated",
+            "body": "AI-assisted development has gone mainstream. GitHub Copilot alone has 1.8M+ paid subscribers. The question is no longer whether developers will use AI — it is whether anyone can see what these agents are doing.",
+            "footnote": "Sources: GitHub (2025), Stack Overflow Developer Survey, McKinsey Digital"
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 2,
+          "type": "comparison",
+          "title": "The Blind Spot Problem",
+          "content": {
+            "headline": "A fleet of trucks with no GPS",
+            "left_column": {
+              "label": "What teams know",
+              "items": [
+                "Code was committed",
+                "Tests passed (or didn't)",
+                "The bill arrived"
+              ]
+            },
+            "right_column": {
+              "label": "What teams don't know",
+              "items": [
+                "Which agent wrote which code",
+                "How many tokens were burned on dead ends",
+                "Whether two agents conflicted",
+                "Which agent is stalled right now",
+                "What the cumulative cost is mid-session"
+              ]
+            },
+            "callout": "30% of AI-generated code will need rework by 2027 — Gartner"
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 3,
+          "type": "comparison",
+          "title": "Infrastructure Monitoring Parallel",
+          "content": {
+            "headline": "Every infrastructure shift creates a monitoring category",
+            "timeline": [
+              { "era": "Bare Metal", "monitor": "Nagios", "decade": "2000s" },
+              { "era": "Virtual Machines", "monitor": "vSphere", "decade": "2000s" },
+              { "era": "Cloud", "monitor": "CloudWatch / Datadog", "decade": "2010s" },
+              { "era": "Containers", "monitor": "Prometheus / Grafana", "decade": "2010s" },
+              { "era": "Kubernetes", "monitor": "K8s Dashboard / Lens", "decade": "2020s" },
+              { "era": "AI Agents", "monitor": "???", "decade": "2025+" }
+            ],
+            "callout": "Combined APM market value: $40B+. The AI agent monitoring category does not exist yet."
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": "infra-timeline.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 4,
+          "type": "intro",
+          "title": "Introducing CCEM",
+          "content": {
+            "headline": "Real-Time APM for AI Agents",
+            "tagline": "One dashboard replaces blind faith with full situational awareness",
+            "pillars": [
+              { "icon": "register", "label": "Agent Registration", "detail": "Fire-and-forget, sub-ms overhead" },
+              { "icon": "graph", "label": "Formation Tracking", "detail": "Hierarchical agent coordination" },
+              { "icon": "chart", "label": "Token Economics", "detail": "Per-agent, per-project cost attribution" },
+              { "icon": "scan", "label": "Environment Awareness", "detail": "Auto-discovery of tools and context" }
+            ],
+            "logo": "ccem-logo.svg"
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": "architecture-overview.mmd",
+          "animation": "fade"
+        },
+        {
+          "id": 5,
+          "type": "stat",
+          "title": "Traction & Validation",
+          "content": {
+            "headline": "Production-Grade, Battle-Tested",
+            "metrics": [
+              { "value": "56", "label": "API Endpoints", "color": "#34d399" },
+              { "value": "19+", "label": "Real-time Dashboards", "color": "#34d399" },
+              { "value": "30", "label": "AG-UI Event Types", "color": "#34d399" },
+              { "value": "<1ms", "label": "Registration Overhead", "color": "#34d399" }
+            ],
+            "body": "Dogfooded daily across active development projects. OpenAPI-documented. Native macOS companion agent. This is not a mockup.",
+            "badge": "v5.0.0"
+          },
+          "background_accent": "#34d399",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 6,
+          "type": "pipeline",
+          "title": "The Open Standard Play",
+          "content": {
+            "headline": "OpenTelemetry for AI Agents",
+            "pipeline_stages": [
+              { "stage": "AG-UI Protocol", "detail": "30 event types, SSE transport", "status": "active" },
+              { "stage": "Community SDK", "detail": "Community contribution, 41 tests", "status": "active" },
+              { "stage": "CCEM Integration", "detail": "Native protocol mapping", "status": "active" },
+              { "stage": "Ecosystem Growth", "detail": "Vendor-neutral, open core", "status": "planned" }
+            ],
+            "callout": "First-mover on the open protocol layer captures ecosystem leadership"
+          },
+          "background_accent": "#818cf8",
+          "diagram_overlay": "ag-ui-flow.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 7,
+          "type": "stat",
+          "title": "Market Sizing",
+          "content": {
+            "headline": "Individual → Team → Enterprise",
+            "tiers": [
+              {
+                "tier": "Individual Developer",
+                "tam": "30M+ developers using AI assistants",
+                "motion": "Free tier / self-serve",
+                "color": "#6366f1"
+              },
+              {
+                "tier": "Development Teams",
+                "tam": "5M+ development teams globally",
+                "motion": "Team subscription",
+                "color": "#818cf8"
+              },
+              {
+                "tier": "Enterprise",
+                "tam": "500K+ enterprises with AI mandates",
+                "motion": "Enterprise contracts + governance",
+                "color": "#a5b4fc"
+              }
+            ],
+            "market_context": "AI developer tools projected at $45B by 2028 (Forrester). Enterprise observability at $15B growing 12% CAGR."
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 8,
+          "type": "cta",
+          "title": "Vision: The AI Agent Control Plane",
+          "content": {
+            "headline": "Not a tool. A control plane.",
+            "vision_layers": [
+              { "layer": "Observe", "detail": "Real-time telemetry and formation graphs", "status": "shipped" },
+              { "layer": "Attribute", "detail": "Per-agent cost and authorship tracking", "status": "shipped" },
+              { "layer": "Govern", "detail": "Policy enforcement and budget gates", "status": "building" },
+              { "layer": "Optimize", "detail": "Formation efficiency and auto-scaling", "status": "planned" }
+            ],
+            "ask": "Seed round to scale from single-developer to team deployment",
+            "closing": "The monitoring category for AI agents does not exist yet. We are building it.",
+            "contact": {
+              "label": "Let's build this category together",
+              "action": "Schedule a deep-dive"
+            }
+          },
+          "background_accent": "#fbbf24",
+          "diagram_overlay": null,
+          "animation": "fade"
+        }
+      ]
+    },
+    "partner": {
+      "title": "CCEM — Integration Partner Overview",
+      "subtitle": "Bidirectional Observability for the AI Development Ecosystem",
+      "total_duration_minutes": 12,
+      "slides": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Integration Landscape",
+          "content": {
+            "headline": "8-15 tools per developer. Zero unified agent visibility.",
+            "stat_primary": "8-15",
+            "stat_label": "Tools per Developer",
+            "tool_categories": [
+              { "category": "IDE & Extensions", "examples": "VS Code, JetBrains, Vim" },
+              { "category": "AI Assistants", "examples": "Copilot, Claude, Cursor" },
+              { "category": "VCS", "examples": "GitHub, GitLab, Azure DevOps" },
+              { "category": "CI/CD", "examples": "Actions, Jenkins, CircleCI" },
+              { "category": "PM", "examples": "Linear, Jira, Plane" },
+              { "category": "Monitoring", "examples": "Datadog, Sentry, PagerDuty" }
+            ],
+            "callout": "None of these tools know what the AI agents are doing. CCEM bridges that gap."
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 2,
+          "type": "pipeline",
+          "title": "Bidirectional Architecture",
+          "content": {
+            "headline": "Inbound telemetry. Outbound intelligence.",
+            "inbound": [
+              { "flow": "Agent Registration", "source": "AI agents", "protocol": "REST POST" },
+              { "flow": "Heartbeats", "source": "Active sessions", "protocol": "REST POST" },
+              { "flow": "Formation Updates", "source": "Orchestrators", "protocol": "REST POST" },
+              { "flow": "Token Metrics", "source": "Session hooks", "protocol": "REST POST" }
+            ],
+            "outbound": [
+              { "flow": "Notifications", "source": "CCEM engine", "protocol": "Event Bus / Webhook" },
+              { "flow": "Drift Alerts", "source": "Sync engine", "protocol": "Event Bus / Webhook" },
+              { "flow": "Status Events", "source": "Formation store", "protocol": "SSE / AG-UI" },
+              { "flow": "Environment Context", "source": "Scanner", "protocol": "REST GET" }
+            ]
+          },
+          "background_accent": "#818cf8",
+          "diagram_overlay": "bidirectional-arch.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 3,
+          "type": "custom",
+          "title": "PM Adapter Framework",
+          "content": {
+            "headline": "Five callbacks. Full integration.",
+            "behavior_contract": [
+              { "callback": "list_projects/1", "description": "Enumerate projects from PM tool" },
+              { "callback": "list_work_items/2", "description": "Fetch issues/tasks for a project" },
+              { "callback": "create_work_item/2", "description": "Create agent-originated work items" },
+              { "callback": "update_work_item/3", "description": "Sync status changes bidirectionally" },
+              { "callback": "test_connection/1", "description": "Validate credentials and connectivity" }
+            ],
+            "implementations": [
+              { "tool": "Plane", "status": "reference", "color": "#34d399" },
+              { "tool": "Linear", "status": "reference", "color": "#34d399" },
+              { "tool": "Jira", "status": "stub", "color": "#fbbf24" },
+              { "tool": "Monday", "status": "stub", "color": "#fbbf24" },
+              { "tool": "MS Project", "status": "stub", "color": "#fbbf24" }
+            ]
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": "adapter-pattern.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 4,
+          "type": "custom",
+          "title": "VCS / CI Integration",
+          "content": {
+            "headline": "Agent-authored vs human-authored: attribution matters",
+            "attribution_flow": [
+              { "step": 1, "label": "Agent session registered", "detail": "Session ID correlated to agent identity" },
+              { "step": 2, "label": "Code changes tracked", "detail": "File modifications linked to session" },
+              { "step": 3, "label": "Commit tagged", "detail": "Co-Author trailer added to metadata" },
+              { "step": 4, "label": "Attribution recorded", "detail": "Full audit trail: task → agent → commit" }
+            ],
+            "vcs_adapters": [
+              { "tool": "GitHub", "status": "reference", "color": "#34d399" },
+              { "tool": "Azure DevOps", "status": "reference", "color": "#34d399" }
+            ]
+          },
+          "background_accent": "#818cf8",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 5,
+          "type": "pipeline",
+          "title": "AG-UI Protocol",
+          "content": {
+            "headline": "30 event types. Automatic compatibility.",
+            "event_categories": [
+              {
+                "category": "Lifecycle",
+                "events": ["RUN_STARTED", "RUN_FINISHED", "RUN_ERROR"],
+                "color": "#6366f1"
+              },
+              {
+                "category": "Execution",
+                "events": ["STEP_STARTED", "STEP_FINISHED", "STATE_SNAPSHOT", "STATE_DELTA"],
+                "color": "#818cf8"
+              },
+              {
+                "category": "Tool Use",
+                "events": ["TOOL_CALL_START", "TOOL_CALL_END", "TOOL_CALL_ARGS"],
+                "color": "#a5b4fc"
+              },
+              {
+                "category": "Content",
+                "events": ["TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END"],
+                "color": "#c7d2fe"
+              }
+            ],
+            "transport": "Server-Sent Events (SSE)",
+            "callout": "Any tool that speaks AG-UI gets CCEM observability automatically"
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": "ag-ui-events.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 6,
+          "type": "custom",
+          "title": "Plugin Marketplace Vision",
+          "content": {
+            "headline": "From integrations to ecosystem",
+            "tiers": [
+              {
+                "tier": "Community",
+                "requirements": "Open adapter, basic docs",
+                "benefits": "Listed in registry, community support",
+                "color": "#e2e8f0"
+              },
+              {
+                "tier": "Verified",
+                "requirements": "Test suite, maintained, responsive",
+                "benefits": "Featured listing, co-marketing",
+                "color": "#818cf8"
+              },
+              {
+                "tier": "Certified",
+                "requirements": "SLA, security audit, enterprise support",
+                "benefits": "Revenue share, premium placement, joint GTM",
+                "color": "#fbbf24"
+              }
+            ],
+            "economics": {
+              "model": "Platform fee on certified tier transactions",
+              "benchmark": "15-30% industry standard (Atlassian, Shopify, Salesforce)"
+            }
+          },
+          "background_accent": "#fbbf24",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 7,
+          "type": "cta",
+          "title": "Partner Onboarding",
+          "content": {
+            "headline": "Hours, not weeks.",
+            "onboarding_steps": [
+              { "step": 1, "label": "Sandbox Setup", "detail": "Local CCEM instance with mock data", "duration": "15 min" },
+              { "step": 2, "label": "Adapter Scaffold", "detail": "Clone reference adapter, implement callbacks", "duration": "1-2 hours" },
+              { "step": 3, "label": "Integration Test", "detail": "Register agents, verify bidirectional flow", "duration": "30 min" },
+              { "step": 4, "label": "Documentation", "detail": "OpenAPI spec + behavior contract reference", "duration": "ongoing" }
+            ],
+            "resources": [
+              "56-endpoint OpenAPI 3.0.3 specification",
+              "Reference adapter implementations",
+              "Sandbox environment with mock telemetry",
+              "Direct engineering support for founding partners"
+            ],
+            "closing": "Join the founding partner cohort. Shape the ecosystem from day one.",
+            "contact": {
+              "label": "Schedule a sandbox session",
+              "action": "Partner inquiry"
+            }
+          },
+          "background_accent": "#34d399",
+          "diagram_overlay": null,
+          "animation": "fade"
+        }
+      ]
+    },
+    "demo": {
+      "title": "CCEM — Live Demo",
+      "subtitle": "From Blind to Full Awareness in Real Time",
+      "total_duration_minutes": 10,
+      "slides": [
+        {
+          "id": 1,
+          "type": "comparison",
+          "title": "Flying Blind",
+          "content": {
+            "headline": "This is AI development today",
+            "visual": "terminal-scroll",
+            "pain_points": [
+              { "icon": "blind", "label": "No agent visibility", "detail": "Terminal output scrolling past — no aggregation" },
+              { "icon": "money", "label": "No cost tracking", "detail": "Token spend accumulates silently across sessions" },
+              { "icon": "conflict", "label": "No conflict detection", "detail": "Agents may duplicate or overwrite each other's work" }
+            ],
+            "mood": "frustration",
+            "contrast_label": "BEFORE"
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 2,
+          "type": "comparison",
+          "title": "Full Awareness",
+          "content": {
+            "headline": "Same workflow. Complete visibility.",
+            "visual": "dashboard-overview",
+            "capabilities": [
+              { "icon": "graph", "label": "Formation graphs", "detail": "Hierarchical agent relationships in real time" },
+              { "icon": "chart", "label": "Token charts", "detail": "Per-agent economic attribution" },
+              { "icon": "bell", "label": "Notifications", "detail": "Categorized alerts and status updates" },
+              { "icon": "scan", "label": "Environment context", "detail": "Auto-discovered tools and configurations" }
+            ],
+            "mood": "confidence",
+            "contrast_label": "AFTER"
+          },
+          "background_accent": "#34d399",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 3,
+          "type": "custom",
+          "title": "Agent Registration",
+          "content": {
+            "headline": "One POST. Sub-millisecond. Done.",
+            "demo_sequence": [
+              { "step": 1, "action": "Agent spawns", "visual": "terminal-command" },
+              { "step": 2, "action": "Hook fires registration request", "visual": "curl-background" },
+              { "step": 3, "action": "Agent appears in dashboard", "visual": "dashboard-update" },
+              { "step": 4, "action": "Agent continues work unblocked", "visual": "terminal-continues" }
+            ],
+            "key_metrics": {
+              "overhead": "<1ms",
+              "pattern": "Fire-and-forget",
+              "failure_mode": "Silent — agent never blocks"
+            }
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 4,
+          "type": "custom",
+          "title": "Formation Tracking",
+          "content": {
+            "headline": "Hierarchy, not a flat list",
+            "demo_sequence": [
+              { "step": 1, "action": "Orchestrator registers", "visual": "root-node" },
+              { "step": 2, "action": "Squadron leads spawn", "visual": "child-nodes" },
+              { "step": 3, "action": "Leaf agents populate", "visual": "full-tree" },
+              { "step": 4, "action": "Status propagates upward", "visual": "status-rollup" }
+            ],
+            "graph_features": [
+              "Orthogonal elbow connectors",
+              "Wave-based grouping",
+              "Real-time status coloring",
+              "Deep-link from notifications"
+            ]
+          },
+          "background_accent": "#818cf8",
+          "diagram_overlay": "formation-hierarchy.mmd",
+          "animation": "slide"
+        },
+        {
+          "id": 5,
+          "type": "stat",
+          "title": "Token Economics",
+          "content": {
+            "headline": "Every token tracked. Every cost attributed.",
+            "chart_type": "area_with_line",
+            "chart_config": {
+              "x_axis": "Time (5-min buckets)",
+              "y_axis": "Token consumption",
+              "series": ["started", "completed", "failed", "active"],
+              "granularity": "12 x 5-minute buckets",
+              "range": "Last hour"
+            },
+            "attribution_levels": [
+              { "level": "Per Agent", "detail": "Individual session token usage" },
+              { "level": "Per Project", "detail": "Aggregate across all agents in a project" },
+              { "level": "Per Formation", "detail": "Total cost for a coordinated agent group" }
+            ]
+          },
+          "background_accent": "#34d399",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 6,
+          "type": "custom",
+          "title": "Environment Management",
+          "content": {
+            "headline": "Auto-discovery. Full context.",
+            "scan_targets": [
+              { "target": "Project Configs", "examples": "package manifests and config files", "icon": "file" },
+              { "target": "Active Ports", "examples": "3000, 5000, 5432", "icon": "network" },
+              { "target": "Hooks", "examples": "PreToolUse, PostToolUse, SessionStart", "icon": "hook" },
+              { "target": "MCPs", "examples": "playwright, puppeteer, notion", "icon": "plug" },
+              { "target": "Skills", "examples": "ccem-apm, drtw, showcase", "icon": "star" }
+            ],
+            "privacy_note": "All scanning is local. No data leaves your machine."
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": null,
+          "animation": "slide"
+        },
+        {
+          "id": 7,
+          "type": "custom",
+          "title": "Companion Agent",
+          "content": {
+            "headline": "5-second interaction arc",
+            "interaction_flow": [
+              { "step": 1, "action": "Glance at menu bar", "duration": "1s" },
+              { "step": 2, "action": "See agent status + token usage", "duration": "2s" },
+              { "step": 3, "action": "Take action (start/stop/inspect)", "duration": "1s" },
+              { "step": 4, "action": "Return to work", "duration": "1s" }
+            ],
+            "sections": [
+              { "section": "Agent Status", "detail": "Active agents with role and formation" },
+              { "section": "Token Telemetry", "detail": "Sparkline chart, summary stats" },
+              { "section": "Background Tasks", "detail": "Running tasks with logs and stop controls" },
+              { "section": "APM Controls", "detail": "Start, stop, restart server" }
+            ],
+            "platform": "Native macOS"
+          },
+          "background_accent": "#818cf8",
+          "diagram_overlay": null,
+          "animation": "fade"
+        },
+        {
+          "id": 8,
+          "type": "pipeline",
+          "title": "Architecture Overview",
+          "content": {
+            "headline": "Four layers. Privacy by default.",
+            "layers": [
+              {
+                "layer": 1,
+                "name": "Telemetry Ingestion",
+                "detail": "REST API, non-blocking, sub-ms overhead",
+                "color": "#6366f1",
+                "components": ["Registration API", "Heartbeat API", "Formation API", "Hooks"]
+              },
+              {
+                "layer": 2,
+                "name": "Correlation Engine",
+                "detail": "In-memory stores, microsecond lookups, event bus",
+                "color": "#818cf8",
+                "components": ["Agent Registry", "Formation Tracker", "Task Manager", "Sync Engine"]
+              },
+              {
+                "layer": 3,
+                "name": "Visualization",
+                "detail": "19+ real-time dashboards, interactive graphs",
+                "color": "#a5b4fc",
+                "components": ["Dashboard", "FormationLive", "SkillsLive", "ActionsLive"]
+              },
+              {
+                "layer": 4,
+                "name": "Companion Agent",
+                "detail": "Native macOS menu bar, local-only data, 5s interaction",
+                "color": "#c7d2fe",
+                "components": ["Companion App", "Server Client", "Environment Monitor", "Menu Bar UI"]
+              }
+            ],
+            "principles": [
+              "Zero agent performance impact",
+              "Privacy by default — no code content transmitted",
+              "Protocol-native — AG-UI first, adapter-extensible",
+              "Real-time — sub-second dashboard refresh"
+            ]
+          },
+          "background_accent": "#6366f1",
+          "diagram_overlay": "four-layer-arch.mmd",
+          "animation": "fade"
+        }
+      ]
+    }
+  }
+}

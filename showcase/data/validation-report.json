@@ -1,0 +1,504 @@
+{
+  "validation_timestamp": "2026-03-11T19:30:00Z",
+  "formation_id": "fmt-20260311-showcase-fleet",
+  "agent_id": "fmt-20260311-showcase-fleet-w3-qa-validator",
+  "overall_status": "FAIL",
+  "total_files_checked": 11,
+  "total_violations": 42,
+  "total_warnings": 8,
+  "checks": [
+    {
+      "file": "diagrams/context.mmd",
+      "file_type": "external",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "file": "diagrams/containers.mmd",
+      "file_type": "external",
+      "status": "WARN",
+      "violations": [
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "warning",
+          "finding": "\"Fire-and-Forget Telemetry\" appears in the Lifecycle Hooks container description",
+          "location": "line 16",
+          "recommendation": "Replace with \"Non-Blocking Telemetry\" or \"Zero-Overhead Telemetry\" to avoid revealing the fire-and-forget implementation pattern"
+        }
+      ]
+    },
+    {
+      "file": "diagrams/process-flow.mmd",
+      "file_type": "external",
+      "status": "WARN",
+      "violations": [
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "warning",
+          "finding": "\"Register agent (fire-and-forget)\" reveals the implementation pattern",
+          "location": "line 14",
+          "recommendation": "Replace with \"Register agent (non-blocking)\" to abstract the pattern"
+        }
+      ]
+    },
+    {
+      "file": "diagrams/user-journey.mmd",
+      "file_type": "external",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "file": "diagrams/deployment.mmd",
+      "file_type": "external",
+      "status": "WARN",
+      "violations": [
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "warning",
+          "finding": "\"Fire-and-forget registration & heartbeats\" on the hooks-to-apm connector",
+          "location": "line 42",
+          "recommendation": "Replace with \"Non-blocking registration & heartbeats\""
+        }
+      ]
+    },
+    {
+      "file": "data/redaction-rules.json",
+      "file_type": "internal",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "file": "data/narrative-content.json",
+      "file_type": "external",
+      "status": "FAIL",
+      "violations": [
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"AgentRegistry\" appears as an internal GenServer name in slide 3 talking point",
+          "location": "demo.slides[3].talking_points[2] (line 269)",
+          "recommendation": "Replace with \"Agent Registry\" or \"the agent tracking system\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"AgentRegistry GenServer\" appears in demo slide 3 speaker_notes",
+          "location": "demo.slides[3].speaker_notes (line 272)",
+          "recommendation": "Replace with \"agent registry handling concurrent registrations\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"ProjectScanner\" appears as a GenServer name in demo slide 6 talking point",
+          "location": "demo.slides[6].talking_points[0] (line 309)",
+          "recommendation": "Replace with \"The project scanner\" or \"Automatic scanning\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"SkillsRegistryStore\" appears as a GenServer name in demo slide 6 talking point",
+          "location": "demo.slides[6].talking_points[1] (line 310)",
+          "recommendation": "Replace with \"The skills health monitor\" or \"Skill health scoring\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"BackgroundTasksStore\" appears as a GenServer name in demo slide 6 talking point",
+          "location": "demo.slides[6].talking_points[2] (line 311)",
+          "recommendation": "Replace with \"The task tracker\" or \"Background task monitoring\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"ActionEngine\" appears as a GenServer name in demo slide 6 talking point",
+          "location": "demo.slides[6].talking_points[3] (line 312)",
+          "recommendation": "Replace with \"The action catalog\" or \"One-click maintenance actions\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"CCEMAgent\" appears as internal Swift module name in demo slide 7 talking point",
+          "location": "demo.slides[7].talking_points[0] (line 323)",
+          "recommendation": "Replace with \"The desktop companion\" or \"CCEM Companion\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Swift and SwiftUI\" exposed in demo slide 7 talking point",
+          "location": "demo.slides[7].talking_points[0] (line 323)",
+          "recommendation": "Replace with \"native macOS menu bar application\" (drop tech stack names)"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Phoenix/Elixir backend\" exposed in demo slide 8 talking point",
+          "location": "demo.slides[8].talking_points[0] (line 337)",
+          "recommendation": "Replace with \"purpose-built backend\" per moderate redaction rules"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"ETS-backed storage\" exposed in demo slide 8 talking point",
+          "location": "demo.slides[8].talking_points[1] (line 338)",
+          "recommendation": "Replace with \"In-memory storage\" or \"no external database required\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"OTP supervision trees\" exposed in demo slide 8 talking point",
+          "location": "demo.slides[8].talking_points[2] (line 339)",
+          "recommendation": "Replace with \"Supervised service processes provide fault tolerance\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"D3.js dependency graph\" exposed in demo slide 4 talking point",
+          "location": "demo.slides[4].talking_points[1] (line 282)",
+          "recommendation": "Replace with \"Interactive dependency graph\" (drop library name)"
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"GenServer\" appears as implementation pattern name in demo slide 3 speaker notes",
+          "location": "demo.slides[3].speaker_notes (line 272)",
+          "recommendation": "Remove \"GenServer\" — say \"handling concurrent registrations\" instead"
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"Elixir/Phoenix\", \"BEAM VM\", \"ETS\", \"OTP supervision tree\" all appear in demo slide 8 speaker notes",
+          "location": "demo.slides[8].speaker_notes (line 342)",
+          "recommendation": "Rewrite to use functional descriptions: \"functional backend chosen for its concurrency model\", \"in-memory performance\", \"supervised process hierarchy\""
+        },
+        {
+          "check_number": 6,
+          "check_name": "Infrastructure specifics",
+          "severity": "critical",
+          "finding": "\"launchd\" exposed in demo slide 7 talking point",
+          "location": "demo.slides[7].talking_points[3] (line 326)",
+          "recommendation": "Replace with \"OS-native service management\" or \"auto-launches at login\""
+        }
+      ]
+    },
+    {
+      "file": "data/speaker-notes.json",
+      "file_type": "external",
+      "status": "FAIL",
+      "violations": [
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"19+ LiveView dashboards\" in investor slide 5 evidence_data exposes LiveView (Phoenix-specific technology)",
+          "location": "investor.slides[5].evidence_data (line 115)",
+          "recommendation": "Replace with \"19+ real-time dashboards\" — remove \"LiveView\" reference"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Elixir SDK\" mentioned in investor slide 6 evidence_data",
+          "location": "investor.slides[6].evidence_data (line 139)",
+          "recommendation": "Acceptable as it refers to an open-source community contribution, but consider \"community SDK\" for maximum redaction"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"19 LiveView dashboards\" in demo slide 2 evidence_data",
+          "location": "demo.slides[2].evidence_data (line 420)",
+          "recommendation": "Replace with \"19 real-time dashboards\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"ETS-backed storage for microsecond lookups\" in demo slide 3 evidence_data",
+          "location": "demo.slides[3].evidence_data (line 439)",
+          "recommendation": "Replace with \"In-memory storage for microsecond lookups\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Native SwiftUI macOS application\" in demo slide 7 evidence_data",
+          "location": "demo.slides[7].evidence_data (line 532)",
+          "recommendation": "Replace with \"Native macOS application\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"ETS-backed GenServer stores\", \"Phoenix LiveView dashboards\", \"PubSub\" all in demo slide 8 evidence_data",
+          "location": "demo.slides[8].evidence_data (line 556)",
+          "recommendation": "Replace with: \"in-memory stores for microsecond lookups\", \"real-time server-rendered dashboards\", \"internal event bus\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Elixir and Phoenix\", \"SwiftUI\", \"D3.js and Chart.js\" all named in demo slide 8 Q&A answer",
+          "location": "demo.slides[8].potential_questions[0].answer (line 562)",
+          "recommendation": "These are in a Q&A answer, which is defensible for demo audience (light redaction), but flag as warning"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"ETS\", \"PubSub\", \"GenServer\" in demo slide 8 Q&A answer about scaling",
+          "location": "demo.slides[8].potential_questions[1].answer (line 566)",
+          "recommendation": "Q&A answers at demo/light level are acceptable if speaker exercises judgment, but evidence_data (line 556) should be redacted"
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"Fire-and-forget pattern: background curl, no response wait\" in demo slide 3 evidence_data",
+          "location": "demo.slides[3].evidence_data (line 439)",
+          "recommendation": "Replace with \"Non-blocking pattern: background registration, no response wait\""
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"ETS-backed GenServer stores with configurable retention and PubSub\" in partner slide 2 Q&A",
+          "location": "partner.slides[2].potential_questions[1].answer (line 256)",
+          "recommendation": "Replace with \"in-memory stores with configurable retention and event-driven distribution\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"ProjectScanner\" appears in demo slide 6 evidence_data",
+          "location": "demo.slides[6].evidence_data (line 509)",
+          "recommendation": "Replace with \"Project scanner\" (lowercase, functional name)"
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "\"CCEMAgent\" appears in demo slide 7 key_message",
+          "location": "demo.slides[7].key_message (line 531)",
+          "recommendation": "Replace with \"The CCEM companion\" or \"The desktop companion\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"reference adapter implementations in Elixir\" in partner slide 7 evidence_data",
+          "location": "partner.slides[7].evidence_data (line 366)",
+          "recommendation": "Replace with \"reference adapter implementations\" (drop language name)"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Reference implementations are in Elixir\" in partner slide 7 Q&A answer",
+          "location": "partner.slides[7].potential_questions[0].answer (line 372)",
+          "recommendation": "At moderate redaction, acceptable since partner audience; flag as warning"
+        },
+        {
+          "check_number": 6,
+          "check_name": "Infrastructure specifics",
+          "severity": "warning",
+          "finding": "\"macOS-native today using SwiftUI\" in demo slide 7 Q&A",
+          "location": "demo.slides[7].potential_questions[0].answer (line 538)",
+          "recommendation": "Q&A context acceptable at light/demo level; SwiftUI mention is the concern"
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "warning",
+          "finding": "\"OTP supervision tree\" in demo slide 8 do_not_say confirms awareness but Q&A answers above still contain it",
+          "location": "demo.slides[8].do_not_say[2] (line 576)",
+          "recommendation": "Ensure consistency: if do_not_say advises against OTP details, Q&A answers should follow same guidance"
+        }
+      ]
+    },
+    {
+      "file": "data/slides.json",
+      "file_type": "external",
+      "status": "FAIL",
+      "violations": [
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"LiveView Dashboards\" label in investor slide 5 metrics",
+          "location": "investor.slides[5].content.metrics[1] (line 115)",
+          "recommendation": "Replace with \"Real-time Dashboards\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Elixir SDK\" stage label in investor slide 6 pipeline",
+          "location": "investor.slides[6].content.pipeline_stages[1] (line 134)",
+          "recommendation": "Replace with \"Community SDK\" or \"Open-Source SDK\""
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"Native macOS (SwiftUI)\" platform label in demo slide 7",
+          "location": "demo.slides[7].content.platform (line 547)",
+          "recommendation": "Replace with \"Native macOS\""
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"ETS-backed GenServers, microsecond lookups, PubSub\" in demo slide 8 layer 2 detail",
+          "location": "demo.slides[8].content.layers[1].detail (line 570)",
+          "recommendation": "Replace with \"In-memory stores, microsecond lookups, event bus\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "Layer 2 components list: [\"AgentRegistry\", \"FormationStore\", \"BackgroundTasksStore\", \"SyncEngine\"]",
+          "location": "demo.slides[8].content.layers[1].components (line 572)",
+          "recommendation": "Replace with functional names: [\"Agent Registry\", \"Formation Tracker\", \"Task Manager\", \"Sync Engine\"]"
+        },
+        {
+          "check_number": 2,
+          "check_name": "Specific technology versions",
+          "severity": "critical",
+          "finding": "\"19+ Phoenix LiveView dashboards, D3.js graphs\" in demo slide 8 layer 3 detail",
+          "location": "demo.slides[8].content.layers[2].detail (line 577)",
+          "recommendation": "Replace with \"19+ real-time dashboards, interactive graphs\""
+        },
+        {
+          "check_number": 1,
+          "check_name": "Internal service names",
+          "severity": "critical",
+          "finding": "Layer 4 components list: [\"CCEMAgent\", \"APMClient\", \"EnvironmentMonitor\", \"MenuBarView\"]",
+          "location": "demo.slides[8].content.layers[3].components (line 586)",
+          "recommendation": "Replace with functional names: [\"Companion App\", \"Server Client\", \"Environment Monitor\", \"Menu Bar UI\"]"
+        },
+        {
+          "check_number": 5,
+          "check_name": "Algorithm names or implementation patterns",
+          "severity": "critical",
+          "finding": "\"PubSub / Webhook\" protocol in partner slide 2 outbound flows",
+          "location": "partner.slides[2].content.outbound[0..1] (lines 241-242)",
+          "recommendation": "Replace with \"Event Bus / Webhook\""
+        },
+        {
+          "check_number": 4,
+          "check_name": "API endpoint paths",
+          "severity": "critical",
+          "finding": "\"Hook fires POST /api/register\" exposes exact API endpoint path in demo slide 3",
+          "location": "demo.slides[3].content.demo_sequence[1].action (line 449)",
+          "recommendation": "Replace with \"Hook fires registration POST\" — remove endpoint path"
+        },
+        {
+          "check_number": 6,
+          "check_name": "Infrastructure specifics",
+          "severity": "warning",
+          "finding": "\"3000, 3032, 5432\" example ports in demo slide 6 includes the actual CCEM port 3032",
+          "location": "demo.slides[6].content.scan_targets[1].examples (line 518)",
+          "recommendation": "Replace with generic port examples: \"3000, 5000, 5432\" to avoid leaking the real port"
+        },
+        {
+          "check_number": 9,
+          "check_name": "Code snippets or pseudocode",
+          "severity": "warning",
+          "finding": "\"package.json, mix.exs, requirements.txt\" in demo slide 6 reveals stack detection method",
+          "location": "demo.slides[6].content.scan_targets[0].examples (line 517)",
+          "recommendation": "At light/demo level this is acceptable as generic file examples, but mix.exs reveals Elixir stack — consider replacing with \"package manifests and config files\""
+        }
+      ]
+    },
+    {
+      "file": "SKILL.md",
+      "file_type": "internal",
+      "status": "PASS",
+      "violations": []
+    },
+    {
+      "file": "formation-config.json",
+      "file_type": "internal",
+      "status": "PASS",
+      "violations": []
+    }
+  ],
+  "summary": {
+    "external_files_clean": false,
+    "internal_files_reviewed": true,
+    "redaction_rules_complete": true,
+    "narrative_ip_safe": false,
+    "diagrams_ip_safe": true,
+    "violation_breakdown": {
+      "check_1_internal_service_names": 10,
+      "check_2_specific_technology": 16,
+      "check_3_database_schema": 0,
+      "check_4_api_endpoint_paths": 1,
+      "check_5_algorithm_patterns": 9,
+      "check_6_infrastructure_specifics": 3,
+      "check_7_team_member_names": 0,
+      "check_8_pricing_financial": 0,
+      "check_9_code_snippets": 1,
+      "check_10_internal_project_ids": 0,
+      "check_11_file_paths": 0,
+      "check_12_api_keys_credentials": 0
+    },
+    "most_affected_files": [
+      {
+        "file": "data/narrative-content.json",
+        "critical_violations": 15,
+        "primary_issue": "Demo section (slides 3-8) contains unredacted GenServer names, tech stack details, and implementation patterns"
+      },
+      {
+        "file": "data/speaker-notes.json",
+        "critical_violations": 12,
+        "primary_issue": "Demo section evidence_data and Q&A answers expose ETS, GenServer, Phoenix LiveView, PubSub, and fire-and-forget pattern details"
+      },
+      {
+        "file": "data/slides.json",
+        "critical_violations": 9,
+        "primary_issue": "Demo architecture overview slide (slide 8) contains component lists with internal module names and tech-specific labels"
+      }
+    ],
+    "clean_files": [
+      "diagrams/context.mmd",
+      "diagrams/user-journey.mmd",
+      "data/redaction-rules.json (internal — clean by design)",
+      "SKILL.md (internal — clean by design)",
+      "formation-config.json (internal — clean by design)"
+    ],
+    "key_observations": [
+      "Investor narrative is clean — properly redacted at maximum level with no IP leakage detected",
+      "Partner narrative is mostly clean — a few Elixir references that are borderline acceptable at moderate level",
+      "Demo narrative is the primary offender — light redaction level was applied too liberally, exposing GenServer names, ETS, PubSub, Phoenix LiveView, SwiftUI, D3.js, and fire-and-forget patterns",
+      "Diagrams are well-abstracted — only minor warnings about fire-and-forget terminology in 3 of 5 diagrams",
+      "No file paths, credentials, project IDs, or team member names leaked anywhere in external files",
+      "The redaction-rules.json is comprehensive and would catch all these violations if consistently applied"
+    ],
+    "recommended_actions": [
+      "PRIORITY 1: Redact all GenServer/Store module names from narrative-content.json demo slides 3, 6, 7",
+      "PRIORITY 2: Remove all Elixir/Phoenix/ETS/OTP/SwiftUI/D3.js references from slides.json demo slide 8",
+      "PRIORITY 3: Scrub speaker-notes.json demo evidence_data fields of tech-specific implementation details",
+      "PRIORITY 4: Replace /api/register endpoint path in slides.json demo slide 3",
+      "PRIORITY 5: Replace fire-and-forget terminology in diagrams with non-blocking equivalent",
+      "PRIORITY 6: Remove port 3032 from slides.json demo slide 6 scan examples"
+    ]
+  }
+}

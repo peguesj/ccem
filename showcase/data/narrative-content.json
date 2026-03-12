@@ -1,0 +1,349 @@
+{
+  "version": "1.0.0",
+  "description": "Redacted narrative content for CCEM showcase across three audiences. Each slide carries its redaction level and references the appropriate diagram.",
+  "investor": {
+    "audience": "Seed/Pre-seed investors, angel groups, accelerator partners",
+    "total_slides": 8,
+    "total_duration_seconds": 960,
+    "redaction_profile": "maximum (default), moderate where technical credibility required",
+    "slides": [
+      {
+        "id": 1,
+        "title": "The AI Development Explosion",
+        "talking_points": [
+          "AI coding assistants are generating unprecedented volumes of autonomous agent activity",
+          "Developers now orchestrate fleets of AI agents working in parallel across codebases",
+          "No one can see what these agents are doing, how much they cost, or whether they succeed"
+        ],
+        "speaker_notes": "Set the stage with the macro trend. Every developer tool company is shipping AI agents. GitHub Copilot, Cursor, Claude Code -- the shift is happening NOW. But there is zero observability into what these agents actually do once deployed. Draw the parallel to early cloud: powerful but opaque.",
+        "diagram_ref": null,
+        "redaction_level": "maximum",
+        "duration_seconds": 90
+      },
+      {
+        "id": 2,
+        "title": "The Blind Spot Problem",
+        "talking_points": [
+          "AI agents consume tokens (real dollars) with no cost attribution or budgeting",
+          "Agent formations -- groups of agents working together -- have no coordination visibility",
+          "Developers cannot answer: 'What did my agents do today? Did they finish? What did it cost?'",
+          "This is the DevOps monitoring gap of the AI era"
+        ],
+        "speaker_notes": "Make the pain concrete. Show that this is not a nice-to-have -- it is a cost control, quality assurance, and operational necessity. Every AI-assisted development session today is flying blind. No dashboards, no alerts, no audit trail.",
+        "diagram_ref": null,
+        "redaction_level": "maximum",
+        "duration_seconds": 120
+      },
+      {
+        "id": 3,
+        "title": "Infrastructure Monitoring Parallel",
+        "talking_points": [
+          "Datadog solved cloud observability: $20B+ market cap",
+          "New Relic solved application performance: $6B acquisition",
+          "CCEM solves the equivalent problem for AI agent infrastructure",
+          "First mover in agentic performance monitoring -- a category that does not exist yet"
+        ],
+        "speaker_notes": "Draw the direct parallel to infrastructure monitoring. Datadog did not invent servers -- they made them observable. CCEM does the same for AI agents. The category is 'Agentic Performance Monitoring' and we are defining it. TAM follows the same trajectory as APM/observability tooling.",
+        "diagram_ref": null,
+        "redaction_level": "maximum",
+        "duration_seconds": 120
+      },
+      {
+        "id": 4,
+        "title": "Introducing CCEM",
+        "talking_points": [
+          "Real-time dashboard showing every agent, its status, cost, and formation hierarchy",
+          "Native desktop companion that lives in the menu bar -- always visible, zero friction",
+          "Privacy-first architecture: runs entirely on the developer's machine, no cloud dependency",
+          "Comprehensive API surface for integration with any AI coding tool"
+        ],
+        "speaker_notes": "Reveal the product. Emphasize three differentiators: (1) real-time visibility into agent formations, (2) local-first privacy model -- no data leaves the machine, (3) open standard integration via the AG-UI protocol. The architecture is purpose-built for concurrent agent monitoring with fault-tolerant service processes.",
+        "diagram_ref": "context.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 5,
+        "title": "Traction and Validation",
+        "talking_points": [
+          "Battle-tested across multiple real-world projects spanning months of daily use",
+          "Comprehensive feature set built iteratively from direct developer pain points",
+          "Fully operational: agent registration, formation tracking, token economics, environment scanning, skill health monitoring",
+          "Open-source AG-UI protocol SDK contributed to the ecosystem"
+        ],
+        "speaker_notes": "Demonstrate credibility. This is not a prototype -- it is a working system used daily by the founder for serious software projects. The feature breadth (agent lifecycle, formations, telemetry, project scanning, skill auditing, background task management) reflects real needs discovered through use. The AG-UI SDK contribution signals commitment to the open ecosystem.",
+        "diagram_ref": null,
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 6,
+        "title": "The Open Standard Play",
+        "talking_points": [
+          "AG-UI is an open event-based protocol for agent-user interaction (30+ event types)",
+          "CCEM is the first monitoring platform to integrate AG-UI natively",
+          "Open standards create network effects: every tool that adopts AG-UI increases CCEM's addressable market",
+          "Contributing an SDK to the AG-UI ecosystem positions CCEM as the reference implementation"
+        ],
+        "speaker_notes": "This is the strategic moat. By building on and contributing to the open AG-UI standard, CCEM benefits from ecosystem growth without vendor lock-in risk. As more AI tools adopt AG-UI, CCEM becomes the natural monitoring layer. This mirrors how Kubernetes created the platform for Datadog's next growth wave.",
+        "diagram_ref": null,
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 7,
+        "title": "Market Sizing",
+        "talking_points": [
+          "AI developer tools market: $30B+ and growing 40%+ annually",
+          "Observability/APM market: $25B+ (Datadog, New Relic, Splunk precedent)",
+          "Intersection: Agentic Performance Monitoring is a new category at the crossroads",
+          "Bottom-up: millions of AI-assisted developers, each needing agent visibility"
+        ],
+        "speaker_notes": "Frame the opportunity. The observability market is proven. The AI tools market is exploding. CCEM sits at the intersection -- a new category that will be as essential to AI-assisted development as Datadog is to cloud infrastructure. Pre-revenue, exploring monetization models including per-seat SaaS, enterprise tiers, and marketplace revenue share.",
+        "diagram_ref": null,
+        "redaction_level": "maximum",
+        "duration_seconds": 120
+      },
+      {
+        "id": 8,
+        "title": "Vision: The AI Development Control Plane",
+        "talking_points": [
+          "Today: monitor and observe AI agents in real time",
+          "Next: cross-tool agent orchestration and cost optimization",
+          "Future: the universal control plane for AI-assisted software development",
+          "Asking for: seed investment to expand the team and accelerate go-to-market"
+        ],
+        "speaker_notes": "Close with the vision. CCEM starts as a monitoring tool but the architecture is designed to become the control plane -- the single pane of glass for all AI agent activity across an organization. The local-first approach builds trust; the open standard approach builds reach. We are building the Datadog for AI agents.",
+        "diagram_ref": "context.mmd",
+        "redaction_level": "maximum",
+        "duration_seconds": 150
+      }
+    ]
+  },
+  "partner": {
+    "audience": "Integration partners, PM platform vendors, AI tool builders, DevOps teams",
+    "total_slides": 7,
+    "total_duration_seconds": 840,
+    "redaction_profile": "moderate (default), light for open-standard and protocol slides",
+    "slides": [
+      {
+        "id": 1,
+        "title": "The Integration Landscape",
+        "talking_points": [
+          "AI development tools are siloed -- each has its own agent model, lifecycle, and telemetry",
+          "Project management platforms have no visibility into AI agent activity",
+          "Version control systems see commits but not the agent work that produced them",
+          "CCEM bridges these gaps with a unified integration architecture"
+        ],
+        "speaker_notes": "Open with the fragmentation problem from the partner's perspective. Their platform is one piece of a larger developer workflow. CCEM connects the pieces by providing a central integration hub for agent activity across PM, VCS, and AI tool boundaries.",
+        "diagram_ref": "containers.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 2,
+        "title": "Bidirectional Architecture",
+        "talking_points": [
+          "Non-blocking event hooks capture agent activity without impacting performance",
+          "Real-time event bus distributes updates to all connected views and integrations",
+          "REST interface provides programmatic access to all monitoring data",
+          "Real-time event streams push live updates to dashboards and companion apps"
+        ],
+        "speaker_notes": "Show the architecture's integration-friendly design. The non-blocking hook pattern means CCEM adds zero latency to the developer's workflow. The event bus architecture means partners can subscribe to exactly the events they care about. REST for pull, event streams for push -- standard patterns that any platform team can integrate with.",
+        "diagram_ref": "containers.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 3,
+        "title": "PM Adapter Framework",
+        "talking_points": [
+          "Adapter-based PM integration supporting multiple platforms via a common interface",
+          "Currently integrated: two major PM platforms with full CRUD and sync",
+          "Adapter interface for enterprise PM, workflow management, and project scheduling platforms",
+          "Bidirectional sync: agent work items reflect in PM boards, PM updates flow back to agents"
+        ],
+        "speaker_notes": "Detail the PM integration layer. The adapter pattern means adding a new PM platform is implementing a well-defined interface -- not building from scratch. Show the sync engine: 5-minute scheduled sync with drift detection. Partners can build their own adapter or work with us to build one. The Unified Project Management module is the orchestration layer.",
+        "diagram_ref": "components.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 4,
+        "title": "VCS and CI Integration",
+        "talking_points": [
+          "Version control adapters for major platforms (adapter interface available for extension)",
+          "Agent activity correlated with commits, branches, and pull requests",
+          "Formation-aware: link multi-agent formations to the code changes they produced",
+          "Webhook-compatible for CI/CD pipeline integration"
+        ],
+        "speaker_notes": "Show the VCS integration layer. The same adapter pattern applies -- partners building VCS integrations implement a standard interface. The key insight: linking agent formations to their code output provides traceability that does not exist anywhere else. This is the audit trail that enterprise customers will require.",
+        "diagram_ref": "components.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 5,
+        "title": "AG-UI Protocol Integration",
+        "talking_points": [
+          "AG-UI: open event-based protocol for agent-user interaction (30+ event types)",
+          "CCEM maps internal events to AG-UI standard events for cross-tool compatibility",
+          "Event types: RUN_STARTED, STEP_*, TOOL_CALL_*, STATE_*, CUSTOM",
+          "Partners adopting AG-UI get CCEM monitoring compatibility for free"
+        ],
+        "speaker_notes": "This is the strategic integration pitch. AG-UI is an open standard -- any tool that emits AG-UI events becomes automatically monitorable by CCEM. Show the event mapping: registration becomes RUN_STARTED, heartbeats become STEP events, tool hooks become TOOL_CALL events. Partners who adopt AG-UI join an ecosystem, not a vendor relationship.",
+        "diagram_ref": "sequence.mmd",
+        "redaction_level": "light",
+        "duration_seconds": 120
+      },
+      {
+        "id": 6,
+        "title": "Plugin Marketplace Vision",
+        "talking_points": [
+          "Skills system: modular capabilities that can be audited, health-scored, and managed",
+          "Partner-built adapters distributed through a marketplace model",
+          "Revenue share opportunity for integration partners",
+          "Skill health monitoring ensures quality across the ecosystem"
+        ],
+        "speaker_notes": "Paint the marketplace future. CCEM already has a skills infrastructure with health scoring and auditing. The natural extension is a marketplace where partners publish adapters, skills, and integrations. Revenue share model aligns incentives. The health monitoring system ensures quality -- partners get visibility into how their integrations perform.",
+        "diagram_ref": null,
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      },
+      {
+        "id": 7,
+        "title": "Partner Onboarding",
+        "talking_points": [
+          "Well-defined adapter interfaces for PM, VCS, and AI tool integration",
+          "Full REST interface with schema-driven validation for all endpoints",
+          "Self-hosted architecture means partners can test locally without cloud dependencies",
+          "Open to co-development partnerships and design partnerships for new adapter types"
+        ],
+        "speaker_notes": "Close with the call to action. Make it concrete: here is the adapter interface, here is the API documentation (schema-driven, always up to date), here is how to test locally. We are looking for design partners to co-develop the next wave of integrations. The open standard approach means this is a collaboration, not a dependency.",
+        "diagram_ref": "containers.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      }
+    ]
+  },
+  "demo": {
+    "audience": "Developer advocates, technical evaluators, potential users, conference attendees",
+    "total_slides": 8,
+    "total_duration_seconds": 720,
+    "redaction_profile": "light (default), moderate for architecture overview to maintain some mystique",
+    "slides": [
+      {
+        "id": 1,
+        "title": "Flying Blind",
+        "talking_points": [
+          "You launch an AI agent formation: 4 agents across 3 worktrees, fixing 12 issues",
+          "You wait. You check terminal output. You scroll. You hope.",
+          "What are they doing? Are they stuck? How much is this costing?",
+          "This is the reality of AI-assisted development today"
+        ],
+        "speaker_notes": "Start with a relatable developer pain moment. Everyone who has used AI coding agents knows this feeling -- you kick off a big task and then you are blind. Show the terminal wall of text. Make the audience feel the pain before showing the solution.",
+        "diagram_ref": null,
+        "redaction_level": "light",
+        "duration_seconds": 60
+      },
+      {
+        "id": 2,
+        "title": "Full Awareness",
+        "talking_points": [
+          "CCEM APM dashboard: real-time view of every agent, every formation, every token spent",
+          "Menu bar companion: always-visible status without switching windows",
+          "Notifications: instant alerts when agents complete, fail, or need attention",
+          "All running locally on your machine -- your data never leaves"
+        ],
+        "speaker_notes": "The reveal. Show the dashboard live. Point out: formation hierarchy view, token usage chart, notification panel, agent status indicators. Then show the menu bar companion -- click it, see the same data in a compact native UI. Emphasize: this is running right now, on this machine, monitoring the agents that built this presentation.",
+        "diagram_ref": "context.mmd",
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 3,
+        "title": "Agent Registration",
+        "talking_points": [
+          "Agents register via a single REST call with formation metadata",
+          "Registration captures: agent ID, project, role, formation hierarchy, task description",
+          "The agent tracking system manages lifecycle: active, idle, completed, failed",
+          "Zero configuration -- hooks fire automatically from the CLI tool"
+        ],
+        "speaker_notes": "Live demo: trigger an agent registration. Show the dashboard update in real time. Walk through the registration payload -- agent_id, formation_role, parent_agent_id. Show the agent tracking system handling concurrent registrations. Emphasize the zero-config aspect: install CCEM, and your existing workflow just works.",
+        "diagram_ref": "sequence.mmd",
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 4,
+        "title": "Formation Tracking",
+        "talking_points": [
+          "Formations are hierarchical: orchestrator -> squadron leads -> individual agents",
+          "Interactive dependency graph shows the live formation topology",
+          "Click any node to see agent details, task progress, and token consumption",
+          "Completed formations persist for post-mortem analysis"
+        ],
+        "speaker_notes": "Live demo: show a multi-agent formation in the dependency graph. Click through the hierarchy. Show the swim lane view for squadron/swarm groupings. Highlight: completed formations do not disappear -- you can review what happened, how long it took, and what it cost. This is the audit trail that does not exist anywhere else.",
+        "diagram_ref": "components.mmd",
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 5,
+        "title": "Token Economics",
+        "talking_points": [
+          "Telemetry endpoint returns bucketed token usage over the last hour",
+          "12 five-minute buckets with started/completed/failed/active counts",
+          "Area chart in the menu bar companion shows usage trends at a glance",
+          "Cost attribution: know exactly what each agent formation costs"
+        ],
+        "speaker_notes": "Live demo: show the telemetry chart updating in real time. Point out the 5-minute bucket granularity. Show how a spike in the chart corresponds to a burst of agent activity. For cost-conscious teams, this is the feature that pays for itself -- you cannot optimize what you cannot measure.",
+        "diagram_ref": null,
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 6,
+        "title": "Environment Management",
+        "talking_points": [
+          "Automatic project scanning detects developer directories for project configs, stack, and active ports",
+          "Skills Health Monitor scores every installed skill with actionable audit results",
+          "Task Tracker monitors long-running processes with log streaming and stop controls",
+          "Action Catalog provides a set of one-click maintenance actions"
+        ],
+        "speaker_notes": "Live demo: trigger a project scan and show results populating. Show the skills health dashboard -- green/yellow/red health scores with fix buttons. Show a background task with live log streaming. Show the action catalog running a skill audit. The message: CCEM does not just monitor agents, it monitors your entire development environment.",
+        "diagram_ref": "components.mmd",
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 7,
+        "title": "The Companion Agent",
+        "talking_points": [
+          "CCEM Companion: native macOS menu bar application built as a native desktop app",
+          "Always visible: agent count, connection status, and quick actions in the menu bar",
+          "Start/stop the APM server directly from the companion -- no terminal needed",
+          "Auto-launches at login via OS-native service management for zero-friction daily use"
+        ],
+        "speaker_notes": "Live demo: click the menu bar icon. Walk through each section: connection status, active agents, telemetry chart, background tasks, quick actions. Show Start/Stop APM. Show the login item toggle. The companion makes CCEM feel like a native part of macOS, not a web tool you have to remember to open.",
+        "diagram_ref": null,
+        "redaction_level": "light",
+        "duration_seconds": 90
+      },
+      {
+        "id": 8,
+        "title": "Architecture Overview",
+        "talking_points": [
+          "Three-tier architecture: CLI hooks, purpose-built backend, native desktop companion",
+          "In-memory storage: no database to install, configure, or maintain",
+          "Supervised process hierarchy provides fault tolerance -- services restart automatically on failure",
+          "AG-UI protocol integration for cross-tool compatibility"
+        ],
+        "speaker_notes": "Close with the architecture for the technically curious. Show the C4 container diagram. Explain: the backend was chosen for its concurrency model -- monitoring dozens of agents simultaneously is a natural fit for the concurrent runtime. In-memory storage gives us performance without database ops overhead. The supervised process hierarchy means the monitoring layer is more reliable than the tools it monitors. AG-UI integration means this is not a closed ecosystem.",
+        "diagram_ref": "containers.mmd",
+        "redaction_level": "moderate",
+        "duration_seconds": 120
+      }
+    ]
+  }
+}

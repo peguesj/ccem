@@ -1,0 +1,243 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-03-11",
+  "description": "Authoritative diagram design system for CCEM showcase presentations. Defines diagram types, animation config, branding, and DRTW-compliant resource references.",
+
+  "branding": {
+    "theme_name": "showcase-obsidian",
+    "palette": {
+      "bg_primary": "#0a0a0f",
+      "bg_secondary": "#12121a",
+      "bg_card": "rgba(20, 20, 35, 0.85)",
+      "accent": "#6366f1",
+      "accent_light": "#818cf8",
+      "text_primary": "#e2e8f0",
+      "text_secondary": "#94a3b8",
+      "success": "#34d399",
+      "warning": "#fbbf24",
+      "error": "#f87171",
+      "node_person": "#08427B",
+      "node_system": "#1168BD",
+      "node_container": "#438DD5",
+      "node_external": "#999999",
+      "node_hook": "#85BBF0",
+      "node_ui": "#2D882D"
+    },
+    "typography": {
+      "heading": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "body": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "mono": "Fira Code, JetBrains Mono, SF Mono, monospace",
+      "diagram_labels": "Inter, sans-serif",
+      "diagram_font_size": "14px"
+    },
+    "glass": {
+      "blur": "12px",
+      "border": "rgba(255, 255, 255, 0.08)",
+      "card_bg": "rgba(20, 20, 35, 0.85)"
+    }
+  },
+
+  "diagram_types": {
+    "c4_context": {
+      "id": "c4_context",
+      "name": "System Context (C4 L1)",
+      "standard": "C4 Model",
+      "abstraction_level": 1,
+      "external_safe": true,
+      "mermaid_type": "graph TB",
+      "description": "High-level system boundary with actors and external systems",
+      "animation": {
+        "strategy": "progressive_reveal",
+        "sequence": ["actors", "system", "externals", "relationships"],
+        "timing_ms": 600,
+        "easing": "easeOutQuad"
+      }
+    },
+    "c4_container": {
+      "id": "c4_container",
+      "name": "Container Diagram (C4 L2)",
+      "standard": "C4 Model",
+      "abstraction_level": 2,
+      "external_safe": true,
+      "mermaid_type": "graph TB",
+      "description": "Services, databases, APIs within the system boundary",
+      "animation": {
+        "strategy": "progressive_reveal",
+        "sequence": ["actors", "boundary", "containers", "externals", "relationships"],
+        "timing_ms": 500,
+        "easing": "easeOutQuad"
+      }
+    },
+    "c4_component": {
+      "id": "c4_component",
+      "name": "Component Diagram (C4 L3)",
+      "standard": "C4 Model",
+      "abstraction_level": 3,
+      "external_safe": false,
+      "mermaid_type": "graph TB",
+      "description": "Internal modules and their relationships — IP sensitive",
+      "animation": {
+        "strategy": "progressive_reveal",
+        "sequence": ["boundary", "components", "relationships"],
+        "timing_ms": 400,
+        "easing": "easeOutCubic"
+      }
+    },
+    "sequence_flow": {
+      "id": "sequence_flow",
+      "name": "Process Flow",
+      "standard": "UML 2.5.1 Sequence Diagram",
+      "abstraction_level": 2,
+      "external_safe": true,
+      "mermaid_type": "sequenceDiagram",
+      "description": "Temporal interaction between participants",
+      "animation": {
+        "strategy": "timeline_playback",
+        "sequence": ["participants", "messages"],
+        "timing_ms": 800,
+        "easing": "easeInOutQuad",
+        "message_stagger_ms": 300
+      }
+    },
+    "deployment": {
+      "id": "deployment",
+      "name": "Deployment Topology",
+      "standard": "C4 Model Deployment",
+      "abstraction_level": 2,
+      "external_safe": true,
+      "mermaid_type": "graph TB",
+      "description": "Infrastructure topology with service placement",
+      "animation": {
+        "strategy": "layer_cascade",
+        "sequence": ["infrastructure", "services", "connections"],
+        "timing_ms": 700,
+        "easing": "easeOutBack"
+      }
+    },
+    "user_journey": {
+      "id": "user_journey",
+      "name": "User Journey",
+      "standard": "UX Journey Map",
+      "abstraction_level": 1,
+      "external_safe": true,
+      "mermaid_type": "journey",
+      "description": "Persona-driven flow through product experience",
+      "animation": {
+        "strategy": "section_slide",
+        "sequence": ["sections"],
+        "timing_ms": 500,
+        "easing": "easeOutQuad"
+      }
+    },
+    "data_flow": {
+      "id": "data_flow",
+      "name": "Data Flow Diagram",
+      "standard": "Yourdon-DeMarco DFD",
+      "abstraction_level": 2,
+      "external_safe": true,
+      "mermaid_type": "graph LR",
+      "description": "How data moves through the system",
+      "animation": {
+        "strategy": "flow_trace",
+        "sequence": ["sources", "processes", "stores", "flows"],
+        "timing_ms": 600,
+        "easing": "easeInOutQuad"
+      }
+    },
+    "formation_topology": {
+      "id": "formation_topology",
+      "name": "Formation Topology",
+      "standard": "CCEM Formation Model",
+      "abstraction_level": 2,
+      "external_safe": true,
+      "mermaid_type": "graph TB",
+      "description": "Agent formation hierarchy with wave grouping",
+      "animation": {
+        "strategy": "wave_deploy",
+        "sequence": ["orchestrator", "wave_1", "wave_2", "wave_3"],
+        "timing_ms": 800,
+        "easing": "easeOutElastic"
+      }
+    }
+  },
+
+  "animation_config": {
+    "engine": "anime.js",
+    "engine_version": "4.x",
+    "cdn": "https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.min.js",
+    "lottie": {
+      "player": "@lottiefiles/lottie-player",
+      "cdn": "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js",
+      "usage": "decorative_only",
+      "contexts": ["slide_transitions", "hero_sections", "loading_states", "empty_states"],
+      "default_assets": {
+        "transition_wipe": "assets/lottie/transition-wipe.json",
+        "server_pulse": "assets/lottie/server-pulse.json",
+        "data_flow": "assets/lottie/data-flow.json",
+        "agent_spawn": "assets/lottie/agent-spawn.json"
+      }
+    },
+    "strategies": {
+      "progressive_reveal": {
+        "description": "Elements appear in groups with staggered fade+translate",
+        "css_initial": "opacity: 0; transform: translateY(20px)",
+        "css_final": "opacity: 1; transform: translateY(0)"
+      },
+      "timeline_playback": {
+        "description": "Sequence messages animate left-to-right along the timeline",
+        "css_initial": "opacity: 0; transform: scaleX(0)",
+        "css_final": "opacity: 1; transform: scaleX(1)",
+        "transform_origin": "left center"
+      },
+      "layer_cascade": {
+        "description": "Infrastructure layers drop in from top, services fill in, connections draw",
+        "css_initial": "opacity: 0; transform: translateY(-30px)",
+        "css_final": "opacity: 1; transform: translateY(0)"
+      },
+      "section_slide": {
+        "description": "Journey sections slide in horizontally with satisfaction indicators",
+        "css_initial": "opacity: 0; transform: translateX(40px)",
+        "css_final": "opacity: 1; transform: translateX(0)"
+      },
+      "flow_trace": {
+        "description": "Data paths illuminate sequentially following flow direction",
+        "css_initial": "stroke-dashoffset: 100%",
+        "css_final": "stroke-dashoffset: 0"
+      },
+      "wave_deploy": {
+        "description": "Agents appear in wave groups with elastic bounce",
+        "css_initial": "opacity: 0; transform: scale(0.3)",
+        "css_final": "opacity: 1; transform: scale(1)"
+      }
+    },
+    "rough_notation": {
+      "enabled": true,
+      "cdn": "https://cdn.jsdelivr.net/npm/rough-notation@0.5/lib/rough-notation.iife.min.js",
+      "usage": "Animated hand-drawn annotation highlights on diagram elements during presenter mode"
+    }
+  },
+
+  "standards_reference": {
+    "uml": {
+      "version": "2.5.1",
+      "spec_url": "https://www.omg.org/spec/UML/2.5.1/",
+      "maintainer": "OMG"
+    },
+    "c4_model": {
+      "spec_url": "https://c4model.com/",
+      "diagrams_url": "https://c4model.com/diagrams",
+      "tooling_url": "https://c4model.com/tooling",
+      "maintainer": "Simon Brown"
+    },
+    "archimate": {
+      "version": "3.2",
+      "spec_url": "https://pubs.opengroup.org/architecture/archimate3-doc/",
+      "maintainer": "The Open Group"
+    },
+    "bpmn": {
+      "version": "2.0.2",
+      "spec_url": "https://www.omg.org/spec/BPMN/2.0.2/About-BPMN",
+      "maintainer": "OMG"
+    }
+  }
+}
