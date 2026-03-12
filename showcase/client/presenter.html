@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCEM Showcase — Presenter Console</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="presenter-container">
+    <!-- Header -->
+    <div class="presenter-header">
+      <h2>Presenter Console</h2>
+      <span id="presenter-info" style="font-size: 13px; color: var(--text-secondary); font-family: var(--font-mono);">Waiting for main window...</span>
+      <div id="presenter-timer" class="presenter-timer">00:00<span class="per-slide">slide: 00:00</span></div>
+    </div>
+
+    <!-- Current Slide -->
+    <div class="presenter-panel presenter-current-slide" id="presenter-current">
+      <h3>Current Slide</h3>
+      <p style="color: var(--text-secondary); font-size: 14px;">Open the main showcase window to begin.</p>
+    </div>
+
+    <!-- Speaker Notes -->
+    <div class="presenter-panel presenter-notes" id="presenter-notes-content">
+      <h3>Speaker Notes</h3>
+      <p style="color: var(--text-secondary); font-size: 14px;">Notes will appear when a slide is active.</p>
+    </div>
+
+    <!-- Do Not Say -->
+    <div class="presenter-panel do-not-say" id="presenter-dns">
+      <h3>Do Not Say</h3>
+      <p style="color: var(--text-secondary); font-size: 13px;">Guardrails will appear here.</p>
+    </div>
+
+    <!-- Q&A -->
+    <div class="presenter-panel qa-panel" id="presenter-qa">
+      <h3>Potential Q&A</h3>
+      <p style="color: var(--text-secondary); font-size: 13px;">Questions and suggested answers will appear here.</p>
+    </div>
+
+    <!-- Next slide preview -->
+    <div class="presenter-panel presenter-next-preview" id="presenter-next">
+      <span class="label">NEXT:</span>
+      <span class="next-title">--</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initPresenter } from './showcase.js';
+    initPresenter();
+  </script>
+</body>
+</html>

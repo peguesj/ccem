@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCEM — Agentic Performance Monitoring</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"Fira Code"', '"SF Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="h-full bg-zinc-950 text-zinc-100 antialiased">
+
+  <!-- Sticky Chrome: Header + Status Bar -->
+  <div class="sticky top-0 z-50">
+    <header class="border-b border-zinc-800 bg-zinc-900/95 px-6 py-3 backdrop-blur-sm">
+      <div class="mx-auto flex max-w-[1600px] items-center justify-between">
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="rounded bg-indigo-500/20 px-2 py-0.5 text-xs font-bold text-indigo-400 ring-1 ring-indigo-500/30" id="version-badge">v5.3.0</span>
+            <h1 class="text-lg font-bold text-zinc-100">CCEM — Agentic Performance Monitoring</h1>
+          </div>
+          <p class="mt-0.5 text-xs text-zinc-500">
+            AG-UI Protocol · Formation Orchestration · Real-Time Agent Observability
+          </p>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-zinc-500">
+          <a href="https://docs.ag-ui.com" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition">AG-UI Docs</a>
+          <a href="http://localhost:3032" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition" id="apm-link">APM Dashboard</a>
+          <a href="http://localhost:3032/api/docs" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition">API Docs</a>
+          <span class="font-mono text-zinc-600" id="git-info">loading...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="border-b border-zinc-800/60 bg-zinc-900/80 px-6 py-2 backdrop-blur-sm" id="status-bar">
+      <div class="mx-auto flex max-w-[1600px] items-center justify-between text-[10px]">
+        <div class="flex items-center gap-3" id="breadcrumb">
+          <span class="text-zinc-500">CCEM</span>
+          <span class="text-zinc-700">/</span>
+          <span class="text-zinc-400">Showcase</span>
+          <span class="text-zinc-700">/</span>
+          <span class="text-zinc-300" id="active-narrative">Investor</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="narrative-tab rounded px-2 py-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60 transition" data-narrative="investor">Investor</button>
+          <button class="narrative-tab rounded px-2 py-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60 transition" data-narrative="partner">Partner</button>
+          <button class="narrative-tab rounded px-2 py-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60 transition" data-narrative="product-demo">Product</button>
+          <button class="narrative-tab rounded px-2 py-0.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60 transition" data-narrative="internal">Internal</button>
+          <span class="text-zinc-700">|</span>
+          <span class="font-mono text-zinc-600" id="apm-status">APM: checking...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Column Layout -->
+  <div class="mx-auto grid max-w-[1600px] grid-cols-[320px_1fr_300px] gap-0 divide-x divide-zinc-800">
+
+    <!-- Left: Feature Cards -->
+    <aside class="sticky top-[98px] h-[calc(100vh-98px)] overflow-y-auto p-5" id="features-panel">
+      <div class="space-y-4" id="features-container"></div>
+    </aside>
+
+    <!-- Center: Architecture + Wave Board -->
+    <main class="min-h-[calc(100vh-98px)] p-5 space-y-6" id="center-panel">
+      <div id="architecture-container"></div>
+      <div id="wave-board-container"></div>
+      <div id="narrative-content"></div>
+    </main>
+
+    <!-- Right: Inspector Panel -->
+    <aside class="sticky top-[98px] h-[calc(100vh-98px)] overflow-y-auto p-5" id="inspector-panel">
+      <div class="space-y-4" id="inspector-container"></div>
+    </aside>
+  </div>
+
+  <script type="module" src="showcase.js"></script>
+</body>
+</html>
