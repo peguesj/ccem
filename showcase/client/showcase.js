@@ -474,6 +474,10 @@ function setProgressFilter(filter) { progressFilter = filter; renderFeatureCards
 
 // ─── Architecture SVG ───────────────────────────────────────────────────────────
 
+// Architecture diagram tab state
+let archTab = 'system'; // 'system' | 'npm'
+let npmSvgCache = null;
+
 function renderArchitecture() {
   const container = document.getElementById('architecture-container');
   if (!container) return;
@@ -481,17 +485,11 @@ function renderArchitecture() {
   const agentCount = apmState.agents?.length || 0;
   const apmDot = apmState.connected ? '#10b981' : '#ef4444';
 
-  container.innerHTML = `
-    <div class="space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="text-sm font-bold text-zinc-300">System Architecture</h2>
-        <div class="flex items-center gap-2">
-          <span class="inline-block h-2 w-2 rounded-full dot-pulse" style="background:${apmDot}"></span>
-          <span class="text-[10px] font-mono text-zinc-600">${agentCount} agents registered</span>
-        </div>
-      </div>
-      <div class="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 overflow-hidden">
-        <svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img" aria-label="CCEM System Architecture">
+  const tabClass = (id) => id === archTab
+    ? 'px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all bg-zinc-800 text-zinc-200 ring-1 ring-zinc-700'
+    : 'px-3 py-1.5 text-[11px] font-medium rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40';
+
+  const systemSvg = `<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img" aria-label="CCEM System Architecture">
           <defs>
             <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,3.5 L0,7" fill="#52525b"/></marker>
@@ -508,10 +506,60 @@ function renderArchitecture() {
           <g class="arch-node" style="animation-delay:0.6s"><rect x="290" y="340" width="220" height="65" rx="8" fill="#18181b" stroke="#6366f140" stroke-width="1" stroke-dasharray="6 3"/><text x="400" y="362" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600" font-family="Inter,sans-serif">EXTERNAL INTEGRATIONS</text><text x="340" y="385" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">Plane PM</text><text x="410" y="385" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">Linear</text><text x="470" y="385" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">GitHub</text></g>
           <line x1="400" y1="340" x2="400" y2="304" stroke="#6366f140" stroke-width="1" marker-end="url(#arrow)" class="arch-edge" stroke-dasharray="4 4"/>
           <circle cx="18" cy="18" r="6" fill="${apmDot}" filter="url(#glow-green)" class="dot-pulse"/><text x="30" y="22" fill="#a1a1aa" font-size="8" font-family="'Fira Code',monospace">APM ${apmState.connected ? 'LIVE' : 'OFFLINE'}</text>
-        </svg>
+        </svg>`;
+
+  container.innerHTML = `
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-zinc-300">Architecture</h2>
+        <div class="flex items-center gap-2">
+          <span class="inline-block h-2 w-2 rounded-full dot-pulse" style="background:${apmDot}"></span>
+          <span class="text-[10px] font-mono text-zinc-600">${agentCount} agents registered</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 rounded-lg bg-zinc-900/80 p-1 ring-1 ring-zinc-800">
+        <button data-arch-tab="system" class="${tabClass('system')}">System</button>
+        <button data-arch-tab="npm" class="${tabClass('npm')}">npm Packages</button>
+      </div>
+      <div class="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 overflow-hidden">
+        <div id="arch-diagram-system" style="display:${archTab === 'system' ? 'block' : 'none'}">
+          ${systemSvg}
+        </div>
+        <div id="arch-diagram-npm" style="display:${archTab === 'npm' ? 'block' : 'none'}">
+          <div id="npm-svg-host"></div>
+        </div>
       </div>
     </div>
   `;
+
+  // Attach tab click handlers
+  container.querySelectorAll('[data-arch-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      archTab = btn.dataset.archTab;
+      renderArchitecture();
+    });
+  });
+
+  // Load npm SVG (fetch once, then cache)
+  if (archTab === 'npm') {
+    const host = document.getElementById('npm-svg-host');
+    if (npmSvgCache) {
+      host.innerHTML = npmSvgCache;
+    } else {
+      host.innerHTML = '<p class="text-center text-xs text-zinc-600 py-8">Loading diagram...</p>';
+      fetch('diagrams/npm-packages.svg')
+        .then(r => r.text())
+        .then(svg => {
+          npmSvgCache = svg;
+          const current = document.getElementById('npm-svg-host');
+          if (current) current.innerHTML = svg;
+        })
+        .catch(() => {
+          const current = document.getElementById('npm-svg-host');
+          if (current) current.innerHTML = '<p class="text-center text-xs text-red-400 py-8">Failed to load npm-packages.svg</p>';
+        });
+    }
+  }
 }
 
 // ─── Inspector Panel (Right) ────────────────────────────────────────────────────

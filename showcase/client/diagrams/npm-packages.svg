@@ -1,0 +1,353 @@
+<svg viewBox="0 0 860 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CCEM npm Package Architecture — @ccem/core + @ccem/apm ecosystem">
+  <defs>
+    <!-- Glow filters -->
+    <filter id="glow-emerald" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.204  0 0 0 0 0.827  0 0 0 0 0.506  0 0 0 0.5 0" result="colorBlur"/>
+      <feMerge><feMergeNode in="colorBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.231  0 0 0 0 0.510  0 0 0 0 0.965  0 0 0 0.5 0" result="colorBlur"/>
+      <feMerge><feMergeNode in="colorBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-purple" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.655  0 0 0 0 0.545  0 0 0 0 0.980  0 0 0 0.5 0" result="colorBlur"/>
+      <feMerge><feMergeNode in="colorBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-amber" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.984  0 0 0 0 0.749  0 0 0 0 0.141  0 0 0 0.4 0" result="colorBlur"/>
+      <feMerge><feMergeNode in="colorBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Arrow markers -->
+    <marker id="arr-zinc" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,3.5 L0,7" fill="#52525b"/>
+    </marker>
+    <marker id="arr-emerald" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,3.5 L0,7" fill="#34d399"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,3.5 L0,7" fill="#60a5fa"/>
+    </marker>
+    <marker id="arr-amber" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,3.5 L0,7" fill="#fbbf24"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,3.5 L0,7" fill="#a78bfa"/>
+    </marker>
+
+    <!-- Animated dash pattern -->
+    <style>
+      @keyframes dash-march { to { stroke-dashoffset: -16; } }
+      @keyframes pulse-glow { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+      @keyframes node-appear { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+      @keyframes fade-in-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      .edge-animated { animation: dash-march 1.2s linear infinite; }
+      .node-animated { animation: node-appear 0.4s ease-out both; }
+      .label-animated { animation: fade-in-up 0.5s ease-out both; }
+      .pulse { animation: pulse-glow 2s ease-in-out infinite; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="860" height="620" fill="#09090b" rx="12"/>
+
+  <!-- Title -->
+  <text x="430" y="28" text-anchor="middle" fill="#e4e4e7" font-size="13" font-weight="700" font-family="Inter,sans-serif" class="label-animated">CCEM Package Ecosystem Architecture</text>
+  <text x="430" y="44" text-anchor="middle" fill="#71717a" font-size="9" font-family="Inter,sans-serif" class="label-animated" style="animation-delay:0.1s">npm packages + native clients + APM server</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 1: Consumers (Top) -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Layer label -->
+  <text x="26" y="76" fill="#52525b" font-size="8" font-weight="600" font-family="'Fira Code',monospace" letter-spacing="0.1em" class="label-animated" style="animation-delay:0.15s">CONSUMERS</text>
+  <line x1="26" y1="80" x2="834" y2="80" stroke="#27272a" stroke-width="0.5"/>
+
+  <!-- Consumer 1: CCEMAgent -->
+  <g class="node-animated" style="animation-delay:0.2s">
+    <rect x="26" y="90" width="190" height="72" rx="8" fill="#18181b" stroke="#ef444460" stroke-width="1.5"/>
+    <rect x="26" y="90" width="190" height="22" rx="8" fill="#ef44441a"/>
+    <rect x="26" y="104" width="190" height="8" fill="#18181b"/>
+    <text x="121" y="106" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="600" font-family="Inter,sans-serif">CCEMAgent</text>
+    <text x="121" y="126" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">Swift / macOS MenuBar</text>
+    <rect x="42" y="136" width="72" height="18" rx="3" fill="#ef44440d" stroke="#ef444425" stroke-width="0.75"/>
+    <text x="78" y="148" text-anchor="middle" fill="#fca5a5" font-size="7" font-family="'Fira Code',monospace">APMClient</text>
+    <rect x="122" y="136" width="78" height="18" rx="3" fill="#ef44440d" stroke="#ef444425" stroke-width="0.75"/>
+    <text x="161" y="148" text-anchor="middle" fill="#fca5a5" font-size="7" font-family="'Fira Code',monospace">AppKit/SSE</text>
+  </g>
+
+  <!-- Consumer 2: UI Server -->
+  <g class="node-animated" style="animation-delay:0.25s">
+    <rect x="232" y="90" width="190" height="72" rx="8" fill="#18181b" stroke="#3b82f660" stroke-width="1.5"/>
+    <rect x="232" y="90" width="190" height="22" rx="8" fill="#3b82f61a"/>
+    <rect x="232" y="104" width="190" height="8" fill="#18181b"/>
+    <text x="327" y="106" text-anchor="middle" fill="#93c5fd" font-size="10" font-weight="600" font-family="Inter,sans-serif">UI Server</text>
+    <text x="327" y="126" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">Express.js :8638</text>
+    <rect x="248" y="136" width="72" height="18" rx="3" fill="#3b82f60d" stroke="#3b82f625" stroke-width="0.75"/>
+    <text x="284" y="148" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">@ccem/apm</text>
+    <rect x="328" y="136" width="78" height="18" rx="3" fill="#3b82f60d" stroke="#3b82f625" stroke-width="0.75"/>
+    <text x="367" y="148" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">proxy layer</text>
+  </g>
+
+  <!-- Consumer 3: Claude Code Hooks -->
+  <g class="node-animated" style="animation-delay:0.3s">
+    <rect x="438" y="90" width="190" height="72" rx="8" fill="#18181b" stroke="#fbbf2460" stroke-width="1.5" stroke-dasharray="6 3"/>
+    <rect x="438" y="90" width="190" height="22" rx="8" fill="#fbbf241a"/>
+    <rect x="438" y="104" width="190" height="8" fill="#18181b"/>
+    <text x="533" y="106" text-anchor="middle" fill="#fcd34d" font-size="10" font-weight="600" font-family="Inter,sans-serif">Claude Code Hooks</text>
+    <text x="533" y="126" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">Bash / curl (direct)</text>
+    <rect x="454" y="136" width="72" height="18" rx="3" fill="#fbbf240d" stroke="#fbbf2425" stroke-width="0.75"/>
+    <text x="490" y="148" text-anchor="middle" fill="#fcd34d" font-size="7" font-family="'Fira Code',monospace">session</text>
+    <rect x="534" y="136" width="78" height="18" rx="3" fill="#fbbf240d" stroke="#fbbf2425" stroke-width="0.75"/>
+    <text x="573" y="148" text-anchor="middle" fill="#fcd34d" font-size="7" font-family="'Fira Code',monospace">heartbeat</text>
+  </g>
+
+  <!-- Consumer 4: Third-party -->
+  <g class="node-animated" style="animation-delay:0.35s">
+    <rect x="644" y="90" width="190" height="72" rx="8" fill="#18181b" stroke="#a78bfa50" stroke-width="1.5" stroke-dasharray="6 3"/>
+    <rect x="644" y="90" width="190" height="22" rx="8" fill="#a78bfa15"/>
+    <rect x="644" y="104" width="190" height="8" fill="#18181b"/>
+    <text x="739" y="106" text-anchor="middle" fill="#c4b5fd" font-size="10" font-weight="600" font-family="Inter,sans-serif">Third-Party Consumers</text>
+    <text x="739" y="126" text-anchor="middle" fill="#a1a1aa" font-size="8" font-family="Inter,sans-serif">npm install @ccem/apm</text>
+    <rect x="660" y="136" width="72" height="18" rx="3" fill="#a78bfa0d" stroke="#a78bfa25" stroke-width="0.75"/>
+    <text x="696" y="148" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="'Fira Code',monospace">@ccem/apm</text>
+    <rect x="740" y="136" width="78" height="18" rx="3" fill="#a78bfa0d" stroke="#a78bfa25" stroke-width="0.75"/>
+    <text x="779" y="148" text-anchor="middle" fill="#c4b5fd" font-size="7" font-family="'Fira Code',monospace">TypeScript</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Connection lines: Consumers → npm Packages -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- CCEMAgent → APM Server (native, bypasses npm) -->
+  <line x1="121" y1="162" x2="121" y2="188" stroke="#ef444440" stroke-width="1" class="edge-animated" stroke-dasharray="4 4"/>
+  <text x="121" y="183" text-anchor="middle" fill="#71717a" font-size="6" font-family="'Fira Code',monospace">native Swift</text>
+
+  <!-- UI Server → @ccem/apm -->
+  <line x1="327" y1="162" x2="540" y2="248" stroke="#3b82f650" stroke-width="1.2" marker-end="url(#arr-blue)" class="edge-animated" stroke-dasharray="4 4"/>
+
+  <!-- Claude Code Hooks → APM Server (direct curl) -->
+  <line x1="533" y1="162" x2="533" y2="188" stroke="#fbbf2440" stroke-width="1" class="edge-animated" stroke-dasharray="4 4"/>
+  <text x="533" y="183" text-anchor="middle" fill="#71717a" font-size="6" font-family="'Fira Code',monospace">curl direct</text>
+
+  <!-- Third-party → @ccem/apm -->
+  <line x1="739" y1="162" x2="620" y2="248" stroke="#a78bfa40" stroke-width="1.2" marker-end="url(#arr-purple)" class="edge-animated" stroke-dasharray="4 4"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 2: npm Packages (Middle) -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Layer label -->
+  <text x="26" y="216" fill="#52525b" font-size="8" font-weight="600" font-family="'Fira Code',monospace" letter-spacing="0.1em" class="label-animated" style="animation-delay:0.35s">NPM PACKAGES</text>
+  <line x1="26" y1="220" x2="834" y2="220" stroke="#27272a" stroke-width="0.5"/>
+
+  <!-- @ccem/core v3.0.0 -->
+  <g class="node-animated" style="animation-delay:0.4s">
+    <rect x="26" y="232" width="394" height="140" rx="10" fill="#18181b" stroke="#34d39980" stroke-width="1.5" filter="url(#glow-emerald)"/>
+    <!-- Header band -->
+    <rect x="26" y="232" width="394" height="28" rx="10" fill="#10b98118"/>
+    <rect x="26" y="252" width="394" height="8" fill="#18181b"/>
+    <text x="46" y="251" fill="#34d399" font-size="12" font-weight="700" font-family="'Fira Code',monospace">@ccem/core</text>
+    <text x="164" y="251" fill="#6ee7b7" font-size="9" font-weight="500" font-family="'Fira Code',monospace">v3.0.0</text>
+    <text x="396" y="251" text-anchor="end" fill="#52525b" font-size="8" font-family="'Fira Code',monospace">212 files &#xB7; 145.9kB</text>
+
+    <!-- Description -->
+    <text x="46" y="278" fill="#a1a1aa" font-size="9" font-family="Inter,sans-serif">TypeScript/Ink TUI Config Manager</text>
+
+    <!-- Module boxes row 1 -->
+    <rect x="42" y="290" width="78" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="81" y="305" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Zod Schema</text>
+
+    <rect x="128" y="290" width="72" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="164" y="305" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Config</text>
+
+    <rect x="208" y="290" width="86" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="251" y="305" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Merge Strat</text>
+
+    <rect x="302" y="290" width="102" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="353" y="305" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Fork Detect</text>
+
+    <!-- Module boxes row 2 -->
+    <rect x="42" y="320" width="78" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="81" y="335" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Ink TUI</text>
+
+    <rect x="128" y="320" width="72" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="164" y="335" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">CLI</text>
+
+    <rect x="208" y="320" width="86" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="251" y="335" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Validators</text>
+
+    <rect x="302" y="320" width="102" height="22" rx="4" fill="#10b98112" stroke="#10b98135" stroke-width="0.75"/>
+    <text x="353" y="335" text-anchor="middle" fill="#6ee7b7" font-size="8" font-family="'Fira Code',monospace">Type Exports</text>
+
+    <!-- Status indicator -->
+    <circle cx="400" cy="362" r="4" fill="#10b981" class="pulse"/>
+    <text x="392" y="366" text-anchor="end" fill="#52525b" font-size="7" font-family="'Fira Code',monospace">published</text>
+  </g>
+
+  <!-- @ccem/apm v1.0.0 -->
+  <g class="node-animated" style="animation-delay:0.45s">
+    <rect x="440" y="232" width="394" height="140" rx="10" fill="#18181b" stroke="#60a5fa80" stroke-width="1.5" filter="url(#glow-blue)"/>
+    <!-- Header band -->
+    <rect x="440" y="232" width="394" height="28" rx="10" fill="#3b82f618"/>
+    <rect x="440" y="252" width="394" height="8" fill="#18181b"/>
+    <text x="460" y="251" fill="#60a5fa" font-size="12" font-weight="700" font-family="'Fira Code',monospace">@ccem/apm</text>
+    <text x="568" y="251" fill="#93c5fd" font-size="9" font-weight="500" font-family="'Fira Code',monospace">v1.0.0</text>
+    <text x="810" y="251" text-anchor="end" fill="#52525b" font-size="8" font-family="'Fira Code',monospace">134 files &#xB7; 43.2kB</text>
+
+    <!-- Description -->
+    <text x="460" y="278" fill="#a1a1aa" font-size="9" font-family="Inter,sans-serif">TypeScript APM Client SDK &#xB7; 100+ endpoints</text>
+
+    <!-- Module boxes row 1 -->
+    <rect x="456" y="290" width="78" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="495" y="305" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">APMClient</text>
+
+    <rect x="542" y="290" width="102" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="593" y="305" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">28 Namespaces</text>
+
+    <rect x="652" y="290" width="72" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="688" y="305" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">SSE</text>
+
+    <rect x="732" y="290" width="86" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="775" y="305" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">25 Types</text>
+
+    <!-- Module boxes row 2 -->
+    <rect x="456" y="320" width="78" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="495" y="335" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">Agents</text>
+
+    <rect x="542" y="320" width="72" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="578" y="335" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">Actions</text>
+
+    <rect x="622" y="320" width="86" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="665" y="335" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">Formations</text>
+
+    <rect x="716" y="320" width="102" height="22" rx="4" fill="#3b82f612" stroke="#3b82f635" stroke-width="0.75"/>
+    <text x="767" y="335" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="'Fira Code',monospace">UPM / Tasks</text>
+
+    <!-- Status indicator -->
+    <circle cx="814" cy="362" r="4" fill="#3b82f6" class="pulse"/>
+    <text x="806" y="366" text-anchor="end" fill="#52525b" font-size="7" font-family="'Fira Code',monospace">published</text>
+  </g>
+
+  <!-- Shared types bidirectional arrow between @ccem/core and @ccem/apm -->
+  <line x1="420" y1="302" x2="440" y2="302" stroke="#a78bfa60" stroke-width="1.5" marker-start="url(#arr-purple)" marker-end="url(#arr-purple)"/>
+  <text x="430" y="296" text-anchor="middle" fill="#a78bfa" font-size="6" font-weight="500" font-family="'Fira Code',monospace" transform="rotate(-90 430 296)">shared types</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Connection lines: npm Packages → APM Server -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- CCEMAgent native path directly to APM Server (bypasses npm) -->
+  <path d="M121,188 L121,198 Q121,208 131,208 L160,208 Q170,208 170,218 L170,430 Q170,440 180,440 L300,460" stroke="#ef444440" stroke-width="1.2" fill="none" marker-end="url(#arr-zinc)" class="edge-animated" stroke-dasharray="4 4"/>
+  <text x="155" y="350" fill="#71717a" font-size="6" font-family="'Fira Code',monospace" transform="rotate(-90 155 350)">native HTTP/SSE</text>
+
+  <!-- Claude Code Hooks direct curl to APM Server -->
+  <path d="M533,188 L533,198 Q533,208 523,208 L500,208 Q490,208 490,218 L490,430 Q490,440 480,440 L560,460" stroke="#fbbf2440" stroke-width="1.2" fill="none" marker-end="url(#arr-zinc)" class="edge-animated" stroke-dasharray="4 4"/>
+  <text x="505" y="350" fill="#71717a" font-size="6" font-family="'Fira Code',monospace" transform="rotate(-90 505 350)">curl REST API</text>
+
+  <!-- @ccem/apm → APM Server (main SDK path) -->
+  <line x1="637" y1="372" x2="540" y2="445" stroke="#60a5fa60" stroke-width="1.8" marker-end="url(#arr-blue)" class="edge-animated" stroke-dasharray="5 4"/>
+  <text x="600" y="408" fill="#60a5fa" font-size="7" font-weight="500" font-family="'Fira Code',monospace">HTTP + SSE</text>
+
+  <!-- @ccem/core config path (does not connect to server, local only) -->
+  <text x="223" y="386" text-anchor="middle" fill="#34d39960" font-size="7" font-style="italic" font-family="Inter,sans-serif">local config only</text>
+  <text x="223" y="396" text-anchor="middle" fill="#34d39940" font-size="6" font-family="Inter,sans-serif">(no server calls)</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- LAYER 3: APM Server (Bottom) -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Layer label -->
+  <text x="26" y="436" fill="#52525b" font-size="8" font-weight="600" font-family="'Fira Code',monospace" letter-spacing="0.1em" class="label-animated" style="animation-delay:0.5s">APM SERVER</text>
+  <line x1="26" y1="440" x2="834" y2="440" stroke="#27272a" stroke-width="0.5"/>
+
+  <!-- APM Server main box -->
+  <g class="node-animated" style="animation-delay:0.55s">
+    <rect x="180" y="450" width="500" height="155" rx="10" fill="#18181b" stroke="#a78bfa70" stroke-width="1.5" filter="url(#glow-purple)"/>
+    <!-- Header band -->
+    <rect x="180" y="450" width="500" height="28" rx="10" fill="#a78bfa15"/>
+    <rect x="180" y="470" width="500" height="8" fill="#18181b"/>
+
+    <text x="200" y="469" fill="#c4b5fd" font-size="12" font-weight="700" font-family="'Fira Code',monospace">CCEM APM Server</text>
+    <text x="380" y="469" fill="#a78bfa" font-size="9" font-weight="500" font-family="'Fira Code',monospace">Phoenix/Elixir :3032</text>
+    <circle cx="660" cy="464" r="5" fill="#a78bfa" class="pulse" filter="url(#glow-purple)"/>
+
+    <!-- Subsystem boxes row 1 -->
+    <rect x="196" y="486" width="110" height="26" rx="4" fill="#a78bfa10" stroke="#a78bfa30" stroke-width="0.75"/>
+    <text x="251" y="503" text-anchor="middle" fill="#c4b5fd" font-size="8" font-weight="600" font-family="'Fira Code',monospace">100+ REST</text>
+    <text x="251" y="507" text-anchor="middle" fill="#a1a1aa" font-size="5" font-family="Inter,sans-serif"> </text>
+
+    <rect x="314" y="486" width="110" height="26" rx="4" fill="#a78bfa10" stroke="#a78bfa30" stroke-width="0.75"/>
+    <text x="369" y="503" text-anchor="middle" fill="#c4b5fd" font-size="8" font-weight="600" font-family="'Fira Code',monospace">AG-UI Protocol</text>
+
+    <rect x="432" y="486" width="110" height="26" rx="4" fill="#a78bfa10" stroke="#a78bfa30" stroke-width="0.75"/>
+    <text x="487" y="503" text-anchor="middle" fill="#c4b5fd" font-size="8" font-weight="600" font-family="'Fira Code',monospace">A2A Messaging</text>
+
+    <rect x="550" y="486" width="114" height="26" rx="4" fill="#a78bfa10" stroke="#a78bfa30" stroke-width="0.75"/>
+    <text x="607" y="503" text-anchor="middle" fill="#c4b5fd" font-size="8" font-weight="600" font-family="'Fira Code',monospace">19 LiveViews</text>
+
+    <!-- GenServer boxes row 2 -->
+    <rect x="196" y="520" width="86" height="20" rx="3" fill="#10b98110" stroke="#10b98130" stroke-width="0.75"/>
+    <text x="239" y="534" text-anchor="middle" fill="#6ee7b7" font-size="7" font-family="'Fira Code',monospace">AgentRegistry</text>
+
+    <rect x="290" y="520" width="78" height="20" rx="3" fill="#10b98110" stroke="#10b98130" stroke-width="0.75"/>
+    <text x="329" y="534" text-anchor="middle" fill="#6ee7b7" font-size="7" font-family="'Fira Code',monospace">EventRouter</text>
+
+    <rect x="376" y="520" width="86" height="20" rx="3" fill="#10b98110" stroke="#10b98130" stroke-width="0.75"/>
+    <text x="419" y="534" text-anchor="middle" fill="#6ee7b7" font-size="7" font-family="'Fira Code',monospace">FormationStore</text>
+
+    <rect x="470" y="520" width="86" height="20" rx="3" fill="#10b98110" stroke="#10b98130" stroke-width="0.75"/>
+    <text x="513" y="534" text-anchor="middle" fill="#6ee7b7" font-size="7" font-family="'Fira Code',monospace">ChatStore</text>
+
+    <rect x="564" y="520" width="100" height="20" rx="3" fill="#10b98110" stroke="#10b98130" stroke-width="0.75"/>
+    <text x="614" y="534" text-anchor="middle" fill="#6ee7b7" font-size="7" font-family="'Fira Code',monospace">SkillsRegistry</text>
+
+    <!-- GenServer boxes row 3 -->
+    <rect x="196" y="548" width="100" height="20" rx="3" fill="#3b82f610" stroke="#3b82f630" stroke-width="0.75"/>
+    <text x="246" y="562" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">BackgroundTasks</text>
+
+    <rect x="304" y="548" width="92" height="20" rx="3" fill="#3b82f610" stroke="#3b82f630" stroke-width="0.75"/>
+    <text x="350" y="562" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">ProjectScanner</text>
+
+    <rect x="404" y="548" width="86" height="20" rx="3" fill="#3b82f610" stroke="#3b82f630" stroke-width="0.75"/>
+    <text x="447" y="562" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">ActionEngine</text>
+
+    <rect x="498" y="548" width="80" height="20" rx="3" fill="#3b82f610" stroke="#3b82f630" stroke-width="0.75"/>
+    <text x="538" y="562" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">SyncEngine</text>
+
+    <rect x="586" y="548" width="78" height="20" rx="3" fill="#3b82f610" stroke="#3b82f630" stroke-width="0.75"/>
+    <text x="625" y="562" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="'Fira Code',monospace">HookBridge</text>
+
+    <!-- OTP label -->
+    <text x="200" y="592" fill="#52525b" font-size="7" font-family="'Fira Code',monospace">OTP GenServers &#xB7; ETS &#xB7; PubSub &#xB7; ag_ui_ex v0.1.0</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Legend -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <g class="label-animated" style="animation-delay:0.65s">
+    <!-- Legend box -->
+    <rect x="700" y="450" width="134" height="100" rx="6" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <text x="767" y="466" text-anchor="middle" fill="#52525b" font-size="7" font-weight="600" font-family="'Fira Code',monospace" letter-spacing="0.05em">LEGEND</text>
+
+    <line x1="714" y1="476" x2="738" y2="476" stroke="#34d399" stroke-width="1.5"/>
+    <text x="744" y="479" fill="#a1a1aa" font-size="7" font-family="Inter,sans-serif">@ccem/core</text>
+
+    <line x1="714" y1="491" x2="738" y2="491" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="744" y="494" fill="#a1a1aa" font-size="7" font-family="Inter,sans-serif">@ccem/apm</text>
+
+    <line x1="714" y1="506" x2="738" y2="506" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="744" y="509" fill="#a1a1aa" font-size="7" font-family="Inter,sans-serif">APM Server</text>
+
+    <line x1="714" y1="521" x2="738" y2="521" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="744" y="524" fill="#a1a1aa" font-size="7" font-family="Inter,sans-serif">Direct (curl)</text>
+
+    <line x1="714" y1="536" x2="738" y2="536" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="744" y="539" fill="#a1a1aa" font-size="7" font-family="Inter,sans-serif">Native Swift</text>
+  </g>
+
+</svg>
