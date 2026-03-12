@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v5.0.0
+## Current Version: v5.3.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -238,27 +238,27 @@ automatically from user-scope settings.json.
 ## Implementation Checkpoints — ralph/ccem-v5-1-management-suite
 
 ### Wave 1: Foundation (Independent)
-- [ ] **CP-57**: GettingStartedWizard modal slideshow (US-009) [CCEM-152]
-- [ ] **CP-58**: Showcase SVG diagrams in wizard slides (US-010) [CCEM-153]
-- [ ] **CP-59**: TooltipOverlay JS hook — guided tour (US-011) [CCEM-154]
-- [ ] **CP-60**: Agent control REST endpoints (US-012) [CCEM-155]
-- [ ] **CP-61**: ChatStore GenServer — message persistence (US-013) [CCEM-156]
-- After Wave 1: `mix compile --warnings-as-errors` must pass
+- [x] **CP-57**: GettingStartedWizard modal slideshow (US-009) [CCEM-152]
+- [x] **CP-58**: Showcase SVG diagrams in wizard slides (US-010) [CCEM-153]
+- [x] **CP-59**: TooltipOverlay JS hook — guided tour (US-011) [CCEM-154]
+- [x] **CP-60**: Agent control REST endpoints (US-012) [CCEM-155]
+- [x] **CP-61**: ChatStore GenServer — message persistence (US-013) [CCEM-156]
+- After Wave 1: `mix compile --warnings-as-errors` PASS
 
 ### Wave 2: Interactive Inspector + CCEMAgent SSE (depends on Wave 1)
-- [ ] **CP-62**: InspectorChatLive — contextual AG-UI chat (US-001) [CCEM-144]
-- [ ] **CP-63**: AgentControlPanel — connect/disconnect/restart (US-002) [CCEM-145]
-- [ ] **CP-64**: SSE LiveView hook — inspector_chat.js (US-003) [CCEM-146]
-- [ ] **CP-65**: Scope breadcrumb navigation (US-004) [CCEM-147]
-- [ ] **CP-66**: APMClient v2 — configurable port + SSE (US-005) [CCEM-148]
-- After Wave 2: `mix compile --warnings-as-errors` + `swift build -c release` must pass
+- [x] **CP-62**: InspectorChatLive — contextual AG-UI chat (US-001) [CCEM-144]
+- [x] **CP-63**: AgentControlPanel — connect/disconnect/restart (US-002) [CCEM-145]
+- [x] **CP-64**: SSE LiveView hook — inspector_chat.js (US-003) [CCEM-146]
+- [x] **CP-65**: Scope breadcrumb navigation (US-004) [CCEM-147]
+- [x] **CP-66**: APMClient v2 — configurable port + SSE (US-005) [CCEM-148]
+- After Wave 2: `mix compile --warnings-as-errors` PASS + `swift build -c release` PASS
 
 ### Wave 3: CCEMAgent Management + Release (depends on Wave 2)
-- [ ] **CP-67**: Agent management actions in MenuBarView (US-006) [CCEM-149]
-- [ ] **CP-68**: CCEMAgent mini-chat view (US-007) [CCEM-150]
-- [ ] **CP-69**: Dynamic port config + multi-server (US-008) [CCEM-151]
-- [ ] **CP-70**: v5.1.0 bump — CHANGELOG, mix.exs, OpenAPI (US-014) [CCEM-157]
-- After Wave 3: `mix compile --warnings-as-errors` + `swift build -c release` must pass
+- [x] **CP-67**: Agent management actions in MenuBarView (US-006) [CCEM-149]
+- [x] **CP-68**: CCEMAgent mini-chat view (US-007) [CCEM-150]
+- [x] **CP-69**: Dynamic port config + multi-server (US-008) [CCEM-151]
+- [x] **CP-70**: v5.1.0 bump — CHANGELOG, mix.exs, OpenAPI (US-014) [CCEM-157]
+- After Wave 3: `mix compile --warnings-as-errors` PASS + `swift build -c release` PASS
 
 ## Showcase
 
@@ -267,6 +267,31 @@ automatically from user-scope settings.json.
 - **Data**: `showcase/data/` — design system, narratives, redaction rules, speaker notes
 - **Skill**: `/showcase` at `~/.claude/skills/showcase/SKILL.md` (user-scope skill definition)
 - **Dev Server**: `python3 -m http.server 8080` from `showcase/client/`
+
+## Implementation Checkpoints — ralph/ccem-agui-hex-integration
+
+### Wave 1: Foundation
+- [x] **CP-87**: Add ag_ui_ex Hex dependency to mix.exs (US-001)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: Core Module Updates (Independent)
+- [x] **CP-88**: EventStream uses AgUi.Core.Events.EventType constants (US-002)
+- [x] **CP-89**: HookBridge uses EventType constants (US-003)
+- [x] **CP-90**: EventRouter uses compile-time module attributes from EventType (US-004)
+- [x] **CP-91**: ChatStore uses EventType module attributes for pattern matching (US-005)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: Controllers + LiveView (depends on Wave 2)
+- [x] **CP-92**: AgUiController updated (US-006)
+- [x] **CP-93**: AgUiV2Controller adds EventType.valid?/1 validation (US-007)
+- [x] **CP-94**: AgUiLive uses EventType.all/0 for filter list (US-008)
+- [x] **CP-95**: ApiController HookBridge integration verified (US-009)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 4: Tests + Release (depends on Wave 3)
+- [x] **CP-96**: Tests updated + ag_ui_ex integration tests (US-010)
+- [x] **CP-97**: v5.3.0 release — CHANGELOG, version bump, docs (US-011)
+- After Wave 4: `mix compile --warnings-as-errors` ✓ PASS | 13 tests, 0 failures
 
 ## CCEM APM Integration
 
