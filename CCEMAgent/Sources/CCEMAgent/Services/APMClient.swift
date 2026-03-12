@@ -230,6 +230,20 @@ actor APMClient {
         _ = try? await session.data(for: request)
     }
 
+    // MARK: - AG-UI Events (US-042)
+
+    func fetchAgUiEvents() async throws -> [AgUiEvent] {
+        let url = baseURL.appendingPathComponent("api/v2/ag-ui/events")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        if let wrapper = try? decoder.decode(AgUiEventsResponse.self, from: data) {
+            return wrapper.events
+        }
+        return (try? decoder.decode([AgUiEvent].self, from: data)) ?? []
+    }
+
     // MARK: - UPM Scan
 
     func triggerUPMScan() async throws {

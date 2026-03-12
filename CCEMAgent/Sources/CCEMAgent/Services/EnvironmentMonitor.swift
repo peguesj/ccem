@@ -21,6 +21,7 @@ final class EnvironmentMonitor {
     var recentNotifications: [APMNotification] = []
     var agentTelemetry: TelemetryResponse?
     var backgroundTasks: [BackgroundTask] = []
+    var agUiEvents: [AgUiEvent] = []
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
@@ -149,6 +150,13 @@ final class EnvironmentMonitor {
             backgroundTasks = try await client.fetchBackgroundTasks()
         } catch {
             backgroundTasks = []
+        }
+
+        // Fetch AG-UI events (non-blocking, best-effort)
+        do {
+            agUiEvents = try await client.fetchAgUiEvents()
+        } catch {
+            agUiEvents = []
         }
     }
 

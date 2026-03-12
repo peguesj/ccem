@@ -34,6 +34,10 @@ struct MenuBarView: View {
                 Divider()
                 upmSection
             }
+            if !monitor.agUiEvents.isEmpty {
+                Divider()
+                recentActivitySection
+            }
             Divider()
             miniChatSection
             Divider()
@@ -76,6 +80,13 @@ struct MenuBarView: View {
                     if let telemetry = monitor.agentTelemetry, telemetry.summary.activeNow > 0 {
                         Label("\(telemetry.summary.activeNow) agents", systemImage: "cpu")
                             .foregroundStyle(.orange)
+                    }
+                    if pendingApprovalCount > 0 {
+                        HStack(spacing: 2) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(.orange)
+                            Text("\(pendingApprovalCount) pending")
+                        }
                     }
                     Spacer()
                 }
@@ -499,6 +510,104 @@ struct MenuBarView: View {
         case "idle", "disconnected": return .secondary
         case "failed", "error": return .red
         default: return .secondary
+        }
+    }
+
+    // MARK: - Recent Activity (US-042)
+
+    private var pendingApprovalCount: Int {
+        monitor.agUiEvents.filter { $0.isPendingApproval }.count
+    }
+
+    private var recentActivitySection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Recent Activity", systemImage: "bolt.horizontal")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if pendingApprovalCount > 0 {
+                    Text("\(pendingApprovalCount)")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(Color.orange)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            ForEach(monitor.agUiEvents.prefix(5)) { event in
+                HStack(spacing: 6) {
+                    agUiEventBadge(event.type)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(event.type)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .lineLimit(1)
+                        if let agentId = event.agentId {
+                            Text(agentId)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    Spacer()
+                    Text(event.date, style: .relative)
+                        .font(.system(size: 8))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 2)
+            }
+        }
+        .padding(.bottom, 4)
+    }
+
+    @ViewBuilder
+    private func agUiEventBadge(_ type: String) -> some View {
+        Text(agUiEventAbbreviation(type))
+            .font(.system(size: 7, weight: .bold, design: .monospaced))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(agUiEventColor(type))
+            .clipShape(RoundedRectangle(cornerRadius: 3))
+    }
+
+    private func agUiEventColor(_ type: String) -> Color {
+        switch type {
+        case "RUN_STARTED": return .blue
+        case "RUN_FINISHED": return .green
+        case "RUN_ERROR": return .red
+        case "STEP_STARTED", "STEP_FINISHED": return .purple
+        case "TOOL_CALL_START", "TOOL_CALL_END": return .orange
+        case "PENDING_APPROVAL": return .orange
+        case "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END": return .cyan
+        case "STATE_DELTA", "STATE_SNAPSHOT": return .indigo
+        default: return .secondary
+        }
+    }
+
+    private func agUiEventAbbreviation(_ type: String) -> String {
+        switch type {
+        case "RUN_STARTED": return "RUN"
+        case "RUN_FINISHED": return "FIN"
+        case "RUN_ERROR": return "ERR"
+        case "STEP_STARTED": return "STP"
+        case "STEP_FINISHED": return "STP"
+        case "TOOL_CALL_START": return "TCS"
+        case "TOOL_CALL_END": return "TCE"
+        case "PENDING_APPROVAL": return "APR"
+        case "TEXT_MESSAGE_START": return "TXT"
+        case "TEXT_MESSAGE_CONTENT": return "TXT"
+        case "TEXT_MESSAGE_END": return "TXT"
+        case "STATE_DELTA": return "DLT"
+        case "STATE_SNAPSHOT": return "SNP"
+        default: return String(type.prefix(3)).uppercased()
         }
     }
 
