@@ -16,7 +16,7 @@
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
-const APM_BASE = 'http://localhost:3032';
+const APM_BASE = window.CCEM_APM_BASE_URL || 'http://localhost:3032';
 const POLL_INTERVAL = 10_000;
 const VERSION = 'v5.3.1';
 
