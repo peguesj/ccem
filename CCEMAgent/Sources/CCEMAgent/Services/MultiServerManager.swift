@@ -25,6 +25,9 @@ final class MultiServerManager {
     var servers: [APMServer] = []
     var serverHealth: [UUID: ServerHealthState] = [:]
 
+    /// One APMClient per server — reused across health checks to avoid
+    /// spawning a new URLSession on every checkHealth() call.
+    private var clients: [UUID: APMClient] = [:]
     private static let storageKey = "apmServers"
 
     enum ServerHealthState: Equatable {
@@ -74,7 +77,11 @@ final class MultiServerManager {
 
     func checkHealth() async {
         for server in servers {
-            let client = APMClient(port: server.port)
+            // Reuse existing client or create one — avoids a new URLSession per call
+            if clients[server.id] == nil {
+                clients[server.id] = APMClient(port: server.port)
+            }
+            let client = clients[server.id]!
             do {
                 let health = try await client.checkHealth()
                 serverHealth[server.id] = health.isHealthy ? .healthy : .unhealthy("Unhealthy")
@@ -82,6 +89,9 @@ final class MultiServerManager {
                 serverHealth[server.id] = .unhealthy("Unreachable")
             }
         }
+        // Remove clients for deleted servers
+        let serverIds = Set(servers.map { $0.id })
+        clients = clients.filter { serverIds.contains($0.key) }
     }
 
     private func loadServers() {

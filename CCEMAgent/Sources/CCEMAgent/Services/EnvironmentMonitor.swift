@@ -177,6 +177,10 @@ final class EnvironmentMonitor {
             for notification in newNotifications {
                 seenNotificationIds.insert(notification.id)
             }
+            // Cap to prevent unbounded Set growth over long-running sessions
+            if seenNotificationIds.count > 2000 {
+                seenNotificationIds = Set(seenNotificationIds.prefix(1000))
+            }
 
             if let latest = newNotifications.max(by: { $0.timestamp < $1.timestamp }) {
                 lastNotificationTimestamp = latest.timestamp

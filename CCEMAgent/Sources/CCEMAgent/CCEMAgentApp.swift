@@ -28,17 +28,17 @@ struct CCEMAgentApp: App {
                 .task {
                     notificationReceiver.start()
                     monitor.requestNotificationPermission()
-                    serverManager.checkRunning()
+                    await serverManager.checkRunning()
                     monitor.start()
                     formationMonitor.start()
                     upmMonitor.start()
                 }
                 .onChange(of: monitor.connectionState) { oldValue, newValue in
                     if oldValue == .connected && newValue == .disconnected {
-                        serverManager.checkRunning()
+                        Task { await serverManager.checkRunning() }
                         postSystemNotification(title: "CCEM APM", body: "APM server disconnected", type: "warning")
                     } else if oldValue == .disconnected && newValue == .connected {
-                        serverManager.checkRunning()
+                        Task { await serverManager.checkRunning() }
                         postSystemNotification(title: "CCEM APM", body: "APM server connected", type: "success")
                     }
                 }
