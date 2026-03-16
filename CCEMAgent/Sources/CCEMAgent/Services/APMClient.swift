@@ -16,7 +16,9 @@ actor APMClient {
         let resolvedPort = port ?? UserDefaults.standard.integer(forKey: Self.portKey)
         let effectivePort = resolvedPort > 0 ? resolvedPort : Self.defaultPort
         self.baseURL = URL(string: "http://localhost:\(effectivePort)")!
-        let config = URLSessionConfiguration.default
+        // Use ephemeral to prevent URL cache accumulation over long-running sessions.
+        // Default config caches responses to disk+memory indefinitely, causing GB of growth.
+        let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 5
         config.timeoutIntervalForResource = 10
         self.session = URLSession(configuration: config)

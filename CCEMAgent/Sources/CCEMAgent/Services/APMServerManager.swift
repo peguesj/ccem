@@ -34,22 +34,37 @@ final class APMServerManager {
 
     // MARK: - Status
 
-    func checkRunning() {
-        // 1. Fast path: is launchd service active?
-        if launchctlServiceRunning() {
-            isRunning = true
-            return
-        }
-        // 2. Fallback: pid file check (for manually-started instances)
-        guard
-            let pidString = try? String(contentsOfFile: pidFile, encoding: .utf8)
+    /// Check whether the APM server is running.
+    /// Dispatches synchronous shell/kill calls to a background thread to avoid
+    /// blocking the main actor (which causes visible UI stalls in the menubar).
+    func checkRunning() async {
+        let pidFile = self.pidFile
+        let launchLabel = self.launchLabel
+        let running = await Task.detached(priority: .utility) { [pidFile, launchLabel] () -> Bool in
+            // 1. Fast path: is launchd service active?
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: "/bin/bash")
+            p.arguments = ["-c", "launchctl list \(launchLabel)"]
+            p.standardOutput = Pipe()
+            p.standardError = Pipe()
+            try? p.run()
+            p.waitUntilExit()
+            if p.terminationStatus == 0 {
+                // Check PID column is non-dash (service is actually running)
+                let out = String(data: (p.standardOutput as! Pipe).fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                if let first = out.split(separator: "\n").first {
+                    let cols = first.split(separator: "\t")
+                    if let pid = cols.first, pid != "-", Int(pid) != nil { return true }
+                }
+            }
+            // 2. Fallback: pid file check
+            guard let pidStr = try? String(contentsOfFile: pidFile, encoding: .utf8)
                 .trimmingCharacters(in: .whitespacesAndNewlines),
-            let pid = Int32(pidString), pid > 0
-        else {
-            isRunning = false
-            return
-        }
-        isRunning = kill(pid, 0) == 0
+                  let pid = Int32(pidStr), pid > 0
+            else { return false }
+            return kill(pid, 0) == 0
+        }.value
+        isRunning = running
     }
 
     // MARK: - Start
@@ -79,7 +94,7 @@ final class APMServerManager {
             }
         }
 
-        checkRunning()
+        await checkRunning()
         if !isRunning {
             lastError = "APM server did not respond within 6 s — check \(logFile)"
         }
