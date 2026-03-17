@@ -1,80 +1,670 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CCEM — Agentic Performance Monitoring</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Project Showcase</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            mono: ['"Fira Code"', '"SF Mono"', 'monospace'],
-          },
-        },
-      },
-    };
+            sans: ['system-ui', '-apple-system', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    * { font-family: system-ui, -apple-system, sans-serif; }
+    code, pre, .font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    body { background: #09090b; color: #f4f4f5; overflow: hidden; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+    .col-scroll { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+    @keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .pulse { animation: pulse-badge 1.8s ease-in-out infinite; }
+    @keyframes progress-shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    .progress-shimmer {
+      background: linear-gradient(90deg, #3b82f6 25%, #60a5fa 50%, #3b82f6 75%);
+      background-size: 200% 100%;
+      animation: progress-shimmer 2s linear infinite;
+    }
+    @keyframes apm-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .apm-dot-online { background: #10b981; animation: apm-blink 3s ease-in-out infinite; }
+    .apm-dot-offline { background: #ef4444; }
+    .apm-dot-checking { background: #f59e0b; animation: apm-blink 1s ease-in-out infinite; }
+    .tree-line { color: #52525b; }
+    .story-card {
+      border-left: 2px solid #3f3f46;
+      transition: border-color 0.15s;
+    }
+    .story-card:hover { border-color: #71717a; }
+    .story-card.done { border-color: #10b981; }
+    .story-card.active { border-color: #f59e0b; }
+    #loading-overlay {
+      position: fixed; inset: 0; background: #09090b;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-family: ui-monospace, monospace; color: #52525b;
+      z-index: 9999;
+    }
+  </style>
 </head>
-<body class="h-full bg-zinc-950 text-zinc-100 antialiased">
+<body class="h-screen flex flex-col">
 
-  <!-- Sticky Chrome: Header + Orchestration Bar -->
-  <div class="sticky top-0 z-50">
-    <header class="border-b border-zinc-800 bg-zinc-900/95 px-6 py-3 backdrop-blur-sm">
-      <div class="mx-auto flex max-w-[1600px] items-center justify-between">
-        <div>
-          <div class="flex items-center gap-3">
-            <span class="rounded bg-indigo-500/20 px-2 py-0.5 text-xs font-bold text-indigo-400 ring-1 ring-indigo-500/30" id="version-badge">v5.3.1</span>
-            <h1 class="text-lg font-bold text-zinc-100">CCEM — Agentic Performance Monitoring</h1>
-          </div>
-          <p class="mt-0.5 text-xs text-zinc-500">
-            AG-UI Protocol · Formation Orchestration · Real-Time Agent Observability
-          </p>
-        </div>
-        <div class="flex items-center gap-4 text-xs text-zinc-500">
-          <a href="https://docs.ag-ui.com" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition">AG-UI Docs</a>
-          <a href="http://localhost:3032" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition" id="apm-link">APM Dashboard</a>
-          <a href="http://localhost:3032/api/docs" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-300 transition">API Docs</a>
-          <span class="font-mono text-zinc-600" id="git-info">loading...</span>
+  <div id="loading-overlay">loading showcase data…</div>
+
+  <!-- Sticky Header -->
+  <header class="sticky top-0 z-50 h-12 flex items-center justify-between px-4 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm flex-shrink-0">
+    <div class="flex items-center gap-2">
+      <span id="hdr-badge" class="rounded bg-violet-500/20 px-2 py-0.5 text-xs font-bold text-violet-300 ring-1 ring-violet-500/30">—</span>
+      <span id="hdr-version" class="font-mono text-xs text-amber-400 ring-1 ring-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded"></span>
+      <span class="text-zinc-700 text-xs">·</span>
+      <span id="hdr-branch" class="text-xs text-zinc-500"></span>
+    </div>
+
+    <div class="absolute left-1/2 -translate-x-1/2 text-xs font-medium text-zinc-300">
+      <span id="hdr-project-name"></span>
+      <span id="hdr-feature-count" class="text-zinc-600 mx-1"></span>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full apm-dot-checking" id="apm-status-dot"></span>
+        <span class="text-zinc-500" id="apm-status-label">APM</span>
+      </div>
+      <span id="hdr-wave-status" class="text-amber-400 font-medium pulse"></span>
+    </div>
+  </header>
+
+  <!-- 3-Column Body -->
+  <div class="flex-1 grid grid-cols-[260px_1fr_280px] divide-x divide-zinc-800 min-h-0">
+
+    <!-- Left: Feature Tree -->
+    <aside class="col-scroll h-full p-3">
+      <div class="mb-3">
+        <div id="feature-tree-label" class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-2">Feature Waves</div>
+        <div class="font-mono text-[11px] text-zinc-400 leading-relaxed">
+          <div id="project-root-label" class="text-zinc-300 font-medium mb-1"></div>
+          <div id="feature-tree"></div>
         </div>
       </div>
-    </header>
-
-    <!-- Orchestration Status Bar -->
-    <div class="border-b border-zinc-800/60 bg-zinc-900/80 px-6 py-2 backdrop-blur-sm" id="orchestration-bar"></div>
-  </div>
-
-  <!-- 3-Column Layout -->
-  <div class="mx-auto grid max-w-[1600px] grid-cols-[320px_1fr_300px] gap-0 divide-x divide-zinc-800">
-
-    <!-- Left: Feature Cards -->
-    <aside class="sticky top-[98px] h-[calc(100vh-98px)] overflow-y-auto p-5" id="features-panel">
-      <div class="space-y-4" id="features-container"></div>
+      <!-- Legend -->
+      <div class="mt-4 pt-3 border-t border-zinc-800">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">Legend</div>
+        <div class="space-y-1 text-[10px]">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-zinc-500">COMPLETE — shipped</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500 pulse"></span>
+            <span class="text-zinc-500">IN_PROGRESS — active</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-zinc-600"></span>
+            <span class="text-zinc-500">PENDING — queued</span>
+          </div>
+        </div>
+      </div>
     </aside>
 
-    <!-- Center: Architecture -->
-    <main class="min-h-[calc(100vh-98px)] p-5 space-y-6" id="center-panel">
-      <div id="architecture-container"></div>
+    <!-- Center: Product overview + architecture -->
+    <main class="col-scroll h-full p-4 space-y-5">
+
+      <!-- Product Header Card -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span id="ctr-project-label" class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500"></span>
+              <span id="ctr-active-badge" class="hidden text-[10px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded ring-1 ring-amber-500/20 pulse"></span>
+            </div>
+            <h1 id="ctr-title" class="text-base font-bold text-zinc-100"></h1>
+            <p id="ctr-description" class="text-xs text-zinc-500 mt-0.5 leading-relaxed max-w-xl"></p>
+          </div>
+          <div class="text-right flex-shrink-0 ml-4">
+            <div id="ctr-version" class="text-2xl font-bold text-zinc-100"></div>
+            <div id="ctr-subtitle" class="text-[10px] text-zinc-500 mt-1"></div>
+            <div id="ctr-feature-count" class="mt-0.5 text-[10px] text-zinc-500"></div>
+          </div>
+        </div>
+        <div id="ctr-version-bar" class="mt-3 flex items-center gap-1 flex-wrap"></div>
+      </div>
+
+      <!-- Architecture diagram (populated from design_system or SVG file) -->
+      <div id="architecture-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Architecture</div>
+        <div id="architecture-content">
+          <div class="text-[11px] text-zinc-600 font-mono">No architecture diagram available for this project.</div>
+        </div>
+      </div>
+
+      <!-- Active wave detail (most recent non-done wave) -->
+      <div id="active-wave-section" class="hidden rounded-lg border border-amber-800/30 bg-amber-950/10 p-4">
+        <div id="active-wave-content"></div>
+      </div>
+
+      <!-- Narratives / completed waves summary -->
+      <div id="narratives-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Feature Waves</div>
+        <div id="narratives-content" class="space-y-3 text-xs"></div>
+      </div>
+
     </main>
 
-    <!-- Right: Inspector Panel -->
-    <aside class="sticky top-[98px] h-[calc(100vh-98px)] overflow-y-auto p-5" id="inspector-panel">
-      <div class="space-y-4" id="inspector-container"></div>
+    <!-- Right: Resource Inspector -->
+    <aside class="col-scroll h-full p-3">
+      <div class="mb-3">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-2">Resource Inspector</div>
+        <div class="flex items-center gap-1.5 mb-3">
+          <span class="w-2 h-2 rounded-full apm-dot-checking" id="inspector-dot"></span>
+          <span class="text-[10px] text-zinc-500">Polling APM every 10s</span>
+          <span class="ml-auto text-[10px] font-mono text-zinc-600" id="last-poll-time">—</span>
+        </div>
+      </div>
+
+      <!-- Project Stats Card -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
+        <div id="stats-label" class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">Project State</div>
+        <div class="space-y-1.5 text-[11px]" id="stats-content">
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Version</span>
+            <span id="stat-version" class="text-amber-400 font-mono pulse">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Features</span>
+            <span id="stat-features" class="text-zinc-400">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Waves</span>
+            <span id="stat-waves" class="text-zinc-400">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Active wave</span>
+            <span id="stat-active-wave" class="text-amber-400 pulse">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- APM Status Card -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">APM Health</div>
+        <div class="space-y-2 text-[11px]">
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Status</span>
+            <span id="apm-health-status" class="text-zinc-400 pulse">checking...</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Endpoint</span>
+            <a id="apm-endpoint-link" href="http://localhost:3032" target="_blank" class="text-blue-400 hover:text-blue-300 font-mono text-[10px]">localhost:3032</a>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Version</span>
+            <span id="apm-version" class="text-zinc-400 font-mono">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Uptime</span>
+            <span id="apm-uptime" class="text-zinc-400 font-mono">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wave Progress Card -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">Wave Progress</div>
+        <div id="wave-progress" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Live APM Data -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">Live APM Data</div>
+        <pre class="text-[10px] font-mono text-zinc-600 leading-relaxed whitespace-pre-wrap break-all" id="apm-raw-data">Polling…</pre>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="space-y-1.5">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-1.5">Quick Links</div>
+        <a href="http://localhost:3032" target="_blank" id="link-apm" class="flex items-center gap-2 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          APM Dashboard
+        </a>
+        <a href="http://localhost:3032/api/status" target="_blank" class="flex items-center gap-2 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          /api/status
+        </a>
+        <div id="extra-links"></div>
+      </div>
     </aside>
   </div>
 
-  <!-- Roadmap Modal (rendered by JS) -->
-  <div id="roadmap-modal"></div>
+  <script>
+    // ── Config ──────────────────────────────────────────────────────────────────
+    const APM_BASE = (typeof window.CCEM_APM_BASE_URL !== 'undefined')
+      ? window.CCEM_APM_BASE_URL
+      : (() => {
+          const urlParam = new URLSearchParams(window.location.search).get('apm');
+          return urlParam || 'http://localhost:3032';
+        })();
 
-  <!-- Bottom Bar (rendered by JS) -->
-  <div id="bottom-bar"></div>
+    const projectParam = new URLSearchParams(window.location.search).get('project');
 
-  <script type="module" src="showcase.js"></script>
+    // ── Wave color palette ──────────────────────────────────────────────────────
+    const WAVE_COLORS = {
+      1: { dot: 'bg-emerald-500', text: 'text-emerald-400', badge: 'bg-emerald-500/15 text-emerald-400 ring-emerald-500/25', bar: '#10b981', border: 'border-emerald-500/20' },
+      2: { dot: 'bg-blue-500', text: 'text-blue-400', badge: 'bg-blue-500/15 text-blue-400 ring-blue-500/25', bar: '#3b82f6', border: 'border-blue-500/20' },
+      3: { dot: 'bg-purple-500', text: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-400 ring-purple-500/25', bar: '#a855f7', border: 'border-purple-500/20' },
+      4: { dot: 'bg-amber-500', text: 'text-amber-400', badge: 'bg-amber-500/15 text-amber-400 ring-amber-500/25', bar: '#f59e0b', border: 'border-amber-500/20' },
+      5: { dot: 'bg-rose-500', text: 'text-rose-400', badge: 'bg-rose-500/15 text-rose-400 ring-rose-500/25', bar: '#ef4444', border: 'border-rose-500/20' },
+    };
+
+    function waveColor(wave) {
+      return WAVE_COLORS[wave] || WAVE_COLORS[1];
+    }
+
+    // ── Data loading ─────────────────────────────────────────────────────────────
+    async function loadShowcaseData(project) {
+      // 1. Try APM API (with short timeout for standalone mode)
+      try {
+        const res = await fetch(`${APM_BASE}/api/showcase/${project}`, {
+          signal: AbortSignal.timeout(3000),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.features) return { source: 'apm', data };
+        }
+      } catch (_) { /* APM not available, try local */ }
+
+      // 2. Try local relative path (standalone serving from project's showcase/client/)
+      try {
+        const res = await fetch('./data/features.json', { signal: AbortSignal.timeout(2000) });
+        if (res.ok) {
+          const features = await res.json();
+          // Try to also load narratives
+          let narratives = {}, designSystem = {};
+          try {
+            const nr = await fetch('./data/narrative-content.json', { signal: AbortSignal.timeout(1000) });
+            if (nr.ok) narratives = await nr.json();
+          } catch (_) {}
+          try {
+            const ds = await fetch('./data/diagram-design-system.json', { signal: AbortSignal.timeout(1000) });
+            if (ds.ok) designSystem = await ds.json();
+          } catch (_) {}
+          return { source: 'local', data: { features, narratives, design_system: designSystem } };
+        }
+      } catch (_) {}
+
+      return { source: 'empty', data: { features: [] } };
+    }
+
+    // ── Rendering ─────────────────────────────────────────────────────────────────
+
+    function groupByWave(features) {
+      const waves = {};
+      (features || []).forEach(f => {
+        const w = f.wave || 1;
+        if (!waves[w]) waves[w] = [];
+        waves[w].push(f);
+      });
+      return waves;
+    }
+
+    function renderFeatureTree(features, projectName) {
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+      const maxWave = waveNums[waveNums.length - 1] || 1;
+
+      // Determine wave status — last wave with items = potentially active
+      // Simple heuristic: waves before the last are "done", last is "active"
+      const isDone = (w) => w < maxWave;
+      const isActive = (w) => w === maxWave;
+
+      let html = '';
+      waveNums.forEach((waveNum, idx) => {
+        const wFeatures = waves[waveNum];
+        const c = waveColor(waveNum);
+        const done = isDone(waveNum);
+        const active = isActive(waveNum);
+        const isLast = idx === waveNums.length - 1;
+        const connector = isLast ? '└──' : '├──';
+        const statusBadge = done
+          ? `<span class="ml-auto text-[10px] ${c.badge} px-1.5 py-0.5 rounded ring-1 flex-shrink-0">DONE</span>`
+          : active
+          ? `<span class="ml-auto text-[10px] ${c.badge} px-1.5 py-0.5 rounded ring-1 flex-shrink-0 pulse">ACTIVE</span>`
+          : `<span class="ml-auto text-[10px] bg-zinc-800/60 text-zinc-600 px-1.5 py-0.5 rounded ring-1 ring-zinc-700/30 flex-shrink-0">QUEUED</span>`;
+
+        html += `<div class="mt-1.5">
+          <div class="flex items-center gap-1.5 ${done ? 'text-emerald-400' : active ? c.text + ' pulse' : 'text-zinc-500'}">
+            <span class="tree-line">${connector}</span>
+            <span class="w-2 h-2 rounded-full ${done ? 'bg-emerald-500' : active ? c.dot : 'bg-zinc-600'} flex-shrink-0"></span>
+            <span class="font-medium">Wave ${waveNum}</span>
+            ${statusBadge}
+          </div>
+          <div class="ml-5 mt-0.5 space-y-0.5">`;
+
+        wFeatures.forEach((f, fi) => {
+          const itemConnector = fi === wFeatures.length - 1 ? '└──' : '├──';
+          const statusIcon = done
+            ? '<span class="text-emerald-400 ml-1">✓</span>'
+            : active
+            ? '<span class="text-amber-400 ml-1 pulse">⟳</span>'
+            : '<span class="text-zinc-600 ml-1">·</span>';
+          const cardClass = done ? 'done' : active ? 'active' : '';
+          html += `<div class="story-card ${cardClass} pl-2 py-0.5 rounded-r">
+            <span class="tree-line">${itemConnector}</span>
+            ${statusIcon}
+            <span class="ml-1 ${done ? 'text-zinc-500' : active ? 'text-zinc-400' : 'text-zinc-600'}">${f.title || f.id}</span>
+          </div>`;
+        });
+
+        html += `</div></div>`;
+      });
+
+      return html;
+    }
+
+    function renderWaveProgress(features) {
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+      if (!waveNums.length) return '<div class="text-zinc-600 text-[10px]">No waves</div>';
+
+      const maxWave = waveNums[waveNums.length - 1];
+      let html = '';
+      waveNums.forEach(waveNum => {
+        const c = waveColor(waveNum);
+        const done = waveNum < maxWave;
+        const active = waveNum === maxWave;
+        const barStyle = done
+          ? `background:${c.bar};width:100%`
+          : active
+          ? `background:linear-gradient(90deg,${c.bar} 25%,#fbbf24 50%,${c.bar} 75%);background-size:200% 100%;animation:progress-shimmer 2s linear infinite;width:70%`
+          : 'width:0%';
+        const labelClass = done ? 'text-emerald-400' : active ? `${c.text} pulse` : 'text-zinc-600';
+        const label = done ? 'done' : active ? 'active' : 'queued';
+        html += `<div class="flex items-center gap-2">
+          <div class="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+            <div class="h-full rounded-full" style="${barStyle}"></div>
+          </div>
+          <span class="text-[10px] ${labelClass} w-16 text-right${active ? ' pulse' : ''}">W${waveNum} · ${label}</span>
+        </div>`;
+      });
+      return html;
+    }
+
+    function renderNarratives(features, narratives) {
+      // Group by wave, show wave-level summary using narrative content if available
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+      const maxWave = waveNums[waveNums.length - 1] || 1;
+
+      let html = '';
+      waveNums.forEach(waveNum => {
+        const wFeatures = waves[waveNum];
+        const c = waveColor(waveNum);
+        const done = waveNum < maxWave;
+        const narrative = (narratives && narratives[`wave_${waveNum}`]) || (narratives && narratives[String(waveNum)]);
+        const waveTitle = (narrative && narrative.title) || `Wave ${waveNum}`;
+        const waveDesc = (narrative && narrative.description) || wFeatures.map(f => f.title).join(', ');
+
+        html += `<div>
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="w-1.5 h-1.5 rounded-full ${done ? 'bg-emerald-500' : c.dot}"></span>
+            <span class="font-semibold ${done ? 'text-emerald-400' : c.text}">${waveTitle}</span>
+          </div>
+          <p class="text-zinc-500 leading-relaxed pl-3">${waveDesc}</p>
+        </div>`;
+      });
+
+      return html || '<div class="text-zinc-600 text-[11px]">No feature waves found.</div>';
+    }
+
+    function renderActiveWave(features) {
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+      const maxWave = waveNums[waveNums.length - 1];
+      if (!maxWave) return null;
+
+      const activeFeatures = waves[maxWave] || [];
+      const c = waveColor(maxWave);
+
+      // Split into done/active/pending — heuristic: no status field means all active
+      const items = activeFeatures.map(f => {
+        const status = f.status || (f.passes ? 'done' : 'active');
+        return { ...f, _status: status };
+      });
+      const done = items.filter(f => f._status === 'done');
+      const active = items.filter(f => f._status !== 'done');
+
+      let doneHtml = '', activeHtml = '';
+      if (done.length) {
+        doneHtml = `<div class="bg-zinc-900/60 rounded p-3 border border-zinc-800">
+          <div class="font-semibold text-emerald-400 mb-1">Shipped</div>
+          <ul class="space-y-0.5 text-zinc-500">
+            ${done.map(f => `<li>· <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
+          </ul>
+        </div>`;
+      }
+      if (active.length) {
+        activeHtml = `<div class="bg-zinc-900/60 rounded p-3 border border-amber-800/20">
+          <div class="font-semibold text-amber-400 mb-1 pulse">In Progress</div>
+          <ul class="space-y-0.5 text-zinc-500">
+            ${active.map(f => `<li>· <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
+          </ul>
+        </div>`;
+      }
+
+      return `<div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-2 rounded-full ${c.dot} pulse flex-shrink-0"></span>
+        <div class="text-[10px] font-semibold uppercase tracking-wider ${c.text}">Wave ${maxWave} (active)</div>
+        <span class="ml-auto text-[10px] ${c.badge} px-1.5 py-0.5 rounded ring-1 pulse">IN PROGRESS</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-xs">${doneHtml}${activeHtml}</div>`;
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────────
+    async function init() {
+      // Determine project name
+      let project = projectParam;
+      if (!project) {
+        // Try loading local config.json (for project-specific standalone serving)
+        try {
+          const r = await fetch('./data/config.json', { signal: AbortSignal.timeout(1000) });
+          if (r.ok) { const cfg = await r.json(); project = cfg.project || cfg.name; }
+        } catch (_) {}
+      }
+      if (!project) {
+        // Try APM for active project
+        try {
+          const r = await fetch(`${APM_BASE}/api/status`, { signal: AbortSignal.timeout(2000) });
+          if (r.ok) { const s = await r.json(); project = s.active_project || s.project; }
+        } catch (_) {}
+      }
+      project = project || 'unknown';
+
+      const { source, data } = await loadShowcaseData(project);
+      const features = data.features || [];
+      const narratives = data.narratives || {};
+      const designSystem = data.design_system || {};
+      const version = data.version || '—';
+
+      // ── Populate header ────────────────────────────────────────────────────────
+      document.getElementById('page-title').textContent = `${project} Showcase`;
+      document.getElementById('hdr-badge').textContent = project.toUpperCase().slice(0, 6);
+      document.getElementById('hdr-version').textContent = version || '';
+      document.getElementById('hdr-project-name').textContent = (narratives.project_name) || project;
+      const featureCount = features.length;
+      if (featureCount) {
+        document.getElementById('hdr-feature-count').innerHTML =
+          `<span class="text-zinc-600 mx-1">·</span>${featureCount} features`;
+      }
+
+      // Active wave status in header
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+      const maxWave = waveNums[waveNums.length - 1] || 0;
+      if (maxWave) {
+        const prevDone = waveNums.slice(0, -1).map(w => `Wave ${w} ✓`).join(' · ');
+        document.getElementById('hdr-wave-status').textContent =
+          (prevDone ? prevDone + ' · ' : '') + `Wave ${maxWave} active`;
+      }
+
+      // ── Left: feature tree ─────────────────────────────────────────────────────
+      document.getElementById('project-root-label').textContent = project;
+      document.getElementById('feature-tree-label').textContent = `${project} Feature Waves`;
+      document.getElementById('feature-tree').innerHTML = renderFeatureTree(features, project);
+
+      // ── Center: product header ─────────────────────────────────────────────────
+      document.getElementById('ctr-project-label').textContent = narratives.project_name || project;
+      document.getElementById('ctr-title').textContent = narratives.tagline || `${project} Platform`;
+      document.getElementById('ctr-description').textContent = narratives.description || '';
+      document.getElementById('ctr-version').innerHTML = version
+        ? `<span>${version}</span>`
+        : '';
+      document.getElementById('ctr-feature-count').textContent = featureCount ? `${featureCount} features` : '';
+
+      if (maxWave && narratives.active_label) {
+        const badge = document.getElementById('ctr-active-badge');
+        badge.textContent = narratives.active_label;
+        badge.classList.remove('hidden');
+      }
+
+      // Version history bar
+      if (narratives.versions && Array.isArray(narratives.versions)) {
+        const bar = narratives.versions.map((v, i) => {
+          const isLast = i === narratives.versions.length - 1;
+          const cls = isLast
+            ? 'text-[10px] font-mono text-amber-400 bg-amber-950/30 px-1.5 py-0.5 rounded ring-1 ring-amber-800/40 pulse'
+            : 'text-[10px] font-mono text-emerald-400/70 bg-emerald-950/30 px-1.5 py-0.5 rounded ring-1 ring-emerald-800/30';
+          return `<span class="${cls}">${v}</span>${isLast ? '' : '<span class="text-zinc-700 text-[10px]">→</span>'}`;
+        }).join('');
+        document.getElementById('ctr-version-bar').innerHTML = bar;
+      }
+
+      // ── Center: architecture ──────────────────────────────────────────────────
+      if (designSystem.architecture_svg) {
+        document.getElementById('architecture-content').innerHTML = designSystem.architecture_svg;
+      } else if (designSystem.architecture_html) {
+        document.getElementById('architecture-content').innerHTML = designSystem.architecture_html;
+      }
+      // else leave placeholder text
+
+      // ── Center: active wave detail ─────────────────────────────────────────────
+      const activeWaveHtml = renderActiveWave(features);
+      if (activeWaveHtml) {
+        document.getElementById('active-wave-section').classList.remove('hidden');
+        document.getElementById('active-wave-content').innerHTML = activeWaveHtml;
+      }
+
+      // ── Center: narratives / waves summary ────────────────────────────────────
+      document.getElementById('narratives-content').innerHTML = renderNarratives(features, narratives);
+
+      // ── Right: stats card ─────────────────────────────────────────────────────
+      document.getElementById('stats-label').textContent = `${project} State`;
+      document.getElementById('stat-version').textContent = version || '—';
+      document.getElementById('stat-features').textContent = featureCount ? `~${featureCount}` : '—';
+      document.getElementById('stat-waves').textContent = waveNums.length ? waveNums.join(', ') : '—';
+      document.getElementById('stat-active-wave').textContent = maxWave ? `Wave ${maxWave}` : '—';
+
+      // ── Right: wave progress bars ─────────────────────────────────────────────
+      document.getElementById('wave-progress').innerHTML = renderWaveProgress(features);
+
+      // ── APM endpoint display ──────────────────────────────────────────────────
+      const apmLink = document.getElementById('apm-endpoint-link');
+      apmLink.href = APM_BASE;
+      apmLink.textContent = APM_BASE.replace(/^https?:\/\//, '').replace(/\/.*/, '');
+      document.getElementById('link-apm').href = APM_BASE;
+
+      // Extra links from narratives
+      if (narratives.links && Array.isArray(narratives.links)) {
+        document.getElementById('extra-links').innerHTML = narratives.links.map(l =>
+          `<a href="${l.url}" target="_blank" class="flex items-center gap-2 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-${l.color || 'emerald'}-500"></span>
+            ${l.label}
+          </a>`
+        ).join('');
+      }
+
+      // ── Hide loading, show content ────────────────────────────────────────────
+      document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    // ── APM polling ──────────────────────────────────────────────────────────────
+    const statusDot = document.getElementById('apm-status-dot');
+    const statusLabel = document.getElementById('apm-status-label');
+    const inspectorDot = document.getElementById('inspector-dot');
+    const healthStatus = document.getElementById('apm-health-status');
+    const apmVersion = document.getElementById('apm-version');
+    const apmUptime = document.getElementById('apm-uptime');
+    const rawData = document.getElementById('apm-raw-data');
+    const lastPollTime = document.getElementById('last-poll-time');
+
+    function formatUptime(seconds) {
+      if (!seconds) return '—';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+
+    function setOnline() {
+      [statusDot, inspectorDot].forEach(d => {
+        d.className = d.className.replace(/apm-dot-\w+/g, '');
+        d.classList.add('apm-dot-online');
+      });
+      statusLabel.textContent = 'APM online';
+      statusLabel.className = 'text-emerald-400';
+    }
+
+    function setOffline() {
+      [statusDot, inspectorDot].forEach(d => {
+        d.className = d.className.replace(/apm-dot-\w+/g, '');
+        d.classList.add('apm-dot-offline');
+      });
+      statusLabel.textContent = 'APM offline';
+      statusLabel.className = 'text-red-400';
+      healthStatus.textContent = 'unreachable';
+      healthStatus.classList.add('text-red-400');
+      rawData.textContent = `// APM not reachable\n// ${APM_BASE}/api/status`;
+    }
+
+    async function pollAPM() {
+      const now = new Date();
+      lastPollTime.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+      try {
+        const res = await fetch(`${APM_BASE}/api/status`, { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setOnline();
+        healthStatus.textContent = 'online';
+        healthStatus.classList.remove('pulse');
+        healthStatus.classList.add('text-emerald-400');
+        const version = data.version || data.app_version || data.vsn || '—';
+        const uptime = data.uptime_seconds || data.uptime || null;
+        apmVersion.textContent = version;
+        apmUptime.textContent = uptime ? formatUptime(uptime) : '—';
+        rawData.textContent = JSON.stringify({
+          status: data.status || 'ok',
+          version,
+          uptime,
+          timestamp: data.timestamp || data.time || now.toISOString(),
+        }, null, 2);
+      } catch (_) {
+        setOffline();
+      }
+    }
+
+    // Start
+    init();
+    pollAPM();
+    setInterval(pollAPM, 10000);
+  </script>
 </body>
 </html>
