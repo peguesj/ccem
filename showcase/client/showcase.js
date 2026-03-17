@@ -656,6 +656,62 @@ function renderBottomBar() {
   `;
 }
 
+// ─── AG-UI SSE ──────────────────────────────────────────────────────────────────
+
+let sseSource = null;
+let formationProgress = new Map(); // month -> {pct, done, total, status, current}
+let formationSummary = { alive: 0, total: 0, avg_pct: 0 };
+
+function connectSSE() {
+  if (sseSource) { try { sseSource.close(); } catch {} sseSource = null; }
+  try {
+    sseSource = new EventSource(`${APM_BASE}/api/v2/ag-ui/events`);
+
+    sseSource.addEventListener('STATE_SNAPSHOT', (e) => {
+      try {
+        const d = JSON.parse(e.data);
+        if (d.data && Array.isArray(d.data.agents)) {
+          apmState.agents = d.data.agents;
+          apmState.connected = true;
+          apmState.apmConn = 'sse';
+          orchState.agentsTotal = apmState.agents.length;
+          orchState.agentsActive = apmState.agents.filter(a => a.status === 'active' || a.status === 'working').length;
+          renderOrchestrationStatus();
+          renderInspector();
+        }
+      } catch {}
+    });
+
+    sseSource.addEventListener('CUSTOM', (e) => {
+      try {
+        const ev = JSON.parse(e.data);
+        const d = ev.data || {};
+        if (d.event === 'formation_progress' && d.month) {
+          formationProgress.set(d.month, { pct: d.pct || 0, done: d.done || 0, total: d.total || 0, status: d.status, current: d.current || '' });
+          renderOrchestrationStatus();
+        } else if (d.event === 'formation_summary') {
+          formationSummary = { alive: d.alive || 0, total: d.total || 0, avg_pct: d.avg_pct || 0 };
+          orchState.agentsActive = d.alive || orchState.agentsActive;
+          renderOrchestrationStatus();
+        }
+      } catch {}
+    });
+
+    sseSource.addEventListener('message', () => {
+      apmState.apmConn = 'sse';
+      apmState.connected = true;
+    });
+
+    sseSource.onerror = () => {
+      apmState.apmConn = 'polling';
+      if (sseSource) { try { sseSource.close(); } catch {} sseSource = null; }
+      setTimeout(connectSSE, 8000);
+    };
+  } catch {
+    apmState.apmConn = 'polling';
+  }
+}
+
 // ─── Init ───────────────────────────────────────────────────────────────────────
 
 function init() {
@@ -668,6 +724,9 @@ function init() {
   renderInspector();
   renderBottomBar();
   renderRoadmapModal();
+
+  // AG-UI SSE primary — REST polling fallback
+  connectSSE();
 
   pollAPM().then(() => {
     renderArchitecture();
