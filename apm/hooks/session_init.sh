@@ -320,6 +320,12 @@ STATEJSON
 
 
 main() {
+    # CCEM-124: Clean up stale hook state files older than 24 hours
+    if [ -d "$STATE_DIR" ]; then
+        find "$STATE_DIR" -name "*.json" -mtime +1 -delete 2>/dev/null
+        log "Hook state TTL cleanup: removed files older than 24h from $STATE_DIR"
+    fi
+
     if is_apm_running; then
         log "APM server already running on port $APM_PORT"
     else
