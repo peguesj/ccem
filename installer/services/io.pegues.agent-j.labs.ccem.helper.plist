@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>io.pegues.agent-j.labs.ccem.agent</string>
+  <string>io.pegues.agent-j.labs.ccem.helper</string>
 
   <key>Program</key>
-  <string>__CCEM_HOME__/CCEMAgent/.build/CCEMAgent.app/Contents/MacOS/CCEMAgent</string>
+  <string>__CCEM_HOME__/CCEMHelper/.build/CCEMHelper.app/Contents/MacOS/CCEMHelper</string>
 
   <key>EnvironmentVariables</key>
   <dict>
@@ -23,10 +23,10 @@
   <false/>
 
   <key>StandardOutPath</key>
-  <string>__CCEM_HOME__/apm/hooks/ccem_agent.log</string>
+  <string>__CCEM_HOME__/apm/hooks/ccem_helper.log</string>
 
   <key>StandardErrorPath</key>
-  <string>__CCEM_HOME__/apm/hooks/ccem_agent.log</string>
+  <string>__CCEM_HOME__/apm/hooks/ccem_helper.log</string>
 
   <key>ThrottleInterval</key>
   <integer>30</integer>

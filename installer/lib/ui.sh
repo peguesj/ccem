@@ -118,7 +118,7 @@ print_plan() {
   echo "    - APM v4 Phoenix Server (Erlang/Elixir/Node)"
   [[ "${SKIP_CLI:-0}" != "1" ]] && echo "    - TypeScript CLI (@ccem/core)"
   [[ "${SKIP_HOOKS:-0}" != "1" ]] && echo "    - Claude Code Hooks (6 lifecycle scripts)"
-  [[ "$PLATFORM" == "darwin" && "${SKIP_AGENT:-0}" != "1" ]] && echo "    - CCEMAgent (macOS menubar app)"
+  [[ "$PLATFORM" == "darwin" && "${SKIP_AGENT:-0}" != "1" ]] && echo "    - CCEMHelper (macOS menubar app)"
   [[ "${SKIP_SERVICE:-0}" != "1" ]] && echo "    - System service ($(service_type_name))"
   echo ""
 }

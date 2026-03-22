@@ -30,7 +30,7 @@ final class EnvironmentMonitor {
     private var notificationPollTask: Task<Void, Never>?
     private let notificationPollInterval: TimeInterval = 5
 
-    static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.agent.lifecycle"
+    static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
     static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
 
     var filteredEnvironments: [APMEnvironment] {
@@ -79,7 +79,7 @@ final class EnvironmentMonitor {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error {
-                print("[CCEMAgent] Notification permission error: \(error.localizedDescription)")
+                print("[CCEMHelper] Notification permission error: \(error.localizedDescription)")
             }
         }
         let agentCategory = UNNotificationCategory(
@@ -259,7 +259,7 @@ final class EnvironmentMonitor {
         do {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
-            print("[CCEMAgent] Failed to post notification: \(error.localizedDescription)")
+            print("[CCEMHelper] Failed to post notification: \(error.localizedDescription)")
         }
     }
 

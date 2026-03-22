@@ -3,7 +3,7 @@ import AppKit
 import UserNotifications
 
 @main
-struct CCEMAgentApp: App {
+struct CCEMHelperApp: App {
     @State private var monitor = EnvironmentMonitor()
     @State private var launchManager = LaunchManager()
     @State private var notificationReceiver = APMNotificationReceiver()
@@ -69,7 +69,7 @@ struct CCEMAgentApp: App {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error {
-                print("[CCEMAgent] System notification error: \(error.localizedDescription)")
+                print("[CCEMHelper] System notification error: \(error.localizedDescription)")
             }
         }
     }

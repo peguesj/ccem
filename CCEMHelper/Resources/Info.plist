@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>CCEM Agent</string>
+    <string>CCEM Helper</string>
     <key>CFBundleIdentifier</key>
-    <string>io.pegues.agent-j.labs.ccem.agent</string>
+    <string>io.pegues.agent-j.labs.ccem.helper</string>
     <key>CFBundleVersion</key>
     <string>3.0.0</string>
     <key>CFBundleShortVersionString</key>
@@ -15,7 +15,7 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleExecutable</key>
-    <string>CCEMAgent</string>
+    <string>CCEMHelper</string>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsLocalNetworking</key>

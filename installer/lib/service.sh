@@ -55,7 +55,7 @@ install_launchd_services() {
     success "Loaded launchd service (legacy): $LAUNCHD_SERVER_LABEL"
   fi
 
-  # CCEMAgent plist (macOS only, skip if --skip-agent)
+  # CCEMHelper plist (macOS only, skip if --skip-agent)
   if [[ "${SKIP_AGENT:-0}" != "1" ]]; then
     local agent_plist="$agents_dir/${LAUNCHD_AGENT_LABEL}.plist"
     local agent_template="$INSTALLER_DIR/services/${LAUNCHD_AGENT_LABEL}.plist"
@@ -120,7 +120,7 @@ uninstall_service() {
         echo "  Removed launchd service: $LAUNCHD_SERVER_LABEL"
       fi
 
-      # CCEMAgent
+      # CCEMHelper
       local agent_plist="$agents_dir/${LAUNCHD_AGENT_LABEL}.plist"
       if [[ -f "$agent_plist" ]]; then
         launchctl bootout "gui/$(id -u)/${LAUNCHD_AGENT_LABEL}" 2>/dev/null \

@@ -79,7 +79,7 @@ apm/__pycache__/
 apm/bridges/.orchestrator.pid
 apm/bridges/.orchestrator_state.json
 apm/.claude/
-CCEMAgent/.claude/
+CCEMHelper/.claude/
 installer/services/.claude/
 
 # Hook reports and data

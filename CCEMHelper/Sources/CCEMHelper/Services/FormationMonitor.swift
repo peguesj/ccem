@@ -4,7 +4,7 @@ import UserNotifications
 import AppKit
 
 /// FormationMonitor polls the APM server for active UPM/formation status and
-/// automatically triggers APM server restarts or CCEMAgent rebuilds when
+/// automatically triggers APM server restarts or CCEMHelper rebuilds when
 /// relevant formations complete.
 @MainActor
 @Observable
@@ -32,8 +32,8 @@ final class FormationMonitor {
     /// When these complete → restart APM Phoenix server.
     private var apmAffectingFormations: Set<String> = ["fmt-20260302-f1"]
 
-    /// Formation IDs that affect CCEMAgent code (Swift sources).
-    /// When these complete → rebuild + reopen CCEMAgent.
+    /// Formation IDs that affect CCEMHelper code (Swift sources).
+    /// When these complete → rebuild + reopen CCEMHelper.
     private var agentAffectingFormations: Set<String> = []
 
     // MARK: - Lifecycle
@@ -57,7 +57,7 @@ final class FormationMonitor {
         apmAffectingFormations.insert(formationId)
     }
 
-    /// Register a formation ID as one that, when complete, should trigger a CCEMAgent rebuild.
+    /// Register a formation ID as one that, when complete, should trigger a CCEMHelper rebuild.
     func trackAgentAffecting(formationId: String) {
         agentAffectingFormations.insert(formationId)
     }
@@ -198,49 +198,49 @@ final class FormationMonitor {
         )
     }
 
-    // MARK: - CCEMAgent Rebuild
+    // MARK: - CCEMHelper Rebuild
 
-    /// Runs `swift build -c release` in the CCEMAgent directory, then relaunches.
+    /// Runs `swift build -c release` in the CCEMHelper directory, then relaunches.
     private func handleAgentRebuild(reason: String) async {
         guard !pendingRebuild else { return }
         pendingRebuild = true
-        lastLifecycleAction = "Rebuilding CCEMAgent: \(reason)"
+        lastLifecycleAction = "Rebuilding CCEMHelper: \(reason)"
         print("[FormationMonitor] \(lastLifecycleAction!)")
 
         await postSystemNotification(
-            title: "CCEMAgent Rebuilding",
+            title: "CCEMHelper Rebuilding",
             body: reason,
             type: "info"
         )
 
         let home = FileManager.default.homeDirectoryForCurrentUser.path
-        let agentDir = "\(home)/Developer/ccem/CCEMAgent"
+        let agentDir = "\(home)/Developer/ccem/CCEMHelper"
 
         // Build
         let buildResult = await runShell("cd '\(agentDir)' && swift build -c release 2>&1")
         if buildResult.exitCode != 0 {
-            lastLifecycleAction = "CCEMAgent build failed"
+            lastLifecycleAction = "CCEMHelper build failed"
             pendingRebuild = false
             await postSystemNotification(
-                title: "CCEMAgent Build Failed",
+                title: "CCEMHelper Build Failed",
                 body: buildResult.output.suffix(200).description,
                 type: "error"
             )
             return
         }
 
-        lastLifecycleAction = "CCEMAgent built — relaunching"
+        lastLifecycleAction = "CCEMHelper built — relaunching"
         pendingRebuild = false
 
         await postSystemNotification(
-            title: "CCEMAgent Rebuilt",
+            title: "CCEMHelper Rebuilt",
             body: "Relaunching new version",
             type: "success"
         )
 
         // Brief delay then relaunch (this process will be killed by the relaunch)
         try? await Task.sleep(for: .seconds(1))
-        _ = await runShell("open -a CCEMAgent")
+        _ = await runShell("open -a CCEMHelper")
     }
 
     // MARK: - Shell Helper

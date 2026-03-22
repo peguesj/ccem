@@ -3,7 +3,7 @@
 # CCEM v4.0.0 Cross-Platform Installer
 # ============================================================================
 # Installs: APM v4 Phoenix Server, TypeScript CLI, Claude Code Hooks,
-#           CCEMAgent (macOS), and launchd/systemd service.
+#           CCEMHelper (macOS), and launchd/systemd service.
 #
 # Usage:
 #   ./install.sh [OPTIONS]
@@ -12,7 +12,7 @@
 #   --prefix <path>   Set CCEM_HOME (default: $HOME/Developer/ccem)
 #   --skip-service    Don't install launchd/systemd service
 #   --skip-hooks      Don't patch Claude Code settings.json
-#   --skip-agent      Don't build CCEMAgent (macOS only)
+#   --skip-agent      Don't build CCEMHelper (macOS only)
 #   --skip-cli        Don't build TypeScript CLI
 #   --verbose         Show debug output
 #   --dry-run         Print what would be done without executing
@@ -76,7 +76,7 @@ Options:
   --prefix <path>   Set CCEM_HOME (default: $HOME/Developer/ccem)
   --skip-service    Don't install launchd/systemd service
   --skip-hooks      Don't patch Claude Code settings.json
-  --skip-agent      Don't build CCEMAgent (macOS only)
+  --skip-agent      Don't build CCEMHelper (macOS only)
   --skip-cli        Don't build TypeScript CLI
   --verbose         Show debug output
   --dry-run         Print what would be done without executing
@@ -197,7 +197,7 @@ verify_installation() {
     summary_add "APM Server (${CCEM_APM_PORT})" "SKIPPED"
     summary_add "TypeScript CLI" "SKIPPED"
     summary_add "Claude Code Hooks" "SKIPPED"
-    summary_add "CCEMAgent" "SKIPPED"
+    summary_add "CCEMHelper" "SKIPPED"
     summary_add "Service" "SKIPPED"
     summary_print
     return 0
@@ -229,15 +229,15 @@ verify_installation() {
     summary_add "Claude Code Hooks" "FAILED"
   fi
 
-  # CCEMAgent check
+  # CCEMHelper check
   if [[ "$PLATFORM" != "darwin" ]]; then
-    summary_add "CCEMAgent" "SKIPPED"
+    summary_add "CCEMHelper" "SKIPPED"
   elif [[ "${SKIP_AGENT:-0}" == "1" ]]; then
-    summary_add "CCEMAgent" "SKIPPED"
-  elif [[ -x "$CCEM_HOME/CCEMAgent/.build/CCEMAgent.app/Contents/MacOS/CCEMAgent" ]]; then
-    summary_add "CCEMAgent" "OK"
+    summary_add "CCEMHelper" "SKIPPED"
+  elif [[ -x "$CCEM_HOME/CCEMHelper/.build/CCEMHelper.app/Contents/MacOS/CCEMHelper" ]]; then
+    summary_add "CCEMHelper" "OK"
   else
-    summary_add "CCEMAgent" "FAILED"
+    summary_add "CCEMHelper" "FAILED"
   fi
 
   # Service check
@@ -315,12 +315,12 @@ main() {
     warn "TypeScript CLI build failed — continuing with remaining phases"
   fi
 
-  # Phase 5: Build CCEMAgent
-  if build_ccem_agent; then
+  # Phase 5: Build CCEMHelper
+  if build_ccem_helper; then
     BUILD_AGENT=OK
   else
     BUILD_AGENT=FAILED
-    warn "CCEMAgent build failed — continuing with remaining phases"
+    warn "CCEMHelper build failed — continuing with remaining phases"
   fi
 
   # Phase 6: Initialize config & state

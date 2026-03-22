@@ -93,34 +93,34 @@ build_typescript_cli() {
   return 0
 }
 
-build_ccem_agent() {
-  header "Phase 5: Building CCEMAgent"
+build_ccem_helper() {
+  header "Phase 5: Building CCEMHelper"
 
   if [[ "$PLATFORM" != "darwin" ]]; then
-    info "Skipping CCEMAgent (Linux — macOS only)"
+    info "Skipping CCEMHelper (Linux — macOS only)"
     return 0
   fi
 
   if [[ "${SKIP_AGENT:-0}" == "1" ]]; then
-    info "Skipping CCEMAgent (--skip-agent)"
+    info "Skipping CCEMHelper (--skip-agent)"
     return 0
   fi
 
-  local agent_dir="$CCEM_HOME/CCEMAgent"
+  local agent_dir="$CCEM_HOME/CCEMHelper"
 
   if [[ ! -d "$agent_dir" ]]; then
-    warn "CCEMAgent directory not found at $agent_dir — skipping"
+    warn "CCEMHelper directory not found at $agent_dir — skipping"
     return 0
   fi
 
   if [[ "${DRY_RUN:-0}" == "1" ]]; then
-    step "[dry-run] Would build CCEMAgent in $agent_dir"
+    step "[dry-run] Would build CCEMHelper in $agent_dir"
     return 0
   fi
 
   cd "$agent_dir"
 
-  spinner_start "Building CCEMAgent (swift build -c release)..."
+  spinner_start "Building CCEMHelper (swift build -c release)..."
   if swift build -c release 2>&1; then
     spinner_stop
   else
@@ -139,19 +139,19 @@ build_ccem_agent() {
     return 0
   fi
 
-  local app_binary="$agent_dir/.build/CCEMAgent.app/Contents/MacOS/CCEMAgent"
+  local app_binary="$agent_dir/.build/CCEMHelper.app/Contents/MacOS/CCEMHelper"
   if [[ -x "$app_binary" ]]; then
-    success "CCEMAgent built: $agent_dir/.build/CCEMAgent.app"
+    success "CCEMHelper built: $agent_dir/.build/CCEMHelper.app"
   else
-    error "CCEMAgent binary not found or not executable"
+    error "CCEMHelper binary not found or not executable"
     return 1
   fi
 
   # Optional: copy to ~/Applications
-  if confirm "Copy CCEMAgent.app to ~/Applications?"; then
+  if confirm "Copy CCEMHelper.app to ~/Applications?"; then
     mkdir -p "$HOME/Applications"
-    cp -R "$agent_dir/.build/CCEMAgent.app" "$HOME/Applications/CCEMAgent.app"
-    success "Copied to ~/Applications/CCEMAgent.app"
+    cp -R "$agent_dir/.build/CCEMHelper.app" "$HOME/Applications/CCEMHelper.app"
+    success "Copied to ~/Applications/CCEMHelper.app"
   fi
 
   return 0

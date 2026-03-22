@@ -7,32 +7,32 @@
 - **Reverse-DNS Identifier Prefix**: `io.pegues.agent-j.labs`
 - **launchd Labels**:
   - APM Server: `io.pegues.agent-j.labs.ccem.apm-server`
-  - CCEMAgent: `io.pegues.agent-j.labs.ccem.agent`
+  - CCEMHelper: `io.pegues.agent-j.labs.ccem.helper`
 - **Use this prefix** for all launchd plists, bundle identifiers, and reverse-DNS identifiers across CCEM and related projects.
 
 ## APM Server Lifecycle Rules
 
-**ALWAYS start CCEMAgent alongside the APM server.** When running `mix phx.server`, ALWAYS also launch CCEMAgent immediately after:
+**ALWAYS start CCEMHelper alongside the APM server.** When running `mix phx.server`, ALWAYS also launch CCEMHelper immediately after:
 ```bash
 # Start APM
 cd ~/Developer/ccem/apm-v4
 nohup mix phx.server > ~/Developer/ccem/apm/hooks/apm_server.log 2>&1 &
 echo $! > .apm.pid
 
-# Start CCEMAgent immediately after - MANDATORY
-open -a CCEMAgent
+# Start CCEMHelper immediately after - MANDATORY
+open -a CCEMHelper
 ```
 
-**When rebuilding CCEMAgent**, ALWAYS run `swift build` from `~/Developer/ccem/CCEMAgent/` and then relaunch:
+**When rebuilding CCEMHelper**, ALWAYS run `swift build` from `~/Developer/ccem/CCEMHelper/` and then relaunch:
 ```bash
-cd ~/Developer/ccem/CCEMAgent
+cd ~/Developer/ccem/CCEMHelper
 swift build -c release
-open -a CCEMAgent
+open -a CCEMHelper
 ```
 
 **When updating CCEM or CCEM APM source:**
-1. Rebuild CCEMAgent: `cd ~/Developer/ccem/CCEMAgent && swift build -c release`
-2. Relaunch: `open -a CCEMAgent`
+1. Rebuild CCEMHelper: `cd ~/Developer/ccem/CCEMHelper && swift build -c release`
+2. Relaunch: `open -a CCEMHelper`
 3. Restart APM if server-side changes: kill + restart `mix phx.server`
 
 **Formation agent registration rule:** Every formation agent MUST register with APM on spawn using fire-and-forget curl to `/api/register` with full `upm_context` metadata. No exceptions -- this applies to orchestrators, squadron leads, swarm agents, cluster agents, and individual leaf agents. Pattern:
@@ -67,7 +67,7 @@ pkill -9 -f "mix phx.server"
 | APM PID | `~/Developer/ccem/apm-v4/.apm.pid` |
 | APM log | `~/Developer/ccem/apm/hooks/apm_server.log` |
 | APM config | `~/Developer/ccem/apm/apm_config.json` |
-| CCEMAgent source | `~/Developer/ccem/CCEMAgent/` |
+| CCEMHelper source | `~/Developer/ccem/CCEMHelper/` |
 | ccem-apm skill | `~/.claude/skills/ccem-apm/SKILL.md` |
 | ccem-apm command | `~/.claude/commands/ccem-apm.md` |
 | Showcase skill | `~/.claude/skills/showcase/` |
@@ -126,12 +126,12 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - [x] **CP-41**: UPM.SyncEngine GenServer — 5-min scheduled sync + drift detection (US-008)
 - After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
 
-### Wave 3: REST + LiveView + CCEMAgent (depends on Wave 2)
+### Wave 3: REST + LiveView + CCEMHelper (depends on Wave 2)
 - [x] **CP-42**: UpmController — 22 REST endpoints at /api/upm/* (US-009)
 - [x] **CP-43**: Router — browser + API routes for UPM (US-009)
 - [x] **CP-44**: UpmLive — /upm, /upm/:id, /upm/:id/board + Kanban board (US-010)
 - [x] **CP-45**: UPM nav item added to all 19 LiveViews (US-010)
-- [x] **CP-46**: CCEMAgent UPMMonitor + UPMModels + MenuBar UPM section (US-011)
+- [x] **CP-46**: CCEMHelper UPMMonitor + UPMModels + MenuBar UPM section (US-011)
 - [x] **CP-47**: v4.1.0 CHANGELOG + mix.exs version bump (US-012)
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
 
@@ -160,7 +160,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - [x] **CP-14**: double-verify endpoint — POST /api/v2/verify/double (US-014)
 - [x] **CP-15**: deploy:agents-v2 APM hook support — wave tracking + toasts (US-015)
 - [x] **CP-16**: Update ccem-apm SKILL.md + command reference (US-016)
-- [x] **CP-17**: Bump to v2.4.0 — mix.exs, CHANGELOG, CCEMAgent rebuild (US-017)
+- [x] **CP-17**: Bump to v2.4.0 — mix.exs, CHANGELOG, CCEMHelper rebuild (US-017)
 - After Wave 3: `/upm verify` — integration tests against http://localhost:3032 ✓ PASS (compile EXIT:0)
 
 ## DRTW — Don't Reinvent The Wheel
@@ -188,24 +188,24 @@ automatically from user-scope settings.json.
 
 ### Wave 1: Foundation (Independent — 4 worktrees parallel)
 - [x] **CP-18**: APMServerManager Swift service — start/stop APM (US-001) [WT: ccem-agent-ui]
-- [x] **CP-19**: CCEMAgent telemetry models + APMClient.fetchTelemetry() (US-004) [WT: ccem-agent-ui]
+- [x] **CP-19**: CCEMHelper telemetry models + APMClient.fetchTelemetry() (US-004) [WT: ccem-agent-ui]
 - [x] **CP-20**: APM v4 GET /api/telemetry endpoint (US-006) [WT: ccem-agent-ui]
 - [x] **CP-21**: APM v4 BackgroundTasksStore GenServer (US-007) [WT: ccem-claude-native]
 - [x] **CP-22**: APM v4 ProjectScanner GenServer (US-011) [WT: apm-project-scanner]
 - [x] **CP-23**: APM v4 ActionEngine GenServer (US-014) [WT: apm-actions]
-- After Wave 1: `mix compile` must pass; `swift build` in CCEMAgent must pass
+- After Wave 1: `mix compile` must pass; `swift build` in CCEMHelper must pass
 
 ### Wave 2: Integration (depends on Wave 1)
-- [x] **CP-24**: CCEMAgent MenuBarView — start APM button in disconnected state (US-002) [WT: ccem-agent-ui]
-- [x] **CP-25**: CCEMAgent MenuBarView — telemetry usage chart (US-005) [WT: ccem-agent-ui]
-- [x] **CP-26**: CCEMAgent background tasks section in MenuBarView (US-010) [WT: ccem-claude-native]
+- [x] **CP-24**: CCEMHelper MenuBarView — start APM button in disconnected state (US-002) [WT: ccem-agent-ui]
+- [x] **CP-25**: CCEMHelper MenuBarView — telemetry usage chart (US-005) [WT: ccem-agent-ui]
+- [x] **CP-26**: CCEMHelper background tasks section in MenuBarView (US-010) [WT: ccem-claude-native]
 - [x] **CP-27**: APM v4 background tasks REST API endpoints (US-008) [WT: ccem-claude-native]
 - [x] **CP-28**: APM v4 project scanner REST API endpoints (US-012) [WT: apm-project-scanner]
 - [x] **CP-29**: APM v4 actions REST API endpoints (US-015) [WT: apm-actions]
 - After Wave 2: `mix compile` must pass; `swift build` must pass
 
 ### Wave 3: UX + LiveViews (depends on Wave 2)
-- [x] **CP-30**: CCEMAgent MenuBarView — consistent sections + Start/Stop APM (US-003) [WT: ccem-agent-ui]
+- [x] **CP-30**: CCEMHelper MenuBarView — consistent sections + Start/Stop APM (US-003) [WT: ccem-agent-ui]
 - [x] **CP-31**: APM v4 TasksLive LiveView (US-009) [WT: ccem-claude-native]
 - [x] **CP-32**: APM v4 ScannerLive LiveView (US-013) [WT: apm-project-scanner]
 - [x] **CP-33**: APM v4 ActionsLive LiveView (US-016) [WT: apm-actions]
@@ -231,7 +231,7 @@ automatically from user-scope settings.json.
 
 ### Wave 3: UI + Release (depends on Wave 2)
 - [x] **CP-54**: SkillsLive health dashboard — three-tier health view, Audit All, Fix buttons, detail panel (US-007)
-- [x] **CP-55**: CCEMAgent UI consistency pass — telemetry chart, task runtime/logs, Start/Stop APM (US-008)
+- [x] **CP-55**: CCEMHelper UI consistency pass — telemetry chart, task runtime/logs, Start/Stop APM (US-008)
 - [x] **CP-56**: v4.2.0 CHANGELOG + mix.exs bump (US-009)
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
 
@@ -245,7 +245,7 @@ automatically from user-scope settings.json.
 - [x] **CP-61**: ChatStore GenServer — message persistence (US-013) [CCEM-156]
 - After Wave 1: `mix compile --warnings-as-errors` PASS
 
-### Wave 2: Interactive Inspector + CCEMAgent SSE (depends on Wave 1)
+### Wave 2: Interactive Inspector + CCEMHelper SSE (depends on Wave 1)
 - [x] **CP-62**: InspectorChatLive — contextual AG-UI chat (US-001) [CCEM-144]
 - [x] **CP-63**: AgentControlPanel — connect/disconnect/restart (US-002) [CCEM-145]
 - [x] **CP-64**: SSE LiveView hook — inspector_chat.js (US-003) [CCEM-146]
@@ -253,9 +253,9 @@ automatically from user-scope settings.json.
 - [x] **CP-66**: APMClient v2 — configurable port + SSE (US-005) [CCEM-148]
 - After Wave 2: `mix compile --warnings-as-errors` PASS + `swift build -c release` PASS
 
-### Wave 3: CCEMAgent Management + Release (depends on Wave 2)
+### Wave 3: CCEMHelper Management + Release (depends on Wave 2)
 - [x] **CP-67**: Agent management actions in MenuBarView (US-006) [CCEM-149]
-- [x] **CP-68**: CCEMAgent mini-chat view (US-007) [CCEM-150]
+- [x] **CP-68**: CCEMHelper mini-chat view (US-007) [CCEM-150]
 - [x] **CP-69**: Dynamic port config + multi-server (US-008) [CCEM-151]
 - [x] **CP-70**: v5.1.0 bump — CHANGELOG, mix.exs, OpenAPI (US-014) [CCEM-157]
 - After Wave 3: `mix compile --warnings-as-errors` PASS + `swift build -c release` PASS
@@ -317,7 +317,7 @@ automatically from user-scope settings.json.
 - [x] **CP-110**: Update /docs LiveView: showcase + port management + CCEM UI sections (US-013) [CCEM-186]
 - [x] **CP-111**: Add @moduledoc/@doc/@spec to all v6.0.0 new modules (US-014) [CCEM-187]
 - [x] **CP-112**: Update OpenAPI 3.0.3 spec for v6.0.0 new endpoints (US-015) [CCEM-188]
-- [x] **CP-113**: v6.0.0 release — mix.exs bump to 6.0.0, CHANGELOG, CCEMAgent rebuild (US-016) [CCEM-189]
+- [x] **CP-113**: v6.0.0 release — mix.exs bump to 6.0.0, CHANGELOG, CCEMHelper rebuild (US-016) [CCEM-189]
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
 
 ### PM Squadron (parallel to all waves)
@@ -362,7 +362,7 @@ automatically from user-scope settings.json.
 ### Wave 2: Integration (parallel)
 - [x] **CP-122**: CCEM APM Skill + usage_constraints.md memory file (US-046) [CCEM-230]
 - [x] **CP-123**: Plane PM — CCEM-226 through CCEM-230 created + set to Done
-- [x] **CP-124**: CCEMAgent — UsageModels.swift, fetchUsageSummary(), usageSection in MenuBarView
+- [x] **CP-124**: CCEMHelper — UsageModels.swift, fetchUsageSummary(), usageSection in MenuBarView
 - After Wave 2: `swift build -c release` ✓ PASS
 
 ### Wave 3: Release
@@ -436,12 +436,12 @@ This is a hard rule with no exceptions.
 - [x] **CP-152**: ActionEngine — 5 new authorization actions (US-014) [CCEM-253]
 - After Wave 3: `mix compile --warnings-as-errors` PASS
 
-### Wave 4: Hooks + CCEMAgent (depends on Wave 3)
+### Wave 4: Hooks + CCEMHelper (depends on Wave 3)
 - [x] **CP-153**: agentlock_pre_tool.sh — PreToolUse authorization hook (US-015) [CCEM-254]
 - [x] **CP-154**: agentlock_post_tool.sh — PostToolUse execution recording (US-016) [CCEM-255]
 - [x] **CP-155**: agentlock_context.sh — context tracking hook (US-017) [CCEM-256]
 - [x] **CP-156**: AuthorizationModels.swift — Swift structs (US-018) [CCEM-257]
-- [x] **CP-157**: CCEMAgent auth integration — APMClient + MenuBarView (US-019) [CCEM-258]
+- [x] **CP-157**: CCEMHelper auth integration — APMClient + MenuBarView (US-019) [CCEM-258]
 - After Wave 4: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS
 
 ### Wave 5: Showcase + Release (depends on Wave 4)

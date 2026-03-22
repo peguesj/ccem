@@ -84,7 +84,7 @@ install_deps_macos() {
   # Swift check — cannot install via brew, needs Xcode
   if [[ "${SKIP_AGENT:-0}" != "1" && "$CHECK_SWIFT" != "1" ]]; then
     if ! command -v swift &>/dev/null; then
-      warn "Swift is not installed. CCEMAgent requires Xcode or Xcode Command Line Tools."
+      warn "Swift is not installed. CCEMHelper requires Xcode or Xcode Command Line Tools."
       echo "  Install with: xcode-select --install"
       echo "  Or download Xcode from the App Store."
       SKIP_AGENT=1

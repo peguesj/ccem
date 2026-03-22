@@ -3,7 +3,7 @@
 # CCEM APM v6.4.0 Installation Suite
 # Author: Jeremiah Pegues <jeremiah@pegues.io>
 # ============================================================================
-# Installs: APM v4 Phoenix Server, CCEMAgent (macOS), Claude Code Hooks,
+# Installs: APM v4 Phoenix Server, CCEMHelper (macOS), Claude Code Hooks,
 #           TypeScript CLI, and launchd/systemd service.
 #
 # Usage:
@@ -13,7 +13,7 @@
 #   --prefix <path>   Set CCEM_HOME (default: $HOME/Developer/ccem)
 #   --skip-service    Don't install launchd/systemd service
 #   --skip-hooks      Don't patch Claude Code settings.json
-#   --skip-agent      Don't build CCEMAgent (macOS only)
+#   --skip-agent      Don't build CCEMHelper (macOS only)
 #   --skip-cli        Don't build TypeScript CLI
 #   --verbose         Show debug output
 #   --dry-run         Print what would be done without executing
@@ -28,7 +28,7 @@ CCEM_APM_PORT="${CCEM_APM_PORT:-3032}"
 CCEM_REPO_URL="https://github.com/peguesj/ccem.git"
 CCEM_DEFAULT_HOME="$HOME/Developer/ccem"
 LAUNCHD_SERVER_LABEL="io.pegues.agent-j.labs.ccem.apm-server"
-LAUNCHD_AGENT_LABEL="io.pegues.agent-j.labs.ccem.agent"
+LAUNCHD_AGENT_LABEL="io.pegues.agent-j.labs.ccem.helper"
 
 # ---- Flags ----
 SKIP_SERVICE=0
@@ -299,7 +299,7 @@ Options:
   --prefix <path>   Set CCEM_HOME (default: \$HOME/Developer/ccem)
   --skip-service    Don't install launchd/systemd service
   --skip-hooks      Don't patch Claude Code settings.json
-  --skip-agent      Don't build CCEMAgent (macOS only)
+  --skip-agent      Don't build CCEMHelper (macOS only)
   --skip-cli        Don't build TypeScript CLI
   --verbose         Show debug output
   --dry-run         Print what would be done without executing
@@ -542,11 +542,11 @@ phase_build_cli() {
 }
 
 # ============================================================================
-# Phase 5: Build CCEMAgent
+# Phase 5: Build CCEMHelper
 # ============================================================================
 phase_build_agent() {
-  header "Phase 5: CCEMAgent (macOS)"
-  step_progress "CCEMAgent build"
+  header "Phase 5: CCEMHelper (macOS)"
+  step_progress "CCEMHelper build"
 
   if [[ "$PLATFORM" != "darwin" ]]; then
     info "Skipped (Linux — macOS only)"
@@ -558,10 +558,10 @@ phase_build_agent() {
     return 0
   fi
 
-  local agent_dir="$CCEM_HOME/CCEMAgent"
+  local agent_dir="$CCEM_HOME/CCEMHelper"
 
   if [[ ! -d "$agent_dir" ]]; then
-    warn "CCEMAgent directory not found — skipping"
+    warn "CCEMHelper directory not found — skipping"
     return 0
   fi
 
@@ -572,20 +572,20 @@ phase_build_agent() {
 
   (
     cd "$agent_dir"
-    spin "Compiling CCEMAgent (release)..." swift build -c release
+    spin "Compiling CCEMHelper (release)..." swift build -c release
   )
 
-  if confirm "Copy CCEMAgent.app to ~/Applications?"; then
-    if [[ -d "$agent_dir/.build/CCEMAgent.app" ]]; then
+  if confirm "Copy CCEMHelper.app to ~/Applications?"; then
+    if [[ -d "$agent_dir/.build/CCEMHelper.app" ]]; then
       mkdir -p "$HOME/Applications"
-      cp -R "$agent_dir/.build/CCEMAgent.app" "$HOME/Applications/CCEMAgent.app"
-      success "Copied to ~/Applications/CCEMAgent.app"
+      cp -R "$agent_dir/.build/CCEMHelper.app" "$HOME/Applications/CCEMHelper.app"
+      success "Copied to ~/Applications/CCEMHelper.app"
     else
-      warn "CCEMAgent.app not found; may require build-app.sh"
+      warn "CCEMHelper.app not found; may require build-app.sh"
     fi
   fi
 
-  success "CCEMAgent built"
+  success "CCEMHelper built"
 }
 
 # ============================================================================
@@ -823,7 +823,7 @@ phase_verify() {
     summary_add "APM Server (${CCEM_APM_PORT})" "SKIPPED"
     summary_add "TypeScript CLI"               "SKIPPED"
     summary_add "Claude Code Hooks"            "SKIPPED"
-    summary_add "CCEMAgent"                    "SKIPPED"
+    summary_add "CCEMHelper"                    "SKIPPED"
     summary_add "System Service"               "SKIPPED"
     summary_print
     return 0
@@ -856,14 +856,14 @@ phase_verify() {
     summary_add "Claude Code Hooks" "FAILED"
   fi
 
-  # CCEMAgent
+  # CCEMHelper
   if [[ "$PLATFORM" != "darwin" || "$SKIP_AGENT" == "1" ]]; then
-    summary_add "CCEMAgent" "SKIPPED"
-  elif [[ -d "$HOME/Applications/CCEMAgent.app" ]] || \
-       [[ -d "$CCEM_HOME/CCEMAgent/.build/CCEMAgent.app" ]]; then
-    summary_add "CCEMAgent" "OK"
+    summary_add "CCEMHelper" "SKIPPED"
+  elif [[ -d "$HOME/Applications/CCEMHelper.app" ]] || \
+       [[ -d "$CCEM_HOME/CCEMHelper/.build/CCEMHelper.app" ]]; then
+    summary_add "CCEMHelper" "OK"
   else
-    summary_add "CCEMAgent" "FAILED"
+    summary_add "CCEMHelper" "FAILED"
   fi
 
   # Service
@@ -917,7 +917,7 @@ print_plan() {
   step "APM v4 Phoenix Server"
   [[ "$SKIP_CLI" != "1" ]]     && step "TypeScript CLI (@ccem/core)"
   [[ "$SKIP_HOOKS" != "1" ]]   && step "Claude Code Hooks"
-  [[ "$PLATFORM" == "darwin" && "$SKIP_AGENT" != "1" ]] && step "CCEMAgent (macOS menu bar)"
+  [[ "$PLATFORM" == "darwin" && "$SKIP_AGENT" != "1" ]] && step "CCEMHelper (macOS menu bar)"
   [[ "$SKIP_SERVICE" != "1" ]] && step "System service ($(case "$PLATFORM" in darwin) echo launchd;; linux) echo systemd;; *) echo none;; esac))"
   echo ""
 }

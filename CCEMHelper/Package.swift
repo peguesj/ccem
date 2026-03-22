@@ -3,14 +3,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "CCEMAgent",
+    name: "CCEMHelper",
     platforms: [
         .macOS(.v14)
     ],
     targets: [
         .executableTarget(
-            name: "CCEMAgent",
-            path: "Sources/CCEMAgent",
+            name: "CCEMHelper",
+            path: "Sources/CCEMHelper",
             resources: [
                 .copy("../../Resources/Info.plist")
             ]
