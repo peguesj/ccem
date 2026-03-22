@@ -106,3 +106,4 @@ ui/capture-apm-screenshots.ts
 CCEMAgent/ccem-agent-watchdog.sh
 backup-*.tar.gz
 backup-*.tar.gz.meta
+.env.npm
