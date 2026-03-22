@@ -22,6 +22,7 @@ final class EnvironmentMonitor {
     var agentTelemetry: TelemetryResponse?
     var backgroundTasks: [BackgroundTask] = []
     var agUiEvents: [AgUiEvent] = []
+    var usageSummary: UsageSummary?
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
@@ -157,6 +158,13 @@ final class EnvironmentMonitor {
             agUiEvents = try await client.fetchAgUiEvents()
         } catch {
             agUiEvents = []
+        }
+
+        // Fetch Claude usage summary (non-blocking, best-effort)
+        do {
+            usageSummary = try await client.fetchUsageSummary()
+        } catch {
+            usageSummary = nil
         }
     }
 

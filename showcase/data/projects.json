@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "default_project": "yjmosaic",
+  "projects": [
+    {
+      "id": "yjmosaic",
+      "name": "YJMosaic",
+      "tagline": "Native macOS photographic mosaic engine",
+      "badge": "YJMOS",
+      "badge_color": "violet",
+      "status": "scaffolded",
+      "data_path": "projects/yjmosaic"
+    },
+    {
+      "id": "ccem-apm",
+      "name": "CCEM APM",
+      "tagline": "Agentic Performance Monitor",
+      "badge": "CCEM",
+      "badge_color": "indigo",
+      "status": "shipped",
+      "data_path": "projects/ccem-apm"
+    }
+  ]
+}

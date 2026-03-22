@@ -1,0 +1,59 @@
+%% Deployment Topology
+%% Single-machine architecture with zero external dependencies
+graph TB
+    subgraph machine ["Developer Machine"]
+        direction TB
+
+        subgraph browser ["Web Browser"]
+            dashboard["<b>Real-time Dashboard</b><br/>Agent Registry View<br/>Formation Topology<br/>Telemetry Charts<br/>Project Scanner<br/>Background Tasks"]
+        end
+
+        subgraph services ["Background Services"]
+            apm["<b>Monitoring Server</b><br/><i>Auto-started service</i><br/><br/>In-Memory State Store<br/>Real-time Event Bus<br/>REST API Layer<br/>Live Interactive Views"]
+        end
+
+        subgraph native ["Native Applications"]
+            companion["<b>Desktop Companion</b><br/><i>System tray app</i><br/><br/>Quick Metrics<br/>Server Control<br/>Notifications"]
+        end
+
+        subgraph sessions ["AI Coding Sessions"]
+            s1["<b>Agent Session 1</b><br/>Active"]
+            s2["<b>Agent Session 2</b><br/>Active"]
+            sn["<b>Agent Session N</b><br/>..."]
+        end
+
+        subgraph integration ["Integration Layer"]
+            hooks["<b>Lifecycle Hooks</b><br/>Session Start/End<br/>Tool Use Events<br/>Heartbeats"]
+        end
+
+        subgraph tooling ["Developer Tooling"]
+            cli["<b>Configuration Manager</b><br/>Setup & Audit"]
+        end
+    end
+
+    %% Connections
+    dashboard ---|"Live WebSocket<br/>connection"| apm
+    companion -->|"Polls telemetry<br/>& notifications"| apm
+    companion -->|"Start / Stop<br/>server lifecycle"| apm
+
+    s1 --> hooks
+    s2 --> hooks
+    sn --> hooks
+    hooks -->|"Non-blocking<br/>registration &<br/>heartbeats"| apm
+
+    cli -->|"Reads & writes<br/>configuration"| apm
+
+    %% Styling
+    classDef service fill:#1168BD,stroke:#0E5CA8,color:#fff,stroke-width:2px
+    classDef app fill:#438DD5,stroke:#3C7FC0,color:#fff,stroke-width:2px
+    classDef session fill:#08427B,stroke:#073B6F,color:#fff,stroke-width:2px
+    classDef hook fill:#85BBF0,stroke:#78A8D8,color:#000,stroke-width:1px
+    classDef tool fill:#999999,stroke:#8A8A8A,color:#fff,stroke-width:1px
+    classDef ui fill:#2D882D,stroke:#267326,color:#fff,stroke-width:2px
+
+    class apm service
+    class companion app
+    class s1,s2,sn session
+    class hooks hook
+    class cli tool
+    class dashboard ui

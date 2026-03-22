@@ -85,7 +85,23 @@ CCEMAgent/.claude/
 .claude/hooks/reports/
 .claude/hooks/data/
 
+# Hook runtime state (ephemeral per-session)
+apm/.hook_state/
+
+# Force directory (session-scoped analysis artifacts)
+.force/
+
+# Lessons runtime data
+lessons/
+
+# Screenshots (binary assets)
+*.png
+showcase-*.png
+ccem-*.png
+
 # Scripts generated at runtime
 scripts/
 ui/capture-apm-screenshots.ts
 CCEMAgent/ccem-agent-watchdog.sh
+backup-*.tar.gz
+backup-*.tar.gz.meta

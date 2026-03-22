@@ -1,0 +1,241 @@
+{
+  "plan": "YJMosaic Port — Remaining Gap Closure",
+  "version": "2.0.0",
+  "total_gaps": 41,
+  "ported": 15,
+  "partial": 5,
+  "stub": 6,
+  "missing": 12,
+  "skipped": 3,
+  "waves": [
+    {
+      "wave": 1,
+      "name": "Critical Integration Wiring",
+      "priority": "P0",
+      "description": "Connect existing complete engine components to UI. No new algorithms needed — pure integration work.",
+      "stories": [
+        {
+          "id": "PORT-001",
+          "gap_ids": ["G-031", "G-025"],
+          "title": "Wire MosaicBuilder into MosaicEditorView",
+          "description": "Replace simulated startBuild() with real MosaicBuilder.buildPlan(). MainMenuView must instantiate MosaicEditorView when 'New Mosaic' selected.",
+          "files": ["YJMosaic/Views/MosaicEditorView.swift", "YJMosaic/Views/MainMenuView.swift"],
+          "acceptance": ["startBuild() calls MosaicBuilder.buildPlan()", "Progress bar reflects real build progress", "MainMenuView navigates to MosaicEditorView", "Build produces a real MosaicPlan"]
+        },
+        {
+          "id": "PORT-002",
+          "gap_ids": ["G-032"],
+          "title": "Connect TileCollectionView to MosaicEditorView",
+          "description": "Embed TileCollectionView in editor sidebar. Create shared TileCollectionManager. Wire import/remove callbacks.",
+          "files": ["YJMosaic/Views/MosaicEditorView.swift", "YJMosaic/Views/TileCollectionView.swift"],
+          "acceptance": ["TileCollectionView visible in editor", "Import folder loads real tiles via TileCollectionManager", "Tile count feeds into MosaicBuilder", "Remove tiles works"]
+        },
+        {
+          "id": "PORT-003",
+          "gap_ids": ["G-033"],
+          "title": "Wire real export in PreviewView",
+          "description": "Replace stub alert with real MosaicExporter.export(plan:to:). Format selection from NSSavePanel.",
+          "files": ["YJMosaic/Views/PreviewView.swift"],
+          "acceptance": ["NSSavePanel -> MosaicExporter.export()", "JPEG/PNG/TIFF format selection works", "Progress shown during export", "Output file is a real mosaic image"]
+        },
+        {
+          "id": "PORT-004",
+          "gap_ids": ["G-004"],
+          "title": "Fix ColorAdjuster integration (targetColor)",
+          "description": "Add targetColor field to TilePlacement. Populate during MosaicBuilder.buildPlan(). Pass to MosaicExporter for real color adjustment.",
+          "files": ["YJMosaic/Models/Models.swift", "YJMosaic/Engine/MosaicBuilder.swift", "YJMosaic/IO/MosaicExporter.swift"],
+          "acceptance": ["TilePlacement has targetColor: RGBColor field", "MosaicBuilder populates targetColor from source image region", "MosaicExporter passes targetColor to ColorAdjuster", "Color adjustment produces visible shift"]
+        }
+      ]
+    },
+    {
+      "wave": 2,
+      "name": "Engine Integration Gaps",
+      "priority": "P1",
+      "description": "Wire remaining engine components that are fully implemented but disconnected from the build pipeline.",
+      "stories": [
+        {
+          "id": "PORT-005",
+          "gap_ids": ["G-002"],
+          "title": "Wire MetalTileScorer into MosaicBuilder",
+          "description": "MosaicBuilder should use MetalTileScorer when GPU is available, falling back to TileScorer (CPU).",
+          "files": ["YJMosaic/Engine/MosaicBuilder.swift"],
+          "acceptance": ["MosaicBuilder checks MetalTileScorer.isGPUAvailable", "GPU path used when available", "CPU fallback works when Metal unavailable", "Build time measurably faster with GPU"]
+        },
+        {
+          "id": "PORT-006",
+          "gap_ids": ["G-005"],
+          "title": "Wire TileSplitter into MosaicBuilder",
+          "description": "Call TileSplitter when config.splitPercentage > 0. Apply splits to MosaicPlan after initial placement.",
+          "files": ["YJMosaic/Engine/MosaicBuilder.swift"],
+          "acceptance": ["splitPercentage > 0 triggers TileSplitter", "Detail regions get smaller tiles", "Split tiles appear in MosaicPlan", "Typecheck passes"]
+        },
+        {
+          "id": "PORT-007",
+          "gap_ids": ["G-006"],
+          "title": "Wire MaskProcessor into build pipeline",
+          "description": "Add mask file picker to MosaicEditorView. MosaicBuilder calls MaskProcessor.applyMask() on plan.",
+          "files": ["YJMosaic/Engine/MosaicBuilder.swift", "YJMosaic/Views/MosaicEditorView.swift"],
+          "acceptance": ["Mask file picker in editor UI", "Mask applied to MosaicPlan", "Masked cells excluded from output", "Auto-detect *Mask.png works"]
+        },
+        {
+          "id": "PORT-008",
+          "gap_ids": ["G-007"],
+          "title": "Replace inline duplicate tracking with DuplicateControlEngine",
+          "description": "MosaicBuilder should use DuplicateControlEngine.UsageTracker, parsePriorityHashtag, and forceUnusedTiles.",
+          "files": ["YJMosaic/Engine/MosaicBuilder.swift"],
+          "acceptance": ["Inline [UUID:[Int]] tracking removed", "DuplicateControlEngine.UsageTracker used", "Priority hashtags detected from filenames", "forceUnusedTiles called when useAllImages=true"]
+        },
+        {
+          "id": "PORT-009",
+          "gap_ids": ["G-039"],
+          "title": "Enable TileVariant selection during build",
+          "description": "When allowRotation/allowFlip are true, score each variant and pick the best match.",
+          "files": ["YJMosaic/Engine/MosaicBuilder.swift", "YJMosaic/Engine/TileScorer.swift"],
+          "acceptance": ["Variants evaluated when enabled in settings", "Best-matching variant stored in TilePlacement", "PSDExporter and MosaicExporter apply variant transform"]
+        }
+      ]
+    },
+    {
+      "wave": 3,
+      "name": "UI Completion",
+      "priority": "P1",
+      "description": "Complete the remaining UI views and controls.",
+      "stories": [
+        {
+          "id": "PORT-010",
+          "gap_ids": ["G-036"],
+          "title": "Build real SettingsView with all controls",
+          "description": "Wire SwiftUI Form to SettingsStore @Observable. Controls for every MosaicSettings field.",
+          "files": ["YJMosaic/Views/SettingsView.swift"],
+          "acceptance": ["Form with all settings fields", "Changes auto-save to UserDefaults", "Import/Export settings buttons work", "Reset to defaults works"]
+        },
+        {
+          "id": "PORT-011",
+          "gap_ids": ["G-030"],
+          "title": "Create About dialog",
+          "description": "SwiftUI About window with app version, build info, framework credits.",
+          "files": ["YJMosaic/Views/AboutView.swift"],
+          "acceptance": ["About window accessible from menu", "Shows version and build info", "Lists framework attributions"]
+        },
+        {
+          "id": "PORT-012",
+          "gap_ids": ["G-028"],
+          "title": "Add Social Sharing",
+          "description": "NSSharingServicePicker integration for sharing exported mosaics.",
+          "files": ["YJMosaic/Views/PreviewView.swift"],
+          "acceptance": ["Share button in toolbar/preview", "NSSharingServicePicker presents", "Can share to Mail, Messages, AirDrop"]
+        },
+        {
+          "id": "PORT-013",
+          "gap_ids": ["G-026"],
+          "title": "Add DSLR preset mode",
+          "description": "Settings preset with high-res defaults for DSLR photography.",
+          "files": ["YJMosaic/Services/SettingsStore.swift", "YJMosaic/Views/SettingsView.swift"],
+          "acceptance": ["DSLR preset selectable", "Applies high-res defaults", "Persists as named preset"]
+        }
+      ]
+    },
+    {
+      "wave": 4,
+      "name": "Web Viewer Enhancement",
+      "priority": "P2",
+      "description": "Upgrade the Leaflet.js web viewer to match the original's Zoomify format and plugin set.",
+      "stories": [
+        {
+          "id": "PORT-014",
+          "gap_ids": ["G-041", "G-022", "G-013"],
+          "title": "Implement Zoomify tile format and full plugin set",
+          "description": "Update WebMosaicExporter to generate Zoomify-compatible tiles. Bundle leaflet-search, fullscreen, easy-button plugins. Generate self-contained offline HTML.",
+          "files": ["YJMosaic/IO/WebMosaicExporter.swift"],
+          "acceptance": ["Zoomify tile layout generated", "Offline HTML with bundled JS/CSS", "Search, fullscreen, easy-button controls present", "Tile URL format matches {group}/{z}-{x}-{y}.jpg"]
+        },
+        {
+          "id": "PORT-015",
+          "gap_ids": ["G-037"],
+          "title": "Add WKWebView in-app preview",
+          "description": "Embed WKWebView in PreviewView to preview generated Leaflet.js mosaics inline.",
+          "files": ["YJMosaic/Views/PreviewView.swift"],
+          "acceptance": ["WKWebView tab in PreviewView", "Loads generated HTML after web export", "Pan/zoom works within app"]
+        }
+      ]
+    },
+    {
+      "wave": 5,
+      "name": "Resources & Polish",
+      "priority": "P2",
+      "description": "Bundle resources and add remaining quality-of-life features.",
+      "stories": [
+        {
+          "id": "PORT-016",
+          "gap_ids": ["G-020"],
+          "title": "Replace toolbar icons with SF Symbols",
+          "description": "Use native SF Symbols throughout the app instead of bitmap toolbar icons.",
+          "files": ["YJMosaic/Views/*.swift"],
+          "acceptance": ["All toolbar actions use SF Symbols", "No bitmap icon dependencies", "Consistent macOS look"]
+        },
+        {
+          "id": "PORT-017",
+          "gap_ids": ["G-023"],
+          "title": "Create credits and license files",
+          "description": "Document all Apple framework and open-source library attributions.",
+          "files": ["YJMosaic/Resources/credits.txt", "YJMosaic/Resources/license.txt"],
+          "acceptance": ["Credits file lists all dependencies", "License file documents terms", "Accessible from About dialog"]
+        },
+        {
+          "id": "PORT-018",
+          "gap_ids": ["G-024"],
+          "title": "Implement UpdateChecker",
+          "description": "URLSession-based version check against GitHub releases API.",
+          "files": ["YJMosaic/Services/UpdateChecker.swift"],
+          "acceptance": ["Checks GitHub releases for newer version", "Shows update available notification", "Non-blocking, fire-and-forget"]
+        },
+        {
+          "id": "PORT-019",
+          "gap_ids": ["G-038"],
+          "title": "Add Undo/Redo for tile swaps",
+          "description": "SwiftUI UndoManager integration for manual tile placement changes.",
+          "files": ["YJMosaic/Views/PreviewView.swift", "YJMosaic/Models/Models.swift"],
+          "acceptance": ["Cmd+Z undoes tile swap", "Cmd+Shift+Z redoes", "UndoManager tracks MosaicPlan mutations"]
+        }
+      ]
+    },
+    {
+      "wave": 6,
+      "name": "Deferred / Optional",
+      "priority": "P3",
+      "description": "Items that are nice-to-have or may not apply to YJMosaic.",
+      "stories": [
+        {
+          "id": "PORT-020",
+          "gap_ids": ["G-018"],
+          "title": "Localization (String Catalogs)",
+          "description": "Create .xcstrings from existing .mo files. Start with en, then add key languages.",
+          "files": ["YJMosaic/Resources/Localizable.xcstrings"],
+          "acceptance": ["English strings extracted", "String Catalog created", "At least 3 languages ported"]
+        },
+        {
+          "id": "PORT-021",
+          "gap_ids": ["G-019"],
+          "title": "Bundle mask templates",
+          "description": "Create or port 7 example mask PNGs and add to app bundle.",
+          "files": ["YJMosaic/Resources/MaskTemplates/"],
+          "acceptance": ["7 mask PNGs in bundle", "Selectable from mask picker UI", "Applied correctly during build"]
+        },
+        {
+          "id": "PORT-022",
+          "gap_ids": ["G-035"],
+          "title": "Metal ColorHistogram shader",
+          "description": "Optional GPU-accelerated histogram for tile collection analytics.",
+          "files": ["YJMosaic/Engine/MetalTileScorer.swift"],
+          "acceptance": ["Histogram kernel implemented", "Collection brightness distribution computed on GPU", "Used in TileCollectionView stats"]
+        }
+      ]
+    }
+  ],
+  "skipped_gaps": [
+    {"id": "G-021", "reason": "User manual — create Help Book later or use in-app onboarding"},
+    {"id": "G-027", "reason": "GigaPan integration — niche feature, WebMosaicExporter provides equivalent deep-zoom"},
+    {"id": "G-029", "reason": "Donate button — not applicable for YJMosaic (different authorship)"}
+  ]
+}

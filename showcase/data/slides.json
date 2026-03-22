@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "generated": "2026-03-11",
+  "version": "6.1.0",
+  "generated": "2026-03-17",
   "theme": {
     "background": "#0a0a0f",
     "accent": "#6366f1",
@@ -599,5 +599,140 @@
         }
       ]
     }
-  }
+  },
+  "progress": [
+    {
+      "id": "slide-1",
+      "title": "CCEM APM v6.x Progress",
+      "type": "progress",
+      "content": {
+        "headline": "Refactor-Max: Wave 2 of 4",
+        "items": [
+          {
+            "label": "Wave 1 — Static Analysis + Sub-Supervisors",
+            "status": "done",
+            "items": [
+              "Credo + Sobelow baseline",
+              "AgUiSupervisor (:rest_for_one)",
+              "IntakeSupervisor (:one_for_one)",
+              "@moduledoc (20 files)",
+              "@spec (10 priority GenServers)"
+            ]
+          },
+          {
+            "label": "Wave 2 — Tests",
+            "status": "done",
+            "items": [
+              "ActionEngine 18 tests",
+              "ChatStore 27 tests",
+              "UpmStore 31 tests",
+              "EventBus 9 tests",
+              "EventStream 12 tests",
+              "EventRouter 14 tests"
+            ]
+          },
+          {
+            "label": "Wave 2-3 — Architecture",
+            "status": "in_progress",
+            "items": [
+              "ApiController domain split",
+              "DashboardLive AgentPanel",
+              "DashboardLive PortPanel",
+              "LiveView integration tests"
+            ]
+          },
+          {
+            "label": "Wave 4 — Release",
+            "status": "planned",
+            "items": [
+              "OpenAPI v6.1.0",
+              "CHANGELOG + v6.2.0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "slide-2",
+      "title": "UPM Module Architecture",
+      "type": "architecture",
+      "content": {
+        "headline": "/upm plan → build → verify → ship",
+        "diagram": "upm-lifecycle",
+        "modules": [
+          {"name": "UPM.ProjectRegistry", "role": "ETS-backed project scan + sync"},
+          {"name": "UPM.PMIntegrationStore", "role": "Plane/Linear/Jira adapter registry"},
+          {"name": "UPM.VCSIntegrationStore", "role": "GitHub/AzureDevOps sync"},
+          {"name": "UPM.WorkItemStore", "role": "Drift detection + work item CRUD"},
+          {"name": "UPM.SyncEngine", "role": "5-min scheduled bi-directional sync"},
+          {"name": "UpmApiController", "role": "22 REST endpoints at /api/upm/*"},
+          {"name": "UpmLive", "role": "Kanban board + /upm/:id deep-link"}
+        ]
+      }
+    },
+    {
+      "id": "slide-3",
+      "title": "AG-UI Pipeline",
+      "type": "pipeline",
+      "content": {
+        "headline": "33 typed events, fully observable",
+        "stages": [
+          {"name": "HookBridge", "desc": "Translates APM lifecycle → AG-UI events (RUN_STARTED, STEP_*, TOOL_CALL_*)"},
+          {"name": "EventBus", "desc": "Wildcard subscriptions, ETS replay buffer, stats"},
+          {"name": "EventStream", "desc": "Sequence-numbered event log, PubSub broadcast, clear/filter"},
+          {"name": "EventRouter", "desc": "Routes events to AgentRegistry, FormationStore, Dashboard"},
+          {"name": "StateManager", "desc": "Per-agent versioned state, JSON Patch deltas, STATE_SNAPSHOT/DELTA"},
+          {"name": "ActivityTracker", "desc": "Activity inference from events, ACTIVITY_SNAPSHOT/DELTA"},
+          {"name": "DashboardStateSync", "desc": "Aggregated dashboard state, RFC-6902 patches, PubSub"}
+        ]
+      }
+    },
+    {
+      "id": "slide-4",
+      "title": "Formation Hierarchy",
+      "type": "hierarchy",
+      "content": {
+        "headline": "Session → Formation → Squadron → Swarm → Agent → Task",
+        "levels": [
+          {"level": "Formation", "role": "Top-level deployment unit, registered at POST /api/v2/formations"},
+          {"level": "Squadron", "role": "Wave-aligned group, tsc/compile gate after completion"},
+          {"level": "Swarm", "role": "Parallel work group within a squadron"},
+          {"level": "Agent", "role": "Leaf worker — implements one story, heartbeats every 30s"},
+          {"level": "Task", "role": "Sub-task within an agent, tracked by BackgroundTasksStore"}
+        ],
+        "telemetry": "Fire-and-forget curl to POST /api/register + POST /api/heartbeat + POST /api/upm/event"
+      }
+    },
+    {
+      "id": "slide-5",
+      "title": "Quality Gates",
+      "type": "gates",
+      "content": {
+        "headline": "mix compile --warnings-as-errors gates every wave",
+        "gates": [
+          {"name": "Credo", "desc": "Code style — 28 warnings resolved in baseline"},
+          {"name": "Sobelow", "desc": "Security scan — Config.CSP + Config.CSWH tracked"},
+          {"name": "mix compile --warnings-as-errors", "desc": "Zero-warning compile required after each wave"},
+          {"name": "ExUnit", "desc": "91 tests across action_engine, chat_store, upm_store, ag_ui"},
+          {"name": "mix test", "desc": "Full suite green before ship"}
+        ]
+      }
+    },
+    {
+      "id": "slide-6",
+      "title": "v6.2.0 Roadmap",
+      "type": "roadmap",
+      "content": {
+        "headline": "Target: v6.2.0",
+        "milestones": [
+          {"id": "US-R12", "title": "ApiController domain split", "status": "in_progress"},
+          {"id": "US-R13", "title": "DashboardLive AgentPanel component", "status": "pending"},
+          {"id": "US-R14", "title": "DashboardLive PortPanel component", "status": "pending"},
+          {"id": "US-R15", "title": "LiveView integration tests", "status": "pending"},
+          {"id": "US-R16", "title": "OpenAPI v6.1.0 spec", "status": "pending"},
+          {"id": "US-R17", "title": "CHANGELOG + v6.2.0 bump", "status": "pending"}
+        ]
+      }
+    }
+  ]
 }

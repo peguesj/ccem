@@ -1,0 +1,398 @@
+[
+  {
+    "id": "US-001",
+    "wave": 1,
+    "title": "AG-UI Protocol",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "33 typed event categories via ag_ui_ex Hex package. SSE transport, compile-time EventType constants. Full ag_ui_ex dependency \u2014 community Elixir SDK contributed to the AG-UI open protocol ecosystem."
+  },
+  {
+    "id": "US-002",
+    "wave": 1,
+    "title": "Event Router",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Central dispatch: routes AG-UI events to AgentRegistry, FormationStore, Dashboard, Metrics. Compile-time module attributes for pattern matching. Fan-out via PubSub to all subscribed LiveViews."
+  },
+  {
+    "id": "US-003",
+    "wave": 1,
+    "title": "Event Stream",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Emit and retrieve events. PubSub broadcast to all subscribers. Time-ordered ETS storage with sequence numbers. Clear/filter operations. 12 ExUnit tests covering emit, subscribe, replay, and filter paths."
+  },
+  {
+    "id": "US-004",
+    "wave": 1,
+    "title": "Hook Bridge",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Translates legacy register/heartbeat/notify into AG-UI event types (RUN_STARTED, STEP_*, TOOL_CALL_*). Zero-config backward compatibility \u2014 existing hook scripts gain AG-UI semantics without modification."
+  },
+  {
+    "id": "US-005",
+    "wave": 1,
+    "title": "State Manager",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Per-agent versioned state with JSON Patch delta emission (STATE_SNAPSHOT / STATE_DELTA). ETS-backed, microsecond reads. Supports get_state/2, put_state/3, apply_delta/3 operations."
+  },
+  {
+    "id": "US-006",
+    "wave": 2,
+    "title": "Agent Registry",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Lifecycle tracking for all agents. Explicit squadron/swarm/cluster/individual hierarchy. Fire-and-forget registration at POST /api/register. 30s heartbeat, 90s stale threshold. ETS-backed with O(1) lookups."
+  },
+  {
+    "id": "US-007",
+    "wave": 2,
+    "title": "Formation Model",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "5.0.0",
+    "description": "Hierarchical agent coordination via FormationStore GenServer. Formation \u2192 Squadron \u2192 Swarm \u2192 Agent \u2192 Task hierarchy. Persists completed formations for post-mortem. POST /api/v2/formations with deep-link support."
+  },
+  {
+    "id": "US-008",
+    "wave": 2,
+    "title": "Metrics Collector",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Per-agent, per-project token economics. 12 x 5-min buckets, full last-hour time-series. GET /api/telemetry returns started/completed/failed/active_now summary. Feeds CCEMAgent AreaMark + LineMark chart."
+  },
+  {
+    "id": "US-009",
+    "wave": 2,
+    "title": "Chat Store",
+    "category": "platform",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Scoped message persistence via ChatStore GenServer. AG-UI TEXT_MESSAGE_START/CONTENT/END event integration. PubSub real-time broadcast. 27 ExUnit tests covering create, list, scope, and clear operations."
+  },
+  {
+    "id": "US-010",
+    "wave": 3,
+    "title": "19+ LiveView Dashboards",
+    "category": "ui",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Real-time Phoenix LiveView pages: agents, formations, analytics, health, tasks, scanner, actions, skills, notifications, AG-UI events, conversations, ports, UPM Kanban, inspector chat, CCEM overview, docs, showcase. All subscribe to PubSub channels for sub-second updates."
+  },
+  {
+    "id": "US-011",
+    "wave": 3,
+    "title": "Sidebar Navigation",
+    "category": "ui",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Unified sidebar across all 19+ views. Dual-section dynamic nav: system tools and project sections. Active page highlighting with icon labels. UPM nav item injected. Dynamic header branding per section."
+  },
+  {
+    "id": "US-012",
+    "wave": 3,
+    "title": "Notification Panel",
+    "category": "ui",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Tabbed categories with toast overlays. Wave completion toasts with deep-link to formation. Read/unread tracking. APM hook support via POST /api/notify. Richer notification cards with formation context and action buttons."
+  },
+  {
+    "id": "US-013",
+    "wave": 3,
+    "title": "Health Check System",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "HealthCheckRunner with 15-second auto-refresh. Overall status badge aggregating server, APM, and service health. Displayed in sidebar and /health LiveView. Used by CCEMAgent EnvironmentMonitor for menu bar status."
+  },
+  {
+    "id": "US-014",
+    "wave": 3,
+    "title": "AG-UI Dashboard",
+    "category": "ui",
+    "status": "shipped",
+    "version": "5.1.0",
+    "description": "Live AG-UI event viewer at /ag-ui. State inspector with per-agent versioned state display. Protocol stats: event counts by type, rate per minute. SSE streaming via EventStream PubSub. Event type filter using EventType.all/0."
+  },
+  {
+    "id": "US-015",
+    "wave": 3,
+    "title": "Conversation Monitor",
+    "category": "ui",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "Real-time conversation tracking across scopes via ChatStore. Message history viewer with TEXT_MESSAGE event replay. Scoped by session, project, or formation. ActivityTracker inference drives ACTIVITY_SNAPSHOT events."
+  },
+  {
+    "id": "US-016",
+    "wave": 4,
+    "title": "CCEMAgent",
+    "category": "platform",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "Native macOS menubar companion. Swift/AppKit @Observable architecture. Telemetry AreaMark + LineMark chart (48px). Start/Stop APM via APMServerManager. APMClient v2 with configurable port + SSE. Mini-chat view and multi-server dynamic port config."
+  },
+  {
+    "id": "US-017",
+    "wave": 4,
+    "title": "Skill Health Monitor",
+    "category": "platform",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "SkillsRegistryStore GenServer with ETS health scoring cache. Three-tier health view (green/yellow/red). Audit engine via ActionEngine: fix_skill_frontmatter, complete_skill_description, add_skill_triggers, backfill_project_memory. Audit All and individual Fix buttons in /skills LiveView."
+  },
+  {
+    "id": "US-018",
+    "wave": 4,
+    "title": "Project Scanner",
+    "category": "platform",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "Auto-discovery of developer directories for projects, stacks, active ports, hooks, MCPs, CLAUDE.md sections. scan_claude_native/1 extracts session state. Configurable scan path via /scanner LiveView. 3s auto-refresh."
+  },
+  {
+    "id": "US-019",
+    "wave": 4,
+    "title": "Background Task Manager",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "BackgroundTasksStore GenServer tracks Claude Code background tasks: name, definition, invoking_process, agent_name, log_path, runtime_ms. PubSub broadcasts on status change. GET /tasks/:id/logs, POST /tasks/:id/stop. 5s auto-refresh in /tasks LiveView."
+  },
+  {
+    "id": "US-020",
+    "wave": 4,
+    "title": "Action Engine",
+    "category": "platform",
+    "status": "shipped",
+    "version": "5.3.0",
+    "description": "ActionEngine GenServer with extensible action catalog: update_hooks, add_memory_pointer, backfill_apm_config, analyze_project, discover_migrate_showcases, register_all_ports, update_port_namespace, analyze_port_assignment, smart_reassign_ports. Async via Task.start/1. Run modal in /actions LiveView."
+  },
+  {
+    "id": "US-021",
+    "wave": 5,
+    "title": "UAT Testing Panel",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "14 test cases across 6 categories exercising the live AG-UI subsystem in-browser. Tests agent registration, event routing, state management, hook bridge translation, formation tracking, and metrics collection. Results displayed per test with pass/fail and latency."
+  },
+  {
+    "id": "US-022",
+    "wave": 5,
+    "title": "Showcase Generator",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "IP-safe architecture diagrams via ShowcaseDataStore. C4 abstraction levels with redaction engine. Pure SVG diagram engine (replaced Mermaid) \u2014 WCAG AA, anime.js node-level animations. LiveView-integrated at /showcase. ShowcaseEngine memory leak fixed (global listener audit)."
+  },
+  {
+    "id": "US-023",
+    "wave": 5,
+    "title": "Cross-Platform Installer",
+    "category": "platform",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "Modular install.sh with libs: ui, detect, deps, build, hooks, service. Supports --prefix, --skip-*, --dry-run, --yes flags. User-level services only (no sudo). Service templates in installer/services/. Generates launchd plist with io.pegues.agent-j.labs reverse-DNS identifier."
+  },
+  {
+    "id": "US-024",
+    "wave": 5,
+    "title": "UPM Orchestration",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "End-to-end orchestration: /upm plan \u2192 /upm build \u2192 /upm verify \u2192 /upm ship. Formation deployment with squadron/swarm/agent hierarchy. Plane PM bidirectional sync. 22 REST endpoints at /api/upm/*. Wave-gated execution with TypeScript/compile gates. AG-UI event emission for real-time progress. CCEM APM toast notifications at every lifecycle point."
+  },
+  {
+    "id": "US-025",
+    "wave": 5,
+    "title": "OpenAPI 3.0.3 Spec",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "56 endpoints across 21 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs. Validated by integration tests. Formation, UPM, AG-UI, skills, tasks, scanner, actions, ports all documented. Used as OpenAPI-first validation gate after APM startup."
+  },
+  {
+    "id": "US-026",
+    "wave": 5,
+    "title": "Port Management",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "PortsLive intelligence dashboard with conflict visualization and utilization heatmap. ActionEngine port actions: register_all_ports, update_port_namespace, analyze_port_assignment, smart_reassign_ports. Project-scoped assignment, namespace tracking, conflict detection. REST at /api/v2/ports."
+  },
+  {
+    "id": "US-027",
+    "wave": 5,
+    "title": "Approval Gates",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "Formation-level approval workflow. POST /api/v2/approvals/request with approve/reject. Integrates with AG-UI approval event types. Wave-gate blocking until approval received. Used by UPM ship step to require human confirmation before deployment."
+  },
+  {
+    "id": "US-028",
+    "wave": 5,
+    "title": "5-Level Formation Graph",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "Full D3.js formation tree at /formation: Formation \u2192 Squadron \u2192 Swarm \u2192 Cluster \u2192 Agent, 5 nesting levels. Wave swim lanes as background bands grouped by wave_number. Agent type badges (ORCH/LEAD/SWM/CLU) in node top-right. Node color by type (indigo/sky/emerald/violet/slate). Sub-labels show story_id and work_item_title. Inspector panel with all 16 metadata fields on click."
+  },
+  {
+    "id": "US-029",
+    "wave": 5,
+    "title": "Screenshot Skill",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "/screenshot skill handles macOS U+202F narrow no-break space in HEIC filenames via Python os.listdir(). Subcommands: default (last screenshot), last N / last 1h, incremental (skip already-processed), setup (project/user scoped config), status. Auto-converts HEIC\u2192PNG via sips. Processed state persisted to screenshot-processed.json for incremental sessions."
+  },
+  {
+    "id": "US-030",
+    "wave": 5,
+    "title": "Skill Dependency Graph",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.0.0",
+    "description": "Visualized skill ecosystem for CCEM: /idea \u2192 /ralph \u2192 /upm \u2192 /formation \u2192 /deploy:agents-v2 \u2192 /live-integration-testing. /ccem-apm as telemetry hub receiving register/heartbeat/event from all agents. /showcase consuming from APM: agent count, formation tree (5 levels), UPM phase, AG-UI event stream. Data flow: prd.json \u2192 formation config \u2192 APM telemetry \u2192 showcase display."
+  },
+  {
+    "id": "US-031",
+    "wave": 6,
+    "title": "Agent Activity Log",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "6.1.0",
+    "description": "AgentActivityLog GenServer ring buffer (200 events) subscribing to lifecycle/tool/thinking/text EventBus topics. PubSub broadcast on apm:activity_log. REST at GET /api/agents/activity-log."
+  },
+  {
+    "id": "US-032",
+    "wave": 6,
+    "title": "Showcase Activity Tab",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.1.0",
+    "description": "D3.js force-directed graph showing live agent status-colored nodes with anime.js pulse rings for active agents. Collapsible 30-event action log pull-down with type badges."
+  },
+  {
+    "id": "US-033",
+    "wave": 6,
+    "title": "Showcase Feature Inspector",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.1.0",
+    "description": "Right-column contextual panel activated by clicking any feature card. Shows description, acceptance criteria checklist, related agents filtered by story_id, timing rows, status mini-timeline."
+  },
+  {
+    "id": "US-034",
+    "wave": 6,
+    "title": "Showcase Template System",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.1.0",
+    "description": "TEMPLATES registry with engine (default 3-col) and formation layouts. applyTemplate(id) dispatch switchable via showcase:template-changed AG-UI event."
+  },
+  {
+    "id": "US-035",
+    "wave": 6,
+    "title": "Project Dropdown UX",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.1.0",
+    "description": "Sectioned into Active (check-circle), Recently Active (clock, 30-day window), and collapsible Show N other toggle. categorize_projects/2 helper recomputes on config reload."
+  },
+  {
+    "id": "US-036",
+    "wave": 7,
+    "title": "UpmApiController",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "Domain controller extracted from ApiController for UPM execution tracking: upm_register, upm_agent, upm_event, upm_status. API routes delegated at /api/upm/*."
+  },
+  {
+    "id": "US-037",
+    "wave": 7,
+    "title": "FormationApiController",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "Domain controller for formation CRUD: list, get, create, update, agents via UpmStore + AgentRegistry. Routes added: /api/formations and /api/formations/{id}/agents."
+  },
+  {
+    "id": "US-038",
+    "wave": 7,
+    "title": "ShowcaseApiController",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "Domain controller for showcase data REST API: index, show, reload via ShowcaseDataStore. Routes: /api/showcase and /api/showcase/{project}/reload."
+  },
+  {
+    "id": "US-039",
+    "wave": 7,
+    "title": "AgentPanel Component",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "Functional component extracted from DashboardLive Agent Fleet section. Includes tier/status/agent_type badges and filter support. Reduces DashboardLive from 1923 to 1765 lines."
+  },
+  {
+    "id": "US-040",
+    "wave": 7,
+    "title": "PortPanel Component",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "Functional component extracted from DashboardLive Ports tab. Includes clash alerts, remediation display, project port configs, and badge helpers."
+  },
+  {
+    "id": "US-041",
+    "wave": 7,
+    "title": "LiveView Integration Tests",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.2.0",
+    "description": "14 ExUnit integration tests: 8 for DashboardLive (AgentPanel + PortPanel component integration) and 6 for ShowcaseLive (nil-session regression + mount/render coverage)."
+  },
+  {
+    "id": "US-042",
+    "wave": 8,
+    "title": "Skills WCAG 2.1 AA Compliance",
+    "category": "accessibility",
+    "status": "shipped",
+    "version": "6.4.0",
+    "description": "Full WCAG 2.1 AA compliance for /skills: skip link, ARIA landmarks (main, complementary, banner), tablist/tab/tabpanel roles, aria-live polite for search announcements, focus management."
+  },
+  {
+    "id": "US-043",
+    "wave": 8,
+    "title": "Skills Fix Wizard",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "6.4.0",
+    "description": "4-step guided Fix Wizard (:diagnose \u2192 :select \u2192 :preview \u2192 :done) replacing fire-and-forget Fix button. MapSet-backed repair type selection. Invokes ActionEngine for frontmatter, description, and trigger repairs."
+  },
+  {
+    "id": "US-044",
+    "wave": 8,
+    "title": "Skills Card Grid + Slide-in Drawer + Session Timeline + AG-UI Health",
+    "category": "ui",
+    "status": "shipped",
+    "version": "6.4.0",
+    "description": "Card grid with SVG health-ring indicator, tier badges, trigger pills. Slide-in detail drawer with keyboard focus trap. Session tab with vertical invocation timeline sorted by last_seen. AG-UI tab summary stats row (Connected/Degraded/Broken) with per-skill health dot + colored borders."
+  }
+]

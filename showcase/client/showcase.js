@@ -18,7 +18,7 @@
 
 const APM_BASE = window.CCEM_APM_BASE_URL || 'http://localhost:3032';
 const POLL_INTERVAL = 10_000;
-const VERSION = 'v5.3.1';
+const VERSION = 'v6.4.0';
 
 const WAVE_COLORS = {
   1: { hex: '#10b981', stroke: '#34d399', fill: '#10b981', text: 'text-emerald-400', bg: 'bg-emerald-500/10', ring: 'ring-emerald-500/30', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30', border: 'border-emerald-500/20', bar: 'bg-emerald-500' },
@@ -36,6 +36,16 @@ const WAVE_LABELS = {
   5: 'Integration',
 };
 
+const VERSION_META = {
+  '5.0.0': { label: 'v5.0.0', name: 'Foundation', text: 'text-amber-400', pill: 'text-amber-400 bg-amber-500/10 ring-amber-500/30', border: 'border-amber-500/20', bar: 'bg-amber-500', hex: '#f59e0b' },
+  '5.1.0': { label: 'v5.1.0', name: 'Platform',   text: 'text-blue-400',  pill: 'text-blue-400 bg-blue-500/10 ring-blue-500/30',   border: 'border-blue-500/20',  bar: 'bg-blue-500',  hex: '#3b82f6' },
+  '5.3.0': { label: 'v5.3.0', name: 'Native',     text: 'text-purple-400',pill: 'text-purple-400 bg-purple-500/10 ring-purple-500/30',border: 'border-purple-500/20',bar: 'bg-purple-500',hex: '#a855f7' },
+  '6.0.0': { label: 'v6.0.0', name: 'Intelligence',  text: 'text-emerald-400', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30',  border: 'border-emerald-500/20', bar: 'bg-emerald-500', hex: '#10b981' },
+  '6.1.0': { label: 'v6.1.0', name: 'Observability', text: 'text-cyan-400',    pill: 'text-cyan-400 bg-cyan-500/10 ring-cyan-500/30',              border: 'border-cyan-500/20',    bar: 'bg-cyan-500',    hex: '#06b6d4' },
+  '6.2.0': { label: 'v6.2.0', name: 'Architecture',  text: 'text-violet-400',  pill: 'text-violet-400 bg-violet-500/10 ring-violet-500/30',        border: 'border-violet-500/20',  bar: 'bg-violet-500',  hex: '#8b5cf6' },
+};
+const VERSION_ORDER = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0'];
+
 const STATUS_COLORS = {
   green:   { dot: 'bg-emerald-500 shadow-emerald-500/60 shadow-sm', text: 'text-emerald-400' },
   amber:   { dot: 'bg-yellow-500 shadow-yellow-500/60 shadow-sm',   text: 'text-yellow-400' },
@@ -46,40 +56,43 @@ const STATUS_COLORS = {
 // ─── Feature Data (static, roadmap status resolved from live polling) ──────────
 
 const FEATURES = [
-  // Wave 1: Foundation
-  { id: 'US-001', wave: 1, title: 'AG-UI Protocol', description: '30 typed event categories via ag_ui_ex Hex package. SSE transport, compile-time constants.', packages: [{ name: 'ag_ui_ex', stars: 'Hex', url: 'https://hex.pm/packages/ag_ui_ex' }, { name: 'AG-UI Protocol', url: 'https://docs.ag-ui.com' }] },
-  { id: 'US-002', wave: 1, title: 'Event Router', description: 'Central dispatch: routes AG-UI events to AgentRegistry, FormationStore, Dashboard, Metrics.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }, { name: 'PubSub', url: 'https://hexdocs.pm/phoenix_pubsub' }] },
-  { id: 'US-003', wave: 1, title: 'Event Stream', description: 'Emit and retrieve events. PubSub broadcast to all subscribers. Time-ordered ETS storage.', packages: [{ name: 'ETS', url: 'https://www.erlang.org/doc/man/ets.html' }] },
-  { id: 'US-004', wave: 1, title: 'Hook Bridge', description: 'Translates legacy register/heartbeat/notify into AG-UI event types. Zero-config backward compat.', packages: [{ name: 'translate_*', url: '#' }] },
-  { id: 'US-005', wave: 1, title: 'State Manager', description: 'Per-agent state with versioning. Simplified JSON Patch (add/remove/replace). ETS-backed.', packages: [{ name: 'ETS', url: 'https://www.erlang.org/doc/man/ets.html' }] },
+  // ── v5.0.0: Foundation ─────────────────────────────────────────────────────────
+  { id: 'US-001', wave: 1, version: '5.0.0', title: 'AG-UI Protocol',          description: '33 typed event categories via ag_ui_ex Hex package. SSE transport, compile-time EventType constants.', packages: [{ name: 'ag_ui_ex', stars: 'Hex', url: 'https://hex.pm/packages/ag_ui_ex' }, { name: 'AG-UI Protocol', url: 'https://docs.ag-ui.com' }] },
+  { id: 'US-002', wave: 1, version: '5.0.0', title: 'Event Router',            description: 'Central dispatch: routes AG-UI events to AgentRegistry, FormationStore, Dashboard, Metrics.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }, { name: 'PubSub', url: 'https://hexdocs.pm/phoenix_pubsub' }] },
+  { id: 'US-003', wave: 1, version: '5.0.0', title: 'Event Stream',            description: 'Emit and retrieve events. PubSub broadcast to all subscribers. Time-ordered ETS storage. 12 ExUnit tests.', packages: [{ name: 'ETS', url: 'https://www.erlang.org/doc/man/ets.html' }] },
+  { id: 'US-004', wave: 1, version: '5.0.0', title: 'Hook Bridge',             description: 'Translates legacy register/heartbeat/notify into AG-UI event types. Zero-config backward compat.', packages: [{ name: 'translate_*', url: '#' }] },
+  { id: 'US-005', wave: 1, version: '5.0.0', title: 'State Manager',           description: 'Per-agent versioned state with JSON Patch delta emission. ETS-backed, microsecond reads.', packages: [{ name: 'ETS', url: 'https://www.erlang.org/doc/man/ets.html' }] },
+  { id: 'US-006', wave: 2, version: '5.0.0', title: 'Agent Registry',          description: 'Lifecycle tracking for all agents. Squadron/swarm/cluster hierarchy. 30s heartbeat, 90s stale threshold.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
+  { id: 'US-007', wave: 2, version: '5.0.0', title: 'Formation Model',         description: 'Hierarchical agent coordination via FormationStore. Formation → Squadron → Swarm → Agent. POST /api/v2/formations.', packages: [{ name: 'FormationStore', url: '#' }] },
 
-  // Wave 2: Core
-  { id: 'US-006', wave: 2, title: 'Agent Registry', description: 'Lifecycle tracking for all agents. Squadron/swarm/cluster hierarchy. Fire-and-forget registration.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
-  { id: 'US-007', wave: 2, title: 'Formation Model', description: 'Hierarchical agent coordination. Squadrons > Swarms > Clusters > Agents. UpmStore + FormationStore.', packages: [{ name: 'FormationStore', url: '#' }] },
-  { id: 'US-008', wave: 2, title: 'Metrics Collector', description: 'Per-agent, per-project token economics. 12 x 5-min buckets, time-series.', packages: [{ name: 'Telemetry', url: 'https://hexdocs.pm/telemetry' }] },
-  { id: 'US-009', wave: 2, title: 'Chat Store', description: 'Scoped message persistence. AG-UI TEXT_MESSAGE integration. PubSub real-time.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
+  // ── v5.1.0: Platform ───────────────────────────────────────────────────────────
+  { id: 'US-008', wave: 2, version: '5.1.0', title: 'Metrics Collector',       description: 'Per-agent, per-project token economics. 12 x 5-min buckets, full last-hour time-series. GET /api/telemetry.', packages: [{ name: 'Telemetry', url: 'https://hexdocs.pm/telemetry' }] },
+  { id: 'US-009', wave: 2, version: '5.1.0', title: 'Chat Store',              description: 'Scoped message persistence. AG-UI TEXT_MESSAGE event integration. PubSub real-time. 27 ExUnit tests.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
+  { id: 'US-010', wave: 3, version: '5.1.0', title: '19+ LiveView Dashboards', description: 'Real-time Phoenix LiveView pages: agents, formations, analytics, health, tasks, scanner, actions, skills, notifications, AG-UI, conversations, ports, UPM Kanban.', packages: [{ name: 'Phoenix LiveView', stars: '6.2k', url: 'https://hexdocs.pm/phoenix_live_view' }, { name: 'daisyUI', stars: '36k', url: 'https://daisyui.com' }] },
+  { id: 'US-011', wave: 3, version: '5.1.0', title: 'Sidebar Navigation',      description: 'Unified sidebar across all 19+ views. Dual-section dynamic nav, active page highlighting, icon labels.', packages: [{ name: 'Phoenix Components', url: 'https://hexdocs.pm/phoenix/components.html' }] },
+  { id: 'US-012', wave: 3, version: '5.1.0', title: 'Notification Panel',      description: 'Tabbed categories with toast overlays. Wave completion toasts. Read/unread tracking. POST /api/notify.', packages: [{ name: 'PubSub', url: 'https://hexdocs.pm/phoenix_pubsub' }] },
+  { id: 'US-013', wave: 3, version: '5.1.0', title: 'Health Check System',     description: 'HealthCheckRunner with 15-second auto-refresh. Overall status badge aggregating server, APM, and service health.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
+  { id: 'US-014', wave: 3, version: '5.1.0', title: 'AG-UI Dashboard',         description: 'Live AG-UI event viewer at /ag-ui. State inspector. Protocol stats. SSE streaming via EventStream PubSub.', packages: [{ name: 'AgUiLive', url: '#' }, { name: 'AG-UI SSE', url: 'https://docs.ag-ui.com/concepts/streaming' }] },
+  { id: 'US-015', wave: 3, version: '5.1.0', title: 'Conversation Monitor',    description: 'Real-time conversation tracking across scopes via ChatStore. Message history viewer. ActivityTracker inference.', packages: [{ name: 'ChatStore', url: '#' }] },
 
-  // Wave 3: Dashboard
-  { id: 'US-010', wave: 3, title: '19+ LiveView Dashboards', description: 'Real-time Phoenix LiveView pages: agents, formations, analytics, health, tasks, scanner, actions, skills, notifications.', packages: [{ name: 'Phoenix LiveView', stars: '6.2k', url: 'https://hexdocs.pm/phoenix_live_view' }, { name: 'daisyUI', stars: '36k', url: 'https://daisyui.com' }] },
-  { id: 'US-011', wave: 3, title: 'Sidebar Navigation', description: 'Unified sidebar across all 19 views. Active page highlighting, icon labels.', packages: [{ name: 'Phoenix Components', url: 'https://hexdocs.pm/phoenix/components.html' }] },
-  { id: 'US-012', wave: 3, title: 'Notification Panel', description: 'Tabbed categories: All, Agent, Formation, UPM, Skill. Toast overlays. Read/unread.', packages: [{ name: 'PubSub', url: 'https://hexdocs.pm/phoenix_pubsub' }] },
-  { id: 'US-013', wave: 3, title: 'Health Check System', description: 'HealthCheckRunner with 15-second refresh. Overall status badge. Manual run button.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }] },
-  { id: 'US-014', wave: 3, title: 'AG-UI Dashboard', description: 'Live AG-UI event viewer. State inspector. Protocol stats. SSE streaming.', packages: [{ name: 'AgUiLive', url: '#' }, { name: 'AG-UI SSE', url: 'https://docs.ag-ui.com/concepts/streaming' }] },
-  { id: 'US-015', wave: 3, title: 'Conversation Monitor', description: 'Real-time conversation tracking across scopes. Message history viewer.', packages: [{ name: 'ChatStore', url: '#' }] },
+  // ── v5.3.0: Native ─────────────────────────────────────────────────────────────
+  { id: 'US-016', wave: 4, version: '5.3.0', title: 'CCEMAgent',               description: 'Native macOS menubar companion. Swift/AppKit @Observable. Telemetry AreaMark + LineMark chart. Start/Stop APM. Mini-chat.', packages: [{ name: 'Swift', url: 'https://swift.org' }, { name: 'AppKit', url: 'https://developer.apple.com/documentation/appkit' }] },
+  { id: 'US-017', wave: 4, version: '5.3.0', title: 'Skill Health Monitor',    description: 'SkillsRegistryStore GenServer with ETS health scoring. Three-tier health view. Audit engine via ActionEngine.', packages: [{ name: 'SkillsLive', url: '#' }] },
+  { id: 'US-018', wave: 4, version: '5.3.0', title: 'Project Scanner',         description: 'Auto-discovery of developer directories: projects, stacks, active ports, hooks, MCPs, CLAUDE.md sections.', packages: [{ name: 'ProjectScanner', url: '#' }] },
+  { id: 'US-019', wave: 4, version: '5.3.0', title: 'Background Task Manager', description: 'BackgroundTasksStore GenServer tracks Claude Code background tasks: name, definition, log_path, runtime_ms. PubSub.', packages: [{ name: 'BackgroundTasksStore', url: '#' }] },
+  { id: 'US-020', wave: 4, version: '5.3.0', title: 'Action Engine',           description: 'ActionEngine GenServer with extensible action catalog. Async via Task.start/1. Run modal in /actions LiveView.', packages: [{ name: 'ActionEngine', url: '#' }] },
 
-  // Wave 4: Tools
-  { id: 'US-016', wave: 4, title: 'CCEMAgent', description: 'Native macOS menubar companion. Swift/AppKit. Telemetry charts, task management, start/stop APM.', packages: [{ name: 'Swift', url: 'https://swift.org' }, { name: 'AppKit', url: 'https://developer.apple.com/documentation/appkit' }] },
-  { id: 'US-017', wave: 4, title: 'Skill Health Monitor', description: 'SkillsRegistryStore with health scoring. Audit engine. Fix frontmatter/triggers.', packages: [{ name: 'SkillsLive', url: '#' }] },
-  { id: 'US-018', wave: 4, title: 'Project Scanner', description: 'Auto-discovery of projects, stacks, ports, hooks, MCPs, CLAUDE.md sections.', packages: [{ name: 'ProjectScanner', url: '#' }] },
-  { id: 'US-019', wave: 4, title: 'Background Task Manager', description: 'Track Claude Code background tasks. Logs, stop, delete. 5s auto-refresh.', packages: [{ name: 'BackgroundTasksStore', url: '#' }] },
-  { id: 'US-020', wave: 4, title: 'Action Engine', description: '4-action catalog: update_hooks, add_memory_pointer, backfill_apm_config, analyze_project.', packages: [{ name: 'ActionEngine', url: '#' }] },
-
-  // Wave 5: Integration
-  { id: 'US-021', wave: 5, title: 'UAT Testing Panel', description: '14 test cases across 6 categories. Live in-browser AG-UI subsystem exerciser.', packages: [{ name: 'UatLive', url: '#' }] },
-  { id: 'US-022', wave: 5, title: 'Showcase Generator', description: 'IP-safe architecture diagrams. C4 abstraction. GIMME-style live dashboard with roadmap.', packages: [{ name: 'SVG', url: '#' }, { name: 'anime.js', url: 'https://animejs.com' }] },
-  { id: 'US-023', wave: 5, title: 'Cross-Platform Installer', description: 'Modular install.sh with libs: ui, detect, deps, build, hooks, service.', packages: [{ name: 'bash', url: '#' }] },
-  { id: 'US-024', wave: 5, title: 'UPM Orchestration', description: 'End-to-end: plan > build > verify > ship. Formation deployment. Plane PM sync.', packages: [{ name: 'UPM', url: '#' }, { name: 'Plane PM', url: 'https://plane.so' }] },
-  { id: 'US-025', wave: 5, title: 'OpenAPI 3.0.3 Spec', description: '56 endpoints across 21 categories. Scalar interactive docs at /api/docs.', packages: [{ name: 'OpenAPI 3.0.3', url: 'https://swagger.io/specification/' }, { name: 'Scalar', url: 'https://scalar.com' }] },
+  // ── v6.0.0: Intelligence ───────────────────────────────────────────────────────
+  { id: 'US-021', wave: 5, version: '6.0.0', title: 'UAT Testing Panel',       description: '14 test cases across 6 categories exercising the live AG-UI subsystem in-browser. Results per test with pass/fail and latency.', packages: [{ name: 'UatLive', url: '#' }] },
+  { id: 'US-022', wave: 5, version: '6.0.0', title: 'Showcase Generator',      description: 'IP-safe architecture diagrams via ShowcaseDataStore. C4 abstraction. Pure SVG engine, WCAG AA, anime.js animations.', packages: [{ name: 'SVG', url: '#' }, { name: 'anime.js', url: 'https://animejs.com' }] },
+  { id: 'US-023', wave: 5, version: '6.0.0', title: 'Cross-Platform Installer',description: 'Modular install.sh with libs: ui, detect, deps, build, hooks, service. --prefix, --dry-run, --yes flags. User-level services.', packages: [{ name: 'bash', url: '#' }] },
+  { id: 'US-024', wave: 5, version: '6.0.0', title: 'UPM Orchestration',       description: 'End-to-end: /upm plan → build → verify → ship. Formation deployment with squadron/swarm hierarchy. 22 REST endpoints.', packages: [{ name: 'UPM', url: '#' }, { name: 'Plane PM', url: 'https://plane.so' }] },
+  { id: 'US-025', wave: 5, version: '6.0.0', title: 'OpenAPI 3.0.3 Spec',      description: '56 endpoints across 21 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs.', packages: [{ name: 'OpenAPI 3.0.3', url: 'https://swagger.io/specification/' }, { name: 'Scalar', url: 'https://scalar.com' }] },
+  { id: 'US-026', wave: 5, version: '6.0.0', title: 'Port Management',         description: 'PortsLive intelligence dashboard with conflict visualization and utilization heatmap. ActionEngine port actions. REST at /api/v2/ports.', packages: [{ name: 'PortRegistryStore', url: '#' }] },
+  { id: 'US-027', wave: 5, version: '6.0.0', title: 'Approval Gates',          description: 'Formation-level approval workflow. POST /api/v2/approvals/request. Wave-gate blocking until approval received.', packages: [{ name: 'FormationStore', url: '#' }] },
+  { id: 'US-028', wave: 5, version: '6.0.0', title: '5-Level Formation Graph', description: 'Full D3.js formation tree at /formation: Formation → Squadron → Swarm → Cluster → Agent. Wave swim lanes. Inspector panel with 16 metadata fields.', packages: [{ name: 'D3.js', stars: 'v7', url: 'https://d3js.org' }] },
+  { id: 'US-029', wave: 5, version: '6.0.0', title: 'Screenshot Skill',        description: '/screenshot skill handles macOS HEIC filenames. Subcommands: default, last N, incremental, setup, status. Auto-converts HEIC→PNG via sips.', packages: [{ name: 'sips', url: '#' }] },
+  { id: 'US-030', wave: 5, version: '6.0.0', title: 'Skill Dependency Graph',  description: 'Visualized skill ecosystem for CCEM: /idea → /ralph → /upm → /formation → /deploy:agents-v2 → /live-integration-testing. Skills toggle in APM dep graph.', packages: [{ name: 'D3.js', stars: 'v7', url: 'https://d3js.org' }] },
 ];
 
 // ─── State ──────────────────────────────────────────────────────────────────────
@@ -321,7 +334,52 @@ function renderRoadmapModal() {
               <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-700" style="width:${pct}%"></div>
             </div>
           </div>
-          <div class="px-5 py-4 overflow-y-auto max-h-[70vh]">${waveGroups}</div>
+          <div class="px-5 py-4 overflow-y-auto max-h-[70vh]">
+            ${VERSION_ORDER.map(ver => {
+              const verStories = byWave ? FEATURES.filter(f => f.version === ver) : [];
+              const vm = VERSION_META[ver];
+              const verDone = verStories.filter(s => resolveStatus(s.id, s.wave) === 'done').length;
+              const allVerDone = verDone === verStories.length;
+              const verWaves = [...new Set(verStories.map(f => f.wave))].sort((a,b) => a - b);
+              if (verStories.length === 0) return '';
+              const verPct = Math.round((verDone / verStories.length) * 100);
+              const versionBanner = `
+                <div class="flex items-center gap-2 mb-3 pb-1.5 border-b ${vm.border}">
+                  <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${vm.pill}">${vm.label}</span>
+                  <span class="text-[11px] font-semibold ${vm.text}">${vm.name}</span>
+                  <div class="flex-1 mx-1 h-0.5 rounded-full bg-zinc-800 overflow-hidden">
+                    <div class="h-full rounded-full ${vm.bar} transition-all" style="width:${verPct}%"></div>
+                  </div>
+                  <span class="text-[9px] font-mono text-zinc-600">${verDone}/${verStories.length}</span>
+                  ${allVerDone ? `<span class="text-[8px] font-mono font-bold px-1 py-0.5 rounded ring-1 ${vm.pill}">SHIPPED</span>` : ''}
+                </div>
+              `;
+              const waveGroupsHtml = verWaves.map(w => {
+                const stories = verStories.filter(s => s.wave === w);
+                const c = WAVE_COLORS[w] || WAVE_COLORS[1];
+                const allDone = stories.every(s => resolveStatus(s.id, w) === 'done');
+                const doneCt = stories.filter(s => resolveStatus(s.id, w) === 'done').length;
+                const storyRows = stories.map((s, i) => {
+                  const passes = resolveStatus(s.id, w) === 'done';
+                  return `<div class="flex items-start gap-2">${storyDot(passes, w, i)}<div class="flex items-baseline gap-1.5 min-w-0"><span class="text-[10px] font-mono text-zinc-600 flex-shrink-0">${s.id}</span><span class="text-[11px] truncate ${passes ? 'text-zinc-300 line-through decoration-zinc-600' : 'text-zinc-400'}">${s.title}</span></div></div>`;
+                }).join('');
+                return `
+                  <div class="flex gap-4 mb-1">
+                    <div class="flex flex-col items-center gap-0 flex-shrink-0">${waveIcon(w, allDone)}</div>
+                    <div class="flex-1 pb-4">
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="text-[11px] font-bold font-mono ${c.text}">WAVE ${w}</span>
+                        <span class="text-[10px] font-mono text-zinc-600">${doneCt}/${stories.length}</span>
+                        ${allDone ? `<span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${c.text} ${c.bg}" style="border-color:${c.stroke}40">SHIPPED</span>` : ''}
+                      </div>
+                      <div class="space-y-1.5">${storyRows}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+              return `<div class="mb-4">${versionBanner}${waveGroupsHtml}</div>`;
+            }).join('')}
+          </div>
           <div class="px-5 py-2.5 border-t border-zinc-800/60 flex items-center justify-between">
             <span class="text-[9px] font-mono text-zinc-700">main</span>
             <span class="text-[9px] font-mono text-zinc-700">Live &middot; polls every 10s</span>
@@ -402,65 +460,108 @@ function renderFeatureCards() {
     </div>
   `;
 
+  // Helpers for rendering a card
+  function cardHtml(f) {
+    const c = WAVE_COLORS[f.wave];
+    const vm = VERSION_META[f.version] || {};
+    return `
+      <div class="rounded-lg border ${f.liveStatus === 'done' ? c.border : 'border-zinc-800'} bg-zinc-900/60 p-3 space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ring-1 ${c.pill}">W${f.wave}</span>
+          <span class="text-[9px] font-mono text-zinc-600">${f.id}</span>
+          ${vm.pill ? `<span class="text-[8px] font-mono px-1.5 py-0.5 rounded ring-1 ${vm.pill}">${vm.label}</span>` : ''}
+          <span class="ml-auto text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${statusColor[f.liveStatus]}">${statusLabel[f.liveStatus]}</span>
+        </div>
+        <h3 class="text-[11px] font-semibold text-zinc-200">${f.title}</h3>
+        <p class="text-[10px] text-zinc-500 leading-relaxed">${f.description}</p>
+        ${f.packages.length > 0 ? `<div class="flex flex-wrap gap-1">${f.packages.map(pkg => `<a href="${pkg.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:text-zinc-200 transition">${pkg.name}${pkg.stars ? ` <span class="text-zinc-600">${pkg.stars}</span>` : ''}</a>`).join('')}</div>` : ''}
+      </div>
+    `;
+  }
+
+  // Helpers for rendering a wave accordion row (hierarchy view)
+  function storyRowHtml(f) {
+    const dotColor = statusColor[f.liveStatus].split(' ')[0];
+    return `
+      <div class="w-full flex items-start gap-2 py-1 px-1.5 rounded hover:bg-zinc-800/50 transition text-left">
+        <span class="flex-shrink-0 text-[9px] font-mono ${dotColor} mt-0.5">${statusDot[f.liveStatus]}</span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-baseline gap-1.5 flex-wrap">
+            <span class="text-[9px] font-mono text-zinc-600">${f.id}</span>
+            <span class="text-[11px] font-medium ${f.liveStatus === 'done' ? 'text-zinc-400 line-through decoration-zinc-600' : 'text-zinc-300'} leading-tight">${f.title}</span>
+          </div>
+        </div>
+        <span class="flex-shrink-0 text-[8px] font-mono px-1 py-0.5 rounded ring-1 ${statusColor[f.liveStatus]} ml-1">${statusLabel[f.liveStatus]}</span>
+      </div>
+    `;
+  }
+
+  function waveAccordionHtml(w, wFeatures) {
+    const c = WAVE_COLORS[w];
+    const doneCt = wFeatures.filter(f => f.liveStatus === 'done').length;
+    const allDone = doneCt === wFeatures.length;
+    return `
+      <div class="rounded-lg border border-zinc-800/60 bg-zinc-900/30 overflow-hidden">
+        <div class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-800/40 transition text-left cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+          <span class="text-zinc-600"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L7.5 5.5L3.5 8.5"/></svg></span>
+          <span class="text-[10px] font-bold ${c.text}">W${w}</span>
+          <span class="text-[10px] font-medium text-zinc-400">${WAVE_LABELS[w]}</span>
+          <span class="ml-auto text-[9px] font-mono text-zinc-600">${doneCt}/${wFeatures.length}</span>
+          ${allDone ? `<span class="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${c.pill}">SHIPPED</span>` : ''}
+        </div>
+        <div class="px-2 pb-2 space-y-0.5 border-t border-zinc-800/60">${wFeatures.map(storyRowHtml).join('')}</div>
+      </div>
+    `;
+  }
+
   // Content
   if (filtered.length === 0) {
     html += '<p class="text-[10px] font-mono text-zinc-700 text-center py-8">No stories match the current filters.</p>';
-  } else if (viewMode === 'card') {
-    html += '<div class="space-y-2.5">';
-    filtered.forEach(f => {
-      const c = WAVE_COLORS[f.wave];
-      html += `
-        <div class="rounded-lg border ${f.liveStatus === 'done' ? c.border : 'border-zinc-800'} bg-zinc-900/60 p-3 space-y-2">
-          <div class="flex items-center gap-2">
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ring-1 ${c.pill}">W${f.wave}</span>
-            <span class="text-[9px] font-mono text-zinc-600">${f.id}</span>
-            <span class="ml-auto text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${statusColor[f.liveStatus]}">${statusLabel[f.liveStatus]}</span>
-          </div>
-          <h3 class="text-[11px] font-semibold text-zinc-200">${f.title}</h3>
-          <p class="text-[10px] text-zinc-500 leading-relaxed">${f.description}</p>
-          ${f.packages.length > 0 ? `<div class="flex flex-wrap gap-1">${f.packages.map(pkg => `<a href="${pkg.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:text-zinc-200 transition">${pkg.name}${pkg.stars ? ` <span class="text-zinc-600">${pkg.stars}</span>` : ''}</a>`).join('')}</div>` : ''}
-        </div>
-      `;
-    });
-    html += '</div>';
+  } else if (waveFilter !== null) {
+    // Single-wave view — no version banner needed
+    if (viewMode === 'card') {
+      html += `<div class="space-y-2.5">${filtered.map(cardHtml).join('')}</div>`;
+    } else {
+      html += `<div class="space-y-2">${waveAccordionHtml(waveFilter, filtered)}</div>`;
+    }
   } else {
-    // Hierarchy view
-    html += '<div class="space-y-2">';
-    waves.filter(w => waveFilter === null || w === waveFilter).forEach(w => {
-      const wFeatures = filtered.filter(f => f.wave === w);
-      if (wFeatures.length === 0) return;
-      const c = WAVE_COLORS[w];
-      const doneCt = wFeatures.filter(f => f.liveStatus === 'done').length;
-      const allDone = doneCt === wFeatures.length;
+    // All waves — group by version with visual separators
+    html += '<div class="space-y-5">';
+    VERSION_ORDER.forEach(ver => {
+      const verFeatures = filtered.filter(f => f.version === ver);
+      if (verFeatures.length === 0) return;
+      const vm = VERSION_META[ver];
+      const verDone = verFeatures.filter(f => f.liveStatus === 'done').length;
+      const allDone = verDone === verFeatures.length;
+      const pct = Math.round((verDone / verFeatures.length) * 100);
 
-      const storyRows = wFeatures.map(f => {
-        const dotColor = statusColor[f.liveStatus].split(' ')[0];
-        return `
-          <div class="w-full flex items-start gap-2 py-1 px-1.5 rounded hover:bg-zinc-800/50 transition text-left">
-            <span class="flex-shrink-0 text-[9px] font-mono ${dotColor} mt-0.5">${statusDot[f.liveStatus]}</span>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-baseline gap-1.5 flex-wrap">
-                <span class="text-[9px] font-mono text-zinc-600">${f.id}</span>
-                <span class="text-[11px] font-medium ${f.liveStatus === 'done' ? 'text-zinc-400 line-through decoration-zinc-600' : 'text-zinc-300'} leading-tight">${f.title}</span>
-              </div>
-            </div>
-            <span class="flex-shrink-0 text-[8px] font-mono px-1 py-0.5 rounded ring-1 ${statusColor[f.liveStatus]} ml-1">${statusLabel[f.liveStatus]}</span>
-          </div>
-        `;
-      }).join('');
-
+      // Version banner
       html += `
-        <div class="rounded-lg border border-zinc-800/60 bg-zinc-900/30 overflow-hidden">
-          <div class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-800/40 transition text-left cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
-            <span class="text-zinc-600"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L7.5 5.5L3.5 8.5"/></svg></span>
-            <span class="text-[10px] font-bold ${c.text}">W${w}</span>
-            <span class="text-[10px] font-medium text-zinc-400">${WAVE_LABELS[w]}</span>
-            <span class="ml-auto text-[9px] font-mono text-zinc-600">${doneCt}/${wFeatures.length}</span>
-            ${allDone ? `<span class="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${c.pill}">SHIPPED</span>` : ''}
+        <div>
+          <div class="flex items-center gap-2.5 mb-2.5 pb-2 border-b ${vm.border}">
+            <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded ring-1 ${vm.pill}">${vm.label}</span>
+            <span class="text-[12px] font-semibold ${vm.text}">${vm.name}</span>
+            <div class="flex-1 mx-2 h-1 rounded-full bg-zinc-800 overflow-hidden">
+              <div class="h-full rounded-full ${vm.bar} transition-all duration-500" style="width:${pct}%"></div>
+            </div>
+            <span class="text-[9px] font-mono text-zinc-600">${verDone}/${verFeatures.length}</span>
+            ${allDone ? `<span class="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${vm.pill}">SHIPPED</span>` : ''}
           </div>
-          <div class="px-2 pb-2 space-y-0.5 border-t border-zinc-800/60">${storyRows}</div>
-        </div>
       `;
+
+      if (viewMode === 'card') {
+        html += `<div class="space-y-2.5">${verFeatures.map(cardHtml).join('')}</div>`;
+      } else {
+        const verWaves = [...new Set(verFeatures.map(f => f.wave))].sort((a, b) => a - b);
+        html += '<div class="space-y-2">';
+        verWaves.forEach(w => {
+          const wFeatures = verFeatures.filter(f => f.wave === w);
+          if (wFeatures.length > 0) html += waveAccordionHtml(w, wFeatures);
+        });
+        html += '</div>';
+      }
+
+      html += '</div>'; // end version group
     });
     html += '</div>';
   }

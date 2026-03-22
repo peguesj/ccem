@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v5.3.0
+## Current Version: v6.2.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -293,6 +293,82 @@ automatically from user-scope settings.json.
 - [x] **CP-97**: v5.3.0 release — CHANGELOG, version bump, docs (US-011)
 - After Wave 4: `mix compile --warnings-as-errors` ✓ PASS | 13 tests, 0 failures
 
+## Implementation Checkpoints — ralph/ccem-v6-0-0
+
+### Wave 1: Performance + Foundation (Independent — 5 parallel)
+- [x] **CP-98**: Fix WebSocket long-poll fallback causing 5-7s latency (US-001) [CCEM-169]
+- [x] **CP-99**: Code-split app.js bundle — D3 lazy per route, mermaid on /docs (US-002) [CCEM-170]
+- [x] **CP-100**: Scope showcase-styles.css to /showcase routes only (US-003) [CCEM-171]
+- [x] **CP-101**: Dependency graph redesign — agentic hierarchy (Session→Formation→Squadron→Swarm→Agent→Task) (US-004) [CCEM-172]
+- [x] **CP-102**: ShowcaseDataStore CCEM project path resolution (US-005) [CCEM-173]
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: Port Intelligence + CCEM UI (depends on Wave 1)
+- [x] **CP-103**: ActionEngine port actions: register_all_ports + update_port_namespace (US-006) [CCEM-179]
+- [x] **CP-104**: ActionEngine port actions: analyze_port_assignment + smart_reassign_ports (US-007) [CCEM-180]
+- [x] **CP-105**: PortsLive intelligence dashboard — conflict viz + utilization heatmap (US-008) [CCEM-181]
+- [x] **CP-106**: CCEM UI sidebar transformation — dual-section dynamic nav (US-009) [CCEM-182]
+- [x] **CP-107**: CCEM UI dynamic header branding + /ccem overview route (US-010) [CCEM-183]
+- [x] **CP-108**: Skills audit + update: ccem-apm, ccem, upm skill files (US-011) [CCEM-184]
+- [x] **CP-109**: Memory leak validation: ShowcaseEngine global listener audit (US-012) [CCEM-185]
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: Docs + Release (depends on Wave 2)
+- [x] **CP-110**: Update /docs LiveView: showcase + port management + CCEM UI sections (US-013) [CCEM-186]
+- [x] **CP-111**: Add @moduledoc/@doc/@spec to all v6.0.0 new modules (US-014) [CCEM-187]
+- [x] **CP-112**: Update OpenAPI 3.0.3 spec for v6.0.0 new endpoints (US-015) [CCEM-188]
+- [x] **CP-113**: v6.0.0 release — mix.exs bump to 6.0.0, CHANGELOG, CCEMAgent rebuild (US-016) [CCEM-189]
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+### PM Squadron (parallel to all waves)
+- [x] **CP-114**: Plane backlog audit — close resolved issues, version/commit report (US-017) [CCEM-190]
+- [x] **CP-115**: Create Plane issues CCEM-169 through CCEM-189 for v6.0.0 feature set (US-018) [CCEM-191]
+- [x] **CP-116**: Board state verification + drift sync (US-019) [CCEM-192]
+
+### Orchestrator
+- [x] **CP-117**: Formation deployment — fmt-ccem-v6-20260316 — all waves complete (US-020) [CCEM-193]
+
+## Implementation Checkpoints — ralph/ccem-v6-1-0
+
+### Wave 1: Activity + Inspector (Independent)
+- [x] **CP-118**: AgentActivityLog GenServer — ring buffer 200 events, lifecycle/tool/thinking/text topics, PubSub broadcast, GET /api/agents/activity-log (US-031)
+- [x] **CP-119**: ShowcaseLive activity_log assign + handle_info({:activity_log_entry}) + showcase:activity push_event (US-032a)
+- [x] **CP-120**: ShowcaseEngine Activity tab — D3.js force-directed graph, pulse rings for active agents, 30-event pull-down log (US-032b)
+- [x] **CP-121**: Showcase Feature Inspector — right-column panel, acceptance criteria checklist, related agents, status mini-timeline (US-033)
+- [x] **CP-122**: Showcase Template System — TEMPLATES registry, engine/formation layouts, applyTemplate dispatch, showcase:template-changed event (US-034)
+- [x] **CP-123**: Project Dropdown UX — categorize_projects/2 helper, Active/Recently Active/Other sections (US-035)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+## Implementation Checkpoints — ralph/ccem-v6-2-0
+
+### Wave 1: Controller Extraction + Component Decomposition (Independent)
+- [x] **CP-124**: UpmApiController — domain controller extracted from ApiController for UPM execution tracking (US-036)
+- [x] **CP-125**: FormationApiController — domain controller for formation CRUD: list, get, create, update, agents (US-037)
+- [x] **CP-126**: ShowcaseApiController — domain controller for showcase data REST API: index, show, reload (US-038)
+- [x] **CP-127**: AgentPanel Component — extracted from DashboardLive Agent Fleet section, tier/status/type badges, filter support (US-039)
+- [x] **CP-128**: PortPanel Component — extracted from DashboardLive Ports tab, clash alerts, remediation display, project port configs (US-040)
+- [x] **CP-129**: LiveView Integration Tests — 14 ExUnit tests: 8 DashboardLive + 6 ShowcaseLive (US-041)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+## Implementation Checkpoints — ralph/ccem-usage-management
+
+### Wave 1: Backend + Hooks (parallel)
+- [x] **CP-118**: ClaudeUsageStore GenServer — ETS token/model tracking + PubSub (US-042) [CCEM-226]
+- [x] **CP-119**: UsageController REST API — 5 endpoints at /api/usage/* (US-043) [CCEM-227]
+- [x] **CP-120**: UsageLive LiveView — /usage dashboard with model breakdown + effort badges (US-044) [CCEM-228]
+- [x] **CP-121**: Claude Code Hooks — PostToolUse usage recorder + PreToolUse threshold checker (US-045) [CCEM-229]
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS (pre-existing beam-reload warnings excluded)
+
+### Wave 2: Integration (parallel)
+- [x] **CP-122**: CCEM APM Skill + usage_constraints.md memory file (US-046) [CCEM-230]
+- [x] **CP-123**: Plane PM — CCEM-226 through CCEM-230 created + set to Done
+- [x] **CP-124**: CCEMAgent — UsageModels.swift, fetchUsageSummary(), usageSection in MenuBarView
+- After Wave 2: `swift build -c release` ✓ PASS
+
+### Wave 3: Release
+- [x] **CP-125**: v6.3.0 — CHANGELOG, priv/docs/changelog.md, api-reference.md, mix.exs bump (US-016)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
 ## CCEM APM Integration
 
 - **APM Dashboard**: http://localhost:3032
@@ -314,3 +390,23 @@ Never include "Generated with Claude Code", "Co-Authored-By: Claude", or any AI/
 - Any externally submitted content (GitHub, GitLab, etc.)
 
 This is a hard rule with no exceptions.
+
+## Implementation Checkpoints — ralph/ccem-skills-ux-v640
+
+### Wave 1: Foundation (4 parallel agents)
+- [x] **CP-130**: WCAG AA infrastructure — skip links, ARIA landmarks, keyboard nav, focus-visible, contrast (US-001) [CCEM-231]
+- [x] **CP-131**: Skill card grid — health ring SVG, collapsible tier groups, responsive 3/2/1-col (US-002) [CCEM-232]
+- [x] **CP-132**: Skill detail slide-in drawer — 5-dim health bars, frontmatter preview, Escape-dismiss (US-003) [CCEM-233]
+- [x] **CP-133**: Search + filter bar — debounced search, tier/methodology/source dropdowns, empty state (US-004) [CCEM-234]
+- After Wave 1: `mix compile --warnings-as-errors` PASS
+
+### Wave 2: Fix Wizard + Redesigns (depends on Wave 1)
+- [x] **CP-134**: Guided Fix Wizard — 4-step Diagnose/Preview/Apply/Verify in drawer (US-005) [CCEM-235]
+- [x] **CP-135**: Session tab redesign — horizontal invocation timeline, remove co-occurrence matrix (US-006) [CCEM-236]
+- [x] **CP-136**: AG-UI tab improvements — hook health cards, guided repair wizard (US-007) [CCEM-237]
+- [x] **CP-137**: skills.js hook — keyboard shortcuts (/ arrow Enter Escape), CSS slide transition (US-008) [CCEM-238]
+- After Wave 2: `mix compile --warnings-as-errors` PASS
+
+### Wave 3: Release (depends on Wave 2)
+- [x] **CP-138**: v6.4.0 release — CHANGELOG, mix.exs bump, /docs update, showcase features (US-009) [CCEM-239]
+- After Wave 3: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS

@@ -1,0 +1,55 @@
+{
+  "project_name": "YJMosaic",
+  "tagline": "Native macOS photographic mosaic engine",
+  "description": "A Swift 6 / SwiftUI application for Apple Silicon that transforms photographs into photographic mosaics using Metal-accelerated tile matching, Core Image processing, and AVFoundation video export. Port of the classic AndreaMosaic C++/MFC engine to modern Apple platform technologies.",
+  "version": "0.1.0-scaffold",
+  "active_label": "PRD in progress",
+  "bundle_id": "io.pegues.agent-j.labs.yjmosaic",
+  "stack": "Swift 6 / SwiftUI / Metal / Core Image / AVFoundation",
+  "target": "Apple Silicon, macOS 14+",
+  "versions": ["0.1.0-scaffold"],
+  "links": [
+    {"label": "Bundle ID", "url": "#", "color": "violet"},
+    {"label": "APM Dashboard", "url": "http://localhost:3032", "color": "blue"}
+  ],
+  "wave_1": {
+    "title": "Wave 1: Foundation Models",
+    "description": "Tile, ImageLoader, Settings, and Color Analysis -- the core data types and image loading pipeline that every subsequent wave depends on."
+  },
+  "wave_2": {
+    "title": "Wave 2: Tile Management",
+    "description": "TileCollectionManager, CPU Tile Scorer, and Tile Cache -- managing tile libraries and implementing the baseline color-distance scoring algorithm."
+  },
+  "wave_3": {
+    "title": "Wave 3: Engine Core",
+    "description": "MosaicBuilder, Color Adjustment, Metal Tile Scorer, and MosaicPlan -- the heart of the mosaic engine with GPU-accelerated matching and intermediate plan representation."
+  },
+  "wave_4": {
+    "title": "Wave 4: Output",
+    "description": "MosaicExporter (JPEG/PNG/TIFF), Build Reports, and WebMosaicExporter -- rendering final output at full resolution with analytics and interactive HTML deep-zoom viewers."
+  },
+  "wave_5": {
+    "title": "Wave 5: SwiftUI Interface",
+    "description": "Menu bar, Mosaic Editor, Collection Browser, and Live Preview -- the full document-based SwiftUI application shell with real-time Metal-backed preview."
+  },
+  "wave_6": {
+    "title": "Wave 6: Advanced Features",
+    "description": "Patterns (hex, Voronoi, spiral), Masks, Adaptive Tile Splitting, Video Mosaic via AVFoundation, and PSD Layer Export -- extending beyond the original AndreaMosaic feature set."
+  },
+  "technology_mapping": {
+    "title": "Technology Port Mapping",
+    "description": "Original C++/MFC components mapped to their Swift/macOS equivalents",
+    "rows": [
+      {"original": "MFC CImage / GDI+", "ported": "Core Image (CIImage, CIFilter)", "notes": "GPU-accelerated image pipeline"},
+      {"original": "Win32 GDI Bitmap", "ported": "MTLTexture / CGImage", "notes": "Metal-backed textures"},
+      {"original": "Direct2D Rendering", "ported": "Metal Compute Shaders", "notes": "Tile scoring on GPU"},
+      {"original": "CDialog / CFrameWnd", "ported": "SwiftUI WindowGroup", "notes": "Document-based app"},
+      {"original": "MFC Doc/View", "ported": "SwiftUI @Observable", "notes": "Reactive data flow"},
+      {"original": "CFileDialog", "ported": "fileImporter / fileExporter", "notes": "Native file panels"},
+      {"original": "Win32 Thread Pool", "ported": "Swift Concurrency (TaskGroup)", "notes": "Structured concurrency"},
+      {"original": "Windows Registry", "ported": "@AppStorage / UserDefaults", "notes": "Settings persistence"},
+      {"original": "AVI Video Export", "ported": "AVFoundation (AVAssetWriter)", "notes": "H.264/HEVC export"},
+      {"original": "JPEG/BMP Export", "ported": "CGImageDestination", "notes": "JPEG/PNG/TIFF/HEIC"}
+    ]
+  }
+}

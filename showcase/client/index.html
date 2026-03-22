@@ -50,24 +50,63 @@
     .story-card:hover { border-color: #71717a; }
     .story-card.done { border-color: #10b981; }
     .story-card.active { border-color: #f59e0b; }
+    .story-card.pending { border-color: #3f3f46; }
     #loading-overlay {
       position: fixed; inset: 0; background: #09090b;
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-family: ui-monospace, monospace; color: #52525b;
       z-index: 9999;
     }
+    /* Project switcher */
+    .project-switcher {
+      position: relative;
+    }
+    .project-switcher select {
+      appearance: none;
+      background: transparent;
+      border: 1px solid #3f3f46;
+      border-radius: 4px;
+      padding: 2px 20px 2px 8px;
+      font-size: 11px;
+      color: #a1a1aa;
+      cursor: pointer;
+      outline: none;
+    }
+    .project-switcher select:hover { border-color: #6366f1; color: #e4e4e7; }
+    .project-switcher select:focus { border-color: #6366f1; box-shadow: 0 0 0 1px rgba(99,102,241,0.3); }
+    .project-switcher::after {
+      content: '';
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      border: 3px solid transparent; border-top-color: #71717a;
+      pointer-events: none;
+    }
+    /* Tech mapping table */
+    .tech-table { border-collapse: collapse; width: 100%; }
+    .tech-table th { text-align: left; font-size: 10px; font-weight: 600; color: #71717a; padding: 4px 8px; border-bottom: 1px solid #27272a; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tech-table td { font-size: 11px; padding: 4px 8px; border-bottom: 1px solid #1c1c1e; color: #a1a1aa; }
+    .tech-table tr:hover td { background: rgba(39,39,42,0.4); }
+    .tech-table .original { color: #71717a; }
+    .tech-table .ported { color: #a78bfa; font-family: ui-monospace, monospace; font-size: 10px; }
+    .tech-table .notes { color: #52525b; font-size: 10px; }
+    /* Notification card */
+    .notif-card { border-left: 2px solid #6366f1; padding: 4px 8px; margin-bottom: 4px; background: rgba(99,102,241,0.05); border-radius: 0 4px 4px 0; }
+    .notif-card .notif-time { font-size: 9px; color: #52525b; font-family: ui-monospace, monospace; }
+    .notif-card .notif-msg { font-size: 10px; color: #a1a1aa; }
   </style>
 </head>
 <body class="h-screen flex flex-col">
 
-  <div id="loading-overlay">loading showcase data…</div>
+  <div id="loading-overlay">loading showcase data...</div>
 
   <!-- Sticky Header -->
   <header class="sticky top-0 z-50 h-12 flex items-center justify-between px-4 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm flex-shrink-0">
     <div class="flex items-center gap-2">
-      <span id="hdr-badge" class="rounded bg-violet-500/20 px-2 py-0.5 text-xs font-bold text-violet-300 ring-1 ring-violet-500/30">—</span>
+      <div class="project-switcher">
+        <select id="project-select" title="Switch project"></select>
+      </div>
+      <span id="hdr-badge" class="rounded bg-violet-500/20 px-2 py-0.5 text-xs font-bold text-violet-300 ring-1 ring-violet-500/30">--</span>
       <span id="hdr-version" class="font-mono text-xs text-amber-400 ring-1 ring-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded"></span>
-      <span class="text-zinc-700 text-xs">·</span>
+      <span class="text-zinc-700 text-xs">.</span>
       <span id="hdr-branch" class="text-xs text-zinc-500"></span>
     </div>
 
@@ -103,15 +142,15 @@
         <div class="space-y-1 text-[10px]">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="text-zinc-500">COMPLETE — shipped</span>
+            <span class="text-zinc-500">COMPLETE -- shipped</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-500 pulse"></span>
-            <span class="text-zinc-500">IN_PROGRESS — active</span>
+            <span class="text-zinc-500">IN_PROGRESS -- active</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-zinc-600"></span>
-            <span class="text-zinc-500">PENDING — queued</span>
+            <span class="text-zinc-500">PENDING -- queued</span>
           </div>
         </div>
       </div>
@@ -130,6 +169,7 @@
             </div>
             <h1 id="ctr-title" class="text-base font-bold text-zinc-100"></h1>
             <p id="ctr-description" class="text-xs text-zinc-500 mt-0.5 leading-relaxed max-w-xl"></p>
+            <div id="ctr-meta" class="mt-2 flex flex-wrap gap-2"></div>
           </div>
           <div class="text-right flex-shrink-0 ml-4">
             <div id="ctr-version" class="text-2xl font-bold text-zinc-100"></div>
@@ -140,7 +180,7 @@
         <div id="ctr-version-bar" class="mt-3 flex items-center gap-1 flex-wrap"></div>
       </div>
 
-      <!-- Architecture diagram (populated from design_system or SVG file) -->
+      <!-- Architecture diagram -->
       <div id="architecture-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
         <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Architecture</div>
         <div id="architecture-content">
@@ -148,12 +188,19 @@
         </div>
       </div>
 
-      <!-- Active wave detail (most recent non-done wave) -->
+      <!-- Technology Mapping Table (shown when data available) -->
+      <div id="tech-mapping-section" class="hidden rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-1" id="tech-mapping-title">Technology Mapping</div>
+        <p id="tech-mapping-desc" class="text-[10px] text-zinc-600 mb-3"></p>
+        <div id="tech-mapping-content"></div>
+      </div>
+
+      <!-- Active wave detail -->
       <div id="active-wave-section" class="hidden rounded-lg border border-amber-800/30 bg-amber-950/10 p-4">
         <div id="active-wave-content"></div>
       </div>
 
-      <!-- Narratives / completed waves summary -->
+      <!-- Narratives / waves summary -->
       <div id="narratives-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
         <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Feature Waves</div>
         <div id="narratives-content" class="space-y-3 text-xs"></div>
@@ -168,7 +215,7 @@
         <div class="flex items-center gap-1.5 mb-3">
           <span class="w-2 h-2 rounded-full apm-dot-checking" id="inspector-dot"></span>
           <span class="text-[10px] text-zinc-500">Polling APM every 10s</span>
-          <span class="ml-auto text-[10px] font-mono text-zinc-600" id="last-poll-time">—</span>
+          <span class="ml-auto text-[10px] font-mono text-zinc-600" id="last-poll-time">--</span>
         </div>
       </div>
 
@@ -178,20 +225,21 @@
         <div class="space-y-1.5 text-[11px]" id="stats-content">
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Version</span>
-            <span id="stat-version" class="text-amber-400 font-mono pulse">—</span>
+            <span id="stat-version" class="text-amber-400 font-mono pulse">--</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Features</span>
-            <span id="stat-features" class="text-zinc-400">—</span>
+            <span id="stat-features" class="text-zinc-400">--</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Waves</span>
-            <span id="stat-waves" class="text-zinc-400">—</span>
+            <span id="stat-waves" class="text-zinc-400">--</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Active wave</span>
-            <span id="stat-active-wave" class="text-amber-400 pulse">—</span>
+            <span id="stat-active-wave" class="text-amber-400 pulse">--</span>
           </div>
+          <div id="stat-extra" class="space-y-1.5"></div>
         </div>
       </div>
 
@@ -209,11 +257,19 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Version</span>
-            <span id="apm-version" class="text-zinc-400 font-mono">—</span>
+            <span id="apm-version" class="text-zinc-400 font-mono">--</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-zinc-500">Uptime</span>
-            <span id="apm-uptime" class="text-zinc-400 font-mono">—</span>
+            <span id="apm-uptime" class="text-zinc-400 font-mono">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Agents</span>
+            <span id="apm-agent-count" class="text-zinc-400 font-mono">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">AG-UI SSE</span>
+            <span id="apm-sse-status" class="text-zinc-600 font-mono text-[10px]">--</span>
           </div>
         </div>
       </div>
@@ -224,10 +280,18 @@
         <div id="wave-progress" class="space-y-1.5"></div>
       </div>
 
+      <!-- APM Notifications -->
+      <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">APM Notifications</div>
+        <div id="apm-notifications" class="space-y-1">
+          <div class="text-[10px] text-zinc-600 font-mono">Polling...</div>
+        </div>
+      </div>
+
       <!-- Live APM Data -->
       <div class="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 mb-3">
         <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 mb-2">Live APM Data</div>
-        <pre class="text-[10px] font-mono text-zinc-600 leading-relaxed whitespace-pre-wrap break-all" id="apm-raw-data">Polling…</pre>
+        <pre class="text-[10px] font-mono text-zinc-600 leading-relaxed whitespace-pre-wrap break-all" id="apm-raw-data">Polling...</pre>
       </div>
 
       <!-- Quick Links -->
@@ -240,6 +304,10 @@
         <a href="http://localhost:3032/api/status" target="_blank" class="flex items-center gap-2 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
           <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
           /api/status
+        </a>
+        <a href="http://localhost:3032/api/notifications" target="_blank" class="flex items-center gap-2 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          /api/notifications
         </a>
         <div id="extra-links"></div>
       </div>
@@ -257,24 +325,61 @@
 
     const projectParam = new URLSearchParams(window.location.search).get('project');
 
-    // ── Wave color palette ──────────────────────────────────────────────────────
+    // ── Wave color palette (6 waves for YJMosaic) ─────────────────────────────
     const WAVE_COLORS = {
       1: { dot: 'bg-emerald-500', text: 'text-emerald-400', badge: 'bg-emerald-500/15 text-emerald-400 ring-emerald-500/25', bar: '#10b981', border: 'border-emerald-500/20' },
       2: { dot: 'bg-blue-500', text: 'text-blue-400', badge: 'bg-blue-500/15 text-blue-400 ring-blue-500/25', bar: '#3b82f6', border: 'border-blue-500/20' },
       3: { dot: 'bg-purple-500', text: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-400 ring-purple-500/25', bar: '#a855f7', border: 'border-purple-500/20' },
       4: { dot: 'bg-amber-500', text: 'text-amber-400', badge: 'bg-amber-500/15 text-amber-400 ring-amber-500/25', bar: '#f59e0b', border: 'border-amber-500/20' },
       5: { dot: 'bg-rose-500', text: 'text-rose-400', badge: 'bg-rose-500/15 text-rose-400 ring-rose-500/25', bar: '#ef4444', border: 'border-rose-500/20' },
+      6: { dot: 'bg-cyan-500', text: 'text-cyan-400', badge: 'bg-cyan-500/15 text-cyan-400 ring-cyan-500/25', bar: '#06b6d4', border: 'border-cyan-500/20' },
     };
 
     function waveColor(wave) {
       return WAVE_COLORS[wave] || WAVE_COLORS[1];
     }
 
-    // ── Data loading ─────────────────────────────────────────────────────────────
-    async function loadShowcaseData(project) {
-      // 1. Try APM API (with short timeout for standalone mode)
+    // ── Project registry ──────────────────────────────────────────────────────
+    let projectRegistry = null;
+
+    async function loadProjectRegistry() {
       try {
-        const res = await fetch(`${APM_BASE}/api/showcase/${project}`, {
+        const r = await fetch('../data/projects.json', { signal: AbortSignal.timeout(2000) });
+        if (r.ok) return await r.json();
+      } catch (_) {}
+      return null;
+    }
+
+    function populateProjectSwitcher(registry, currentProject) {
+      const select = document.getElementById('project-select');
+      if (!registry || !registry.projects) return;
+      select.innerHTML = '';
+      registry.projects.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        if (p.id === currentProject) opt.selected = true;
+        select.appendChild(opt);
+      });
+      select.addEventListener('change', () => {
+        const url = new URL(window.location);
+        url.searchParams.set('project', select.value);
+        window.location = url.toString();
+      });
+    }
+
+    // ── Data loading ─────────────────────────────────────────────────────────
+    async function loadProjectData(projectId, registry) {
+      // Determine data path from registry
+      let dataPath = null;
+      if (registry && registry.projects) {
+        const entry = registry.projects.find(p => p.id === projectId);
+        if (entry && entry.data_path) dataPath = `../data/${entry.data_path}`;
+      }
+
+      // 1. Try APM API
+      try {
+        const res = await fetch(`${APM_BASE}/api/showcase/${projectId}`, {
           signal: AbortSignal.timeout(3000),
           headers: { 'Accept': 'application/json' }
         });
@@ -282,21 +387,40 @@
           const data = await res.json();
           if (data && data.features) return { source: 'apm', data };
         }
-      } catch (_) { /* APM not available, try local */ }
+      } catch (_) {}
 
-      // 2. Try local relative path (standalone serving from project's showcase/client/)
+      // 2. Try project-specific local data
+      if (dataPath) {
+        try {
+          const res = await fetch(`${dataPath}/features.json`, { signal: AbortSignal.timeout(2000) });
+          if (res.ok) {
+            const features = await res.json();
+            let narratives = {}, designSystem = {};
+            try {
+              const nr = await fetch(`${dataPath}/narrative-content.json`, { signal: AbortSignal.timeout(1000) });
+              if (nr.ok) narratives = await nr.json();
+            } catch (_) {}
+            try {
+              const ds = await fetch(`${dataPath}/diagram-design-system.json`, { signal: AbortSignal.timeout(1000) });
+              if (ds.ok) designSystem = await ds.json();
+            } catch (_) {}
+            return { source: 'local-project', data: { features, narratives, design_system: designSystem } };
+          }
+        } catch (_) {}
+      }
+
+      // 3. Fall back to default data/ directory
       try {
-        const res = await fetch('./data/features.json', { signal: AbortSignal.timeout(2000) });
+        const res = await fetch('../data/features.json', { signal: AbortSignal.timeout(2000) });
         if (res.ok) {
           const features = await res.json();
-          // Try to also load narratives
           let narratives = {}, designSystem = {};
           try {
-            const nr = await fetch('./data/narrative-content.json', { signal: AbortSignal.timeout(1000) });
+            const nr = await fetch('../data/narrative-content.json', { signal: AbortSignal.timeout(1000) });
             if (nr.ok) narratives = await nr.json();
           } catch (_) {}
           try {
-            const ds = await fetch('./data/diagram-design-system.json', { signal: AbortSignal.timeout(1000) });
+            const ds = await fetch('../data/diagram-design-system.json', { signal: AbortSignal.timeout(1000) });
             if (ds.ok) designSystem = await ds.json();
           } catch (_) {}
           return { source: 'local', data: { features, narratives, design_system: designSystem } };
@@ -306,7 +430,7 @@
       return { source: 'empty', data: { features: [] } };
     }
 
-    // ── Rendering ─────────────────────────────────────────────────────────────────
+    // ── Rendering ─────────────────────────────────────────────────────────────
 
     function groupByWave(features) {
       const waves = {};
@@ -318,24 +442,53 @@
       return waves;
     }
 
+    function resolveWaveStatus(features) {
+      // Check if features have explicit status fields
+      const hasExplicitStatus = features.some(f => f.status && f.status !== 'pending');
+      const waves = groupByWave(features);
+      const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
+
+      if (hasExplicitStatus) {
+        // Use explicit statuses: a wave is done if ALL features are shipped/complete
+        return (waveNum) => {
+          const wFeatures = waves[waveNum] || [];
+          const allDone = wFeatures.every(f => f.status === 'shipped' || f.status === 'complete' || f.status === 'done');
+          const anyActive = wFeatures.some(f => f.status === 'active' || f.status === 'in_progress');
+          if (allDone) return 'done';
+          if (anyActive) return 'active';
+          // For projects where everything is pending, find the first pending wave
+          const firstPendingWave = waveNums.find(w => {
+            const wf = waves[w] || [];
+            return wf.some(f => f.status === 'pending' || !f.status);
+          });
+          if (waveNum === firstPendingWave) return 'active';
+          if (waveNum < firstPendingWave) return 'done';
+          return 'pending';
+        };
+      }
+      // Fallback: last wave is active, everything before is done
+      const maxWave = waveNums[waveNums.length - 1] || 1;
+      return (waveNum) => {
+        if (waveNum < maxWave) return 'done';
+        if (waveNum === maxWave) return 'active';
+        return 'pending';
+      };
+    }
+
     function renderFeatureTree(features, projectName) {
       const waves = groupByWave(features);
       const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
-      const maxWave = waveNums[waveNums.length - 1] || 1;
-
-      // Determine wave status — last wave with items = potentially active
-      // Simple heuristic: waves before the last are "done", last is "active"
-      const isDone = (w) => w < maxWave;
-      const isActive = (w) => w === maxWave;
+      const getStatus = resolveWaveStatus(features);
 
       let html = '';
       waveNums.forEach((waveNum, idx) => {
         const wFeatures = waves[waveNum];
         const c = waveColor(waveNum);
-        const done = isDone(waveNum);
-        const active = isActive(waveNum);
+        const status = getStatus(waveNum);
+        const done = status === 'done';
+        const active = status === 'active';
         const isLast = idx === waveNums.length - 1;
-        const connector = isLast ? '└──' : '├──';
+        const connector = isLast ? '\u2514\u2500\u2500' : '\u251C\u2500\u2500';
         const statusBadge = done
           ? `<span class="ml-auto text-[10px] ${c.badge} px-1.5 py-0.5 rounded ring-1 flex-shrink-0">DONE</span>`
           : active
@@ -352,17 +505,20 @@
           <div class="ml-5 mt-0.5 space-y-0.5">`;
 
         wFeatures.forEach((f, fi) => {
-          const itemConnector = fi === wFeatures.length - 1 ? '└──' : '├──';
-          const statusIcon = done
-            ? '<span class="text-emerald-400 ml-1">✓</span>'
-            : active
-            ? '<span class="text-amber-400 ml-1 pulse">⟳</span>'
-            : '<span class="text-zinc-600 ml-1">·</span>';
-          const cardClass = done ? 'done' : active ? 'active' : '';
+          const itemConnector = fi === wFeatures.length - 1 ? '\u2514\u2500\u2500' : '\u251C\u2500\u2500';
+          const fStatus = f.status || 'pending';
+          const fDone = fStatus === 'shipped' || fStatus === 'complete' || fStatus === 'done';
+          const fActive = fStatus === 'active' || fStatus === 'in_progress' || (active && !fDone);
+          const statusIcon = fDone
+            ? '<span class="text-emerald-400 ml-1">&#10003;</span>'
+            : fActive && active
+            ? '<span class="text-amber-400 ml-1 pulse">&#x27F3;</span>'
+            : '<span class="text-zinc-600 ml-1">.</span>';
+          const cardClass = fDone ? 'done' : (fActive && active) ? 'active' : 'pending';
           html += `<div class="story-card ${cardClass} pl-2 py-0.5 rounded-r">
             <span class="tree-line">${itemConnector}</span>
             ${statusIcon}
-            <span class="ml-1 ${done ? 'text-zinc-500' : active ? 'text-zinc-400' : 'text-zinc-600'}">${f.title || f.id}</span>
+            <span class="ml-1 ${fDone ? 'text-zinc-500' : (fActive && active) ? 'text-zinc-400' : 'text-zinc-600'}">${f.title || f.id}</span>
           </div>`;
         });
 
@@ -377,16 +533,17 @@
       const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
       if (!waveNums.length) return '<div class="text-zinc-600 text-[10px]">No waves</div>';
 
-      const maxWave = waveNums[waveNums.length - 1];
+      const getStatus = resolveWaveStatus(features);
       let html = '';
       waveNums.forEach(waveNum => {
         const c = waveColor(waveNum);
-        const done = waveNum < maxWave;
-        const active = waveNum === maxWave;
+        const status = getStatus(waveNum);
+        const done = status === 'done';
+        const active = status === 'active';
         const barStyle = done
           ? `background:${c.bar};width:100%`
           : active
-          ? `background:linear-gradient(90deg,${c.bar} 25%,#fbbf24 50%,${c.bar} 75%);background-size:200% 100%;animation:progress-shimmer 2s linear infinite;width:70%`
+          ? `background:linear-gradient(90deg,${c.bar} 25%,#fbbf24 50%,${c.bar} 75%);background-size:200% 100%;animation:progress-shimmer 2s linear infinite;width:15%`
           : 'width:0%';
         const labelClass = done ? 'text-emerald-400' : active ? `${c.text} pulse` : 'text-zinc-600';
         const label = done ? 'done' : active ? 'active' : 'queued';
@@ -394,23 +551,23 @@
           <div class="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
             <div class="h-full rounded-full" style="${barStyle}"></div>
           </div>
-          <span class="text-[10px] ${labelClass} w-16 text-right${active ? ' pulse' : ''}">W${waveNum} · ${label}</span>
+          <span class="text-[10px] ${labelClass} w-16 text-right${active ? ' pulse' : ''}">W${waveNum} . ${label}</span>
         </div>`;
       });
       return html;
     }
 
     function renderNarratives(features, narratives) {
-      // Group by wave, show wave-level summary using narrative content if available
       const waves = groupByWave(features);
       const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
-      const maxWave = waveNums[waveNums.length - 1] || 1;
+      const getStatus = resolveWaveStatus(features);
 
       let html = '';
       waveNums.forEach(waveNum => {
         const wFeatures = waves[waveNum];
         const c = waveColor(waveNum);
-        const done = waveNum < maxWave;
+        const status = getStatus(waveNum);
+        const done = status === 'done';
         const narrative = (narratives && narratives[`wave_${waveNum}`]) || (narratives && narratives[String(waveNum)]);
         const waveTitle = (narrative && narrative.title) || `Wave ${waveNum}`;
         const waveDesc = (narrative && narrative.description) || wFeatures.map(f => f.title).join(', ');
@@ -430,16 +587,17 @@
     function renderActiveWave(features) {
       const waves = groupByWave(features);
       const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
-      const maxWave = waveNums[waveNums.length - 1];
-      if (!maxWave) return null;
+      const getStatus = resolveWaveStatus(features);
+      const activeWaveNum = waveNums.find(w => getStatus(w) === 'active');
+      if (!activeWaveNum) return null;
 
-      const activeFeatures = waves[maxWave] || [];
-      const c = waveColor(maxWave);
+      const activeFeatures = waves[activeWaveNum] || [];
+      const c = waveColor(activeWaveNum);
 
-      // Split into done/active/pending — heuristic: no status field means all active
       const items = activeFeatures.map(f => {
-        const status = f.status || (f.passes ? 'done' : 'active');
-        return { ...f, _status: status };
+        const s = f.status || 'pending';
+        const isDone = s === 'shipped' || s === 'complete' || s === 'done';
+        return { ...f, _status: isDone ? 'done' : 'active' };
       });
       const done = items.filter(f => f._status === 'done');
       const active = items.filter(f => f._status !== 'done');
@@ -449,40 +607,75 @@
         doneHtml = `<div class="bg-zinc-900/60 rounded p-3 border border-zinc-800">
           <div class="font-semibold text-emerald-400 mb-1">Shipped</div>
           <ul class="space-y-0.5 text-zinc-500">
-            ${done.map(f => `<li>· <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
+            ${done.map(f => `<li>. <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
           </ul>
         </div>`;
       }
       if (active.length) {
         activeHtml = `<div class="bg-zinc-900/60 rounded p-3 border border-amber-800/20">
-          <div class="font-semibold text-amber-400 mb-1 pulse">In Progress</div>
+          <div class="font-semibold text-amber-400 mb-1 pulse">Pending</div>
           <ul class="space-y-0.5 text-zinc-500">
-            ${active.map(f => `<li>· <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
+            ${active.map(f => `<li>. <code class="text-zinc-400">${f.title || f.id}</code></li>`).join('')}
           </ul>
         </div>`;
       }
 
       return `<div class="flex items-center gap-2 mb-3">
         <span class="w-2 h-2 rounded-full ${c.dot} pulse flex-shrink-0"></span>
-        <div class="text-[10px] font-semibold uppercase tracking-wider ${c.text}">Wave ${maxWave} (active)</div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider ${c.text}">Wave ${activeWaveNum} (active)</div>
         <span class="ml-auto text-[10px] ${c.badge} px-1.5 py-0.5 rounded ring-1 pulse">IN PROGRESS</span>
       </div>
       <div class="grid grid-cols-2 gap-3 text-xs">${doneHtml}${activeHtml}</div>`;
     }
 
-    // ── Init ─────────────────────────────────────────────────────────────────────
+    function renderTechMapping(narratives) {
+      const mapping = narratives.technology_mapping;
+      if (!mapping || !mapping.rows || !mapping.rows.length) return;
+
+      document.getElementById('tech-mapping-section').classList.remove('hidden');
+      document.getElementById('tech-mapping-title').textContent = mapping.title || 'Technology Mapping';
+      document.getElementById('tech-mapping-desc').textContent = mapping.description || '';
+
+      let html = '<table class="tech-table"><thead><tr><th>Original (C++/MFC)</th><th>Port (Swift/macOS)</th><th>Notes</th></tr></thead><tbody>';
+      mapping.rows.forEach(row => {
+        html += `<tr>
+          <td class="original">${row.original}</td>
+          <td class="ported">${row.ported}</td>
+          <td class="notes">${row.notes || ''}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('tech-mapping-content').innerHTML = html;
+    }
+
+    function renderMetaBadges(narratives) {
+      const meta = document.getElementById('ctr-meta');
+      const badges = [];
+      if (narratives.bundle_id) badges.push({ label: narratives.bundle_id, color: 'violet' });
+      if (narratives.stack) badges.push({ label: narratives.stack, color: 'blue' });
+      if (narratives.target) badges.push({ label: narratives.target, color: 'zinc' });
+      meta.innerHTML = badges.map(b =>
+        `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded ring-1 ring-${b.color}-500/20 bg-${b.color}-500/10 text-${b.color}-400">${b.label}</span>`
+      ).join('');
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
     async function init() {
-      // Determine project name
+      // Load project registry
+      projectRegistry = await loadProjectRegistry();
+
+      // Determine project
       let project = projectParam;
+      if (!project && projectRegistry) {
+        project = projectRegistry.default_project;
+      }
       if (!project) {
-        // Try loading local config.json (for project-specific standalone serving)
         try {
-          const r = await fetch('./data/config.json', { signal: AbortSignal.timeout(1000) });
+          const r = await fetch('../data/config.json', { signal: AbortSignal.timeout(1000) });
           if (r.ok) { const cfg = await r.json(); project = cfg.project || cfg.name; }
         } catch (_) {}
       }
       if (!project) {
-        // Try APM for active project
         try {
           const r = await fetch(`${APM_BASE}/api/status`, { signal: AbortSignal.timeout(2000) });
           if (r.ok) { const s = await r.json(); project = s.active_project || s.project; }
@@ -490,39 +683,50 @@
       }
       project = project || 'unknown';
 
-      const { source, data } = await loadShowcaseData(project);
+      // Populate project switcher
+      populateProjectSwitcher(projectRegistry, project);
+
+      const { source, data } = await loadProjectData(project, projectRegistry);
       const features = data.features || [];
       const narratives = data.narratives || {};
       const designSystem = data.design_system || {};
-      const version = data.version || '—';
+      const version = narratives.version || data.version || '--';
 
-      // ── Populate header ────────────────────────────────────────────────────────
-      document.getElementById('page-title').textContent = `${project} Showcase`;
-      document.getElementById('hdr-badge').textContent = project.toUpperCase().slice(0, 6);
+      // ── Populate header ────────────────────────────────────────────────────
+      document.getElementById('page-title').textContent = `${narratives.project_name || project} Showcase`;
+
+      // Badge color from registry
+      const regEntry = projectRegistry && projectRegistry.projects
+        ? projectRegistry.projects.find(p => p.id === project)
+        : null;
+      const badgeText = (regEntry && regEntry.badge) || project.toUpperCase().slice(0, 6);
+      document.getElementById('hdr-badge').textContent = badgeText;
       document.getElementById('hdr-version').textContent = version || '';
-      document.getElementById('hdr-project-name').textContent = (narratives.project_name) || project;
+      document.getElementById('hdr-project-name').textContent = narratives.project_name || project;
       const featureCount = features.length;
       if (featureCount) {
         document.getElementById('hdr-feature-count').innerHTML =
-          `<span class="text-zinc-600 mx-1">·</span>${featureCount} features`;
+          `<span class="text-zinc-600 mx-1">.</span>${featureCount} features`;
       }
 
       // Active wave status in header
       const waves = groupByWave(features);
       const waveNums = Object.keys(waves).map(Number).sort((a, b) => a - b);
-      const maxWave = waveNums[waveNums.length - 1] || 0;
-      if (maxWave) {
-        const prevDone = waveNums.slice(0, -1).map(w => `Wave ${w} ✓`).join(' · ');
+      const getStatus = resolveWaveStatus(features);
+      const activeWaveNum = waveNums.find(w => getStatus(w) === 'active');
+      const doneWaves = waveNums.filter(w => getStatus(w) === 'done');
+      if (activeWaveNum) {
+        const prevDone = doneWaves.map(w => `W${w} done`).join(' . ');
         document.getElementById('hdr-wave-status').textContent =
-          (prevDone ? prevDone + ' · ' : '') + `Wave ${maxWave} active`;
+          (prevDone ? prevDone + ' . ' : '') + `Wave ${activeWaveNum} active`;
       }
 
-      // ── Left: feature tree ─────────────────────────────────────────────────────
-      document.getElementById('project-root-label').textContent = project;
-      document.getElementById('feature-tree-label').textContent = `${project} Feature Waves`;
+      // ── Left: feature tree ────────────────────────────────────────────────
+      document.getElementById('project-root-label').textContent = narratives.project_name || project;
+      document.getElementById('feature-tree-label').textContent = `${narratives.project_name || project} Feature Waves`;
       document.getElementById('feature-tree').innerHTML = renderFeatureTree(features, project);
 
-      // ── Center: product header ─────────────────────────────────────────────────
+      // ── Center: product header ────────────────────────────────────────────
       document.getElementById('ctr-project-label').textContent = narratives.project_name || project;
       document.getElementById('ctr-title').textContent = narratives.tagline || `${project} Platform`;
       document.getElementById('ctr-description').textContent = narratives.description || '';
@@ -531,11 +735,14 @@
         : '';
       document.getElementById('ctr-feature-count').textContent = featureCount ? `${featureCount} features` : '';
 
-      if (maxWave && narratives.active_label) {
+      if (activeWaveNum && narratives.active_label) {
         const badge = document.getElementById('ctr-active-badge');
         badge.textContent = narratives.active_label;
         badge.classList.remove('hidden');
       }
+
+      // Meta badges (bundle ID, stack, target)
+      renderMetaBadges(narratives);
 
       // Version history bar
       if (narratives.versions && Array.isArray(narratives.versions)) {
@@ -544,40 +751,57 @@
           const cls = isLast
             ? 'text-[10px] font-mono text-amber-400 bg-amber-950/30 px-1.5 py-0.5 rounded ring-1 ring-amber-800/40 pulse'
             : 'text-[10px] font-mono text-emerald-400/70 bg-emerald-950/30 px-1.5 py-0.5 rounded ring-1 ring-emerald-800/30';
-          return `<span class="${cls}">${v}</span>${isLast ? '' : '<span class="text-zinc-700 text-[10px]">→</span>'}`;
+          return `<span class="${cls}">${v}</span>${isLast ? '' : '<span class="text-zinc-700 text-[10px]"> -> </span>'}`;
         }).join('');
         document.getElementById('ctr-version-bar').innerHTML = bar;
       }
 
-      // ── Center: architecture ──────────────────────────────────────────────────
+      // ── Center: architecture ──────────────────────────────────────────────
       if (designSystem.architecture_svg) {
         document.getElementById('architecture-content').innerHTML = designSystem.architecture_svg;
       } else if (designSystem.architecture_html) {
         document.getElementById('architecture-content').innerHTML = designSystem.architecture_html;
       }
-      // else leave placeholder text
 
-      // ── Center: active wave detail ─────────────────────────────────────────────
+      // ── Center: tech mapping table ────────────────────────────────────────
+      renderTechMapping(narratives);
+
+      // ── Center: active wave detail ────────────────────────────────────────
       const activeWaveHtml = renderActiveWave(features);
       if (activeWaveHtml) {
         document.getElementById('active-wave-section').classList.remove('hidden');
         document.getElementById('active-wave-content').innerHTML = activeWaveHtml;
       }
 
-      // ── Center: narratives / waves summary ────────────────────────────────────
+      // ── Center: narratives / waves summary ────────────────────────────────
       document.getElementById('narratives-content').innerHTML = renderNarratives(features, narratives);
 
-      // ── Right: stats card ─────────────────────────────────────────────────────
-      document.getElementById('stats-label').textContent = `${project} State`;
-      document.getElementById('stat-version').textContent = version || '—';
-      document.getElementById('stat-features').textContent = featureCount ? `~${featureCount}` : '—';
-      document.getElementById('stat-waves').textContent = waveNums.length ? waveNums.join(', ') : '—';
-      document.getElementById('stat-active-wave').textContent = maxWave ? `Wave ${maxWave}` : '—';
+      // ── Right: stats card ─────────────────────────────────────────────────
+      document.getElementById('stats-label').textContent = `${narratives.project_name || project} State`;
+      document.getElementById('stat-version').textContent = version || '--';
+      document.getElementById('stat-features').textContent = featureCount ? `~${featureCount}` : '--';
+      document.getElementById('stat-waves').textContent = waveNums.length ? waveNums.join(', ') : '--';
+      document.getElementById('stat-active-wave').textContent = activeWaveNum ? `Wave ${activeWaveNum}` : '--';
 
-      // ── Right: wave progress bars ─────────────────────────────────────────────
+      // Extra stats for project-specific metadata
+      const extraStats = document.getElementById('stat-extra');
+      if (narratives.bundle_id) {
+        extraStats.innerHTML += `<div class="flex items-center justify-between">
+          <span class="text-zinc-500">Bundle</span>
+          <span class="text-violet-400 font-mono text-[10px]">${narratives.bundle_id}</span>
+        </div>`;
+      }
+      if (narratives.target) {
+        extraStats.innerHTML += `<div class="flex items-center justify-between">
+          <span class="text-zinc-500">Target</span>
+          <span class="text-zinc-400 text-[10px]">${narratives.target}</span>
+        </div>`;
+      }
+
+      // ── Right: wave progress bars ─────────────────────────────────────────
       document.getElementById('wave-progress').innerHTML = renderWaveProgress(features);
 
-      // ── APM endpoint display ──────────────────────────────────────────────────
+      // ── APM endpoint display ──────────────────────────────────────────────
       const apmLink = document.getElementById('apm-endpoint-link');
       apmLink.href = APM_BASE;
       apmLink.textContent = APM_BASE.replace(/^https?:\/\//, '').replace(/\/.*/, '');
@@ -593,22 +817,27 @@
         ).join('');
       }
 
-      // ── Hide loading, show content ────────────────────────────────────────────
+      // Store project name for notification polling
+      window._currentProject = project;
+
+      // ── Hide loading, show content ────────────────────────────────────────
       document.getElementById('loading-overlay').style.display = 'none';
     }
 
-    // ── APM polling ──────────────────────────────────────────────────────────────
+    // ── APM polling ──────────────────────────────────────────────────────────
     const statusDot = document.getElementById('apm-status-dot');
     const statusLabel = document.getElementById('apm-status-label');
     const inspectorDot = document.getElementById('inspector-dot');
     const healthStatus = document.getElementById('apm-health-status');
-    const apmVersion = document.getElementById('apm-version');
+    const apmVersionEl = document.getElementById('apm-version');
     const apmUptime = document.getElementById('apm-uptime');
+    const apmAgentCount = document.getElementById('apm-agent-count');
+    const apmSseStatus = document.getElementById('apm-sse-status');
     const rawData = document.getElementById('apm-raw-data');
     const lastPollTime = document.getElementById('last-poll-time');
 
     function formatUptime(seconds) {
-      if (!seconds) return '—';
+      if (!seconds) return '--';
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
       return h > 0 ? `${h}h ${m}m` : `${m}m`;
@@ -632,6 +861,9 @@
       statusLabel.className = 'text-red-400';
       healthStatus.textContent = 'unreachable';
       healthStatus.classList.add('text-red-400');
+      apmAgentCount.textContent = '--';
+      apmSseStatus.textContent = 'unavailable';
+      apmSseStatus.className = 'text-red-400 font-mono text-[10px]';
       rawData.textContent = `// APM not reachable\n// ${APM_BASE}/api/status`;
     }
 
@@ -646,14 +878,20 @@
         healthStatus.textContent = 'online';
         healthStatus.classList.remove('pulse');
         healthStatus.classList.add('text-emerald-400');
-        const version = data.version || data.app_version || data.vsn || '—';
+        const version = data.version || data.app_version || data.vsn || '--';
         const uptime = data.uptime_seconds || data.uptime || null;
-        apmVersion.textContent = version;
-        apmUptime.textContent = uptime ? formatUptime(uptime) : '—';
+        const agents = data.agent_count || data.agents_active || data.total_agents || 0;
+        apmVersionEl.textContent = version;
+        apmUptime.textContent = uptime ? formatUptime(uptime) : '--';
+        apmAgentCount.textContent = String(agents);
+        apmSseStatus.textContent = 'available';
+        apmSseStatus.className = 'text-emerald-400 font-mono text-[10px]';
         rawData.textContent = JSON.stringify({
           status: data.status || 'ok',
           version,
           uptime,
+          agents,
+          project: data.active_project || data.project || window._currentProject,
           timestamp: data.timestamp || data.time || now.toISOString(),
         }, null, 2);
       } catch (_) {
@@ -661,10 +899,47 @@
       }
     }
 
+    // ── Notification polling ─────────────────────────────────────────────────
+    async function pollNotifications() {
+      const container = document.getElementById('apm-notifications');
+      try {
+        const res = await fetch(`${APM_BASE}/api/notifications`, { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const notifications = Array.isArray(data) ? data : (data.notifications || []);
+        // Filter for current project if possible
+        const project = window._currentProject;
+        const filtered = notifications.filter(n => {
+          if (!project) return true;
+          const msg = (n.message || n.body || '').toLowerCase();
+          const proj = (n.project || '').toLowerCase();
+          return proj === project.toLowerCase() || msg.includes(project.toLowerCase()) || proj === '';
+        }).slice(0, 5);
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div class="text-[10px] text-zinc-600 font-mono">No recent notifications</div>';
+          return;
+        }
+        container.innerHTML = filtered.map(n => {
+          const time = n.inserted_at || n.timestamp || n.time || '';
+          const msg = n.message || n.body || n.title || '';
+          const shortTime = time ? new Date(time).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '';
+          return `<div class="notif-card">
+            <div class="notif-time">${shortTime}</div>
+            <div class="notif-msg">${msg}</div>
+          </div>`;
+        }).join('');
+      } catch (_) {
+        container.innerHTML = '<div class="text-[10px] text-zinc-600 font-mono">APM notifications unavailable</div>';
+      }
+    }
+
     // Start
     init();
     pollAPM();
+    pollNotifications();
     setInterval(pollAPM, 10000);
+    setInterval(pollNotifications, 10000);
   </script>
 </body>
 </html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YJMosaic Port — Gap Analysis Showcase</title>
+  <base href="/client/">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { sans: ['system-ui', '-apple-system', 'sans-serif'], mono: ['ui-monospace', 'SFMono-Regular', 'monospace'] } } }
+    }
+  </script>
+  <style>
+    * { font-family: system-ui, -apple-system, sans-serif; }
+    code, pre, .font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    body { background: #09090b; color: #f4f4f5; overflow: hidden; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    .col-scroll { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .pulse { animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .slide-in { animation: slide-in 0.3s ease-out; }
+    .gap-ported { border-left: 3px solid #10b981; }
+    .gap-partial { border-left: 3px solid #f59e0b; }
+    .gap-missing { border-left: 3px solid #ef4444; }
+    .gap-stub { border-left: 3px solid #6366f1; }
+    .port-edge { stroke-dasharray: 4; animation: dash 1s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -8; } }
+  </style>
+</head>
+<body class="h-screen flex flex-col">
+  <!-- Status Bar -->
+  <header class="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-bold text-zinc-100">YJMosaic</span>
+      <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30">v0.1.0</span>
+      <span class="text-xs text-zinc-500">Port Gap Analysis</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1.5">
+        <span id="sse-dot" class="w-2 h-2 rounded-full bg-zinc-600"></span>
+        <span id="sse-label" class="text-xs text-zinc-500">Connecting...</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span id="apm-dot" class="w-2 h-2 rounded-full bg-zinc-600"></span>
+        <span id="apm-label" class="text-xs text-zinc-500">APM</span>
+      </div>
+      <span id="clock" class="text-xs text-zinc-600 font-mono"></span>
+    </div>
+  </header>
+
+  <!-- Main 3-Column Layout -->
+  <main class="flex-1 flex overflow-hidden">
+    <!-- Left: Gap Items -->
+    <section class="w-[340px] border-r border-zinc-800 flex flex-col">
+      <div class="px-3 py-2 border-b border-zinc-800 flex items-center justify-between">
+        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Feature Gaps</span>
+        <div class="flex gap-1">
+          <button onclick="filterGaps('all')" class="gap-filter text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300" data-filter="all">All</button>
+          <button onclick="filterGaps('missing')" class="gap-filter text-xs px-2 py-0.5 rounded text-zinc-500" data-filter="missing">Missing</button>
+          <button onclick="filterGaps('stub')" class="gap-filter text-xs px-2 py-0.5 rounded text-zinc-500" data-filter="stub">Stub</button>
+          <button onclick="filterGaps('partial')" class="gap-filter text-xs px-2 py-0.5 rounded text-zinc-500" data-filter="partial">Partial</button>
+          <button onclick="filterGaps('ported')" class="gap-filter text-xs px-2 py-0.5 rounded text-zinc-500" data-filter="ported">Ported</button>
+        </div>
+      </div>
+      <div id="gap-list" class="col-scroll flex-1 p-2 space-y-1.5"></div>
+      <div class="px-3 py-2 border-t border-zinc-800 flex justify-between text-xs text-zinc-500">
+        <span id="gap-summary">Loading...</span>
+        <span id="gap-pct">--%</span>
+      </div>
+    </section>
+
+    <!-- Center: Architecture / Plan / Events -->
+    <section class="flex-1 flex flex-col border-r border-zinc-800">
+      <div class="px-3 py-2 border-b border-zinc-800 flex items-center gap-3">
+        <button onclick="showTab('arch')" class="tab-btn text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300" data-tab="arch">Architecture</button>
+        <button onclick="showTab('plan')" class="tab-btn text-xs px-2 py-1 rounded text-zinc-500" data-tab="plan">Port Plan</button>
+        <button onclick="showTab('events')" class="tab-btn text-xs px-2 py-1 rounded text-zinc-500" data-tab="events">Live Events</button>
+      </div>
+      <div id="tab-arch" class="tab-content flex-1 col-scroll p-4">
+        <div id="arch-diagram" class="text-zinc-400 text-sm"></div>
+      </div>
+      <div id="tab-plan" class="tab-content flex-1 col-scroll p-4 hidden">
+        <div id="plan-content" class="text-zinc-400 text-sm"></div>
+      </div>
+      <div id="tab-events" class="tab-content flex-1 col-scroll p-3 hidden">
+        <div id="event-log" class="space-y-1 font-mono text-xs"></div>
+      </div>
+    </section>
+
+    <!-- Right: Resource Inspector -->
+    <section class="w-[320px] flex flex-col">
+      <div class="px-3 py-2 border-b border-zinc-800">
+        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Original Binary Inspector</span>
+      </div>
+      <div id="resource-list" class="col-scroll flex-1 p-2 space-y-1"></div>
+      <div class="px-3 py-2 border-t border-zinc-800">
+        <div class="flex justify-between text-xs text-zinc-500">
+          <span id="res-count">-- resources</span>
+          <span id="res-size">-- MB total</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-14 right-4 z-50 space-y-2 w-80"></div>
+
+  <script>
+    // === Config ===
+    const APM_BASE = 'http://localhost:3032';
+    const SSE_URL = APM_BASE + '/api/ag-ui/events';
+    const POLL_INTERVAL = 5000;
+    let sseConnection = null;
+    let activeFilter = 'all';
+    let gapData = [];
+    let resourceData = [];
+    let archData = null;
+
+    // === SSE with HTTP fallback ===
+    function connectSSE() {
+      const dot = document.getElementById('sse-dot');
+      const label = document.getElementById('sse-label');
+      try {
+        sseConnection = new EventSource(SSE_URL + '?agent_id=yjmosaic-showcase');
+        sseConnection.onopen = () => {
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-500 pulse';
+          label.textContent = 'SSE Live';
+          label.className = 'text-xs text-emerald-400';
+          addEvent('system', 'SSE connected');
+        };
+        sseConnection.onmessage = (e) => {
+          try { handleSSEEvent(JSON.parse(e.data)); } catch (_) {}
+        };
+        sseConnection.onerror = () => {
+          dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+          label.textContent = 'HTTP Poll';
+          label.className = 'text-xs text-amber-400';
+          sseConnection.close();
+          sseConnection = null;
+          addEvent('system', 'SSE unavailable, using HTTP polling');
+          startPolling();
+        };
+      } catch (_) { startPolling(); }
+    }
+
+    function startPolling() { setInterval(pollAPM, POLL_INTERVAL); pollAPM(); }
+
+    async function pollAPM() {
+      try {
+        const r = await fetch(APM_BASE + '/api/status');
+        if (r.ok) {
+          const d = await r.json();
+          document.getElementById('apm-dot').className = 'w-2 h-2 rounded-full bg-emerald-500 pulse';
+          document.getElementById('apm-label').className = 'text-xs text-emerald-400';
+          document.getElementById('apm-label').textContent = 'APM Online';
+          if (d.notifications) handleNotifications(d.notifications);
+        }
+      } catch (_) {
+        document.getElementById('apm-dot').className = 'w-2 h-2 rounded-full bg-red-500';
+        document.getElementById('apm-label').className = 'text-xs text-red-400';
+        document.getElementById('apm-label').textContent = 'APM Offline';
+      }
+    }
+
+    function handleSSEEvent(data) {
+      const type = data.event_type || data.type || 'event';
+      const msg = data.message || data.title || JSON.stringify(data).slice(0, 120);
+      addEvent(type, msg);
+      if (data.type === 'gap_update') updateGaps(data.gaps);
+      if (data.type === 'resource_update') updateResources(data.resources);
+      if (data.category === 'upm' || data.category === 'formation') showToast(data);
+    }
+
+    function handleNotifications(notes) {
+      if (!Array.isArray(notes)) return;
+      notes.slice(-3).forEach(n => addEvent(n.type || 'info', n.message || n.title));
+    }
+
+    // === Event Log ===
+    function addEvent(type, msg) {
+      const log = document.getElementById('event-log');
+      const colors = { info: 'text-blue-400', success: 'text-emerald-400', error: 'text-red-400', warning: 'text-amber-400', system: 'text-zinc-500' };
+      const ts = new Date().toLocaleTimeString('en', { hour12: false });
+      const el = document.createElement('div');
+      el.className = 'slide-in';
+      el.innerHTML = `<span class="text-zinc-600">${ts}</span> <span class="${colors[type] || 'text-zinc-400'}">[${type}]</span> <span class="text-zinc-300">${msg}</span>`;
+      log.prepend(el);
+      if (log.children.length > 200) log.lastChild.remove();
+    }
+
+    // === Toast Notifications ===
+    function showToast(data) {
+      const container = document.getElementById('toast-container');
+      const colors = { success: 'border-emerald-500', error: 'border-red-500', warning: 'border-amber-500', info: 'border-blue-500' };
+      const el = document.createElement('div');
+      el.className = `slide-in p-3 rounded-lg bg-zinc-900 border-l-2 ${colors[data.type] || 'border-zinc-600'} shadow-xl`;
+      el.innerHTML = `<div class="text-xs font-semibold text-zinc-200">${data.title || 'Notification'}</div><div class="text-xs text-zinc-400 mt-0.5">${data.message || ''}</div>`;
+      container.appendChild(el);
+      setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 6000);
+    }
+
+    // === Gap Display ===
+    function updateGaps(gaps) { gapData = gaps; renderGaps(); }
+
+    function renderGaps() {
+      const list = document.getElementById('gap-list');
+      const filtered = activeFilter === 'all' ? gapData : gapData.filter(g => g.status === activeFilter);
+      list.innerHTML = filtered.map(g => {
+        const cls = g.status === 'ported' ? 'gap-ported' : g.status === 'partial' ? 'gap-partial' : g.status === 'stub' ? 'gap-stub' : 'gap-missing';
+        const badgeColors = { ported: 'text-emerald-400', partial: 'text-amber-400', stub: 'text-indigo-400', missing: 'text-red-400' };
+        return `<div class="${cls} px-2 py-1.5 rounded-r bg-zinc-900/50 hover:bg-zinc-800/50 cursor-pointer" onclick="showGapDetail('${g.id}')">
+          <div class="flex justify-between items-center"><span class="text-xs font-medium text-zinc-200">${g.name}</span><span class="${badgeColors[g.status] || ''} text-xs uppercase">${g.status}</span></div>
+          <div class="text-xs text-zinc-500 mt-0.5">${g.category} &middot; ${g.id}</div>
+        </div>`;
+      }).join('');
+
+      const total = gapData.length;
+      const ported = gapData.filter(g => g.status === 'ported').length;
+      const partial = gapData.filter(g => g.status === 'partial').length;
+      const stub = gapData.filter(g => g.status === 'stub').length;
+      document.getElementById('gap-summary').textContent = `${ported} ported, ${partial} partial, ${stub} stub, ${total - ported - partial - stub} missing`;
+      document.getElementById('gap-pct').textContent = total ? `${Math.round((ported + partial * 0.5) / total * 100)}%` : '--%';
+    }
+
+    function filterGaps(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.gap-filter').forEach(b => {
+        b.className = b.dataset.filter === filter ? 'gap-filter text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300' : 'gap-filter text-xs px-2 py-0.5 rounded text-zinc-500';
+      });
+      renderGaps();
+    }
+
+    function showGapDetail(id) {
+      const gap = gapData.find(g => g.id === id);
+      if (!gap) return;
+      document.getElementById('plan-content').innerHTML = `<div class="space-y-3">
+        <h3 class="text-lg font-bold text-zinc-100">${gap.name}</h3>
+        <div class="text-xs text-zinc-500">${gap.category} | ${gap.status} | ${gap.id}</div>
+        <div class="text-sm text-zinc-300">${gap.description || ''}</div>
+        ${gap.original ? `<div class="mt-2"><span class="text-xs text-zinc-500">Original:</span><pre class="text-xs text-zinc-400 mt-1 p-2 bg-zinc-900 rounded whitespace-pre-wrap">${gap.original}</pre></div>` : ''}
+        ${gap.port_notes ? `<div class="mt-2"><span class="text-xs text-zinc-500">Port Notes:</span><pre class="text-xs text-zinc-400 mt-1 p-2 bg-zinc-900 rounded whitespace-pre-wrap">${gap.port_notes}</pre></div>` : ''}
+      </div>`;
+      showTab('plan');
+    }
+
+    // === Resource Inspector ===
+    function updateResources(resources) { resourceData = resources; renderResources(); }
+
+    function renderResources() {
+      const list = document.getElementById('resource-list');
+      const catColors = { executable: 'text-red-400', library: 'text-amber-400', runtime: 'text-purple-400', documentation: 'text-rose-400', mask: 'text-emerald-400', theme: 'text-cyan-400', webviewer: 'text-yellow-400', locale: 'text-blue-400', config: 'text-zinc-400' };
+      list.innerHTML = resourceData.map(r => {
+        const color = catColors[r.category] || 'text-zinc-400';
+        const size = r.size ? `<span class="text-zinc-600">${formatSize(r.size)}</span>` : '';
+        return `<div class="flex items-center justify-between px-2 py-1 rounded hover:bg-zinc-800/50">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="${color} text-xs flex-shrink-0 w-12 text-right">${r.category}</span>
+            <span class="text-xs text-zinc-300 truncate">${r.name}</span>
+          </div>
+          ${size}
+        </div>`;
+      }).join('');
+      const totalSize = resourceData.reduce((s, r) => s + (r.size || 0), 0);
+      document.getElementById('res-count').textContent = `${resourceData.length} resources`;
+      document.getElementById('res-size').textContent = formatSize(totalSize);
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + 'B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + 'KB';
+      return (bytes / 1048576).toFixed(1) + 'MB';
+    }
+
+    // === Tab Switching ===
+    function showTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = b.dataset.tab === tab ? 'tab-btn text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300' : 'tab-btn text-xs px-2 py-1 rounded text-zinc-500';
+      });
+    }
+
+    // === Clock ===
+    setInterval(() => {
+      document.getElementById('clock').textContent = new Date().toLocaleTimeString('en', { hour12: false });
+    }, 1000);
+
+    // === Architecture Diagram (interactive, from architecture.json) ===
+    function loadArchitecture() {
+      fetch('/data/projects/yjmosaic-port/architecture.json', {cache:'no-store'})
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { archData = data; renderArchitecture(data); })
+        .catch(() => renderArchitectureFallback());
+    }
+
+    function renderArchitecture(data) {
+      if (!data || !data.dep_graph) return renderArchitectureFallback();
+      const g = data.dep_graph;
+      const container = document.getElementById('arch-diagram');
+      const nodeMap = {};
+      g.nodes.forEach(n => nodeMap[n.id] = n);
+      const portEdges = g.edges.filter(e => e.type === 'port');
+      const depEdges = g.edges.filter(e => !e.type);
+      const origNodes = g.nodes.filter(n => n.group === 'original');
+      const portNodes = g.nodes.filter(n => n.group === 'port');
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-zinc-100">Dependency Graph</h2>
+            <div class="flex gap-2">
+              <button onclick="showArchView('graph')" class="arch-btn text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300" data-view="graph">Graph</button>
+              <button onclick="showArchView('mapping')" class="arch-btn text-xs px-2 py-0.5 rounded text-zinc-500" data-view="mapping">Port Mapping</button>
+              <button onclick="showArchView('structure')" class="arch-btn text-xs px-2 py-0.5 rounded text-zinc-500" data-view="structure">Directory</button>
+            </div>
+          </div>
+
+          <div id="arch-graph" class="arch-view">
+            <svg id="dep-svg" viewBox="0 0 820 340" class="w-full rounded-lg bg-zinc-900/50 border border-zinc-800" style="min-height:300px">
+              <defs>
+                <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52525b"/></marker>
+                <marker id="parr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#10b981"/></marker>
+              </defs>
+              <rect x="10" y="5" width="390" height="325" rx="6" fill="none" stroke="#3f3f46" stroke-dasharray="4" opacity="0.5"/>
+              <text x="20" y="22" fill="#71717a" font-size="10" font-family="system-ui">AndreaMosaic (Windows/C++/MFC)</text>
+              <rect x="420" y="5" width="390" height="325" rx="6" fill="none" stroke="#065f46" stroke-dasharray="4" opacity="0.5"/>
+              <text x="430" y="22" fill="#6ee7b7" font-size="10" font-family="system-ui">YJMosaic (macOS/Swift 6)</text>
+              ${origNodes.map((n, i) => {
+                const col = i % 5, row = Math.floor(i / 5);
+                const x = 20 + col * 76, y = 35 + row * 48;
+                const colors = { executable: '#ef4444', library: '#f59e0b', runtime: '#a78bfa' };
+                const c = colors[n.type] || '#71717a';
+                return `<g><rect x="${x}" y="${y}" width="70" height="35" rx="4" fill="#18181b" stroke="${c}" stroke-width="1"/>` +
+                  `<text x="${x+35}" y="${y+15}" text-anchor="middle" fill="${c}" font-size="7" font-family="system-ui">${n.label}</text>` +
+                  (n.size ? `<text x="${x+35}" y="${y+26}" text-anchor="middle" fill="#52525b" font-size="6.5" font-family="system-ui">${n.size}</text>` : '') +
+                  `</g>`;
+              }).join('')}
+              ${portNodes.map((n, i) => {
+                const col = i % 4, row = Math.floor(i / 4);
+                const x = 435 + col * 92, y = 35 + row * 48;
+                const c = n.type === 'binary' ? '#10b981' : '#34d399';
+                return `<g><rect x="${x}" y="${y}" width="82" height="35" rx="4" fill="#052e16" stroke="${c}" stroke-width="1"/>` +
+                  `<text x="${x+41}" y="${y+15}" text-anchor="middle" fill="${c}" font-size="7.5" font-family="system-ui">${n.label}</text>` +
+                  (n.size ? `<text x="${x+41}" y="${y+26}" text-anchor="middle" fill="#065f46" font-size="6.5" font-family="system-ui">${n.size}</text>` : '') +
+                  `</g>`;
+              }).join('')}
+              ${portEdges.map(e => {
+                const fi = origNodes.findIndex(n => n.id === e.from);
+                const ti = portNodes.findIndex(n => n.id === e.to);
+                if (fi < 0 || ti < 0) return '';
+                const fx = 20 + (fi % 5) * 76 + 70, fy = 35 + Math.floor(fi / 5) * 48 + 17;
+                const tx = 435 + (ti % 4) * 92, ty = 35 + Math.floor(ti / 4) * 48 + 17;
+                return `<line x1="${fx}" y1="${fy}" x2="${tx}" y2="${ty}" stroke="#10b981" stroke-width="0.7" opacity="0.35" class="port-edge" marker-end="url(#parr)"/>`;
+              }).join('')}
+            </svg>
+            <div class="flex gap-4 mt-2 text-xs text-zinc-600">
+              <span><span class="inline-block w-2 h-2 rounded-sm bg-red-500 mr-1"></span>executable</span>
+              <span><span class="inline-block w-2 h-2 rounded-sm bg-amber-500 mr-1"></span>library</span>
+              <span><span class="inline-block w-2 h-2 rounded-sm bg-purple-400 mr-1"></span>runtime</span>
+              <span><span class="inline-block w-2 h-2 rounded-sm bg-emerald-500 mr-1"></span>port target</span>
+              <span class="text-emerald-600">--- port mapping</span>
+            </div>
+          </div>
+
+          <div id="arch-mapping" class="arch-view hidden">
+            <div class="grid grid-cols-3 gap-px bg-zinc-800 rounded-lg overflow-hidden text-xs">
+              <div class="bg-zinc-900 px-3 py-2 font-semibold text-zinc-400">Original</div>
+              <div class="bg-zinc-900 px-3 py-2 font-semibold text-zinc-400">Port Target</div>
+              <div class="bg-zinc-900 px-3 py-2 font-semibold text-zinc-400">Mapping</div>
+              ${portEdges.map(e => {
+                const from = nodeMap[e.from] || {label: e.from};
+                const to = nodeMap[e.to] || {label: e.to};
+                return `<div class="bg-zinc-950 px-3 py-1.5 text-red-300">${from.label}</div><div class="bg-zinc-950 px-3 py-1.5 text-emerald-300">${to.label}</div><div class="bg-zinc-950 px-3 py-1.5 text-zinc-400">${e.label || 'ported to'}</div>`;
+              }).join('')}
+            </div>
+          </div>
+
+          <div id="arch-structure" class="arch-view hidden">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h3 class="text-sm font-semibold text-zinc-300 mb-2">Original (Windows)</h3>
+                <pre class="text-xs text-zinc-400 p-3 bg-zinc-900 rounded-lg leading-relaxed whitespace-pre">${data.dir_structure ? data.dir_structure.original : 'N/A'}</pre>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-emerald-300 mb-2">Port (macOS)</h3>
+                <pre class="text-xs text-zinc-400 p-3 bg-zinc-900 rounded-lg leading-relaxed whitespace-pre">${data.dir_structure ? data.dir_structure.port : 'N/A'}</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 text-xs text-zinc-500">
+            <span>${origNodes.length} original components</span>
+            <span>${portNodes.length} port targets</span>
+            <span>${portEdges.length} port mappings</span>
+            <span>${depEdges.length} internal deps</span>
+          </div>
+        </div>`;
+    }
+
+    function showArchView(view) {
+      document.querySelectorAll('.arch-view').forEach(el => el.classList.add('hidden'));
+      document.getElementById('arch-' + view).classList.remove('hidden');
+      document.querySelectorAll('.arch-btn').forEach(b => {
+        b.className = b.dataset.view === view ? 'arch-btn text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300' : 'arch-btn text-xs px-2 py-0.5 rounded text-zinc-500';
+      });
+    }
+
+    function renderArchitectureFallback() {
+      document.getElementById('arch-diagram').innerHTML = `
+        <div class="space-y-4">
+          <h2 class="text-lg font-bold text-zinc-100">YJMosaic Port Architecture</h2>
+          <pre class="text-xs text-zinc-400 leading-relaxed p-3 bg-zinc-900 rounded-lg">
+MFC CDialog UI ───────────────▶ SwiftUI Views
+GDI+ Bitmap/Image ────────────▶ CGImage / CIImage
+ConcRT + OpenMP ──────────────▶ Swift TaskGroup + Metal
+libtiff ──────────────────────▶ ImageIO (CGImageSource)
+libpng ───────────────────────▶ ImageIO
+libexif ──────────────────────▶ CGImageSourceCopyProperties
+zlib ─────────────────────────▶ Compression framework
+libcurl ──────────────────────▶ URLSession
+GNU gettext .mo ──────────────▶ String Catalogs
+CSimpleIni ───────────────────▶ Codable + UserDefaults
+AVI/VFW codecs ───────────────▶ AVFoundation</pre>
+          <p class="text-xs text-zinc-500">Could not load architecture.json. Ensure server root is ~/Developer/ccem/showcase/</p>
+        </div>`;
+    }
+
+    // === Init ===
+    connectSSE();
+    pollAPM();
+    loadArchitecture();
+
+    fetch('/data/projects/yjmosaic-port/gaps.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : [])
+      .then(gaps => { if (gaps.length) updateGaps(gaps); })
+      .catch(() => {});
+
+    fetch('/data/projects/yjmosaic-port/resources.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : [])
+      .then(res => { if (res.length) updateResources(res); })
+      .catch(() => {});
+
+    // Load port plan into Plan tab
+    fetch('/data/projects/yjmosaic-port/plan.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : null)
+      .then(plan => { if (plan) renderPlan(plan); })
+      .catch(() => {});
+
+    function renderPlan(plan) {
+      const el = document.getElementById('plan-content');
+      const waveColors = ['emerald','blue','amber','purple','cyan','zinc'];
+      el.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-zinc-100">${plan.plan}</h2>
+            <span class="text-xs text-zinc-500">${plan.total_gaps} gaps: ${plan.ported} ported, ${plan.partial} partial, ${plan.stub} stub, ${plan.missing} missing</span>
+          </div>
+          ${plan.waves.map((w, wi) => {
+            const c = waveColors[wi % waveColors.length];
+            return `<div class="border border-zinc-800 rounded-lg overflow-hidden">
+              <div class="px-3 py-2 bg-zinc-900 flex items-center justify-between border-b border-zinc-800">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-${c}-400">Wave ${w.wave}</span>
+                  <span class="text-xs text-zinc-300">${w.name}</span>
+                </div>
+                <span class="text-xs px-1.5 py-0.5 rounded bg-${c}-500/10 text-${c}-400 ring-1 ring-${c}-500/20">${w.priority}</span>
+              </div>
+              <div class="p-2 space-y-1">
+                ${w.stories.map(s => `<div class="px-2 py-1.5 rounded hover:bg-zinc-800/50 cursor-pointer" onclick="showStoryDetail('${s.id}',this)">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono text-zinc-500">${s.id}</span>
+                    <span class="text-xs text-zinc-200">${s.title}</span>
+                  </div>
+                  <div class="text-xs text-zinc-500 mt-0.5">${s.gap_ids.join(', ')} | ${s.files.length} files</div>
+                </div>`).join('')}
+              </div>
+            </div>`;
+          }).join('')}
+          ${plan.skipped_gaps ? `<div class="text-xs text-zinc-600 mt-2">Skipped: ${plan.skipped_gaps.map(s => s.id + ' (' + s.reason + ')').join(', ')}</div>` : ''}
+        </div>`;
+    }
+
+    function showStoryDetail(storyId, el) {
+      // Find story in plan data
+      if (!window._planData) return;
+      for (const w of window._planData.waves) {
+        const s = w.stories.find(s => s.id === storyId);
+        if (s) {
+          const detail = document.createElement('div');
+          detail.className = 'mt-2 p-2 bg-zinc-900/80 rounded text-xs space-y-1 border border-zinc-700';
+          detail.innerHTML = `<div class="text-zinc-300">${s.description}</div>
+            <div class="text-zinc-500 mt-1">Files: ${s.files.join(', ')}</div>
+            <div class="text-zinc-500">Acceptance:</div>
+            <ul class="list-disc pl-4 text-zinc-400">${s.acceptance.map(a => '<li>' + a + '</li>').join('')}</ul>`;
+          // Toggle
+          const existing = el.querySelector('.bg-zinc-900\\/80');
+          if (existing) { existing.remove(); return; }
+          el.appendChild(detail);
+          return;
+        }
+      }
+    }
+
+    // Store plan data globally for detail lookup
+    fetch('/data/projects/yjmosaic-port/plan.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : null)
+      .then(plan => { window._planData = plan; })
+      .catch(() => {});
+  </script>
+</body>
+</html>

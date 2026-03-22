@@ -34,6 +34,11 @@ struct MenuBarView: View {
                 Divider()
                 upmSection
             }
+            if let usage = monitor.usageSummary,
+               (usage.totalInputTokens + usage.totalOutputTokens) > 0 {
+                Divider()
+                usageSection(usage)
+            }
             if !monitor.agUiEvents.isEmpty {
                 Divider()
                 recentActivitySection
@@ -1092,6 +1097,84 @@ struct MenuBarView: View {
             }
         }
         .padding(.bottom, 4)
+    }
+
+    // MARK: - Claude Usage Section
+
+    private func usageSection(_ usage: UsageSummary) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Claude Usage", systemImage: "chart.bar.fill")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if let level = usage.effortLevel {
+                    Text(level)
+                        .font(.caption2)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(effortLevelColor(level).opacity(0.15))
+                        .foregroundStyle(effortLevelColor(level))
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Tokens")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text(usage.totalTokensFormatted)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
+
+                if let model = usage.topModel, !model.isEmpty {
+                    Divider()
+                        .frame(height: 24)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Model")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                        Text(model)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                    }
+                }
+
+                Divider()
+                    .frame(height: 24)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Tool Calls")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text("\(usage.totalToolCalls)")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 6)
+        }
+    }
+
+    private func effortLevelColor(_ level: String) -> Color {
+        switch level {
+        case "intensive": return .red
+        case "high": return .orange
+        case "medium": return .yellow
+        default: return .green
+        }
     }
 
     // MARK: - Helpers

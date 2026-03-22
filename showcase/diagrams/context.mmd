@@ -1,0 +1,25 @@
+%% C4 Level 1 - System Context Diagram
+%% CCEM: AI Agent Monitoring Platform
+graph TB
+    dev["<b>Developer</b><br/>Uses AI coding assistants<br/>and monitors agent activity"]
+    agent["<b>AI Coding Agent</b><br/>Autonomous coding sessions<br/>managed by the platform"]
+
+    ccem["<b>CCEM Platform</b><br/><i>AI Agent Monitoring & Orchestration</i><br/><br/>Provides real-time visibility into<br/>AI agent sessions, formations,<br/>and performance metrics"]
+
+    pm["<b>Project Management</b><br/><i>External System</i><br/><br/>Work item tracking,<br/>sprint boards, drift detection"]
+    vcs["<b>Version Control</b><br/><i>External System</i><br/><br/>Repository sync,<br/>commit tracking, branch state"]
+    protocol["<b>AI Interaction Protocol</b><br/><i>External Standard</i><br/><br/>Event-based agent-user<br/>communication layer"]
+
+    dev -->|"Monitors agents,<br/>deploys formations,<br/>reviews metrics"| ccem
+    agent -->|"Registers sessions,<br/>sends heartbeats,<br/>reports status"| ccem
+    ccem -->|"Syncs work items,<br/>detects drift"| pm
+    ccem -->|"Reads repo state,<br/>tracks changes"| vcs
+    ccem -->|"Emits & consumes<br/>agent lifecycle events"| protocol
+
+    classDef person fill:#08427B,stroke:#073B6F,color:#fff,stroke-width:2px
+    classDef system fill:#1168BD,stroke:#0E5CA8,color:#fff,stroke-width:2px
+    classDef external fill:#999999,stroke:#8A8A8A,color:#fff,stroke-width:2px
+
+    class dev,agent person
+    class ccem system
+    class pm,vcs,protocol external

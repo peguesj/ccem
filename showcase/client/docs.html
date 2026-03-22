@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIKI — Technical Documentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'], mono: ['Fira Code','ui-monospace','monospace'] }
+      }}
+    }
+  </script>
+  <style>
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono, code, pre { font-family: 'Fira Code', ui-monospace, monospace; }
+    body { background: #09090b; color: #a1a1aa; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #18181b; } ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    .fs-9 { font-size: 9px; line-height: 13px; }
+    .fs-10 { font-size: 10px; line-height: 14px; }
+    .fs-11 { font-size: 11px; line-height: 15px; }
+    .nav-link.active { color: #e4e4e7; background: #27272a; }
+    .nav-link { transition: all 0.1s; }
+    .section { scroll-margin-top: 60px; }
+    .method-get { color: #34d399; }
+    .method-post { color: #fbbf24; }
+    .method-put { color: #60a5fa; }
+    .method-delete { color: #f87171; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-zinc-950/95 border-b border-zinc-800/60" style="backdrop-filter:blur(8px);">
+    <div class="flex items-center justify-between px-6 py-2.5">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="bg-indigo-600 text-white font-mono font-bold px-2.5 py-1 rounded tracking-widest text-sm hover:bg-indigo-500 transition-colors">VIKI</a>
+        <span class="text-zinc-700">/</span>
+        <span class="text-zinc-300 font-medium text-sm">Technical Documentation</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-mono fs-9 text-zinc-600 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded">v2.0.0</span>
+        <a href="index.html" class="font-mono fs-9 text-zinc-500 hover:text-zinc-200 transition-colors px-2 py-1 rounded hover:bg-zinc-800">← Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex" style="min-height: calc(100vh - 50px);">
+
+    <!-- Left Nav -->
+    <nav class="w-52 shrink-0 border-r border-zinc-800/50 bg-zinc-950 sticky top-[50px] h-screen overflow-y-auto p-3 space-y-4">
+      <div>
+        <div class="font-mono fs-9 text-zinc-700 uppercase tracking-widest mb-2 px-2">Overview</div>
+        <a href="#overview" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Introduction</a>
+        <a href="#architecture" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Architecture</a>
+        <a href="#data-flow" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Data Flow</a>
+      </div>
+      <div>
+        <div class="font-mono fs-9 text-zinc-700 uppercase tracking-widest mb-2 px-2">API Reference</div>
+        <a href="#api-public" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Public Endpoints</a>
+        <a href="#api-auth" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Auth Required</a>
+        <a href="#api-passkey" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">WebAuthn / Passkey</a>
+        <a href="#api-liveview" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">LiveView Pages</a>
+      </div>
+      <div>
+        <div class="font-mono fs-9 text-zinc-700 uppercase tracking-widest mb-2 px-2">Setup</div>
+        <a href="#setup-local" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Local Development</a>
+        <a href="#setup-azure" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Azure Deployment</a>
+        <a href="#setup-vikiagent" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">VikiAgent macOS</a>
+        <a href="#setup-env" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Environment Vars</a>
+      </div>
+      <div>
+        <div class="font-mono fs-9 text-zinc-700 uppercase tracking-widest mb-2 px-2">Formation</div>
+        <a href="#formation-overview" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Overview</a>
+        <a href="#formation-deploy" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Deployment</a>
+        <a href="#formation-monitor" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Monitoring</a>
+      </div>
+      <div>
+        <div class="font-mono fs-9 text-zinc-700 uppercase tracking-widest mb-2 px-2">Operations</div>
+        <a href="#azure-resources" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Azure Resources</a>
+        <a href="#security" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Security</a>
+        <a href="#troubleshooting" class="nav-link block px-2 py-1 rounded fs-10 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900">Troubleshooting</a>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="flex-1 max-w-4xl mx-auto px-8 py-8 space-y-12">
+
+      <!-- Overview -->
+      <section id="overview" class="section">
+        <div class="flex items-center gap-3 mb-4">
+          <h1 class="text-zinc-100 font-bold text-xl">VIKI — Vectorized Intelligence &amp; Knowledge Infrastructure</h1>
+        </div>
+        <p class="text-zinc-400 text-sm leading-relaxed mb-4">VIKI is a self-hosted AI conversation memory and retrieval platform. It captures, compresses, and semantically indexes all AI conversations and screen recordings across multiple AI platforms, creating a personal data lake with an enterprise-grade RAG engine.</p>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-zinc-900/60 border border-zinc-800/50 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-1">Primary System</div>
+            <div class="font-mono fs-9 text-zinc-500 leading-relaxed">Multi-format conversation storage (Parquet + JSON). Vector search with Azure AI Search. Medallion architecture (Bronze/Silver/Gold). Event-driven ingestion pipeline.</div>
+          </div>
+          <div class="bg-zinc-900/60 border border-zinc-800/50 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-1">Companion: OSYJ</div>
+            <div class="font-mono fs-9 text-zinc-500 leading-relaxed">Open Source Your Journey. Personal development tracking. AI coaching (GPT-4o). Strategic thinking frameworks. Life event analytics. Multi-modal capture.</div>
+          </div>
+          <div class="bg-zinc-900/60 border border-zinc-800/50 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-1">Current Status</div>
+            <div class="font-mono fs-9 text-zinc-500 leading-relaxed">Active Development · feature/vikiagent-resource-dashboard. CP-50 in progress. 10,517 chunks captured. 9 Azure services in East US production.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Architecture -->
+      <section id="architecture" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-indigo-500 inline-block"></span>
+          Architecture Overview
+        </h2>
+
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4 mb-4">
+          <div class="font-mono fs-9 text-zinc-600 mb-3 uppercase tracking-widest">4-Layer System Architecture</div>
+          <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" class="w-full" style="max-height:200px;">
+            <defs>
+              <marker id="da" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#52525b"/></marker>
+            </defs>
+
+            <!-- L1 -->
+            <rect x="10" y="10" width="680" height="44" rx="3" fill="#1e1b4b" stroke="#4338ca" stroke-width="1"/>
+            <text x="20" y="26" fill="#818cf8" font-size="8" font-family="Fira Code" font-weight="600">LAYER 1 — DATA CAPTURE</text>
+            <text x="20" y="42" fill="#6366f1" font-size="7.5" font-family="Fira Code">macOS User → VikiAgent.app (Swift 5.9) → MemoryVault local cache (10,517 chunks) → Screen recordings + conversations</text>
+
+            <!-- L2 -->
+            <rect x="10" y="64" width="680" height="44" rx="3" fill="#1c1917" stroke="#d97706" stroke-width="1"/>
+            <text x="20" y="80" fill="#fcd34d" font-size="8" font-family="Fira Code" font-weight="600">LAYER 2 — PROCESSING FORMATION</text>
+            <text x="20" y="96" fill="#d97706" font-size="7.5" font-family="Fira Code">Python 3.11 (23 agents) → ffmpeg + libsvtav1 (AV1/WebM · 65% compression) → Azure Event Hubs (Kafka) → Bronze ingestion</text>
+
+            <!-- L3 -->
+            <rect x="10" y="118" width="680" height="44" rx="3" fill="#052e16" stroke="#059669" stroke-width="1"/>
+            <text x="20" y="134" fill="#6ee7b7" font-size="8" font-family="Fira Code" font-weight="600">LAYER 3 — PLATFORM</text>
+            <text x="20" y="150" fill="#10b981" font-size="7.5" font-family="Fira Code">Phoenix/Elixir API + LiveView (11 pages) → PostgreSQL (viki_metadata) → Azure Blob ADLS Gen2 (Bronze→Silver→Gold) → Cosmos DB</text>
+
+            <!-- L4 -->
+            <rect x="10" y="172" width="680" height="44" rx="3" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1"/>
+            <text x="20" y="188" fill="#c4b5fd" font-size="8" font-family="Fira Code" font-weight="600">LAYER 4 — INTELLIGENCE</text>
+            <text x="20" y="204" fill="#8b5cf6" font-size="7.5" font-family="Fira Code">Azure AI Search (HNSW vector) → Azure OpenAI (text-embedding-3-large · gpt-4o) → Key Vault + VNet (security)</text>
+
+            <!-- Connector arrows -->
+            <line x1="350" y1="54" x2="350" y2="62" stroke="#52525b" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#da)"/>
+            <line x1="350" y1="108" x2="350" y2="116" stroke="#52525b" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#da)"/>
+            <line x1="350" y1="162" x2="350" y2="170" stroke="#52525b" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#da)"/>
+          </svg>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Medallion Architecture</div>
+            <div class="space-y-2 font-mono fs-9">
+              <div class="flex items-start gap-2"><span class="text-amber-600 bg-amber-950/40 px-1.5 py-0.5 rounded w-14 text-center shrink-0">Bronze</span><span class="text-zinc-500">Raw immutable data (Parquet + Zstd). Partitioned by date/platform/user. 1TB capacity, 90-day retention.</span></div>
+              <div class="flex items-start gap-2"><span class="text-zinc-400 bg-zinc-800/60 px-1.5 py-0.5 rounded w-14 text-center shrink-0">Silver</span><span class="text-zinc-500">Validated &amp; normalized data. Schema enforcement. Deduplication. Quality checks.</span></div>
+              <div class="flex items-start gap-2"><span class="text-yellow-500 bg-yellow-950/40 px-1.5 py-0.5 rounded w-14 text-center shrink-0">Gold</span><span class="text-zinc-500">Analytics-ready aggregations. Daily/weekly/monthly rollups. Pre-computed metrics. Business intelligence.</span></div>
+            </div>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Resource Group</div>
+            <div class="font-mono fs-9 text-zinc-500 space-y-1">
+              <div><span class="text-zinc-400">Name:</span> rg-yj-unified-prod-eus</div>
+              <div><span class="text-zinc-400">Region:</span> East US (primary)</div>
+              <div><span class="text-zinc-400">Services:</span> 40+ Azure resources deployed</div>
+              <div><span class="text-zinc-400">Cost:</span> ~$1,250/mo (with 30% reserved discount)</div>
+              <div><span class="text-zinc-400">Shared:</span> VIKI + OSYJ systems</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Flow -->
+      <section id="data-flow" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-amber-500 inline-block"></span>
+          Data Flow
+        </h2>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4 font-mono fs-9 text-zinc-500 leading-relaxed">
+          <pre class="overflow-x-auto"><code>macOS Screen Recording
+        ↓
+VikiAgent.app (Swift 5.9, Cocoa)
+  └─ captures screen + audio to ~/MemoryVault
+        ↓
+Python Formation (23 parallel agents)
+  ├─ ffmpeg AV1/WebM compression (65% ratio, 4.2MB → 1.4MB avg)
+  ├─ Opus audio extraction
+  ├─ metadata extraction (duration, resolution, platform)
+  └─ POST → Azure Event Hubs (conversations-raw topic)
+        ↓
+Azure Event Hubs (Kafka protocol)
+  ├─ conversations-raw        → Bronze layer ingestion
+  ├─ conversations-enriched   → Silver layer processing
+  ├─ conversations-gold       → Gold layer analytics
+  ├─ osyj-events-intake       → OSYJ life events
+  ├─ osyj-coaching-conversations
+  ├─ osyj-strategic-sessions
+  ├─ osyj-reflections
+  └─ omi-transcripts-realtime → Omi wearable audio
+        ↓
+Phoenix/Elixir (port 6769)
+  ├─ Oban: InsightGeneratorWorker (hourly)
+  ├─ Oban: ExpertiseIngestionWorker (daily 03:00)
+  ├─ Oban: IntegrationSyncWorker (every 30min)
+  └─ stores metadata → PostgreSQL (viki_metadata)
+        ↓
+Azure Blob ADLS Gen2 (styjprodeus)
+  ├─ /bronze/  raw compressed media
+  ├─ /silver/  validated + deduplicated
+  └─ /gold/    analytics aggregations
+        ↓
+Azure AI Search (srch-yj-unified-prod-eus)
+  ├─ text-embedding-3-large → vector embeddings
+  ├─ HNSW index → approximate nearest neighbor
+  └─ hybrid search = BM25 + vector similarity + semantic reranking
+        ↓
+VIKI API / LiveView
+  └─ semantic retrieval, analytics, media streaming, insights</code></pre>
+        </div>
+      </section>
+
+      <!-- API Public -->
+      <section id="api-public" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-1 flex items-center gap-2">
+          <span class="w-4 h-px bg-emerald-500 inline-block"></span>
+          Public API Endpoints
+        </h2>
+        <p class="text-zinc-600 fs-10 mb-4">No authentication required. These endpoints are accessible without a bearer token.</p>
+        <div class="space-y-2">
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-get font-mono font-semibold fs-10 w-12">GET</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/health</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">HealthController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400 mb-1.5">Returns system health status. Used by VikiAgent polling and external monitoring.</p>
+              <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto">{"status": "ok", "version": "0.1.0", "timestamp": "2026-03-16T..."}</pre>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-get font-mono font-semibold fs-10 w-12">GET</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/sync/status</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">SyncStatusController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400 mb-1.5">Returns current formation sync status. Polled by Python formation agents to check system state.</p>
+              <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto">{"status": "running", "agents": 23, "chunks_processed": 10517, "last_checkin": "..."}</pre>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-post font-mono font-semibold fs-10 w-12">POST</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/sync/status</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">SyncStatusController#checkin</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400 mb-1.5">Formation agent check-in. Updates last-seen timestamp and progress data.</p>
+              <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto">Body: {"agent_id": "agent-01", "chunks": 450, "status": "running"}</pre>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-get font-mono font-semibold fs-10 w-12">GET</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/insights/pending</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">InsightsController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400 mb-1.5">Returns pending AI insights for delivery to VikiAgent. Polled every 5 minutes by VikiAgent.</p>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-post font-mono font-semibold fs-10 w-12">POST</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/insights/:id/acknowledge</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">InsightsController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400">Mark an insight as delivered. Called by VikiAgent after displaying OS notification.</p>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-get font-mono font-semibold fs-10 w-12">GET</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/expertise/search</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">InsightsController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400 mb-1.5">Full-text search over viki_knowledge_items. Query param: <code class="font-mono fs-9 text-indigo-400">?q=elixir</code></p>
+            </div>
+          </div>
+
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg overflow-hidden">
+            <div class="flex items-center gap-3 px-4 py-2 border-b border-zinc-800/40">
+              <span class="method-get font-mono font-semibold fs-10 w-12">GET</span>
+              <span class="font-mono text-zinc-200 fs-10">/api/viki-interface/settings</span>
+              <span class="ml-auto font-mono fs-9 text-zinc-600">VikiInterfaceController</span>
+            </div>
+            <div class="px-4 py-2">
+              <p class="fs-10 text-zinc-400">Returns VIKI Interface display settings (tile layout, face blend mode, speech config).</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- API Auth -->
+      <section id="api-auth" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-1 flex items-center gap-2">
+          <span class="w-4 h-px bg-amber-500 inline-block"></span>
+          Auth-Required API Endpoints
+        </h2>
+        <div class="bg-amber-950/20 border border-amber-900/40 rounded p-2 mb-4">
+          <p class="fs-10 text-amber-300 font-mono">All endpoints below require <code>Authorization: Bearer &lt;token&gt;</code> header. Tokens issued via session login or /auth/redeem OTP flow.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="font-mono fs-9 text-zinc-600 border-b border-zinc-800/60">
+                <th class="text-left pb-2 w-12">Method</th>
+                <th class="text-left pb-2">Endpoint</th>
+                <th class="text-left pb-2">Description</th>
+                <th class="text-left pb-2">Controller</th>
+              </tr>
+            </thead>
+            <tbody class="font-mono fs-9 divide-y divide-zinc-800/20">
+              <tr class="py-1"><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/search</td><td class="text-zinc-600">Semantic + hybrid search across conversations</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/analytics/metrics</td><td class="text-zinc-600">Aggregate metrics (counts, trends)</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/analytics/distribution</td><td class="text-zinc-600">Platform distribution breakdown</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/analytics/timeseries</td><td class="text-zinc-600">Time-series conversation data</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/conversations</td><td class="text-zinc-600">List conversations (paginated)</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/conversations/:id</td><td class="text-zinc-600">Get single conversation with messages</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/explorer/layers</td><td class="text-zinc-600">List medallion layers (bronze/silver/gold)</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/explorer/files/:layer</td><td class="text-zinc-600">List files in a medallion layer</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/explorer/preview/:layer/*path</td><td class="text-zinc-600">Preview file content from storage</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/memoryvault/media</td><td class="text-zinc-600">List media chunks (paginated)</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/memoryvault/media/:id</td><td class="text-zinc-600">Get single media chunk metadata</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/memoryvault/stats</td><td class="text-zinc-600">Media vault aggregate stats</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/memoryvault/stream/:id</td><td class="text-zinc-600">Stream media chunk (video/audio)</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/memoryvault/tiles</td><td class="text-zinc-600">Tile metadata for VIKI Interface cube</td><td class="text-zinc-700">ApiController</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/v1/telemetry/ingest</td><td class="text-zinc-600">Ingest Claude Code hook telemetry</td><td class="text-zinc-700">TelemetryController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/v1/telemetry/stats</td><td class="text-zinc-600">Telemetry aggregate statistics</td><td class="text-zinc-700">TelemetryController</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/v1/dev-events/ingest</td><td class="text-zinc-600">Ingest developer behavior events (UEBA)</td><td class="text-zinc-700">DevEventsController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/v1/dev-events</td><td class="text-zinc-600">List developer events</td><td class="text-zinc-700">DevEventsController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/v1/dev-events/patterns</td><td class="text-zinc-600">Behavior pattern analysis</td><td class="text-zinc-700">DevEventsController</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/viki-interface/tiles</td><td class="text-zinc-600">Server-side tile cache for 3D cube</td><td class="text-zinc-700">VikiInterfaceController</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/viki-interface/speak</td><td class="text-zinc-600">Neural TTS → audio/mpeg (Azure Speech)</td><td class="text-zinc-700">VikiInterfaceController</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/viki-interface/avatar/synthesize</td><td class="text-zinc-600">Avatar video synthesis request</td><td class="text-zinc-700">VikiInterfaceController</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WebAuthn -->
+      <section id="api-passkey" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-1 flex items-center gap-2">
+          <span class="w-4 h-px bg-violet-500 inline-block"></span>
+          WebAuthn / Passkey API
+        </h2>
+        <p class="text-zinc-600 fs-10 mb-4">Requires active browser session (cookie). Implements W3C WebAuthn Level 2 via wax_ 0.6 library. Passkeys stored in viki_webauthn_credentials table.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="font-mono fs-9 text-zinc-600 border-b border-zinc-800/60"><th class="text-left pb-2 w-12">Method</th><th class="text-left pb-2">Endpoint</th><th class="text-left pb-2">Description</th></tr></thead>
+            <tbody class="font-mono fs-9 divide-y divide-zinc-800/20">
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/passkey/register/options</td><td class="text-zinc-600">Get WebAuthn registration challenge</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/passkey/register</td><td class="text-zinc-600">Complete passkey registration with attestation</td></tr>
+              <tr><td class="py-1.5 method-get">GET</td><td class="text-zinc-400">/api/passkey/authenticate/options</td><td class="text-zinc-600">Get WebAuthn authentication challenge</td></tr>
+              <tr><td class="py-1.5 method-post">POST</td><td class="text-zinc-400">/api/passkey/authenticate</td><td class="text-zinc-600">Complete passkey authentication + OTP redirect if return_url present</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-3 bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+          <div class="font-mono fs-9 text-zinc-600 uppercase tracking-widest mb-2">VikiAgent Auth Flow</div>
+          <pre class="font-mono fs-9 text-zinc-500 leading-relaxed"><code>1. VikiAgent: "Authenticate" menu action
+2. Opens system browser: /login?return_url=vikiagent://auth/callback
+3. User authenticates via passkey (Touch ID / Face ID)
+4. PasskeyController generates OTP → redirects to /auth/redeem?token=OTP&return_url=vikiagent://...
+5. AuthTokenController validates OTP → redirects to vikiagent://auth/callback?session=...
+6. VikiAgent handles deep link → extracts session token
+7. WKWebView loads /dashboard with session token</code></pre>
+        </div>
+      </section>
+
+      <!-- LiveView Pages -->
+      <section id="api-liveview" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-emerald-500 inline-block"></span>
+          LiveView Pages
+        </h2>
+        <p class="text-zinc-600 fs-10 mb-3">All LiveView pages require authentication. Real-time server-pushed updates via Phoenix LiveView WebSocket.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="font-mono fs-9 text-zinc-600 border-b border-zinc-800/60"><th class="text-left pb-2">Route</th><th class="text-left pb-2">Module</th><th class="text-left pb-2">Description</th></tr></thead>
+            <tbody class="font-mono fs-9 divide-y divide-zinc-800/20">
+              <tr><td class="py-1.5 text-zinc-400">/</td><td class="text-zinc-600">AnalyticsLive</td><td class="text-zinc-700">Main analytics dashboard · MiniChart widgets · claude-mem stats</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/search</td><td class="text-zinc-600">SearchLive</td><td class="text-zinc-700">Semantic + hybrid search interface</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/explorer</td><td class="text-zinc-600">ExplorerLive</td><td class="text-zinc-700">Medallion layer file browser (Bronze/Silver/Gold)</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/viewer</td><td class="text-zinc-600">ViewerLive</td><td class="text-zinc-700">Conversation viewer with message timeline</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/media</td><td class="text-zinc-600">MediaLive</td><td class="text-zinc-700">MemoryVault media browser · video playback</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/ueba</td><td class="text-zinc-600">UebaLive</td><td class="text-zinc-700">User/Entity Behavior Analytics · pattern detection</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/memory</td><td class="text-zinc-600">MemoryLive</td><td class="text-zinc-700">claude-mem browser · observations · session summaries</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/viki-interface</td><td class="text-zinc-600">VikiInterfaceLive</td><td class="text-zinc-700">I,Robot 3D cube interface · TTS · avatar overlay</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/insights</td><td class="text-zinc-600">InsightsLive</td><td class="text-zinc-700">AI-generated insights feed</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/expertise</td><td class="text-zinc-600">ExpertiseLive</td><td class="text-zinc-700">Knowledge base browser (116+ posts)</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/integrations</td><td class="text-zinc-600">IntegrationsLive</td><td class="text-zinc-700">Connector registry · Omi · Limitless · sync status</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">/settings</td><td class="text-zinc-600">SettingsLive</td><td class="text-zinc-700">User settings · VIKI Interface config</td></tr>
+              <tr><td class="py-1.5 text-indigo-600">/formation</td><td class="text-indigo-800">FormationLive</td><td class="text-indigo-900">CP-55 planned · live agent progress · resource gauges</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Local Setup -->
+      <section id="setup-local" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-cyan-500 inline-block"></span>
+          Local Development Setup
+        </h2>
+        <div class="space-y-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Phoenix (viki_phoenix)</div>
+            <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code># Prerequisites: Elixir 1.17, Erlang/OTP 27, PostgreSQL 15+
+cd /Users/jeremiah/Developer/viki/src/apps/viki_phoenix
+
+# Install dependencies
+mix deps.get
+
+# Setup database (creates + migrates + seeds)
+mix ecto.setup
+
+# Install JS/CSS assets
+mix assets.setup
+
+# Start development server
+mix phx.server  # → http://localhost:6769
+
+# Run with interactive shell
+iex -S mix phx.server</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Python Environment</div>
+            <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code>cd /Users/jeremiah/Developer/viki
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Run backfill (formation)
+python3 scripts/backfill_conversations_v3.py
+
+# Run tests
+pytest tests/ --cov=src --cov-report=html
+
+# Lint
+ruff check . && mypy src/</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Azure Deployment -->
+      <section id="setup-azure" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-blue-500 inline-block"></span>
+          Azure Deployment
+        </h2>
+        <div class="space-y-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Infrastructure (Bicep)</div>
+            <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code># Full infrastructure deployment
+bash scripts/deploy-infrastructure.sh
+
+# Or directly via Azure CLI
+az deployment group create \
+  --resource-group rg-yj-unified-prod-eus \
+  --template-file infrastructure/bicep/main.bicep \
+  --parameters infrastructure/bicep/prod.parameters.json
+
+# Validate before deploy
+az deployment group what-if \
+  --resource-group rg-yj-unified-prod-eus \
+  --template-file infrastructure/bicep/main.bicep</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Application (Container Apps)</div>
+            <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code># Full deployment pipeline
+bash scripts/deploy-viki-apps.sh
+
+# Health validation post-deploy
+bash scripts/health-check-consolidated.sh --verbose
+bash scripts/post-deployment-validation.sh
+
+# View application logs
+az containerapp logs show \
+  --name ca-viki-cc-prod-eus \
+  --resource-group rg-yj-unified-prod-eus \
+  --follow</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- VikiAgent -->
+      <section id="setup-vikiagent" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-indigo-500 inline-block"></span>
+          VikiAgent macOS
+        </h2>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+          <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code>cd /Users/jeremiah/Developer/viki/src/apps/viki_agent
+
+# Build and install to /Applications
+make install
+
+# Or build only (Xcode required)
+xcodebuild -scheme VikiAgent -configuration Release
+
+# VikiAgent features:
+# - macOS menu bar icon (system tray)
+# - Screen recording capture to ~/MemoryVault
+# - AI insights polling (every 5 min via /api/insights/pending)
+# - OS notifications for pending insights
+# - Passkey authentication via browser deep link (vikiagent://)
+# - Formation status display (CP-53, planned)
+# - Resource throttle menu (CP-51, planned)
+# - WKWebView for embedded VIKI dashboard
+
+# Deep link URL scheme: vikiagent://auth/callback?session=...
+# Info.plist: CFBundleURLSchemes = ["vikiagent"]</code></pre>
+        </div>
+      </section>
+
+      <!-- Environment Variables -->
+      <section id="setup-env" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-amber-500 inline-block"></span>
+          Environment Variables
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="font-mono fs-9 text-zinc-600 border-b border-zinc-800/60"><th class="text-left pb-2">Variable</th><th class="text-left pb-2">Value / Source</th><th class="text-left pb-2">Required</th></tr></thead>
+            <tbody class="font-mono fs-9 divide-y divide-zinc-800/20">
+              <tr><td class="py-1.5 text-zinc-400">AZURE_SUBSCRIPTION_ID</td><td class="text-zinc-600">Azure subscription UUID</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_TENANT_ID</td><td class="text-zinc-600">Azure AD tenant UUID</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_RESOURCE_GROUP</td><td class="text-zinc-600">rg-yj-unified-prod-eus</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">STORAGE_ACCOUNT_NAME</td><td class="text-zinc-600">styjprodeus</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">STORAGE_CONNECTION_STRING</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">EVENTHUB_NAMESPACE</td><td class="text-zinc-600">evh-yj-unified-prod-eus</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">EVENTHUB_CONNECTION_STRING</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">COSMOS_ENDPOINT</td><td class="text-zinc-600">https://cosmos-yj-notion-sync-prod.documents.azure.com:443/</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">COSMOS_KEY</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">POSTGRES_HOST</td><td class="text-zinc-600">psql-yj-unified-prod-eus2.postgres.database.azure.com</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">POSTGRES_DATABASE</td><td class="text-zinc-600">viki_metadata</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">POSTGRES_PASSWORD</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_OPENAI_ENDPOINT</td><td class="text-zinc-600">https://aoai-yj-unified-prod-eus.openai.azure.com/</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_OPENAI_KEY</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_SEARCH_ENDPOINT</td><td class="text-zinc-600">https://srch-yj-unified-prod-eus.search.windows.net</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AZURE_SEARCH_KEY</td><td class="text-zinc-600">from Key Vault</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">SPEECH_API_KEY</td><td class="text-zinc-600">from Key Vault (Azure Speech Service)</td><td class="text-zinc-600">optional</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">SECRET_KEY_BASE</td><td class="text-zinc-600">Phoenix session secret (64 bytes)</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">PHX_HOST</td><td class="text-zinc-600">your-domain.com or localhost</td><td class="text-emerald-600">required</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">LOG_LEVEL</td><td class="text-zinc-600">info / debug / warning</td><td class="text-zinc-600">optional</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Formation Overview -->
+      <section id="formation-overview" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-rose-500 inline-block"></span>
+          Formation — Overview
+        </h2>
+        <p class="text-zinc-400 text-sm leading-relaxed mb-3">The "formation" is a parallel Python agent architecture for batch-processing 22 months of historical MemoryVault content. 23 agents run concurrently, each responsible for a time slice of recordings.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Architecture</div>
+            <div class="font-mono fs-9 text-zinc-500 space-y-1">
+              <div>• 23 parallel Python processes</div>
+              <div>• Each agent handles a date range slice</div>
+              <div>• ffmpeg + libsvtav1 for AV1 compression</div>
+              <div>• Opus audio at 96kbps</div>
+              <div>• PID file: /tmp/mv-logs/pids.txt</div>
+              <div>• Log dir: /tmp/mv-logs/agent-NN.log</div>
+              <div>• Status: POST /api/sync/status</div>
+            </div>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Current Status</div>
+            <div class="font-mono fs-9 text-zinc-500 space-y-1">
+              <div><span class="text-amber-400">PAUSED</span> — awaiting CP-53 completion</div>
+              <div>20 / 23 agents were active</div>
+              <div>10,517 chunks processed</div>
+              <div>65% avg AV1 compression ratio</div>
+              <div>4.2MB → 1.4MB average per chunk</div>
+              <div>22 months of history to index</div>
+              <div>281,839 messages in pipeline</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Formation Deployment -->
+      <section id="formation-deploy" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-orange-500 inline-block"></span>
+          Formation — Deployment
+        </h2>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+          <pre class="font-mono fs-9 text-zinc-500 leading-relaxed overflow-x-auto"><code>cd /Users/jeremiah/Developer/viki
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Start full 23-agent formation (background)
+python3 scripts/backfill_conversations_v3.py --agents 23 --background
+
+# Start specific agent count
+python3 scripts/backfill_conversations_v3.py --agents 10
+
+# MemoryVault discovery scan
+python3 scripts/memoryvault/discover.py
+
+# Check formation status
+cat /tmp/mv-logs/pids.txt
+tail -f /tmp/mv-logs/agent-01.log
+
+# Stop formation gracefully
+kill $(cat /tmp/mv-logs/pids.txt)
+
+# Monitor via Phoenix API
+curl http://localhost:6769/api/sync/status
+
+# APM backfill
+python3 scripts/backfill_apm_ccem.py
+python3 scripts/backfill_cc_transcripts.py</code></pre>
+        </div>
+      </section>
+
+      <!-- Formation Monitoring -->
+      <section id="formation-monitor" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-violet-500 inline-block"></span>
+          Formation — Monitoring (CP-50 to CP-55)
+        </h2>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4 mb-3">
+          <div class="text-zinc-200 font-medium text-sm mb-2">Planned: ResourceMode Enum (CP-50)</div>
+          <pre class="font-mono fs-9 text-zinc-600 leading-relaxed overflow-x-auto"><code>// VikiAgent Swift — ResourceMode enum
+enum ResourceMode {
+    case performance   // full CPU/RAM, no throttle
+    case balanced      // 50% CPU cap via renice
+    case economy       // 20% CPU cap, pause non-critical agents
+    case manual        // user-specified renice level
+}
+
+// CPU/RAM sampler: polls /proc or host_statistics()
+// every 5s, updates menu bar indicator</code></pre>
+        </div>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4 mb-3">
+          <div class="text-zinc-200 font-medium text-sm mb-2">Planned: Rich ASCII Menu (CP-53)</div>
+          <pre class="font-mono fs-9 text-zinc-600 leading-relaxed overflow-x-auto"><code>┌─ VIKI Formation ─────────────────────────────┐
+│ ████████████████░░░░ 87%  20/23 agents       │
+│ CPU: 34%  RAM: 6.2GB  Mode: BALANCED         │
+│                                              │
+│  agent-01  ████████████ 450/520 chunks  ✓   │
+│  agent-02  ██████████░░ 380/520 chunks  ↻   │
+│  agent-03  ████████████ 520/520 chunks  ✓   │
+│  ...                                         │
+│                                              │
+│ ▸ Throttle Mode  ▸ Pause All  ▸ Resume       │
+└──────────────────────────────────────────────┘</code></pre>
+        </div>
+        <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4">
+          <div class="text-zinc-200 font-medium text-sm mb-2">Planned: FormationLive LiveView (CP-54–CP-55)</div>
+          <div class="font-mono fs-9 text-zinc-500 space-y-1">
+            <div>Route: /formation (authenticated LiveView)</div>
+            <div>Real-time agent progress table via Phoenix PubSub</div>
+            <div>Per-agent: progress bars, ETA, current file, CPU/RAM</div>
+            <div>Aggregate: total chunks, throughput, estimated completion</div>
+            <div>Controls: pause/resume individual agents, adjust throttle</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Azure Resources -->
+      <section id="azure-resources" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-blue-500 inline-block"></span>
+          Azure Resources
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead><tr class="font-mono fs-9 text-zinc-600 border-b border-zinc-800/60"><th class="text-left pb-2">Service</th><th class="text-left pb-2">Resource Name</th><th class="text-left pb-2">Config</th><th class="text-right pb-2">$/mo</th></tr></thead>
+            <tbody class="font-mono fs-9 divide-y divide-zinc-800/20">
+              <tr><td class="py-1.5 text-zinc-400">Event Hubs</td><td class="text-zinc-600">evh-yj-unified-prod-eus</td><td class="text-zinc-700">4 TU, Kafka API, 9 topics</td><td class="text-right text-zinc-500">$350</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">AI Search</td><td class="text-zinc-600">srch-yj-unified-prod-eus</td><td class="text-zinc-700">S1, 3 replicas, HNSW vector</td><td class="text-right text-zinc-500">$750</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">PostgreSQL</td><td class="text-zinc-600">psql-yj-unified-prod-eus2</td><td class="text-zinc-700">D4s_v3 Flex Server</td><td class="text-right text-zinc-500">$180</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">Redis</td><td class="text-zinc-600">redis-yj-unified-prod-eus</td><td class="text-zinc-700">Premium P1</td><td class="text-right text-zinc-500">$150</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">Storage ADLS</td><td class="text-zinc-600">styjprodeus</td><td class="text-zinc-700">Gen2, 1TB ZRS, 90-day TTL</td><td class="text-right text-zinc-500">$25</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">Azure OpenAI</td><td class="text-zinc-600">aoai-yj-unified-prod-eus</td><td class="text-zinc-700">embed-3-large + gpt-4o</td><td class="text-right text-zinc-500">$100</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">Cosmos DB</td><td class="text-zinc-600">cosmos-yj-notion-sync-prod</td><td class="text-zinc-700">Serverless NoSQL</td><td class="text-right text-zinc-500">$50</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">Key Vault</td><td class="text-zinc-600">kv-yj-unified-prod</td><td class="text-zinc-700">secrets + RBAC</td><td class="text-right text-zinc-500">~$5</td></tr>
+              <tr><td class="py-1.5 text-zinc-400">VNet</td><td class="text-zinc-600">vnet-yj-unified-prod-eus</td><td class="text-zinc-700">private endpoints, TLS 1.2+</td><td class="text-right text-zinc-500">incl.</td></tr>
+              <tr class="border-t border-zinc-700/50"><td class="py-2 text-zinc-200 font-semibold">Total (w/ 30% reserved)</td><td></td><td></td><td class="text-right text-emerald-400 font-semibold">~$1,250</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Security -->
+      <section id="security" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-rose-500 inline-block"></span>
+          Security
+        </h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Auth &amp; Identity</div>
+            <div class="font-mono fs-9 text-zinc-500 space-y-1">
+              <div>• Azure AD — primary identity provider</div>
+              <div>• Managed Identities — service-to-service</div>
+              <div>• WebAuthn/Passkey — user auth (wax_ 0.6)</div>
+              <div>• OTP tokens — VikiAgent bridge auth</div>
+              <div>• RBAC — role-based access control</div>
+              <div>• Session cookies — Phoenix browser sessions</div>
+            </div>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-200 font-medium text-sm mb-2">Data Protection</div>
+            <div class="font-mono fs-9 text-zinc-500 space-y-1">
+              <div>• Encryption at rest — all storage services</div>
+              <div>• TLS 1.2+ — all transit</div>
+              <div>• Private endpoints — network isolation</div>
+              <div>• Key Vault — secrets management</div>
+              <div>• GDPR-ready — configurable TTL policies</div>
+              <div>• PII detection — automatic masking pipeline</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Troubleshooting -->
+      <section id="troubleshooting" class="section">
+        <h2 class="text-zinc-200 font-semibold text-base mb-4 flex items-center gap-2">
+          <span class="w-4 h-px bg-zinc-500 inline-block"></span>
+          Troubleshooting
+        </h2>
+        <div class="space-y-3">
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-300 font-medium fs-11 mb-1.5">Event Hub connection timeout</div>
+            <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto"><code>az network vnet show --resource-group rg-yj-unified-prod-eus --name vnet-yj-unified-prod-eus
+az eventhubs namespace show --name evh-yj-unified-prod-eus --resource-group rg-yj-unified-prod-eus --query 'networkRuleSets'</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-300 font-medium fs-11 mb-1.5">Search indexer failures</div>
+            <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto"><code>curl "$SEARCH_ENDPOINT/indexers/viki-conversations-indexer/status?api-version=2023-11-01" -H "api-key: $SEARCH_KEY"
+# Reset and rerun:
+curl -X POST "$SEARCH_ENDPOINT/indexers/viki-conversations-indexer/reset?api-version=2023-11-01" -H "api-key: $SEARCH_KEY"</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-300 font-medium fs-11 mb-1.5">Formation agent not starting</div>
+            <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto"><code>ls /tmp/mv-logs/        # check log directory exists
+cat /tmp/mv-logs/pids.txt    # check PIDs file
+tail -50 /tmp/mv-logs/agent-01.log   # check agent logs
+ps aux | grep backfill   # check processes are running</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-300 font-medium fs-11 mb-1.5">Phoenix won't start (port conflict)</div>
+            <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto"><code>lsof -ti:6769 | xargs kill -9   # kill process on port 6769
+mix phx.server                   # restart Phoenix</code></pre>
+          </div>
+          <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-3">
+            <div class="text-zinc-300 font-medium fs-11 mb-1.5">Enable debug logging</div>
+            <pre class="font-mono fs-9 text-zinc-600 bg-zinc-950/60 rounded p-2 overflow-x-auto"><code>export LOG_LEVEL=DEBUG
+export AZURE_LOG_LEVEL=DEBUG
+mix phx.server</code></pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Highlight active nav section
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + id) link.classList.add('active');
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

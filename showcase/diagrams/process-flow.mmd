@@ -1,0 +1,55 @@
+%% Process Flow - Agent Monitoring Pipeline
+sequenceDiagram
+    participant Agent as AI Agent Session
+    participant Hooks as Lifecycle Hooks
+    participant Server as Monitoring Service
+    participant Dashboard as Real-time Dashboard
+    participant App as Desktop Companion
+    participant Dev as Developer
+
+    Note over Agent,Dev: Agent Session Lifecycle
+
+    Agent->>Hooks: Session begins
+    activate Hooks
+    Hooks->>Server: Register agent (non-blocking)
+    deactivate Hooks
+    activate Server
+    Server->>Server: Store in agent registry
+    Server-->>Dashboard: Broadcast: new agent online
+    Server-->>App: Telemetry update available
+    deactivate Server
+
+    activate Dashboard
+    Dashboard-->>Dev: Dashboard shows new agent
+    deactivate Dashboard
+    activate App
+    App-->>Dev: Notification: agent started
+    deactivate App
+
+    loop Every Heartbeat Interval
+        Agent->>Hooks: Tool use / progress event
+        Hooks->>Server: Heartbeat + metrics
+        Server-->>Dashboard: Live metric update
+        Server-->>App: Updated telemetry
+    end
+
+    Note over Agent,Dev: Formation Deployment (Multi-Agent)
+
+    Dev->>Server: Deploy agent formation
+    activate Server
+    Server->>Server: Create formation, assign roles
+    Server-->>Dashboard: Formation topology rendered
+    Server-->>App: Formation status update
+    deactivate Server
+
+    loop Formation Agents Active
+        Agent->>Hooks: Wave progress / completion
+        Hooks->>Server: Status + dependency update
+        Server-->>Dashboard: Formation graph updates
+    end
+
+    Agent->>Hooks: Session ends
+    Hooks->>Server: Deregister agent
+    Server-->>Dashboard: Agent marked complete
+    Server-->>App: Session summary available
+    App-->>Dev: Final metrics delivered

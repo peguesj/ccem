@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/lessons_logger.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

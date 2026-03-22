@@ -1,0 +1,51 @@
+{
+  "$schema": "CCEM experiential learnings - patterns and anti-patterns discovered during migrations and project setup",
+  "learnings": [
+    {
+      "id": "L001",
+      "date": "2026-03-11",
+      "category": "git-repo-migration",
+      "project": "gimme",
+      "severity": "high",
+      "title": "Multi-project monorepo causes formation agent confusion",
+      "problem": "GIMME project files (backend/, frontend/, supabase/) were tracked at the root of ~/Developer alongside unrelated projects (191919/, jeremiah_loves_bia/, idfwu2/). The git repo root was ~/Developer pointing to dnd.git. Formation agents spawned into worktrees inherited the entire multi-project tree, causing: (1) mypy/tsc commands failing due to wrong working directory assumptions, (2) git status showing 200+ unrelated untracked files, (3) CLAUDE.md needing caveats about repo root != project root.",
+      "solution": "Extracted GIMME into standalone repo at ~/Developer/gimme/ with its own .git. Removed GIMME files from parent repo index (git rm --cached). Added gimme/ and project dirs to parent .gitignore. Updated CLAUDE.md and memory files to reference new root.",
+      "steps": [
+        "cp -R {backend,frontend,supabase,docker,tests,.github} gimme/",
+        "cp {Makefile,README.md,.env.example,.dockerignore,.gitignore,docker-compose*.yml} gimme/",
+        "cd gimme && git init && git add . && git commit",
+        "cd ~/Developer && git rm -r --cached backend/ frontend/ ... (all GIMME dirs)",
+        "echo 'gimme/' >> .gitignore (parent)",
+        "Update .claude/CLAUDE.md repo root reference",
+        "Update memory files to reflect new structure"
+      ],
+      "impact": "Formation agents and worktrees now scope correctly to GIMME files only. No more ~/Developer catch-all confusion.",
+      "recommendation": "When /upm plan or /formation deploy creates a new project, always verify the git root matches the project scope. If the git root contains multiple unrelated projects, extract to standalone repo BEFORE deploying formations.",
+      "tags": ["git", "monorepo", "migration", "formation", "worktree", "scope"]
+    },
+    {
+      "id": "L002",
+      "date": "2026-03-11",
+      "category": "init-migration",
+      "project": "gimme",
+      "severity": "medium",
+      "title": "CLAUDE.md must be updated when git root changes",
+      "problem": "The CLAUDE.md file referenced '~/Developer' as the git root and all path examples assumed files were at that root level. After migrating to ~/Developer/gimme/, these references became incorrect and would confuse future agents.",
+      "solution": "Updated CLAUDE.md Repository Layout section to reference ~/Developer/gimme/ as standalone repo. Updated memory files (reference_repo_structure.md) to note the migration date and new structure.",
+      "recommendation": "After any git root migration, immediately update: (1) .claude/CLAUDE.md repo layout section, (2) memory files referencing paths, (3) formation configs if they embed absolute paths.",
+      "tags": ["claude-md", "documentation", "migration", "paths"]
+    },
+    {
+      "id": "L003",
+      "date": "2026-03-11",
+      "category": "ccem-scope",
+      "project": "gimme",
+      "severity": "medium",
+      "title": "User-level vs project-level CLAUDE.md scoping",
+      "problem": "Project config was in ~/.claude/projects/-Users-jeremiah-Developer-gimme/.claude/CLAUDE.md (user-level project scope) but the actual CLAUDE.md lived at ~/Developer/gimme/.claude/CLAUDE.md (repo-level). The user-level path encodes the working directory, so changing from ~/Developer to ~/Developer/gimme changes the project scope key.",
+      "solution": "Ensured the repo-level .claude/CLAUDE.md is the source of truth. The user-level project directory (~/.claude/projects/-Users-jeremiah-Developer-gimme/) holds only memory files. No user-level CLAUDE.md override needed.",
+      "recommendation": "Prefer repo-level .claude/CLAUDE.md for project instructions. Use user-level project directories only for memory persistence. The project scope key is derived from the working directory path, so it changes when the project moves.",
+      "tags": ["ccem", "scope", "claude-md", "config"]
+    }
+  ]
+}

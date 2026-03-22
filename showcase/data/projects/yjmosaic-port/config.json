@@ -1,0 +1,23 @@
+{
+  "project": "YJMosaic Port Gap Analysis",
+  "version": "0.1.0",
+  "description": "Native macOS port of AndreaMosaic v3.55.0 — gap analysis between Wineskin binary and Swift implementation",
+  "apm_base": "http://localhost:3032",
+  "showcase_port": 1511,
+  "sse_endpoint": "/api/ag-ui/events",
+  "fallback": "http",
+  "poll_interval": 5000,
+  "source": {
+    "name": "AndreaMosaic Beta",
+    "path": "/Users/jeremiah/Applications/AndreaMosaic 2026-03-18 17.08.53/AndreaMosaic Beta.app",
+    "platform": "Windows (Wineskin)",
+    "version": "3.55.0"
+  },
+  "target": {
+    "name": "YJMosaic",
+    "path": "/Users/jeremiah/Developer/andreamosaic-macnative-port",
+    "platform": "macOS (native)",
+    "version": "0.1.0",
+    "repo": "https://github.com/peguesj/andreamosaic-macnative-port"
+  }
+}

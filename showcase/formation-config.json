@@ -1,0 +1,169 @@
+{
+  "formation_id": "showcase-fleet",
+  "formation_name": "Showcase Fleet",
+  "description": "7-agent formation for generating IP-safe architecture diagrams and process flow visualizations for investor presentations, product showcases, and partner demos",
+  "version": "6.1.0",
+  "total_agents": 7,
+  "waves": 3,
+  "skill_dependency": "showcase",
+  "apm_port": 3032,
+  "squadrons": [
+    {
+      "name": "Discovery Squadron",
+      "wave": 1,
+      "purpose": "Analyze codebase architecture and build narrative frameworks",
+      "gate": "Architecture report + narrative arcs delivered",
+      "agents": [
+        {
+          "agent_suffix": "w1-codebase-analyst",
+          "name": "Codebase Analyst",
+          "formation_role": "swarm_agent",
+          "skill_profile": "Explore",
+          "purpose": "Scans repositories to extract architecture patterns, service boundaries, data flows, and technology stack for diagram generation",
+          "inputs": ["codebase path or description"],
+          "outputs": ["architecture-report.json"],
+          "tools": ["glob", "grep", "read", "bash"],
+          "abstraction_focus": "C4 L1 (Context) + L2 (Container)",
+          "ip_rule": "Extract patterns only, never raw code or internal identifiers"
+        },
+        {
+          "agent_suffix": "w1-narrative-architect",
+          "name": "Narrative Architect",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Builds investor/partner/demo story arcs using positioning-statement, press-release, and storyboard PM frameworks",
+          "inputs": ["product description", "audience type", "narrative arc selection"],
+          "outputs": ["narrative-arcs.json"],
+          "tools": ["read", "webfetch", "websearch"],
+          "frameworks_used": ["positioning-statement (Geoffrey Moore)", "press-release (Amazon Working Backwards)", "storyboard (6-frame visual narrative)"],
+          "ip_rule": "Value-level language only, no implementation details"
+        }
+      ]
+    },
+    {
+      "name": "Generation Squadron",
+      "wave": 2,
+      "purpose": "Generate diagrams, apply redaction, compose narrative content",
+      "gate": "All diagrams + content blocks generated and redacted",
+      "depends_on": ["Discovery Squadron"],
+      "agents": [
+        {
+          "agent_suffix": "w2-diagram-renderer",
+          "name": "Diagram Renderer",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Generates C4 Context, Container, Process Flow, User Journey, and Deployment Mermaid diagrams at audience-appropriate abstraction levels",
+          "inputs": ["architecture-report.json", "audience level", "diagram type selections"],
+          "outputs": ["diagrams/*.mmd"],
+          "tools": ["write", "read"],
+          "diagram_types": [
+            "C4Context (L1 — actors + system boundary)",
+            "C4Container (L2 — services, databases, APIs)",
+            "sequenceDiagram (process flows)",
+            "journey (user journey)",
+            "graph TD (deployment topology)"
+          ],
+          "ip_rule": "Use generic labels per redaction level; never expose internal service names at investor/partner levels"
+        },
+        {
+          "agent_suffix": "w2-redaction-engine",
+          "name": "Redaction Engine",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Applies IP protection transforms: service name generalization, tech stack abstraction, metric anonymization, algorithm obfuscation per audience level",
+          "inputs": ["diagrams/*.mmd", "narrative-arcs.json", "redaction-rules.json"],
+          "outputs": ["redacted-diagrams/*.mmd", "redacted-narrative.json"],
+          "tools": ["read", "edit", "write", "grep"],
+          "redaction_levels": {
+            "maximum": "Generic labels, no tech stack, no vendor names, no metrics",
+            "moderate": "Tech categories visible, specific tools hidden, ranges for metrics",
+            "light": "Stack visible, algorithms/logic hidden, exact metrics hidden",
+            "none": "Full transparency (internal audiences only)"
+          },
+          "ip_rule": "Core agent — enforces all IP boundaries; validates every output token"
+        },
+        {
+          "agent_suffix": "w2-content-composer",
+          "name": "Content Composer",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Writes narrative blocks, speaker notes, slide content, and talking points using positioning + press-release + storyboard frameworks",
+          "inputs": ["narrative-arcs.json", "redacted-diagrams/*.mmd"],
+          "outputs": ["content-blocks.json", "speaker-notes.json", "slides.json"],
+          "tools": ["write", "read"],
+          "content_types": [
+            "Section headers + body text",
+            "KPI cards (redacted metrics)",
+            "Callout boxes (key insights)",
+            "Speaker notes per slide",
+            "Transition talking points",
+            "Q&A parking lot prompts"
+          ],
+          "ip_rule": "Product/value language only; no code references, no internal project IDs"
+        }
+      ]
+    },
+    {
+      "name": "Presentation Squadron",
+      "wave": 3,
+      "purpose": "Assemble final HTML showcase and validate IP safety",
+      "gate": "Showcase passes IP leakage check + renders correctly",
+      "depends_on": ["Generation Squadron"],
+      "agents": [
+        {
+          "agent_suffix": "w3-ui-builder",
+          "name": "UI Builder",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Assembles glassmorphism HTML showcase with Mermaid diagram rendering, wrapped slideshow, presenter console, navigation, and responsive layout",
+          "inputs": ["redacted-diagrams/*.mmd", "content-blocks.json", "speaker-notes.json", "slides.json", "showcase-manifest.json"],
+          "outputs": ["client/index.html", "client/presenter.html", "client/styles.css", "client/showcase.js"],
+          "tools": ["write", "read", "bash"],
+          "design_system": {
+            "theme": "showcase-obsidian",
+            "background": "#0a0a0f",
+            "accent": "#6366f1",
+            "diagram_bg": "rgba(15, 15, 25, 0.85)",
+            "text": "#e2e8f0",
+            "font_heading": "Inter",
+            "font_diagram": "Fira Code",
+            "glass_blur": "12px"
+          },
+          "ip_rule": "Render only redacted content; never embed raw source data"
+        },
+        {
+          "agent_suffix": "w3-qa-validator",
+          "name": "QA Validator",
+          "formation_role": "swarm_agent",
+          "skill_profile": "general-purpose",
+          "purpose": "Runs IP leakage checks against redaction rules, validates diagram accuracy, verifies no internal names/paths/secrets in external-audience output",
+          "inputs": ["all generated files", "redaction-rules.json"],
+          "outputs": ["validation-report.json"],
+          "tools": ["grep", "read", "bash"],
+          "validation_checks": [
+            "No internal service names in external diagrams",
+            "No specific technology versions exposed",
+            "No database schema details visible",
+            "No API endpoint paths revealed",
+            "No algorithm names or ML model identifiers",
+            "No infrastructure provider specifics (at maximum redaction)",
+            "No team member names or counts",
+            "No pricing or financial specifics beyond permitted level",
+            "No code snippets or pseudocode",
+            "No internal project identifiers or ticket numbers",
+            "No file paths from source system",
+            "No API keys, tokens, or credentials"
+          ],
+          "ip_rule": "Final gate — blocks publication if ANY leakage detected"
+        }
+      ]
+    }
+  ],
+  "apm_registration": {
+    "endpoint": "POST http://localhost:3032/api/register",
+    "required_fields": ["agent_id", "project", "role", "status", "formation_id", "formation_role", "parent_agent_id", "wave", "task_subject", "session_id"],
+    "heartbeat_interval_seconds": 30,
+    "stale_threshold_seconds": 90,
+    "event_types": ["spawn", "task_start", "task_complete", "task_fail", "wave_complete", "formation_complete"]
+  }
+}

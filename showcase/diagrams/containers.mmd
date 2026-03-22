@@ -1,0 +1,43 @@
+%% C4 Level 2 - Container Diagram
+%% Inside the CCEM Platform boundary
+graph TB
+    dev["<b>Developer</b>"]
+    agent["<b>AI Coding Agent</b>"]
+
+    subgraph ccem ["CCEM Platform"]
+        direction TB
+
+        server["<b>Monitoring Server</b><br/><i>Backend Service</i><br/><br/>Agent Registry<br/>Formation Orchestration<br/>Real-time Dashboard<br/>Telemetry Engine<br/>Background Task Manager<br/>Project Scanner"]
+
+        desktop["<b>Desktop Companion</b><br/><i>Native Application</i><br/><br/>System Tray Presence<br/>Quick-Glance Metrics<br/>Server Lifecycle Control<br/>Session Notifications"]
+
+        cli["<b>Configuration Manager</b><br/><i>Command-Line Tool</i><br/><br/>Config Merging & Validation<br/>Fork Discovery<br/>Security Auditing<br/>Interactive Terminal UI"]
+
+        hooks["<b>Lifecycle Hooks</b><br/><i>Integration Layer</i><br/><br/>Session Start/End Events<br/>Tool Use Notifications<br/>Non-Blocking Telemetry<br/>Zero-Overhead Design"]
+    end
+
+    pm["<b>Project Management</b><br/><i>External</i>"]
+    vcs["<b>Version Control</b><br/><i>External</i>"]
+    protocol["<b>AI Protocol Layer</b><br/><i>External</i>"]
+
+    dev -->|"Browses dashboard,<br/>deploys formations"| server
+    dev -->|"Glances at status,<br/>starts/stops server"| desktop
+    dev -->|"Configures environment,<br/>audits setup"| cli
+
+    agent -->|"Triggers on<br/>session lifecycle"| hooks
+    hooks -->|"Registers agents,<br/>sends heartbeats"| server
+    desktop -->|"Polls telemetry,<br/>displays metrics"| server
+
+    server -->|"Syncs work items"| pm
+    server -->|"Reads repo state"| vcs
+    server -->|"Emits agent events"| protocol
+
+    classDef person fill:#08427B,stroke:#073B6F,color:#fff,stroke-width:2px
+    classDef container fill:#438DD5,stroke:#3C7FC0,color:#fff,stroke-width:2px
+    classDef external fill:#999999,stroke:#8A8A8A,color:#fff,stroke-width:2px
+    classDef boundary fill:none,stroke:#1168BD,stroke-width:2px,stroke-dasharray:5 5,color:#1168BD
+
+    class dev,agent person
+    class server,desktop,cli,hooks container
+    class pm,vcs,protocol external
+    class ccem boundary
