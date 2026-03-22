@@ -39,6 +39,11 @@ struct MenuBarView: View {
                 Divider()
                 usageSection(usage)
             }
+            if let auth = monitor.authorizationSummary,
+               auth.registeredTools > 0 {
+                Divider()
+                authorizationSection(auth)
+            }
             if !monitor.agUiEvents.isEmpty {
                 Divider()
                 recentActivitySection
@@ -1174,6 +1179,98 @@ struct MenuBarView: View {
         case "high": return .orange
         case "medium": return .yellow
         default: return .green
+        }
+    }
+
+    // MARK: - Authorization Section (v7.0.0)
+
+    private func authorizationSection(_ auth: AuthorizationSummary) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label("Authorization", systemImage: "shield.checkered")
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(auth.trustLabel)
+                    .font(.caption2)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .background(authTrustColor(auth.trustColor).opacity(0.15))
+                    .foregroundStyle(authTrustColor(auth.trustColor))
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Sessions")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text("\(auth.activeSessions)")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
+
+                Divider()
+                    .frame(height: 24)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Tools")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text("\(auth.registeredTools)")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
+
+                Divider()
+                    .frame(height: 24)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Denied")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text("\(auth.totalDenied)")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(auth.totalDenied > 0 ? .red : .primary)
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+
+            // Open Authorization Dashboard button
+            Button(action: {
+                if let url = URL(string: "http://localhost:3032/authorization") {
+                    NSWorkspace.shared.open(url)
+                }
+            }) {
+                HStack {
+                    Image(systemName: "shield.checkered")
+                        .font(.caption2)
+                    Text("Open Authorization Dashboard")
+                        .font(.caption2)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 3)
+            }
+            .buttonStyle(.borderless)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 6)
+        }
+    }
+
+    private func authTrustColor(_ color: String) -> Color {
+        switch color {
+        case "green": return .green
+        case "yellow": return .yellow
+        case "red": return .red
+        default: return .secondary
         }
     }
 

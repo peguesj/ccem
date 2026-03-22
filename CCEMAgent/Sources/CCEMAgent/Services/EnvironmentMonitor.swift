@@ -23,6 +23,7 @@ final class EnvironmentMonitor {
     var backgroundTasks: [BackgroundTask] = []
     var agUiEvents: [AgUiEvent] = []
     var usageSummary: UsageSummary?
+    var authorizationSummary: AuthorizationSummary?
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
@@ -165,6 +166,13 @@ final class EnvironmentMonitor {
             usageSummary = try await client.fetchUsageSummary()
         } catch {
             usageSummary = nil
+        }
+
+        // Fetch authorization summary (non-blocking, best-effort)
+        do {
+            authorizationSummary = try await client.fetchAuthorizationSummary()
+        } catch {
+            authorizationSummary = nil
         }
     }
 

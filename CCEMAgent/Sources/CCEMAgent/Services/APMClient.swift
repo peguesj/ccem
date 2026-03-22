@@ -269,6 +269,18 @@ actor APMClient {
         let wrapper = try decoder.decode(UsageSummaryResponse.self, from: data)
         return wrapper.summary
     }
+
+    // MARK: - AgentLock Authorization (v7.0.0)
+
+    func fetchAuthorizationSummary() async throws -> AuthorizationSummary {
+        let url = baseURL.appendingPathComponent("api/v2/auth/summary")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let wrapper = try decoder.decode(AuthorizationSummaryResponse.self, from: data)
+        return wrapper.summary
+    }
 }
 
 enum APMClientError: Error, LocalizedError {
