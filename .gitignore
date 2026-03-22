@@ -80,6 +80,7 @@ apm/bridges/.orchestrator.pid
 apm/bridges/.orchestrator_state.json
 apm/.claude/
 CCEMAgent/.claude/
+installer/services/.claude/
 
 # Hook reports and data
 .claude/hooks/reports/
