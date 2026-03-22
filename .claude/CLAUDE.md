@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v6.2.0
+## Current Version: v7.0.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -410,3 +410,42 @@ This is a hard rule with no exceptions.
 ### Wave 3: Release (depends on Wave 2)
 - [x] **CP-138**: v6.4.0 release — CHANGELOG, mix.exs bump, /docs update, showcase features (US-009) [CCEM-239]
 - After Wave 3: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS
+
+## Implementation Checkpoints — ralph/ccem-v7-0-0-agentlock
+
+### Wave 1: Foundation (5 parallel — independent GenServers)
+- [x] **CP-139**: ApmV5.Auth.Types — shared structs, risk levels, trust levels, context sources (US-001) [CCEM-240]
+- [x] **CP-140**: ApmV5.Auth.PolicyEngine — stateless risk evaluation, default tool map (US-002) [CCEM-241]
+- [x] **CP-141**: ApmV5.Auth.TokenStore — GenServer + ETS, atk_ tokens, SHA-256 param binding (US-003) [CCEM-242]
+- [x] **CP-142**: ApmV5.Auth.SessionStore — dual-indexed ETS, 15-min TTL, monotonic trust (US-004) [CCEM-243]
+- [x] **CP-143**: ApmV5.Auth.RateLimiter — sliding window per {user, tool} (US-005) [CCEM-244]
+- After Wave 1: `mix compile --warnings-as-errors` PASS
+
+### Wave 2: Advanced Auth + API (depends on Wave 1)
+- [x] **CP-144**: ApmV5.Auth.ContextTracker — trust/provenance, monotonic degradation (US-006) [CCEM-245]
+- [x] **CP-145**: ApmV5.Auth.MemoryGate — persistence auth, 7 prohibited patterns (US-007) [CCEM-246]
+- [x] **CP-146**: ApmV5.Auth.RedactionEngine — 7 regex patterns, auto/manual/none modes (US-008) [CCEM-247]
+- [x] **CP-147**: ApmV5.Auth.AuthorizationGate — central Layer 2 enforcement (US-009) [CCEM-248]
+- [x] **CP-148**: AuthController + Router + Supervision — 19 endpoints, 5 GenServers (US-010) [CCEM-249]
+- After Wave 2: `mix compile --warnings-as-errors` PASS
+
+### Wave 3: Visualization + Process Management (depends on Wave 2)
+- [x] **CP-149**: AuthorizationLive — 4-tab dashboard (US-011) [CCEM-250]
+- [x] **CP-150**: RoutingLive — D3.js auth flow graph (US-012) [CCEM-251]
+- [x] **CP-151**: ApmV5.Auth.AgentLifecycle — state machine module (US-013) [CCEM-252]
+- [x] **CP-152**: ActionEngine — 5 new authorization actions (US-014) [CCEM-253]
+- After Wave 3: `mix compile --warnings-as-errors` PASS
+
+### Wave 4: Hooks + CCEMAgent (depends on Wave 3)
+- [x] **CP-153**: agentlock_pre_tool.sh — PreToolUse authorization hook (US-015) [CCEM-254]
+- [x] **CP-154**: agentlock_post_tool.sh — PostToolUse execution recording (US-016) [CCEM-255]
+- [x] **CP-155**: agentlock_context.sh — context tracking hook (US-017) [CCEM-256]
+- [x] **CP-156**: AuthorizationModels.swift — Swift structs (US-018) [CCEM-257]
+- [x] **CP-157**: CCEMAgent auth integration — APMClient + MenuBarView (US-019) [CCEM-258]
+- After Wave 4: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS
+
+### Wave 5: Showcase + Release (depends on Wave 4)
+- [x] **CP-158**: features.json + showcase.js — 8 v7.0.0 features, auth pipeline phase (US-020) [CCEM-259]
+- [x] **CP-159**: mix.exs bump to v7.0.0 (US-022) [CCEM-261]
+- After Wave 5: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS
+- PR: https://github.com/peguesj/ccem-apm/pull/9
