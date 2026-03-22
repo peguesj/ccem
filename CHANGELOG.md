@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-03-21
+
+### Changed
+- **@ccem/core v4.0.0**: Major version bump for AgentLock authorization integration
+- **@ccem/apm v2.0.0**: Major version bump for new auth endpoints
+- **@ccem/ui v2.0.0**: Major version bump aligned with v7.0.0 release
+- **@ccem/ui-server v2.0.0**: Major version bump aligned with v7.0.0 release
+- Version alignment across all @ccem/* packages for CCEM v7.0.0 release
+
+### Package Details
+- `@ccem/core@4.0.0` — https://www.npmjs.com/package/@ccem/core
+- `@ccem/apm@2.0.0` — https://www.npmjs.com/package/@ccem/apm
+
+---
+
 ## [3.0.0] - 2026-03-12
 
 ### Added
@@ -509,6 +524,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No telemetry collection
   - Local-only operations
 
+[4.0.0]: https://github.com/peguesj/ccem/releases/tag/v4.0.0
+[3.0.0]: https://github.com/peguesj/ccem/releases/tag/v3.0.0
 [1.0.0]: https://github.com/peguesj/ccem/releases/tag/v1.0.0
 [2.2.1]: https://github.com/peguesj/ccem/releases/tag/v2.2.1
 [2.2.0]: https://github.com/peguesj/ccem/releases/tag/v2.2.0

@@ -8,7 +8,7 @@
  *
  * @packageDocumentation
  * @module cli
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 import { Command } from 'commander';
@@ -29,7 +29,7 @@ const program = new Command();
 program
   .name('ccem')
   .description('Claude Code Environment Manager - TUI-based configuration management')
-  .version('3.0.0');
+  .version('4.0.0');
 
 program
   .command('interactive')
