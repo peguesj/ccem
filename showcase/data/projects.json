@@ -1,16 +1,7 @@
 {
-  "version": "1.0.0",
-  "default_project": "yjmosaic",
+  "version": "1.1.0",
+  "default_project": "ccem-apm",
   "projects": [
-    {
-      "id": "yjmosaic",
-      "name": "YJMosaic",
-      "tagline": "Native macOS photographic mosaic engine",
-      "badge": "YJMOS",
-      "badge_color": "violet",
-      "status": "scaffolded",
-      "data_path": "projects/yjmosaic"
-    },
     {
       "id": "ccem-apm",
       "name": "CCEM APM",
@@ -19,6 +10,24 @@
       "badge_color": "indigo",
       "status": "shipped",
       "data_path": "projects/ccem-apm"
+    },
+    {
+      "id": "sfa",
+      "name": "Sound Forge Alchemy",
+      "tagline": "Phoenix LiveView audio production platform",
+      "badge": "SFA",
+      "badge_color": "emerald",
+      "status": "shipped",
+      "data_path": "projects/sfa"
+    },
+    {
+      "id": "yjmosaic",
+      "name": "YJMosaic",
+      "tagline": "Native macOS photographic mosaic engine",
+      "badge": "YJMOS",
+      "badge_color": "violet",
+      "status": "scaffolded",
+      "data_path": "projects/yjmosaic"
     }
   ]
 }
