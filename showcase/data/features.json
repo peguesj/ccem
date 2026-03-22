@@ -394,5 +394,77 @@
     "status": "shipped",
     "version": "6.4.0",
     "description": "Card grid with SVG health-ring indicator, tier badges, trigger pills. Slide-in detail drawer with keyboard focus trap. Session tab with vertical invocation timeline sorted by last_seen. AG-UI tab summary stats row (Connected/Degraded/Broken) with per-skill health dot + colored borders."
+  },
+  {
+    "id": "US-045",
+    "wave": 9,
+    "title": "Authorization Gate",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "3-layer enforcement: Agent \u2192 AuthorizationGate \u2192 ToolExecution. Central GenServer evaluates policy, issues single-use atk_ tokens with SHA-256 param binding, delegates to existing ApprovalGate for escalation. Integrates with AG-UI EventBus for CUSTOM auth events."
+  },
+  {
+    "id": "US-046",
+    "wave": 9,
+    "title": "Policy Engine",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "Stateless risk evaluation module. Default tool risk map (Read=none, Write=medium, Bash=high). Destructive command detection via regex. Data boundary enforcement, bulk operation checks, trust ceiling validation. Returns PolicyDecision with allow/deny/escalate."
+  },
+  {
+    "id": "US-047",
+    "wave": 9,
+    "title": "Token + Session + Rate Limiter",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "TokenStore GenServer with ETS: atk_ prefix tokens, 60s TTL, 10s sweep, atomic validate-and-consume. SessionStore with dual-indexed ETS (session_id + user_id), 15-min TTL, monotonic trust degradation. RateLimiter with sliding window per {user, tool}."
+  },
+  {
+    "id": "US-048",
+    "wave": 10,
+    "title": "Trust & Context Tracking",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "ContextTracker GenServer tracks provenance of information flowing through agent context. Monotonic trust degradation: once untrusted content enters, trust ceiling can never rise within that session. 200-event ring buffer per session."
+  },
+  {
+    "id": "US-049",
+    "wave": 10,
+    "title": "Memory Gate + Data Redaction",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "MemoryGate controls persistence authorization with 7 prohibited patterns (API keys, PEM, JWT, SSH, OAuth, AWS, conn strings). RedactionEngine applies 7 regex patterns (SSN, CC, email, phone, IP, AWS key, API key) with auto/manual/none modes."
+  },
+  {
+    "id": "US-050",
+    "wave": 10,
+    "title": "Authorization Dashboard + Routing Graph",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "AuthorizationLive: 4-tab dashboard (Overview/Sessions/Audit/Policies) with live PubSub updates, risk badges, trust indicators. RoutingLive: D3.js force-directed auth flow graph with approval gate diamonds, audit trail side panel."
+  },
+  {
+    "id": "US-051",
+    "wave": 11,
+    "title": "Agent Lifecycle State Machine",
+    "category": "process-management",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "Pure functional state machine: PENDING\u2192AUTHORIZED\u2192RUNNING\u2192COMPLETING\u2192COMPLETED/FAILED/TIMED_OUT. Authorization checkpoint between PENDING and AUTHORIZED requires valid token. Edge list export for D3.js visualization."
+  },
+  {
+    "id": "US-052",
+    "wave": 11,
+    "title": "AgentLock Hooks + CCEMAgent Auth",
+    "category": "agentlock",
+    "status": "shipped",
+    "version": "7.0.0",
+    "description": "PreToolUse hook: POST /api/v2/auth/authorize, store token, 3s timeout, fail-open. PostToolUse hook: consume token, fire-and-forget. Context hook: trust tracking for Write/Edit/WebFetch. CCEMAgent: AuthorizationModels.swift, authorization section in MenuBarView."
   }
 ]

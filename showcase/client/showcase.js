@@ -43,8 +43,10 @@ const VERSION_META = {
   '6.0.0': { label: 'v6.0.0', name: 'Intelligence',  text: 'text-emerald-400', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30',  border: 'border-emerald-500/20', bar: 'bg-emerald-500', hex: '#10b981' },
   '6.1.0': { label: 'v6.1.0', name: 'Observability', text: 'text-cyan-400',    pill: 'text-cyan-400 bg-cyan-500/10 ring-cyan-500/30',              border: 'border-cyan-500/20',    bar: 'bg-cyan-500',    hex: '#06b6d4' },
   '6.2.0': { label: 'v6.2.0', name: 'Architecture',  text: 'text-violet-400',  pill: 'text-violet-400 bg-violet-500/10 ring-violet-500/30',        border: 'border-violet-500/20',  bar: 'bg-violet-500',  hex: '#8b5cf6' },
+  '6.4.0': { label: 'v6.4.0', name: 'Skills UX',     text: 'text-pink-400',    pill: 'text-pink-400 bg-pink-500/10 ring-pink-500/30',              border: 'border-pink-500/20',    bar: 'bg-pink-500',    hex: '#ec4899' },
+  '7.0.0': { label: 'v7.0.0', name: 'Security',       text: 'text-red-400',     pill: 'text-red-400 bg-red-500/10 ring-red-500/30',                border: 'border-red-500/20',     bar: 'bg-red-500',     hex: '#ef4444' },
 };
-const VERSION_ORDER = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0'];
+const VERSION_ORDER = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0', '6.4.0', '7.0.0'];
 
 const STATUS_COLORS = {
   green:   { dot: 'bg-emerald-500 shadow-emerald-500/60 shadow-sm', text: 'text-emerald-400' },
@@ -181,10 +183,10 @@ function renderOrchestrationStatus() {
   const connText = (conn) => conn === 'live' ? 'text-emerald-400' : conn === 'polling' ? 'text-emerald-400/70' : 'text-zinc-600';
   const connLabel = (conn) => conn === 'live' ? 'sse' : conn === 'polling' ? 'rest' : 'off';
 
-  const phases = ['plan', 'build', 'verify', 'ship'];
+  const phases = ['plan', 'build', 'verify', 'auth', 'ship'];
   const activeIdx = orchState.phase !== 'idle' ? phases.indexOf(orchState.phase) : -1;
-  const phaseColors = { plan: 'text-blue-400', build: 'text-emerald-400', verify: 'text-purple-400', ship: 'text-pink-400' };
-  const phaseBg = { plan: 'bg-blue-500/10 ring-blue-500/20', build: 'bg-emerald-500/10 ring-emerald-500/20', verify: 'bg-purple-500/10 ring-purple-500/20', ship: 'bg-pink-500/10 ring-pink-500/20' };
+  const phaseColors = { plan: 'text-blue-400', build: 'text-emerald-400', verify: 'text-purple-400', auth: 'text-red-400', ship: 'text-pink-400' };
+  const phaseBg = { plan: 'bg-blue-500/10 ring-blue-500/20', build: 'bg-emerald-500/10 ring-emerald-500/20', verify: 'bg-purple-500/10 ring-purple-500/20', auth: 'bg-red-500/10 ring-red-500/20', ship: 'bg-pink-500/10 ring-pink-500/20' };
 
   const stepper = phases.map((step, i) => {
     const isActive = step === orchState.phase;
