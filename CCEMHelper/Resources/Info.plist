@@ -7,9 +7,9 @@
     <key>CFBundleIdentifier</key>
     <string>io.pegues.agent-j.labs.ccem.helper</string>
     <key>CFBundleVersion</key>
-    <string>3.0.0</string>
+    <string>7.0.0</string>
     <key>CFBundleShortVersionString</key>
-    <string>3.0.0</string>
+    <string>7.0.0</string>
     <key>LSUIElement</key>
     <true/>
     <key>CFBundlePackageType</key>

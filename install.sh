@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# CCEM v4.0.0 Cross-Platform Installer
+# CCEM v7.0.0 Cross-Platform Installer
 # ============================================================================
 # Installs: APM v4 Phoenix Server, TypeScript CLI, Claude Code Hooks,
 #           CCEMHelper (macOS), and launchd/systemd service.

@@ -1,5 +1,5 @@
 #!/bin/bash
-# PostToolUse hook — CCEM APM 6.2.0
+# PostToolUse hook — CCEM APM 7.0.0
 # Fires after each tool call. Calculates duration, captures tool outcome metadata,
 # emits enriched heartbeat with span completion. Always exits 0.
 
@@ -51,7 +51,7 @@ TOOL_OUTPUT=$(echo "$INPUT" | _jq "" '.tool_output // ""')
 OUTPUT_LENGTH=$(echo "$TOOL_OUTPUT" | wc -c | tr -d ' ')
 OUTPUT_PREVIEW=$(echo "$TOOL_OUTPUT" | _jq "" -r 'if type == "string" then .[0:150] else (tostring | .[0:150]) end' 2>/dev/null || echo "")
 
-# Build APM 6.2.0 completion payload
+# Build APM 7.0.0 completion payload
 PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
   --arg status "working" \

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# CCEM APM v6.4.0 Installation Suite
+# CCEM APM v7.0.0 Installation Suite
 # Author: Jeremiah Pegues <jeremiah@pegues.io>
 # ============================================================================
 # Installs: APM v4 Phoenix Server, CCEMHelper (macOS), Claude Code Hooks,
@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-CCEM_VERSION="6.4.0"
+CCEM_VERSION="7.0.0"
 CCEM_APM_PORT="${CCEM_APM_PORT:-3032}"
 CCEM_REPO_URL="https://github.com/peguesj/ccem.git"
 CCEM_DEFAULT_HOME="$HOME/Developer/ccem"

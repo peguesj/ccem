@@ -1,5 +1,5 @@
 #!/bin/bash
-# PreToolUse hook — CCEM APM 6.2.0
+# PreToolUse hook — CCEM APM 7.0.0
 # Fires before each tool call. Emits detailed heartbeat with tool context,
 # UPM formation metadata, input summary, and distributed tracing spans.
 # Always exits 0 to never block Claude Code.
@@ -89,7 +89,7 @@ if [ "$HAS_JQ" = "1" ]; then
     }' > "$STATE_DIR/${SESSION_ID}_${TOOL_USE_ID}.json"
 fi
 
-# Build APM 6.2.0 heartbeat payload with full context
+# Build APM 7.0.0 heartbeat payload with full context
 PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
   --arg status "working" \

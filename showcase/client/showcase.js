@@ -18,7 +18,7 @@
 
 const APM_BASE = window.CCEM_APM_BASE_URL || 'http://localhost:3032';
 const POLL_INTERVAL = 10_000;
-const VERSION = 'v6.4.0';
+const VERSION = 'v7.0.0';
 
 const WAVE_COLORS = {
   1: { hex: '#10b981', stroke: '#34d399', fill: '#10b981', text: 'text-emerald-400', bg: 'bg-emerald-500/10', ring: 'ring-emerald-500/30', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30', border: 'border-emerald-500/20', bar: 'bg-emerald-500' },

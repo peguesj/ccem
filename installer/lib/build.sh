@@ -177,7 +177,7 @@ init_config_and_state() {
     cat > "$config_file" << ENDJSON
 {
   "\$schema": "./apm_config_v4.schema.json",
-  "version": "4.0.0",
+  "version": "7.0.0",
   "port": ${CCEM_APM_PORT},
   "active_project": "",
   "projects": []
