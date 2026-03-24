@@ -943,12 +943,89 @@
       }
     }
 
+    // ── Skill Alignment Modal ─────────────────────────────────────────────────
+    let _lastAlignmentTs = null;
+
+    async function pollSkillAlignment() {
+      try {
+        const r = await fetch('http://localhost:3032/api/notifications?limit=10&category=skill_alignment', {
+          signal: AbortSignal.timeout(2000), cache: 'no-store'
+        });
+        if (!r.ok) return;
+        const data = await r.json();
+        const notifs = Array.isArray(data) ? data : (data.notifications || data.data || []);
+        const latest = notifs.find(n => (n.category || '') === 'skill_alignment');
+        if (!latest) return;
+        const ts = latest.inserted_at || latest.timestamp || '';
+        if (ts && ts === _lastAlignmentTs) return; // already shown
+        _lastAlignmentTs = ts;
+        showAlignmentModal(latest);
+      } catch (_) {}
+    }
+
+    function showAlignmentModal(notif) {
+      const modal = document.getElementById('skill-alignment-modal');
+      if (!modal) return;
+      let summary = {};
+      try { summary = JSON.parse(notif.data || '{}'); } catch (_) {}
+      const findings = summary.findings || [];
+      const misaligned = summary.misaligned || 0;
+      const total = summary.total_checked || 0;
+      const badgeClass = misaligned > 0 ? 'bg-amber-500/20 text-amber-400 ring-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 ring-emerald-500/30';
+      const badgeText = misaligned > 0 ? `${misaligned} misaligned` : 'all aligned';
+      const rows = findings.map(f => {
+        const issues = [...(f.skill_md_issues || []), ...(f.claude_md_issues || [])];
+        const statusBadge = f.status === 'aligned'
+          ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30">aligned</span>'
+          : '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/30">misaligned</span>';
+        return `<div class="py-2 border-b border-zinc-800/60 last:border-0">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-mono text-xs text-zinc-200">${f.skill}</span>${statusBadge}
+          </div>
+          ${f.state_files_at_user_level?.length ? `<div class="text-[10px] text-zinc-500 font-mono">State at user-level: ${f.state_files_at_user_level.join(', ')}</div>` : ''}
+          ${issues.length ? `<ul class="mt-1 space-y-0.5">${issues.map(i => `<li class="text-[10px] text-amber-400/80 font-mono">• ${i}</li>`).join('')}</ul>` : ''}
+          ${f.recommended_path ? `<div class="text-[10px] text-zinc-600 mt-1 font-mono">→ ${f.recommended_path}</div>` : ''}
+        </div>`;
+      }).join('');
+      document.getElementById('sal-badge').innerHTML = `<span class="text-[9px] px-2 py-0.5 rounded-full ring-1 ${badgeClass}">${badgeText}</span>`;
+      document.getElementById('sal-title').textContent = notif.title || 'Skill Path Alignment';
+      document.getElementById('sal-message').textContent = notif.message || '';
+      document.getElementById('sal-findings').innerHTML = rows || '<div class="text-xs text-zinc-600">No findings</div>';
+      modal.classList.remove('hidden');
+    }
+
     // Start
     init();
     pollAPM();
     pollNotifications();
+    pollSkillAlignment();
     setInterval(pollAPM, 10000);
     setInterval(pollNotifications, 10000);
+    setInterval(pollSkillAlignment, 5000);
   </script>
+
+  <!-- Skill Alignment Modal -->
+  <div id="skill-alignment-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div class="relative w-full max-w-lg mx-4 bg-zinc-900 border border-zinc-700/60 rounded-xl shadow-2xl">
+      <div class="flex items-start justify-between p-4 border-b border-zinc-800">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">APM Action Result</span>
+            <span id="sal-badge"></span>
+          </div>
+          <h2 id="sal-title" class="text-sm font-semibold text-zinc-100"></h2>
+          <p id="sal-message" class="text-[11px] text-zinc-400 mt-0.5"></p>
+        </div>
+        <button onclick="document.getElementById('skill-alignment-modal').classList.add('hidden')"
+          class="ml-4 text-zinc-500 hover:text-zinc-300 transition-colors text-lg leading-none">&times;</button>
+      </div>
+      <div id="sal-findings" class="p-4 max-h-80 overflow-y-auto text-zinc-300 text-xs space-y-0"></div>
+      <div class="flex justify-between items-center px-4 py-3 border-t border-zinc-800 bg-zinc-950/50 rounded-b-xl">
+        <span class="text-[10px] font-mono text-zinc-600">Run: <code class="text-zinc-400">POST /api/actions/run {"action_type":"align_skill_paths"}</code></span>
+        <button onclick="document.getElementById('skill-alignment-modal').classList.add('hidden')"
+          class="text-[11px] px-3 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors">Dismiss</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
