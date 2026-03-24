@@ -19,6 +19,7 @@
 const APM_BASE = window.CCEM_APM_BASE_URL || 'http://localhost:3032';
 const POLL_INTERVAL = 10_000;
 const VERSION = 'v7.0.0';
+const PROJECT = new URLSearchParams(window.location.search).get('project') || 'ccem-apm';
 
 const WAVE_COLORS = {
   1: { hex: '#10b981', stroke: '#34d399', fill: '#10b981', text: 'text-emerald-400', bg: 'bg-emerald-500/10', ring: 'ring-emerald-500/30', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30', border: 'border-emerald-500/20', bar: 'bg-emerald-500' },
@@ -26,6 +27,8 @@ const WAVE_COLORS = {
   3: { hex: '#a855f7', stroke: '#c084fc', fill: '#a855f7', text: 'text-purple-400', bg: 'bg-purple-500/10', ring: 'ring-purple-500/30', pill: 'text-purple-400 bg-purple-500/10 ring-purple-500/30', border: 'border-purple-500/20', bar: 'bg-purple-500' },
   4: { hex: '#f59e0b', stroke: '#fbbf24', fill: '#f59e0b', text: 'text-amber-400', bg: 'bg-amber-500/10', ring: 'ring-amber-500/30', pill: 'text-amber-400 bg-amber-500/10 ring-amber-500/30', border: 'border-amber-500/20', bar: 'bg-amber-500' },
   5: { hex: '#ef4444', stroke: '#f87171', fill: '#ef4444', text: 'text-rose-400', bg: 'bg-rose-500/10', ring: 'ring-rose-500/30', pill: 'text-rose-400 bg-rose-500/10 ring-rose-500/30', border: 'border-rose-500/20', bar: 'bg-rose-500' },
+  6: { hex: '#06b6d4', stroke: '#22d3ee', fill: '#06b6d4', text: 'text-cyan-400', bg: 'bg-cyan-500/10', ring: 'ring-cyan-500/30', pill: 'text-cyan-400 bg-cyan-500/10 ring-cyan-500/30', border: 'border-cyan-500/20', bar: 'bg-cyan-500' },
+  7: { hex: '#8b5cf6', stroke: '#a78bfa', fill: '#8b5cf6', text: 'text-violet-400', bg: 'bg-violet-500/10', ring: 'ring-violet-500/30', pill: 'text-violet-400 bg-violet-500/10 ring-violet-500/30', border: 'border-violet-500/20', bar: 'bg-violet-500' },
 };
 
 const WAVE_LABELS = {
@@ -34,6 +37,8 @@ const WAVE_LABELS = {
   3: 'Dashboard',
   4: 'Tools',
   5: 'Integration',
+  6: 'Orchestration',
+  7: 'Extended',
 };
 
 const VERSION_META = {
@@ -57,7 +62,7 @@ const STATUS_COLORS = {
 
 // ─── Feature Data (static, roadmap status resolved from live polling) ──────────
 
-const FEATURES = [
+let FEATURES = [
   // ── v5.0.0: Foundation ─────────────────────────────────────────────────────────
   { id: 'US-001', wave: 1, version: '5.0.0', title: 'AG-UI Protocol',          description: '33 typed event categories via ag_ui_ex Hex package. SSE transport, compile-time EventType constants.', packages: [{ name: 'ag_ui_ex', stars: 'Hex', url: 'https://hex.pm/packages/ag_ui_ex' }, { name: 'AG-UI Protocol', url: 'https://docs.ag-ui.com' }] },
   { id: 'US-002', wave: 1, version: '5.0.0', title: 'Event Router',            description: 'Central dispatch: routes AG-UI events to AgentRegistry, FormationStore, Dashboard, Metrics.', packages: [{ name: 'GenServer', url: 'https://hexdocs.pm/elixir/GenServer.html' }, { name: 'PubSub', url: 'https://hexdocs.pm/phoenix_pubsub' }] },
@@ -96,6 +101,33 @@ const FEATURES = [
   { id: 'US-029', wave: 5, version: '6.0.0', title: 'Screenshot Skill',        description: '/screenshot skill handles macOS HEIC filenames. Subcommands: default, last N, incremental, setup, status. Auto-converts HEIC→PNG via sips.', packages: [{ name: 'sips', url: '#' }] },
   { id: 'US-030', wave: 5, version: '6.0.0', title: 'Skill Dependency Graph',  description: 'Visualized skill ecosystem for CCEM: /idea → /ralph → /upm → /formation → /deploy:agents-v2 → /live-integration-testing. Skills toggle in APM dep graph.', packages: [{ name: 'D3.js', stars: 'v7', url: 'https://d3js.org' }] },
 ];
+
+// ─── Project Data Loader ─────────────────────────────────────────────────────────
+
+async function loadProjectFeatures() {
+  if (PROJECT === 'ccem-apm') return; // use hardcoded FEATURES array
+  try {
+    const res = await fetch(`../data/projects/${PROJECT}/features.json`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    // Normalize: ensure packages field exists (ccem-apm specific), map status→liveMap
+    FEATURES = data.map(f => ({
+      packages: [],
+      ...f,
+    }));
+    // Update orch state totals
+    orchState.storiesDone = FEATURES.length;
+    orchState.storiesTotal = FEATURES.length;
+  } catch (err) {
+    console.warn(`[showcase] Failed to load project features for "${PROJECT}":`, err);
+  }
+  // Update page title
+  if (PROJECT !== 'ccem-apm') {
+    document.title = `${PROJECT} — CCEM Showcase`;
+    const badge = document.getElementById('version-badge');
+    if (badge) badge.textContent = PROJECT;
+  }
+}
 
 // ─── State ──────────────────────────────────────────────────────────────────────
 
@@ -464,7 +496,7 @@ function renderFeatureCards() {
 
   // Helpers for rendering a card
   function cardHtml(f) {
-    const c = WAVE_COLORS[f.wave];
+    const c = WAVE_COLORS[f.wave] || WAVE_COLORS[1];
     const vm = VERSION_META[f.version] || {};
     return `
       <div class="rounded-lg border ${f.liveStatus === 'done' ? c.border : 'border-zinc-800'} bg-zinc-900/60 p-3 space-y-2">
@@ -476,7 +508,7 @@ function renderFeatureCards() {
         </div>
         <h3 class="text-[11px] font-semibold text-zinc-200">${f.title}</h3>
         <p class="text-[10px] text-zinc-500 leading-relaxed">${f.description}</p>
-        ${f.packages.length > 0 ? `<div class="flex flex-wrap gap-1">${f.packages.map(pkg => `<a href="${pkg.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:text-zinc-200 transition">${pkg.name}${pkg.stars ? ` <span class="text-zinc-600">${pkg.stars}</span>` : ''}</a>`).join('')}</div>` : ''}
+        ${(f.packages || []).length > 0 ? `<div class="flex flex-wrap gap-1">${(f.packages || []).map(pkg => `<a href="${pkg.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:text-zinc-200 transition">${pkg.name}${pkg.stars ? ` <span class="text-zinc-600">${pkg.stars}</span>` : ''}</a>`).join('')}</div>` : ''}
       </div>
     `;
   }
@@ -724,6 +756,71 @@ function inspectorRow(label, value, dot) {
 
 // ─── Bottom Bar ─────────────────────────────────────────────────────────────────
 
+// ─── AG-UI Chat State ────────────────────────────────────────────────────────
+
+let chatMessages = [];
+const CHAT_SCOPE = 'dashboard';
+const CHAT_MAX_DISPLAY = 50;
+
+function formatChatTime(ts) {
+  if (!ts) return '';
+  try {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  } catch { return ''; }
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+
+  if (chatMessages.length === 0) {
+    container.innerHTML = '<div class="text-center text-zinc-600 text-xs py-2">No messages yet. Type below to start.</div>';
+    return;
+  }
+
+  container.innerHTML = chatMessages.slice().reverse().map(msg => {
+    const isUser = msg.role === 'user';
+    const roleBadge = isUser
+      ? '<span class="rounded px-1.5 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-400">user</span>'
+      : `<span class="rounded px-1.5 py-0.5 text-[9px] font-bold bg-zinc-700 text-zinc-400">${msg.role || 'system'}</span>`;
+    const agentTag = msg.agent_id
+      ? `<span class="text-[9px] text-zinc-600 font-mono truncate max-w-[120px]">${msg.agent_id}</span>`
+      : '';
+    return `<div class="flex flex-col gap-0.5 px-2 py-1 ${isUser ? 'items-end' : 'items-start'}">
+      <div class="flex items-center gap-1.5">${roleBadge}${agentTag}<span class="text-[9px] text-zinc-700">${formatChatTime(msg.timestamp)}</span></div>
+      <div class="rounded-lg px-3 py-1.5 text-xs max-w-[85%] whitespace-pre-wrap break-words ${isUser ? 'bg-emerald-500/10 text-emerald-200 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-300 border border-zinc-700'}">${msg.content || ''}</div>
+    </div>`;
+  }).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+async function loadChatMessages() {
+  try {
+    const res = await fetch(`${APM_BASE}/api/v2/chat/${CHAT_SCOPE}?limit=${CHAT_MAX_DISPLAY}`);
+    if (res.ok) {
+      const json = await res.json();
+      chatMessages = json.data || [];
+      renderChatMessages();
+    }
+  } catch { /* APM offline */ }
+}
+
+async function sendChatMessage(content) {
+  if (!content.trim()) return;
+  try {
+    const res = await fetch(`${APM_BASE}/api/v2/chat/${CHAT_SCOPE}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content.trim(), role: 'user' })
+    });
+    if (res.ok) {
+      await loadChatMessages();
+    }
+  } catch { /* APM offline */ }
+}
+
 function renderBottomBar() {
   const bar = document.getElementById('bottom-bar');
   if (!bar) return;
@@ -731,8 +828,13 @@ function renderBottomBar() {
   bar.innerHTML = `
     <div class="mx-auto flex w-full max-w-[1600px] items-center gap-3 px-6 py-3">
       <span class="flex-shrink-0 rounded bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-500 ring-1 ring-emerald-500/20">AG-UI</span>
-      <input type="text" disabled placeholder="AG-UI chat coming soon — roadmap US-047 (WebSocket channel)" class="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none disabled:opacity-50"/>
-      <button type="button" disabled class="flex-shrink-0 rounded-lg bg-zinc-700 px-4 py-2 text-xs font-bold text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed">Send</button>
+      <div class="flex-1 flex flex-col">
+        <div id="chat-messages" class="max-h-[120px] overflow-y-auto mb-1.5 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent"></div>
+        <form id="chat-form" class="flex gap-2">
+          <input type="text" id="chat-input" placeholder="Send a message..." class="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition"/>
+          <button type="submit" class="flex-shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-bold text-white transition">Send</button>
+        </form>
+      </div>
     </div>
     <div class="border-t border-zinc-800/60 bg-zinc-950/60">
       <div class="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-2 px-6 py-2">
@@ -757,6 +859,22 @@ function renderBottomBar() {
       </div>
     </div>
   `;
+
+  // Wire up chat form
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('chat-input');
+  if (form && input) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const val = input.value;
+      if (!val.trim()) return;
+      input.value = '';
+      await sendChatMessage(val);
+    });
+  }
+
+  // Load initial messages
+  loadChatMessages();
 }
 
 // ─── AG-UI SSE ──────────────────────────────────────────────────────────────────
@@ -817,9 +935,11 @@ function connectSSE() {
 
 // ─── Init ───────────────────────────────────────────────────────────────────────
 
-function init() {
-  document.getElementById('version-badge').textContent = VERSION;
-  document.getElementById('git-info').textContent = `${VERSION} · main`;
+async function init() {
+  await loadProjectFeatures();
+
+  document.getElementById('version-badge').textContent = PROJECT === 'ccem-apm' ? VERSION : PROJECT;
+  document.getElementById('git-info').textContent = PROJECT === 'ccem-apm' ? `${VERSION} · main` : `${PROJECT} · main`;
 
   renderOrchestrationStatus();
   renderFeatureCards();

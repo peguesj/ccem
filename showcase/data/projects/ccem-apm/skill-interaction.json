@@ -1,0 +1,129 @@
+{
+  "version": "1.0.0",
+  "title": "CCEM Skill Interaction Graph",
+  "description": "Nodes and edges representing how CCEM skills coordinate during project delivery",
+  "generated_at": "2026-03-24",
+  "nodes": [
+    {
+      "id": "upm",
+      "label": "/upm",
+      "type": "orchestrator",
+      "color": "#6366f1",
+      "description": "Unified Project Management — coordinates the full delivery pipeline",
+      "triggers": ["plan", "build", "ship", "verify"],
+      "outputs": ["prd.json", "plane-issues", "ralph-agents", "pr"]
+    },
+    {
+      "id": "plane-pm",
+      "label": "/plane-pm",
+      "type": "integration",
+      "color": "#0ea5e9",
+      "description": "Plane PM API integration — manages issues, cycles, modules, and state transitions",
+      "triggers": ["create-issues", "update-state", "sync-drift"],
+      "outputs": ["issue-ids", "cycle-id", "module-id"]
+    },
+    {
+      "id": "ralph",
+      "label": "/ralph",
+      "type": "agent-system",
+      "color": "#f59e0b",
+      "description": "Ralph autonomous agent — implements stories sequentially with gate checks",
+      "triggers": ["story-implementation", "gate-check", "worktree-management"],
+      "outputs": ["code-changes", "pass-fail-results", "compile-gate"]
+    },
+    {
+      "id": "formation",
+      "label": "/formation",
+      "type": "agent-system",
+      "color": "#10b981",
+      "description": "Formation deploy — hierarchical agent structure per wave (squadron/swarm/cluster)",
+      "triggers": ["deploy", "wave-start", "wave-complete"],
+      "outputs": ["agent-registrations", "wave-results", "apm-telemetry"]
+    },
+    {
+      "id": "ship",
+      "label": "/ship",
+      "type": "delivery",
+      "color": "#ec4899",
+      "description": "Source Control Excellence — creates PR, syncs Plane, closes the delivery loop",
+      "triggers": ["pr-create", "merge", "plane-sync"],
+      "outputs": ["pr-url", "commit-sha", "release-tag"]
+    },
+    {
+      "id": "apm",
+      "label": "/ccem-apm",
+      "type": "observability",
+      "color": "#8b5cf6",
+      "description": "APM server — tracks agent registration, telemetry, auth, and token usage",
+      "triggers": ["agent-register", "heartbeat", "auth-authorize", "usage-record"],
+      "outputs": ["telemetry", "auth-token", "usage-summary", "notifications"]
+    },
+    {
+      "id": "prd",
+      "label": "prd.json",
+      "type": "artifact",
+      "color": "#64748b",
+      "description": "Wave-structured PRD — source of truth for story definitions and pass/fail state",
+      "triggers": ["generate", "update-passes", "read"],
+      "outputs": ["story-list", "wave-structure", "gate-results"]
+    },
+    {
+      "id": "showcase",
+      "label": "/showcase",
+      "type": "presentation",
+      "color": "#f97316",
+      "description": "Showcase skill — generates and serves the CCEM feature showcase with live APM data",
+      "triggers": ["render", "reload", "ag-ui-connect"],
+      "outputs": ["feature-slides", "live-telemetry", "sse-stream"]
+    },
+    {
+      "id": "ccem",
+      "label": "/ccem",
+      "type": "management",
+      "color": "#06b6d4",
+      "description": "CCEM root skill — session management, APM lifecycle, config, and multi-project routing",
+      "triggers": ["apm-start", "apm-stop", "session-init", "project-switch"],
+      "outputs": ["apm-pid", "session-id", "project-context"]
+    },
+    {
+      "id": "hooks",
+      "label": "Claude Hooks",
+      "type": "infrastructure",
+      "color": "#a78bfa",
+      "description": "Claude Code hooks — PreToolUse/PostToolUse lifecycle integrating AgentLock auth and APM telemetry",
+      "triggers": ["pre-tool-use", "post-tool-use", "session-start", "session-end"],
+      "outputs": ["auth-decision", "usage-record", "context-entry", "session-summary"]
+    }
+  ],
+  "edges": [
+    {"from": "upm", "to": "prd", "label": "generates", "phase": "plan", "style": "solid"},
+    {"from": "upm", "to": "plane-pm", "label": "creates issues", "phase": "plan", "style": "solid"},
+    {"from": "upm", "to": "ralph", "label": "spawns agents", "phase": "build", "style": "solid"},
+    {"from": "ralph", "to": "prd", "label": "updates passes", "phase": "build", "style": "dashed"},
+    {"from": "ralph", "to": "formation", "label": "deploys via", "phase": "build", "style": "solid"},
+    {"from": "formation", "to": "apm", "label": "registers agents", "phase": "build", "style": "solid"},
+    {"from": "upm", "to": "ship", "label": "triggers on complete", "phase": "ship", "style": "solid"},
+    {"from": "ship", "to": "plane-pm", "label": "marks Done", "phase": "ship", "style": "solid"},
+    {"from": "hooks", "to": "apm", "label": "auth + telemetry", "phase": "runtime", "style": "dashed"},
+    {"from": "ccem", "to": "apm", "label": "lifecycle control", "phase": "runtime", "style": "solid"},
+    {"from": "showcase", "to": "apm", "label": "live data via SSE", "phase": "runtime", "style": "dashed"}
+  ],
+  "phases": [
+    {"id": "plan", "label": "Plan", "color": "#0ea5e9", "description": "PRD generation, issue creation, cycle/module setup"},
+    {"id": "build", "label": "Build", "color": "#f59e0b", "description": "Agent spawning, wave execution, gate checks"},
+    {"id": "ship", "label": "Ship", "color": "#ec4899", "description": "PR creation, merge, Plane state sync"},
+    {"id": "runtime", "label": "Runtime", "color": "#8b5cf6", "description": "Continuous — auth, telemetry, monitoring"}
+  ],
+  "example_trace": {
+    "invocation": "/upm plan build ship wave=all project=CCEM-v7.0.0",
+    "plane_epic": "CCEM-240 through CCEM-261 (22 issues, 5 waves)",
+    "prd_file": "prd/ccem-v7-agentlock.json",
+    "formation_id": "fmt-ccem-v7-agentlock-20260321",
+    "agents_deployed": 12,
+    "waves_completed": 5,
+    "gate_checks": ["mix compile --warnings-as-errors", "swift build -c release"],
+    "pr": "PR#9 merged 2026-03-24 (73cad7c — 17 commits, 56 files, 5900 insertions)",
+    "plane_final_state": "260/260 issues Done (100%)",
+    "duration_estimate": "~3 hours wall-clock (parallel agents)"
+  }
+}

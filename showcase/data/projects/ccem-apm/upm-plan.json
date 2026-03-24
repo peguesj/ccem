@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0",
+  "title": "UPM Orchestration System — Live Status",
+  "description": "How the /upm skill coordinates with /plane-pm, /ralph, /formation, and /ship to deliver features end-to-end",
+  "generated_at": "2026-03-24",
+  "plane_status": {
+    "project": "CCEM - Claude Code Environment Manager",
+    "project_id": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
+    "workspace": "lgtm",
+    "total_issues": 260,
+    "done": 260,
+    "in_progress": 0,
+    "backlog": 0,
+    "completion_pct": 100
+  },
+  "github_status": {
+    "repo": "peguesj/ccem-apm",
+    "prs": [
+      {"number": 9, "title": "v7.0.0 AgentLock process manager", "state": "merged", "merged_at": "2026-03-24", "branch": "ralph/ccem-v7-0-0-agentlock", "commits": 17, "files": 56, "insertions": 5900},
+      {"number": 8, "title": "v6.4.0 Skills UX overhaul — WCAG AA, Fix Wizard", "state": "merged", "merged_at": "2026-03-19", "branch": "ralph/ccem-skills-ux-v640"},
+      {"number": 7, "title": "v5.4.0 AG-UI protocol integration (48 stories)", "state": "merged", "merged_at": "2026-03-12", "branch": "ralph/ccem5-agui-integration"},
+      {"number": 6, "title": "UAT testing panel — self-service system validation", "state": "open", "merged_at": null, "branch": "feat/uat-panel"},
+      {"number": 5, "title": "v5.1.0 Management Suite, universal rename, showcase", "state": "merged", "merged_at": "2026-03-12", "branch": "ralph/ccem-v5-1-management-suite"},
+      {"number": 4, "title": "v4.2.0 Dynamic APM — SkillsRegistry, enhanced tasks", "state": "merged", "merged_at": "2026-03-03", "branch": "ralph/ccem-dynamic-apm-v4-2"},
+      {"number": 2, "title": "v4.0.0 Formation UX integration, wave tracking", "state": "merged", "merged_at": "2026-02-26", "branch": "ralph/apm-v4-formation-ux-integration"},
+      {"number": 1, "title": "Scoped notifications, graph hierarchy, toast system", "state": "merged", "merged_at": "2026-02-26", "branch": "ralph/apm-v4-gap-closure"}
+    ]
+  },
+  "skill_interaction_flow": {
+    "nodes": [
+      {"id": "upm", "label": "/upm", "type": "orchestrator", "description": "Unified Project Management — coordinates the full delivery pipeline"},
+      {"id": "plane-pm", "label": "/plane-pm", "type": "integration", "description": "Plane PM API — creates cycles, modules, issues; tracks state transitions"},
+      {"id": "ralph", "label": "/ralph", "type": "agent-system", "description": "Ralph autonomous agent — implements stories sequentially with gate checks"},
+      {"id": "formation", "label": "/formation", "type": "agent-system", "description": "Formation deploy — hierarchical agent structure per wave"},
+      {"id": "ship", "label": "/ship", "type": "delivery", "description": "Source Control Excellence — creates PR, syncs Plane, closes the loop"},
+      {"id": "apm", "label": "/ccem-apm", "type": "observability", "description": "APM server — tracks all formation agent registration and telemetry"},
+      {"id": "prd", "label": "prd.json", "type": "artifact", "description": "Wave-structured PRD — source of truth for story definitions and pass/fail state"}
+    ],
+    "edges": [
+      {"from": "upm", "to": "prd", "label": "generates", "phase": "plan"},
+      {"from": "upm", "to": "plane-pm", "label": "creates issues", "phase": "plan"},
+      {"from": "upm", "to": "ralph", "label": "spawns agents", "phase": "build"},
+      {"from": "ralph", "to": "prd", "label": "updates passes", "phase": "build"},
+      {"from": "ralph", "to": "formation", "label": "deploys via", "phase": "build"},
+      {"from": "formation", "to": "apm", "label": "registers agents", "phase": "build"},
+      {"from": "upm", "to": "ship", "label": "triggers on complete", "phase": "ship"},
+      {"from": "ship", "to": "plane-pm", "label": "marks Done", "phase": "ship"}
+    ],
+    "example_trace": {
+      "skill": "/upm",
+      "invocation": "/upm plan build ship wave=all project=CCEM-v7.0.0",
+      "plane_epic": "CCEM-240 through CCEM-261 (22 issues, 5 waves)",
+      "formation_id": "fmt-ccem-v7-agentlock-20260321",
+      "agents_deployed": 12,
+      "waves_completed": 5,
+      "gate_checks": ["mix compile --warnings-as-errors", "swift build -c release"],
+      "pr": "PR#9 merged 2026-03-24 (73cad7c)",
+      "duration_estimate": "~3 hours wall-clock (parallel agents)"
+    }
+  },
+  "waves": [
+    {
+      "wave": 1, "title": "AgentLock Foundation",
+      "stories": 5, "stories_passed": 5,
+      "cps": ["CP-139 Types", "CP-140 PolicyEngine", "CP-141 TokenStore", "CP-142 SessionStore", "CP-143 RateLimiter"],
+      "gate": "mix compile --warnings-as-errors PASS"
+    },
+    {
+      "wave": 2, "title": "Advanced Auth + API",
+      "stories": 5, "stories_passed": 5,
+      "cps": ["CP-144 ContextTracker", "CP-145 MemoryGate", "CP-146 RedactionEngine", "CP-147 AuthorizationGate", "CP-148 AuthController"],
+      "gate": "mix compile --warnings-as-errors PASS + GET /api/v2/auth/summary 200"
+    },
+    {
+      "wave": 3, "title": "Visualization + Process Management",
+      "stories": 4, "stories_passed": 4,
+      "cps": ["CP-149 AuthorizationLive", "CP-150 RoutingLive", "CP-151 AgentLifecycle", "CP-152 ActionEngine"],
+      "gate": "mix compile PASS + /authorization and /routing render"
+    },
+    {
+      "wave": 4, "title": "Hooks + CCEMHelper Swift",
+      "stories": 5, "stories_passed": 5,
+      "cps": ["CP-153 agentlock_pre_tool.sh", "CP-154 agentlock_post_tool.sh", "CP-155 agentlock_context.sh", "CP-156 AuthorizationModels.swift", "CP-157 CCEMHelper integration"],
+      "gate": "mix compile PASS + swift build -c release PASS + hooks <100ms"
+    },
+    {
+      "wave": 5, "title": "Showcase + Release",
+      "stories": 2, "stories_passed": 2,
+      "cps": ["CP-158 features.json + showcase.js", "CP-159 v7.0.0 bump"],
+      "gate": "mix compile PASS + swift build PASS + showcase renders v7.0.0"
+    }
+  ]
+}
