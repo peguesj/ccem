@@ -19,7 +19,7 @@
 const APM_BASE = window.CCEM_APM_BASE_URL || 'http://localhost:3032';
 const POLL_INTERVAL = 10_000;
 const VERSION = 'v7.0.0';
-const PROJECT = new URLSearchParams(window.location.search).get('project') || 'ccem-apm';
+const PROJECT = new URLSearchParams(window.location.search).get('project') || 'ccem';
 
 const WAVE_COLORS = {
   1: { hex: '#10b981', stroke: '#34d399', fill: '#10b981', text: 'text-emerald-400', bg: 'bg-emerald-500/10', ring: 'ring-emerald-500/30', pill: 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/30', border: 'border-emerald-500/20', bar: 'bg-emerald-500' },
@@ -105,12 +105,13 @@ let FEATURES = [
 // ─── Project Data Loader ─────────────────────────────────────────────────────────
 
 async function loadProjectFeatures() {
-  if (PROJECT === 'ccem-apm') return; // use hardcoded FEATURES array
+  // 'ccem' is the default project — use the hardcoded FEATURES array (full APM feature set)
+  if (PROJECT === 'ccem' || PROJECT === 'ccem-apm') return;
   try {
     const res = await fetch(`../data/projects/${PROJECT}/features.json`, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Normalize: ensure packages field exists (ccem-apm specific), map status→liveMap
+    // Normalize: ensure packages field exists, map status→liveMap
     FEATURES = data.map(f => ({
       packages: [],
       ...f,
@@ -121,12 +122,10 @@ async function loadProjectFeatures() {
   } catch (err) {
     console.warn(`[showcase] Failed to load project features for "${PROJECT}":`, err);
   }
-  // Update page title
-  if (PROJECT !== 'ccem-apm') {
-    document.title = `${PROJECT} — CCEM Showcase`;
-    const badge = document.getElementById('version-badge');
-    if (badge) badge.textContent = PROJECT;
-  }
+  // Update page title for non-default projects
+  document.title = `${PROJECT} — CCEM Showcase`;
+  const badge = document.getElementById('version-badge');
+  if (badge) badge.textContent = PROJECT;
 }
 
 // ─── State ──────────────────────────────────────────────────────────────────────
@@ -738,7 +737,7 @@ function renderInspector() {
     html += inspectorSection(`Agents (${apmState.agents.length})`, apmState.agents.slice(0, 8).map(a => `<div class="flex items-center justify-between py-1.5"><div class="flex items-center gap-2 min-w-0"><span class="inline-block h-2 w-2 flex-shrink-0 rounded-full ${a.status === 'active' ? STATUS_COLORS.green.dot : STATUS_COLORS.unknown.dot}"></span><span class="text-[10px] text-zinc-400 truncate font-mono">${a.agent_id || a.id || 'unknown'}</span></div><span class="text-[9px] font-mono text-zinc-600">${a.status || 'idle'}</span></div>`).join(''));
   }
 
-  html += inspectorSection('Git', [inspectorRow('Branch', 'main'), inspectorRow('Version', VERSION), inspectorRow('Repo', 'peguesj/ccem-apm')].join(''));
+  html += inspectorSection('Git', [inspectorRow('Branch', 'main'), inspectorRow('Version', VERSION), inspectorRow('Repo', 'peguesj/ccem')].join(''));
   html += inspectorSection('Stack', [inspectorRow('Runtime', 'Elixir/OTP 27'), inspectorRow('Framework', 'Phoenix 1.7'), inspectorRow('UI', 'LiveView + daisyUI'), inspectorRow('Protocol', 'AG-UI (ag_ui_ex)'), inspectorRow('Agent', 'Swift/AppKit'), inspectorRow('Installer', 'Bash modular')].join(''));
   html += inspectorSection('DRTW Libraries', [inspectorRow('ag_ui_ex', 'v0.1.0 (Hex)'), inspectorRow('Phoenix', 'v1.7.x'), inspectorRow('LiveView', 'v1.0.x'), inspectorRow('Jason', 'JSON codec'), inspectorRow('Bandit', 'HTTP server'), inspectorRow('Tailwind', 'v3.x (CDN)')].join(''));
   html += inspectorSection('Key Endpoints', [inspectorRow('/api/status', 'GET', 'green'), inspectorRow('/api/agents', 'GET', 'green'), inspectorRow('/api/register', 'POST', 'green'), inspectorRow('/api/heartbeat', 'POST', 'green'), inspectorRow('/api/ag-ui/events', 'SSE', 'green'), inspectorRow('/api/v2/openapi.json', 'GET', 'green'), inspectorRow('/uat', 'LiveView', 'green')].join(''));

@@ -124,6 +124,34 @@
     </div>
   </header>
 
+  <!-- Pull-Tab Navigation (shown only for ccem project) -->
+  <div id="ccem-pull-tabs" class="hidden flex-shrink-0 border-b border-zinc-800 bg-zinc-950 px-4">
+    <div class="flex items-center gap-0.5 py-1.5">
+      <button class="pull-tab active" data-tab="both" title="Show all features">Both</button>
+      <button class="pull-tab" data-tab="ccem" title="CCEM core — skills, hooks, installer, scanner">CCEM</button>
+      <button class="pull-tab" data-tab="apm" title="APM — monitoring, dashboards, formation tracking">APM</button>
+      <button class="pull-tab" data-tab="last-version" title="v6.x features only">Last Version</button>
+      <span class="ml-auto text-[10px] font-mono text-zinc-700" id="pull-tab-count"></span>
+    </div>
+  </div>
+  <style>
+    .pull-tab {
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      color: #52525b;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: color 0.12s, background 0.12s, border-color 0.12s;
+      letter-spacing: 0.02em;
+    }
+    .pull-tab:hover { color: #a1a1aa; background: rgba(39,39,42,0.5); }
+    .pull-tab.active { color: #e4e4e7; background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.35); }
+  </style>
+
   <!-- 3-Column Body -->
   <div class="flex-1 grid grid-cols-[260px_1fr_280px] divide-x divide-zinc-800 min-h-0">
 
@@ -828,6 +856,67 @@
 
       // Store project name for notification polling
       window._currentProject = project;
+
+      // ── Pull-tabs (ccem project only) ─────────────────────────────────────
+      if (project === 'ccem' || project === 'ccem-apm') {
+        const pullTabsBar = document.getElementById('ccem-pull-tabs');
+        if (pullTabsBar) {
+          pullTabsBar.classList.remove('hidden');
+          pullTabsBar.classList.add('flex');
+        }
+
+        // Feature classification: CCEM-core vs APM vs Both
+        // Wave 1-3: APM core protocol/server   Wave 4: CCEM native/skills   Wave 5+: both
+        const CCEM_CORE_VERSIONS = ['5.3.0', '6.4.0', '7.0.0'];
+        const APM_VERSIONS = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0'];
+        const LAST_VERSION = '6.4.0'; // v6.x = "last version" before v7
+
+        function filterFeaturesByTab(tab, allFeatures) {
+          if (tab === 'both') return allFeatures;
+          if (tab === 'ccem') {
+            // CCEM-specific: skills, hooks, installer, scanner, CCEMAgent, config mgmt
+            return allFeatures.filter(f =>
+              CCEM_CORE_VERSIONS.includes(f.version) ||
+              (f.title || '').match(/skill|hook|installer|scanner|ccemag|config|action engine|background task/i)
+            );
+          }
+          if (tab === 'apm') {
+            // APM-specific: server, LiveViews, agents, formations, dashboards, API
+            return allFeatures.filter(f =>
+              APM_VERSIONS.includes(f.version) ||
+              (f.title || '').match(/agent|formation|dashboard|liveview|api|socket|event|stream|notification|metrics|telemetry|monitor|health|port|upm|openapi|auth/i)
+            );
+          }
+          if (tab === 'last-version') {
+            // Everything from v6.x (before v7.0.0 Security wave)
+            return allFeatures.filter(f => f.version && f.version.startsWith('6'));
+          }
+          return allFeatures;
+        }
+
+        function applyPullTab(tab) {
+          const filtered = filterFeaturesByTab(tab, features);
+          document.getElementById('feature-tree').innerHTML = renderFeatureTree(filtered, project);
+          document.getElementById('narratives-content').innerHTML = renderNarratives(filtered, narratives);
+          document.getElementById('wave-progress').innerHTML = renderWaveProgress(filtered);
+          document.getElementById('hdr-feature-count').innerHTML =
+            filtered.length ? `<span class="text-zinc-600 mx-1">.</span>${filtered.length} features` : '';
+          const countEl = document.getElementById('pull-tab-count');
+          if (countEl) countEl.textContent = `${filtered.length} features`;
+        }
+
+        document.querySelectorAll('.pull-tab').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.pull-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyPullTab(btn.dataset.tab);
+          });
+        });
+
+        // Initialize with default tab (both)
+        const countEl = document.getElementById('pull-tab-count');
+        if (countEl) countEl.textContent = `${features.length} features`;
+      }
 
       // ── Hide loading, show content ────────────────────────────────────────
       document.getElementById('loading-overlay').style.display = 'none';

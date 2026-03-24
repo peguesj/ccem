@@ -1,15 +1,17 @@
 {
     "version": "1.1.0",
-    "default_project": "ccem-apm",
+    "default_project": "ccem",
     "projects": [
         {
-            "id": "ccem-apm",
-            "name": "CCEM APM",
-            "tagline": "Agentic Performance Monitor",
+            "id": "ccem",
+            "name": "CCEM",
+            "tagline": "Claude Code Environment Manager — APM, Skills, Agents",
             "badge": "CCEM",
             "badge_color": "indigo",
             "status": "shipped",
-            "data_path": "projects/ccem-apm"
+            "data_path": "projects/ccem-apm",
+            "alias": "ccem-apm",
+            "sections": ["CCEM", "APM", "Both", "Last Version"]
         },
         {
             "id": "sfa",
