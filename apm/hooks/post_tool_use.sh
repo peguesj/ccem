@@ -51,6 +51,16 @@ TOOL_OUTPUT=$(echo "$INPUT" | _jq "" '.tool_output // ""')
 OUTPUT_LENGTH=$(echo "$TOOL_OUTPUT" | wc -c | tr -d ' ')
 OUTPUT_PREVIEW=$(echo "$TOOL_OUTPUT" | _jq "" -r 'if type == "string" then .[0:150] else (tostring | .[0:150]) end' 2>/dev/null || echo "")
 
+# Detect Plane plugin context: check for Plane project ID in local CLAUDE.md
+PLUGIN_CONTEXT=""
+if [ -n "$CWD" ]; then
+  CLAUDE_MD="${CWD}/.claude/CLAUDE.md"
+  if [ -f "$CLAUDE_MD" ]; then
+    PLANE_ID=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$CLAUDE_MD" 2>/dev/null | head -1)
+    [ -n "$PLANE_ID" ] && PLUGIN_CONTEXT="plane"
+  fi
+fi
+
 # Build APM 7.0.0 completion payload
 PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
@@ -76,6 +86,7 @@ PAYLOAD=$(jq -n \
   --arg timestamp "$NOW_ISO" \
   --arg agent_level "$AGENT_LEVEL" \
   --arg parent_session_id "$PARENT_SESSION_ID" \
+  --arg plugin_context "$PLUGIN_CONTEXT" \
   '{
     agent_id: $agent_id,
     status: $status,
@@ -110,7 +121,8 @@ PAYLOAD=$(jq -n \
       formation_role: $formation_role,
       agent_level: ($agent_level | tonumber),
       parent_session_id: (if $parent_session_id != "" then $parent_session_id else null end),
-      timestamp: $timestamp
+      timestamp: $timestamp,
+      plugin_context: (if $plugin_context != "" then $plugin_context else null end)
     }
   }' 2>/dev/null)
 

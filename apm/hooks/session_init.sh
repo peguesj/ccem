@@ -170,6 +170,14 @@ register_session() {
         fi
     done
 
+    # Detect Plane plugin context from project CLAUDE.md
+    local plugin_context=""
+    local plane_project_id=""
+    if [ -f "${CWD}/.claude/CLAUDE.md" ]; then
+        plane_project_id=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "${CWD}/.claude/CLAUDE.md" 2>/dev/null | head -1)
+        [ -n "$plane_project_id" ] && plugin_context="plane"
+    fi
+
     cat > "$session_file" << ENDJSON
 {
   "session_id": "$SESSION_ID",
@@ -181,7 +189,9 @@ register_session() {
   "tasks_dir": "$tasks_dir",
   "prd_json": "$prd_json",
   "todo_md": "$todo_md",
-  "apm_port": $APM_PORT
+  "apm_port": $APM_PORT,
+  "plugin_context": "$plugin_context",
+  "plane_project_id": "$plane_project_id"
 }
 ENDJSON
 
@@ -344,6 +354,14 @@ main() {
         # Register this session as an agent in the AgentRegistry so that
         # subsequent heartbeats from PreToolUse/PostToolUse hooks are accepted.
         # Without this, POST /api/heartbeat returns 404 (agent not found).
+        # Detect Plane plugin context for registration payload
+        local reg_plugin_context=""
+        if [ -f "${CWD}/.claude/CLAUDE.md" ]; then
+            local reg_plane_id
+            reg_plane_id=$(grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "${CWD}/.claude/CLAUDE.md" 2>/dev/null | head -1)
+            [ -n "$reg_plane_id" ] && reg_plugin_context="plane"
+        fi
+
         local register_payload
         register_payload=$(jq -n \
           --arg agent_id "session-${SESSION_ID}" \
@@ -352,18 +370,43 @@ main() {
           --arg status "active" \
           --arg formation_id "$FORMATION_ID" \
           --arg session_id "$SESSION_ID" \
+          --arg plugin_context "$reg_plugin_context" \
           '{
             agent_id: $agent_id,
             project: $project,
             role: $role,
             status: $status,
             formation_id: $formation_id,
-            session_id: $session_id
+            session_id: $session_id,
+            plugin_context: (if $plugin_context != "" then $plugin_context else null end)
           }' 2>/dev/null)
         curl -s -X POST "http://localhost:${APM_PORT}/api/register" \
           -H "Content-Type: application/json" \
           -d "$register_payload" >/dev/null 2>&1 || true
         log "Registered session agent: session-${SESSION_ID}"
+
+        # Create a formal AgentLock auth session so that agentlock_pre_tool.sh
+        # tokens are bound to a real session_id (not ephemeral per-call).
+        # Without this, /api/v2/auth/sessions always shows 0 active sessions
+        # even while tools are being authorized.
+        local auth_session_payload
+        auth_session_payload=$(jq -n \
+          --arg session_id "auth_sess_${SESSION_ID}" \
+          --arg user_id "jeremiah" \
+          --arg project "$PROJECT_NAME" \
+          --arg role "$FORMATION_ROLE" \
+          '{
+            session_id: $session_id,
+            user_id: $user_id,
+            metadata: {
+              project: $project,
+              role: $role
+            }
+          }' 2>/dev/null)
+        curl -s -X POST "http://localhost:${APM_PORT}/api/v2/auth/sessions" \
+          -H "Content-Type: application/json" \
+          -d "$auth_session_payload" >/dev/null 2>&1 || true
+        log "Created AgentLock auth session: auth_sess_${SESSION_ID}"
     fi
 
     # Output success for hook system
