@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v7.0.0
+## Current Version: v7.3.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -449,3 +449,20 @@ This is a hard rule with no exceptions.
 - [x] **CP-159**: mix.exs bump to v7.0.0 (US-022) [CCEM-261]
 - After Wave 5: `mix compile --warnings-as-errors` PASS | `swift build -c release` PASS
 - PR: https://github.com/peguesj/ccem-apm/pull/9
+
+## Implementation Checkpoints — feat/plugin-engine-plane-pm (v7.3.0)
+
+### Wave 1: Foundation
+- [x] **CP-160**: `ApmV5.Plugins.PluginBehaviour` — @behaviour contract with plugin_name/0, plugin_description/0, plugin_version/0, list_endpoints/0, handle_action/3, optional inspector_section/1
+- [x] **CP-161**: `ApmV5.Plugins.PluginRegistry` — GenServer + ETS `:plugin_registry`, auto-registers default plugins on init
+- [x] **CP-162**: `ApmV5.Plugins.Plane.PlanePlugin` — Plane PM plugin: list_issues, get_issue, list_projects, board_state, search_issues; backed by PlaneClient; CCEM project pre-configured
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: API + LiveView + Hooks
+- [x] **CP-163**: `ApmV5Web.V2.PluginController` — REST: index, show, action (POST), board (GET), issues (GET) at `/api/v2/plugins/*`
+- [x] **CP-164**: Router — `GET /api/v2/plugins`, `GET /api/v2/plugins/:name`, `POST /api/v2/plugins/:name/action`, `GET /api/v2/plugins/:name/board`, `GET /api/v2/plugins/:name/issues`
+- [x] **CP-165**: `PluginDashboardLive /plugins` — tabbed: MCP Servers, Discovered, Registered (engine), Plane PM board with Kanban columns + issue inspector pull-out drawer; PubSub `"apm:plugins"`
+- [x] **CP-166**: `application.ex` — `ApmV5.Plugins.PluginRegistry` added to supervision tree
+- [x] **CP-167**: `pre_tool_use.sh` — `plugin_context` enrichment: detects plugin engine paths/actions, emits `{engine, plugin_name}` in heartbeat context
+- [x] **CP-168**: v7.3.0 — mix.exs bump, CHANGELOG, CLAUDE.md checkpoints
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS

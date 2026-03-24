@@ -58,6 +58,16 @@ fi
 # Summarize input keys for general context
 INPUT_KEYS=$(echo "$TOOL_INPUT" | _jq "" -r 'if type == "object" then (keys | join(", ")) else "raw" end')
 
+# Plugin context: detect if tool involves plugin engine paths or actions (v7.3.0)
+PLUGIN_CONTEXT=""
+PLUGIN_NAME=""
+if echo "$FILE_PATH$BASH_CMD$AGENT_DESC" | grep -qi "plugin\|plane_plugin\|PluginRegistry\|/api/v2/plugins"; then
+  PLUGIN_CONTEXT="plugin_engine"
+  if echo "$FILE_PATH$BASH_CMD$AGENT_DESC" | grep -qi "plane"; then
+    PLUGIN_NAME="plane"
+  fi
+fi
+
 load_state "$SESSION_ID"
 
 SPAN_ID=$(new_span_id)
@@ -114,6 +124,8 @@ PAYLOAD=$(jq -n \
   --arg timestamp "$NOW_ISO" \
   --arg agent_level "$AGENT_LEVEL" \
   --arg parent_session_id "$PARENT_SESSION_ID" \
+  --arg plugin_context "$PLUGIN_CONTEXT" \
+  --arg plugin_name "$PLUGIN_NAME" \
   '{
     agent_id: $agent_id,
     status: $status,
@@ -142,7 +154,8 @@ PAYLOAD=$(jq -n \
       formation_role: $formation_role,
       agent_level: ($agent_level | tonumber),
       parent_session_id: (if $parent_session_id != "" then $parent_session_id else null end),
-      timestamp: $timestamp
+      timestamp: $timestamp,
+      plugin_context: (if $plugin_context != "" then {engine: $plugin_context, plugin_name: (if $plugin_name != "" then $plugin_name else null end)} else null end)
     }
   }' 2>/dev/null)
 
