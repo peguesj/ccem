@@ -344,7 +344,7 @@
 
     async function loadProjectRegistry() {
       try {
-        const r = await fetch('../data/projects.json', { signal: AbortSignal.timeout(2000) });
+        const r = await fetch('../data/projects.json', { signal: AbortSignal.timeout(2000), cache: 'no-store' });
         if (r.ok) return await r.json();
       } catch (_) {}
       return null;
@@ -682,6 +682,15 @@
         } catch (_) {}
       }
       project = project || 'unknown';
+
+      // Redirect to canonical URL if project defines one (e.g. APM-hosted projects)
+      if (projectRegistry && projectRegistry.projects) {
+        const entry = projectRegistry.projects.find(p => p.id === project);
+        if (entry && entry.canonical_url) {
+          window.location.replace(entry.canonical_url);
+          return;
+        }
+      }
 
       // Populate project switcher
       populateProjectSwitcher(projectRegistry, project);
