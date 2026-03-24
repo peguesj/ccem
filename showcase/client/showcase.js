@@ -136,7 +136,27 @@ let liveMap = new Map(); // id -> { id, title, wave, passes, status }
 let viewMode = 'card'; // 'card' | 'hierarchy'
 let waveFilter = null;
 let progressFilter = 'all'; // 'all' | 'done' | 'in-progress' | 'planned'
+let scopeFilter = localStorage.getItem('ccem_scope_filter') || 'all'; // 'all' | 'ccem' | 'apm' | 'last'
 let roadmapOpen = false;
+
+function setScopeFilter(scope) {
+  scopeFilter = scope;
+  localStorage.setItem('ccem_scope_filter', scope);
+  renderFeatureCards();
+}
+
+function applyScopeFilter(features) {
+  if (scopeFilter === 'all') return features;
+  // Determine last version from VERSION_META keys
+  const versions = Object.keys(VERSION_META).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+  const lastVer = versions[versions.length - 1];
+  return features.filter(f => {
+    if (scopeFilter === 'last') return f.version === lastVer;
+    if (scopeFilter === 'ccem') return !f.version || parseFloat(f.version) >= 5.0;
+    if (scopeFilter === 'apm') return f.version && parseFloat(f.version) >= 6.0;
+    return true;
+  });
+}
 
 // Derive status from liveMap or default
 function resolveStatus(featureId, wave) {
@@ -431,7 +451,8 @@ function renderFeatureCards() {
 
   const waves = [...new Set(FEATURES.map(f => f.wave))].sort((a, b) => a - b);
   const withStatus = FEATURES.map(f => ({ ...f, liveStatus: resolveStatus(f.id, f.wave) }));
-  const filtered = withStatus.filter(f => {
+  const scopeFiltered = applyScopeFilter(withStatus);
+  const filtered = scopeFiltered.filter(f => {
     if (waveFilter !== null && f.wave !== waveFilter) return false;
     if (progressFilter === 'done' && f.liveStatus !== 'done') return false;
     if (progressFilter === 'in-progress' && f.liveStatus !== 'in-progress') return false;
@@ -470,6 +491,14 @@ function renderFeatureCards() {
     </div>
   `;
 
+  // Scope pull-tabs
+  const scopeTabs = [
+    { id: 'all', label: 'All' }, { id: 'ccem', label: 'CCEM' },
+    { id: 'apm', label: 'APM' }, { id: 'last', label: 'Latest' },
+  ].map(({ id, label }) =>
+    `<button type="button" onclick="setScopeFilter('${id}')" class="text-[9px] px-2 py-0.5 rounded-full ring-1 transition ${scopeFilter === id ? 'text-emerald-300 bg-emerald-500/15 ring-emerald-500/40' : 'text-zinc-600 ring-zinc-700/60 hover:text-zinc-400'}">${label}</button>`
+  ).join('');
+
   // Progress filter
   const progressFilters = [
     { id: 'all', label: 'All' }, { id: 'done', label: 'Done' },
@@ -488,6 +517,7 @@ function renderFeatureCards() {
         </div>
         ${viewToggle}
       </div>
+      <div class="flex gap-1 mb-1.5">${scopeTabs}</div>
       ${waveFilters}
       <div class="flex gap-1">${progressFilters}</div>
     </div>
