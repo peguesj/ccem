@@ -1,27 +1,272 @@
 [
-  {"id":"SFA-001","wave":1,"title":"Phoenix LiveView Foundation","category":"platform","status":"shipped","version":"4.0.0","description":"Full-stack Elixir/Phoenix LiveView application. Oban background jobs, Ecto/PostgreSQL, real-time PubSub, HEEx templates. SpotDL Spotify metadata integration, Python analyzer bridge. Phoenix built-in auth + Spotify OAuth."},
-  {"id":"SFA-002","wave":1,"title":"Track Library + Download Pipeline","category":"audio","status":"shipped","version":"4.0.0","description":"Download Spotify tracks via SpotDL. Track model with metadata (BPM, key, genre, bitrate). Oban-powered async download pipeline. Local file storage with relative paths for clean /files/... URLs. Batch download with Select All cross-page support."},
-  {"id":"SFA-003","wave":1,"title":"Audio Analysis (Python)","category":"audio","status":"shipped","version":"4.1.0","description":"librosa-powered Python analyzer bridge: BPM, key, MFCC, spectral centroid, beat tracking, chromagram. Results stored in AnalysisResult schema. 5 D3.js visualization hooks: AnalysisRadar, AnalysisChroma, AnalysisBeats, AnalysisMFCC, AnalysisSpectral."},
-  {"id":"SFA-004","wave":1,"title":"Demucs Stem Separation","category":"audio","status":"shipped","version":"4.1.0","description":"Local Demucs pipeline: htdemucs, htdemucs_ft, htdemucs_6s, mdx_extra models. 4-stem extraction (vocals, drums, bass, other). Oban-backed async processing. Pipeline tracker UI showing per-stage status."},
-  {"id":"SFA-005","wave":2,"title":"Spotify OAuth + Playback SDK","category":"integration","status":"shipped","version":"4.2.0","description":"Spotify Web Playback SDK integration with device handoff. OAuth flow with session token persistence. Local/Spotify playback toggle. Bitrate, codec, kHz metadata display for audiophile mode. SpotifyPlayer LiveComponent with WebSocket reconnection handling."},
-  {"id":"SFA-006","wave":2,"title":"lalal.ai Cloud Stems","category":"audio","status":"shipped","version":"4.2.5","description":"Cloud stem separation via lalal.ai REST API. 9 stem types: vocals, drums, bass, electric/acoustic guitar, piano, synth, strings, wind. 60s preview without full download. Engine toggle in settings (local Demucs vs cloud). Model comparison tooltips."},
-  {"id":"SFA-007","wave":2,"title":"Admin Dashboard + SaaS Roles","category":"platform","status":"shipped","version":"4.2.10","description":"6-tier role hierarchy: user → pro → enterprise → admin → super_admin → platform_admin. Admin panel with user management, role promotion, quota controls. /platform/library for platform_admin access to all users' tracks. Revenue charts, user growth analytics."},
-  {"id":"SFA-008","wave":2,"title":"Azure Container Apps Deployment","category":"infrastructure","status":"shipped","version":"4.2.12","description":"Production deployment on Azure Container Apps (Consumption plan). ACR remote amd64 builds (required for Apple Silicon). PostgreSQL 16 on Azure Flexible Server. GitHub Actions CI/CD pipeline. Container App env with secrets from Key Vault. Auto-scaling, 0→N replicas."},
-  {"id":"SFA-009","wave":2,"title":"MIDI/OSC Controller System","category":"midi","status":"shipped","version":"4.2.5","description":"Phoenix LiveView MIDI UI at /midi. DeviceManager ETS with composite port IDs (input:N/output:N). Dispatcher GenServer in supervision tree. Action execution framework: play, stop, next_track, prev_track, bpm_tap, stem_volume, stem_solo, stem_mute. MIDI Learn 3-step inline workflow."},
-  {"id":"SFA-010","wave":2,"title":"CrateDigger Spotify Integration","category":"integration","status":"shipped","version":"4.2.0","description":"CrateDigger LiveView at /crate. Spotify playlist import, crate management (create/rename/delete), stem config per crate, track filtering. Context menu: Load in DJ/DAW/Pads, Download to Library, Re-download, View on Spotify. Track inspector with analysis overlay. Artwork thumbnails."},
-  {"id":"SFA-011","wave":3,"title":"Multi-LLM Agent System","category":"ai","status":"shipped","version":"4.3.0","description":"6 specialist agents: MusicAnalyst, ChordAnalyst, BeatDetector, StemEngineer, MixingConsultant, SoundDesigner. Agent Orchestrator for multi-agent conversations. LLM adapter routing: OpenAI, Anthropic, Google, local models. Health worker monitoring. 707 ExUnit tests. /ai chat interface."},
-  {"id":"SFA-012","wave":3,"title":"Audio-to-MIDI + Piano Roll","category":"audio","status":"shipped","version":"4.5.0","description":"basic-pitch integration for polyphonic audio-to-MIDI conversion. Chord detection via librosa chroma analysis. Interactive piano roll LiveComponent. Audio warping via pyrubberband. Auto-pipeline extensions for MIDI stage. Export MIDI files from browser."},
-  {"id":"SFA-013","wave":3,"title":"DJ Dual-Deck Component","category":"dj","status":"shipped","version":"4.2.0","description":"WaveSurfer waveform displays per deck. Transport controls, BPM, crossfader, EQ 3-band strips. Pitch control with reset. Deck A/B letter labels (ADR-004). Vertical channel faders with cap indicator. Crossfader with Lin/EQ-P/Sharp curve modes inline. Grid mode: BAR/BEAT/SUB/SMART."},
-  {"id":"SFA-014","wave":3,"title":"Splice Integration + DrumKit","category":"dj","status":"shipped","version":"4.6.0","description":"Splice-inspired DrumKit JSONB pads. Pure Elixir MIDI extractor. DrumGraph D3 XO scatter plot visualization. Drag-and-drop pad assignment from track library. DJ preset layouts with Rekordbox XML import. PianoRoll + ChordProgression D3 hooks."},
-  {"id":"SFA-015","wave":3,"title":"DAW Tab Component","category":"daw","status":"shipped","version":"4.2.0","description":"In-browser DAW with waveform editing. Timeline, loop regions, zoom/scroll. Stem mixer with per-stem volume/solo/mute. Multiple playhead modes. Annotation overlays. Integrated with AudioPlayerLive for local/Spotify routing. Real-time collaboration via PubSub."},
-  {"id":"SFA-016","wave":4,"title":"Prototype Sandbox + DevTools","category":"developer-tools","status":"shipped","version":"4.4.0","description":"/prototype LiveView with Components|DevTools|UAT|LLM tabs. Floating DevTools overlay panel. UAT fixture/scenario helpers (runtime env guard). platform_admin + Mix.env :dev gate. Component previewer for HEEx components in isolation."},
-  {"id":"SFA-017","wave":4,"title":"Docs Site (MkDocs Material)","category":"docs","status":"shipped","version":"4.4.0","description":"41-page MkDocs Material documentation site deployed to GitHub Pages. Built-in Mermaid + code highlighting. GitHub Actions CI. Architecture, guides, features, API, changelog, contributing sections. 191 internal links verified. Footer: 'Ported in part by Claude Code'."},
-  {"id":"SFA-018","wave":4,"title":"AppHeader Universal Navigation","category":"ux","status":"shipped","version":"4.7.0","description":"Sticky AppHeader LiveComponent shared across all LiveViews. Nav tabs: Library, Browse, DJ, DAW, Pads, Alchemy, Crate, Samples (new), MIDI, Practice. MIDI BPM/transport status display. Version badge v4.7.0. Scope-aware user display. Mobile-responsive with drawer."},
-  {"id":"SFA-019","wave":4,"title":"SampleLibrary LiveView","category":"ux","status":"shipped","version":"4.7.0","description":"New /samples route. Left sidebar: SamplePacks list with file counts. Search + BPM range + key + category filters. Streaming file table with mono font names. Play preview via SamplePreview JS hook. Always-visible play button (opacity-40, not hidden — ADR-004 pattern). BPM in cyan, key in purple."},
-  {"id":"SFA-020","wave":4,"title":"Universal MIDI Controls","category":"midi","status":"shipped","version":"4.7.0","description":"All LiveViews now subscribe to midi:actions PubSub. DashboardLive, CrateDiggerLive, SampleLibraryLive handle :play/:stop/:next_track/:prev_track uniformly. CrateDigger uses active_tracks() helper for context-aware next/prev navigation. SampleLibrary pushes preview events to JS hooks."},
-  {"id":"SFA-021","wave":5,"title":"ADR-004 UX Overhaul","category":"ux","status":"shipped","version":"4.7.0","description":"Design Decision Document aligned to Traktor/Serato/Rekordbox/VirtualDJ/Logic Pro standards. 10 decisions documented. Hot cue pads: 2×4 grid (grid-cols-4) with full color per letter (A=red, B=blue, C=green, D=yellow...). Empty pads show dimmed base color as affordance. Cue timestamps shown in pad."},
-  {"id":"SFA-022","wave":5,"title":"CrateDigger BPM/Key Display","category":"ux","status":"shipped","version":"4.7.0","description":"Track rows in CrateDigger now show analysis BPM and key inline — Rekordbox industry standard. BPM in cyan monospace, key in purple medium weight. Single load_analysis() call per row (no duplicate DB queries). Green analysis dot reuses same analysis result."},
-  {"id":"SFA-023","wave":5,"title":"Comprehensive E2E Tests","category":"testing","status":"shipped","version":"4.7.0","description":"Playwright test suite: full-pipeline.spec.ts (9 steps), dj-daw-midi.spec.ts (15 cases across DJ/DAW/MIDI), crate-sample-library.spec.ts (12 cases + nav consistency). Tests verify AppHeader presence on all routes, hot cue 2×4 grid, play button visibility, crossfader curve inline, MIDI device UI."},
-  {"id":"SFA-024","wave":5,"title":"Changelog v1.0.0–v4.7.0","category":"docs","status":"shipped","version":"4.7.0","description":"Complete CHANGELOG.md covering every version from v1.0.0 through v4.7.0-dev. Version jump select dropdown at top. All v4.2.x versions documented individually (v4.2.0–v4.2.12). Jekyll layout default.html updated with version selector in topbar navigation. CSS `.wiki-version-select` style added."},
-  {"id":"SFA-025","wave":5,"title":"CCEM APM Hooks + Sessions","category":"platform","status":"active","version":"4.7.0","description":"APM hooks at ~/.claude/hooks: session_init.sh registers SFA session at port 3032, pre_tool_use.sh fires skill tracking events. PostToolUse hooks for write/edit. toast notification on compile errors from log_watcher.sh. All fire-and-forget to avoid blocking development."}
+  {
+    "id": "SFA-001",
+    "wave": 1,
+    "title": "Phoenix LiveView Foundation",
+    "category": "platform",
+    "status": "shipped",
+    "version": "4.0.0",
+    "description": "Full-stack Elixir/Phoenix LiveView application. Oban background jobs, Ecto/PostgreSQL, real-time PubSub, HEEx templates. SpotDL Spotify metadata integration, Python analyzer bridge. Phoenix built-in auth + Spotify OAuth."
+  },
+  {
+    "id": "SFA-002",
+    "wave": 1,
+    "title": "Track Library + Download Pipeline",
+    "category": "audio",
+    "status": "shipped",
+    "version": "4.0.0",
+    "description": "Download Spotify tracks via SpotDL. Track model with metadata (BPM, key, genre, bitrate). Oban-powered async download pipeline. Local file storage with relative paths for clean /files/... URLs. Batch download with Select All cross-page support."
+  },
+  {
+    "id": "SFA-003",
+    "wave": 1,
+    "title": "Audio Analysis (Python)",
+    "category": "audio",
+    "status": "shipped",
+    "version": "4.1.0",
+    "description": "librosa-powered Python analyzer bridge: BPM, key, MFCC, spectral centroid, beat tracking, chromagram. Results stored in AnalysisResult schema. 5 D3.js visualization hooks: AnalysisRadar, AnalysisChroma, AnalysisBeats, AnalysisMFCC, AnalysisSpectral."
+  },
+  {
+    "id": "SFA-004",
+    "wave": 1,
+    "title": "Demucs Stem Separation",
+    "category": "audio",
+    "status": "shipped",
+    "version": "4.1.0",
+    "description": "Local Demucs pipeline: htdemucs, htdemucs_ft, htdemucs_6s, mdx_extra models. 4-stem extraction (vocals, drums, bass, other). Oban-backed async processing. Pipeline tracker UI showing per-stage status."
+  },
+  {
+    "id": "SFA-005",
+    "wave": 2,
+    "title": "Spotify OAuth + Playback SDK",
+    "category": "integration",
+    "status": "shipped",
+    "version": "4.2.0",
+    "description": "Spotify Web Playback SDK integration with device handoff. OAuth flow with session token persistence. Local/Spotify playback toggle. Bitrate, codec, kHz metadata display for audiophile mode. SpotifyPlayer LiveComponent with WebSocket reconnection handling."
+  },
+  {
+    "id": "SFA-006",
+    "wave": 2,
+    "title": "lalal.ai Cloud Stems",
+    "category": "audio",
+    "status": "shipped",
+    "version": "4.2.5",
+    "description": "Cloud stem separation via lalal.ai REST API. 9 stem types: vocals, drums, bass, electric/acoustic guitar, piano, synth, strings, wind. 60s preview without full download. Engine toggle in settings (local Demucs vs cloud). Model comparison tooltips."
+  },
+  {
+    "id": "SFA-007",
+    "wave": 2,
+    "title": "Admin Dashboard + SaaS Roles",
+    "category": "platform",
+    "status": "shipped",
+    "version": "4.2.10",
+    "description": "6-tier role hierarchy: user \u2192 pro \u2192 enterprise \u2192 admin \u2192 super_admin \u2192 platform_admin. Admin panel with user management, role promotion, quota controls. /platform/library for platform_admin access to all users' tracks. Revenue charts, user growth analytics."
+  },
+  {
+    "id": "SFA-008",
+    "wave": 2,
+    "title": "Azure Container Apps Deployment",
+    "category": "infrastructure",
+    "status": "shipped",
+    "version": "4.2.12",
+    "description": "Production deployment on Azure Container Apps (Consumption plan). ACR remote amd64 builds (required for Apple Silicon). PostgreSQL 16 on Azure Flexible Server. GitHub Actions CI/CD pipeline. Container App env with secrets from Key Vault. Auto-scaling, 0\u2192N replicas."
+  },
+  {
+    "id": "SFA-009",
+    "wave": 2,
+    "title": "MIDI/OSC Controller System",
+    "category": "midi",
+    "status": "shipped",
+    "version": "4.2.5",
+    "description": "Phoenix LiveView MIDI UI at /midi. DeviceManager ETS with composite port IDs (input:N/output:N). Dispatcher GenServer in supervision tree. Action execution framework: play, stop, next_track, prev_track, bpm_tap, stem_volume, stem_solo, stem_mute. MIDI Learn 3-step inline workflow."
+  },
+  {
+    "id": "SFA-010",
+    "wave": 2,
+    "title": "CrateDigger Spotify Integration",
+    "category": "integration",
+    "status": "shipped",
+    "version": "4.2.0",
+    "description": "CrateDigger LiveView at /crate. Spotify playlist import, crate management (create/rename/delete), stem config per crate, track filtering. Context menu: Load in DJ/DAW/Pads, Download to Library, Re-download, View on Spotify. Track inspector with analysis overlay. Artwork thumbnails."
+  },
+  {
+    "id": "SFA-011",
+    "wave": 3,
+    "title": "Multi-LLM Agent System",
+    "category": "ai",
+    "status": "shipped",
+    "version": "4.3.0",
+    "description": "6 specialist agents: MusicAnalyst, ChordAnalyst, BeatDetector, StemEngineer, MixingConsultant, SoundDesigner. Agent Orchestrator for multi-agent conversations. LLM adapter routing: OpenAI, Anthropic, Google, local models. Health worker monitoring. 707 ExUnit tests. /ai chat interface."
+  },
+  {
+    "id": "SFA-012",
+    "wave": 3,
+    "title": "Audio-to-MIDI + Piano Roll",
+    "category": "audio",
+    "status": "shipped",
+    "version": "4.5.0",
+    "description": "basic-pitch integration for polyphonic audio-to-MIDI conversion. Chord detection via librosa chroma analysis. Interactive piano roll LiveComponent. Audio warping via pyrubberband. Auto-pipeline extensions for MIDI stage. Export MIDI files from browser."
+  },
+  {
+    "id": "SFA-013",
+    "wave": 3,
+    "title": "DJ Dual-Deck Component",
+    "category": "dj",
+    "status": "shipped",
+    "version": "4.2.0",
+    "description": "WaveSurfer waveform displays per deck. Transport controls, BPM, crossfader, EQ 3-band strips. Pitch control with reset. Deck A/B letter labels (ADR-004). Vertical channel faders with cap indicator. Crossfader with Lin/EQ-P/Sharp curve modes inline. Grid mode: BAR/BEAT/SUB/SMART."
+  },
+  {
+    "id": "SFA-014",
+    "wave": 3,
+    "title": "Splice Integration + DrumKit",
+    "category": "dj",
+    "status": "shipped",
+    "version": "4.6.0",
+    "description": "Splice-inspired DrumKit JSONB pads. Pure Elixir MIDI extractor. DrumGraph D3 XO scatter plot visualization. Drag-and-drop pad assignment from track library. DJ preset layouts with Rekordbox XML import. PianoRoll + ChordProgression D3 hooks."
+  },
+  {
+    "id": "SFA-015",
+    "wave": 3,
+    "title": "DAW Tab Component",
+    "category": "daw",
+    "status": "shipped",
+    "version": "4.2.0",
+    "description": "In-browser DAW with waveform editing. Timeline, loop regions, zoom/scroll. Stem mixer with per-stem volume/solo/mute. Multiple playhead modes. Annotation overlays. Integrated with AudioPlayerLive for local/Spotify routing. Real-time collaboration via PubSub."
+  },
+  {
+    "id": "SFA-016",
+    "wave": 4,
+    "title": "Prototype Sandbox + DevTools",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "4.4.0",
+    "description": "/prototype LiveView with Components|DevTools|UAT|LLM tabs. Floating DevTools overlay panel. UAT fixture/scenario helpers (runtime env guard). platform_admin + Mix.env :dev gate. Component previewer for HEEx components in isolation."
+  },
+  {
+    "id": "SFA-017",
+    "wave": 4,
+    "title": "Docs Site (MkDocs Material)",
+    "category": "docs",
+    "status": "shipped",
+    "version": "4.4.0",
+    "description": "41-page MkDocs Material documentation site deployed to GitHub Pages. Built-in Mermaid + code highlighting. GitHub Actions CI. Architecture, guides, features, API, changelog, contributing sections. 191 internal links verified. Footer: 'Ported in part by Claude Code'."
+  },
+  {
+    "id": "SFA-018",
+    "wave": 4,
+    "title": "AppHeader Universal Navigation",
+    "category": "ux",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "Sticky AppHeader LiveComponent shared across all LiveViews. Nav tabs: Library, Browse, DJ, DAW, Pads, Alchemy, Crate, Samples (new), MIDI, Practice. MIDI BPM/transport status display. Version badge v4.7.0. Scope-aware user display. Mobile-responsive with drawer."
+  },
+  {
+    "id": "SFA-019",
+    "wave": 4,
+    "title": "SampleLibrary LiveView",
+    "category": "ux",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "New /samples route. Left sidebar: SamplePacks list with file counts. Search + BPM range + key + category filters. Streaming file table with mono font names. Play preview via SamplePreview JS hook. Always-visible play button (opacity-40, not hidden \u2014 ADR-004 pattern). BPM in cyan, key in purple."
+  },
+  {
+    "id": "SFA-020",
+    "wave": 4,
+    "title": "Universal MIDI Controls",
+    "category": "midi",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "All LiveViews now subscribe to midi:actions PubSub. DashboardLive, CrateDiggerLive, SampleLibraryLive handle :play/:stop/:next_track/:prev_track uniformly. CrateDigger uses active_tracks() helper for context-aware next/prev navigation. SampleLibrary pushes preview events to JS hooks."
+  },
+  {
+    "id": "SFA-021",
+    "wave": 5,
+    "title": "ADR-004 UX Overhaul",
+    "category": "ux",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "Design Decision Document aligned to Traktor/Serato/Rekordbox/VirtualDJ/Logic Pro standards. 10 decisions documented. Hot cue pads: 2\u00d74 grid (grid-cols-4) with full color per letter (A=red, B=blue, C=green, D=yellow...). Empty pads show dimmed base color as affordance. Cue timestamps shown in pad."
+  },
+  {
+    "id": "SFA-022",
+    "wave": 5,
+    "title": "CrateDigger BPM/Key Display",
+    "category": "ux",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "Track rows in CrateDigger now show analysis BPM and key inline \u2014 Rekordbox industry standard. BPM in cyan monospace, key in purple medium weight. Single load_analysis() call per row (no duplicate DB queries). Green analysis dot reuses same analysis result."
+  },
+  {
+    "id": "SFA-023",
+    "wave": 5,
+    "title": "Comprehensive E2E Tests",
+    "category": "testing",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "Playwright test suite: full-pipeline.spec.ts (9 steps), dj-daw-midi.spec.ts (15 cases across DJ/DAW/MIDI), crate-sample-library.spec.ts (12 cases + nav consistency). Tests verify AppHeader presence on all routes, hot cue 2\u00d74 grid, play button visibility, crossfader curve inline, MIDI device UI."
+  },
+  {
+    "id": "SFA-024",
+    "wave": 5,
+    "title": "Changelog v1.0.0\u2013v4.7.0",
+    "category": "docs",
+    "status": "shipped",
+    "version": "4.7.0",
+    "description": "Complete CHANGELOG.md covering every version from v1.0.0 through v4.7.0-dev. Version jump select dropdown at top. All v4.2.x versions documented individually (v4.2.0\u2013v4.2.12). Jekyll layout default.html updated with version selector in topbar navigation. CSS `.wiki-version-select` style added."
+  },
+  {
+    "id": "SFA-025",
+    "wave": 5,
+    "title": "CCEM APM Hooks + Sessions",
+    "category": "platform",
+    "status": "active",
+    "version": "4.7.0",
+    "description": "APM hooks at ~/.claude/hooks: session_init.sh registers SFA session at port 3032, pre_tool_use.sh fires skill tracking events. PostToolUse hooks for write/edit. toast notification on compile errors from log_watcher.sh. All fire-and-forget to avoid blocking development."
+  },
+  {
+    "id": "SFA-026",
+    "wave": 6,
+    "title": "AgentLock Auth \u2014 Session Gate",
+    "category": "security",
+    "status": "shipped",
+    "version": "4.8.0",
+    "description": "session_init.sh now POSTs /api/v2/auth/sessions to formally create auth_sess_{SESSION_ID} at startup. Every subsequent tool call is bound to a real session in AgentLock's ETS store. Previously 0 active sessions were registered even during active tool use."
+  },
+  {
+    "id": "SFA-027",
+    "wave": 6,
+    "title": "AgentLock Auth \u2014 Subagent Spawn Gate",
+    "category": "security",
+    "status": "shipped",
+    "version": "4.8.0",
+    "description": "subagent_start.sh now calls POST /api/v2/auth/authorize before writing the handoff JSON. Agent tool risk=low. Fail-open on 3s timeout. DENY \u2192 exit 2 blocks subagent launch. Full audit trail for every spawned agent in the AgentLock /authorization dashboard."
+  },
+  {
+    "id": "SFA-028",
+    "wave": 6,
+    "title": "AgentLock Auth \u2014 MCP Tool Registry",
+    "category": "security",
+    "status": "shipped",
+    "version": "4.8.0",
+    "description": "27 MCP tools registered with risk levels: mcp__playwright__*(8), mcp__agent-browser__*(7), mcp__chrome-devtools__*(6), mcp__linear-server__*(4). JS eval = HIGH, navigation/form = MEDIUM, read-only = LOW. Total: 47 tools, 40 requiring auth (85%)."
+  },
+  {
+    "id": "SFA-029",
+    "wave": 6,
+    "title": "Playlist Pipeline Alignment",
+    "category": "pipeline",
+    "status": "shipped",
+    "version": "4.8.0",
+    "description": "Formation fmt-20260320-playlist-align: 11 stories, 4 waves. Music context get_track_by_spotify_id_with_status/1, list_playlist_tracks_with_status/1, track_pipeline_complete?/1. playlist_pipeline:{id} PubSub topic. Cross-playlist dedup. CrateDigger load_into_sfa fixed. Auto-resume incomplete pipelines. 15 ExUnit tests, all passing."
+  },
+  {
+    "id": "SFA-030",
+    "wave": 6,
+    "title": "Showcase \u2014 AgentLock Pipeline SVG",
+    "category": "observability",
+    "status": "shipped",
+    "version": "4.8.0",
+    "description": "GIMME-style showcase at localhost:3032/showcase/sfa. AgentLock auth pipeline SVG: hook chain \u2192 PolicyEngine \u2192 AuthorizationGate \u2192 TokenStore. Live-polling AgentLock panel: risk distribution bar, authorized/escalated/denied counters, active token count. 15s polling cadence."
+  }
 ]
