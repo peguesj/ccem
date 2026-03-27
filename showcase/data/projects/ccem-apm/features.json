@@ -394,5 +394,113 @@
     "status": "shipped",
     "version": "7.2.0",
     "description": "WorkflowLive /workflow/upm gains pill-tab bar: Default (standard UPM diagram) and Current (live UPM phase, active wave/story, stack-specific TSC gate, formation status). UPM category notifications auto-enriched with View Workflow action."
+  },
+  {
+    "id": "US-v8-001",
+    "wave": 8,
+    "title": "Plugin Engine Standard",
+    "category": "architecture",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "Formal PluginBehaviour v2 with supervisor_children/0, inspector_component/0, default_enabled?/0, on_enable/0, on_disable/0, live_views/0. PluginSupervisor DynamicSupervisor for plugin-owned child processes. 9-plugin default registry."
+  },
+  {
+    "id": "US-v8-002",
+    "wave": 8,
+    "title": "Ralph Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping the Ralph PRD reader — start_loop, stop_loop, status, list_runs actions. Delegates to ApmV5.Ralph for PRD loading and flowchart generation."
+  },
+  {
+    "id": "US-v8-003",
+    "wave": 8,
+    "title": "Formations Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping FormationStore — list, get, create, update, agents actions. Exposes formation CRUD and agent membership queries through the plugin engine."
+  },
+  {
+    "id": "US-v8-004",
+    "wave": 8,
+    "title": "UAT Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin for User Acceptance Testing orchestration — run_suite, get_results, list_suites actions. Bridges APM to the UAT execution pipeline."
+  },
+  {
+    "id": "US-v8-005",
+    "wave": 8,
+    "title": "Skills Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping SkillsRegistryStore — list_skills, get_skill, health_score, audit, refresh actions. Exposes full skills health scoring and registry management through the plugin API."
+  },
+  {
+    "id": "US-v8-006",
+    "wave": 8,
+    "title": "Ports Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping PortManager — get_port_map, scan_active_ports, detect_clashes, assign_port, suggest_remediation actions. Exposes full port intelligence through the plugin engine."
+  },
+  {
+    "id": "US-v8-007",
+    "wave": 8,
+    "title": "Usage Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping ClaudeUsageStore — summary, record, by_project, all_usage, reset_project actions. Token consumption and effort-level tracking accessible via plugin API."
+  },
+  {
+    "id": "US-v8-008",
+    "wave": 8,
+    "title": "DevOps Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping BackgroundTasksStore, ProjectScanner, and ActionEngine — list_tasks, stop_task, scan_projects, list_actions, run_action actions. Unified DevOps operations surface through the plugin engine."
+  },
+  {
+    "id": "US-v8-009",
+    "wave": 8,
+    "title": "Alerting Plugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "APM Plugin wrapping AlertRulesEngine and SloEngine — list_rules, add_rule, enable_rule, evaluate, alert_history, list_slis, error_budget actions. Full SLO/alerting lifecycle through the plugin API."
+  },
+  {
+    "id": "US-v8-010",
+    "wave": 8,
+    "title": "Integration Engine Standard",
+    "category": "architecture",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "New IntegrationBehaviour contract for external protocol bridges — integration_name/0, protocol/0, connect/1, disconnect/0, status/0, handle_event/3, supervisor_children/0. IntegrationSupervisor DynamicSupervisor. IntegrationRegistry GenServer + ETS."
+  },
+  {
+    "id": "US-v8-011",
+    "wave": 8,
+    "title": "AgentLock Integration",
+    "category": "integrations",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "Integration wrapping the 3-layer AgentLock authorization pipeline — authorize, summary, list_tools, record_execution actions. Connects to PolicyEngine/TokenStore/RateLimiter/AuthorizationGate via custom protocol."
+  },
+  {
+    "id": "US-v8-012",
+    "wave": 8,
+    "title": "AG-UI Integration",
+    "category": "integrations",
+    "status": "shipped",
+    "version": "8.0.0",
+    "description": "Integration bridging APM to the AG-UI open protocol via ag_ui_ex Hex SDK — emit_event, stats, replay_since actions. Translates APM lifecycle events to 33-type AG-UI event model. Protocol: :ag_ui."
   }
 ]
