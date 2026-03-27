@@ -1,0 +1,450 @@
+{
+  "version": "0.5.0-sprint5",
+  "project_name": "Vantage Portal",
+  "tagline": "Purpose-Built MSSP Operations Platform",
+  "description": "Multi-tenant MSSP portal with SOC operations, RMM integration, compliance automation, client lifecycle management, and an AG-UI SSE integration builder. PostgreSQL RLS enforcement, 30+ RBAC roles, HMAC-SHA256 licensing engine. 8 fully-built portal sections with live workflow data, global cookie-based client context switcher, @kit/integrations package with OCSF 1.3.0 normalizer, ConnectWise/NinjaRMM/Stripe connectors, and Azure Speech voice mode. 123 UAT tests written.",
+  "stack": "Next.js 15 + Supabase + Elixir/Phoenix",
+  "target": "MSSP / SOC / Compliance",
+  "active_label": "Sprint 5 Complete",
+  "current_sprint": "Sprint 6 \u2014 TBD",
+  "sprint5_summary": "Sprint 5 (Integration Builder) ships AG-UI SSE chat endpoint (POST /api/integrations/builder) with 4 tools, @kit/integrations package (IntegrationConnector interface + ConnectWise, NinjaRMM, Stripe connectors, OcsfNormalizer mapping to OCSF 1.3.0 classes 2001/3002/6003), integrations + integration_events DB schema with full RLS, integration builder page with D3 force-directed topology graph, and Azure Speech SDK voice mode (STT + TTS) with graceful fallback. New route: /home/integrations. 5 checkpoints (CP-45 through CP-49). Quality gates: typecheck pass, lint pass, build pass.",
+  "sprint4_summary": "Sprint 4 (Multi-Tenant Client Scoping) implements cookie-based global client context switcher (active_client_id / active_client_name cookies), ClientContextProvider + setActiveClient server actions, ClientSwitcher header dropdown, optional clientId filter on all list/stats queries, getClientKpis() aggregate action, per-section context banners (SOC, RMM, Billing, Support), and Clients list v3 with per-client live KPI badges and View Client navigation. 10 checkpoints (CP-35 through CP-44). Quality gates: typecheck pass, lint pass, build pass.",
+  "sprint3_summary": "Sprint 3 (Workflows) delivers live data across all 7 portal sections: RMM live endpoint inventory table, SOC SLA deadline badges (overdue/warning/ok) with analyst assignment, Clients onboarding status badges and service tier pills, Billing invoice creation modal with full CRUD. 4 DB migrations (rmm_endpoints, alert_source_format, sla/onboarding enums), 3 new server action groups in @kit/mssp package, 123 Playwright UAT tests. Quality gates: typecheck 0 errors, lint 0 errors (3 pre-existing warnings), build PASS.",
+  "sprint2_summary": "Sprint 2 delivers all 7 MSSP portal section pages (SOC, Compliance, RMM, Clients, Billing, Admin, Support) backed by PostgreSQL schemas, RLS policies, and server actions for each domain. Bonus: Docker containerization (multi-stage Dockerfile, docker-compose, Nginx, NATS JetStream) and Supabase MCP integration for schema-aware development. 15 stories shipped with full typecheck 16/16, lint 14/14, build pass, and all 8 routes live-tested via Puppeteer.",
+  "versions": [
+    "v0.1.0-sprint1",
+    "v0.2.0-sprint2",
+    "v0.3.0-sprint3",
+    "v0.4.0-sprint4",
+    "v0.5.0-sprint5"
+  ],
+  "completed_sprints": [
+    {
+      "sprint": "Sprint 1 \u2014 MSSP Platform Foundation",
+      "branch": "feat/mssp-foundation-sprint1",
+      "version": "0.1.0-sprint1",
+      "completedAt": "2026-03-25",
+      "storiesShipped": 9,
+      "commits": [
+        "186935d",
+        "eab05f5",
+        "43f6a42",
+        "02c2d05"
+      ],
+      "summary": "Multi-tenant schema, CI/CD pipeline, Terraform IaC, RBAC (20 roles), licensing engine (HMAC-SHA256), comprehensive RLS audit, client server actions, and MSSP home dashboard."
+    },
+    {
+      "sprint": "Sprint 2 \u2014 Portal Sections",
+      "branch": "feat/mssp-sprint2-portal-sections",
+      "version": "0.2.0-sprint2",
+      "completedAt": "2026-03-25",
+      "storiesShipped": 18,
+      "commits": [
+        "941ab8f",
+        "6a4c5c2",
+        "207d5bc",
+        "30144f5",
+        "4a92400",
+        "0707d17",
+        "46eb07f",
+        "b300365",
+        "1bb3f95"
+      ],
+      "qualityGates": "typecheck 16/16 | lint 14/14 | build PASS | 10 tests PASS",
+      "liveTestedRoutes": [
+        "/home",
+        "/home/soc",
+        "/home/compliance",
+        "/home/rmm",
+        "/home/clients",
+        "/home/billing",
+        "/home/admin",
+        "/home/support"
+      ],
+      "summary": "All 7 MSSP portal section pages live (SOC, Compliance, RMM, Clients, Billing, Admin, Support) with full PostgreSQL schemas, RLS, and server actions. Plus: Docker + NATS JetStream containerization, Supabase MCP, dark-first Vantage Portal brand (marketing page rebrand, gold logo), dev tools panel (/home/dev-tools) with 8 seeded MSSP role users (Vantage123!), and 11-file Playwright UAT suite covering all portal sections."
+    },
+    {
+      "sprint": "Sprint 3 \u2014 MSSP Workflows",
+      "branch": "feat/mssp-sprint3-workflows",
+      "version": "0.3.0-sprint3",
+      "completedAt": "2026-03-27",
+      "storiesShipped": 10,
+      "qualityGates": "typecheck 0 errors | lint 0 errors (3 pre-existing warnings) | build PASS (NEXT_PUBLIC_CI=true)",
+      "liveTestedRoutes": [
+        "/home/soc",
+        "/home/rmm",
+        "/home/clients",
+        "/home/billing"
+      ],
+      "uatTests": 123,
+      "summary": "Sprint 3 delivers live workflow data across all 7 portal sections: DB migrations (rmm_endpoints, alert_source_format enum, sla/onboarding enums), server actions for RMM, incident workflow, and client onboarding in @kit/mssp. UI enhancements: SOC SLA deadline badges, RMM live endpoint table, Clients onboarding status badges + service tier pills, Billing invoice creation modal. 123 Playwright UAT tests written."
+    },
+    {
+      "sprint": "Sprint 4 \u2014 Multi-Tenant Client Scoping",
+      "branch": "feat/mssp-sprint4-client-scoping",
+      "version": "0.4.0-sprint4",
+      "completedAt": "2026-03-27",
+      "storiesShipped": 10,
+      "commits": ["e6ad9c8"],
+      "qualityGates": "typecheck pass | lint pass | build pass",
+      "checkpoints": ["CP-35", "CP-36", "CP-37", "CP-38", "CP-39", "CP-40", "CP-41", "CP-42", "CP-43", "CP-44"],
+      "summary": "Cookie-based global client context switcher (active_client_id / active_client_name httpOnly:false cookies). ClientContextProvider + setActiveClient server actions. ClientSwitcher header dropdown. Optional clientId filter on all list/stats queries + getClientKpis() aggregate. Context banners on SOC, RMM, Billing, Support pages. Clients list v3: per-client live KPI badges (incidents/endpoints/invoices) + View Client navigation. 10 checkpoints shipped."
+    },
+    {
+      "sprint": "Sprint 5 \u2014 Integration Builder",
+      "branch": "feat/mssp-sprint5-integration-builder",
+      "version": "0.5.0-sprint5",
+      "completedAt": "2026-03-27",
+      "storiesShipped": 5,
+      "commits": ["40a0f81", "fffa984"],
+      "qualityGates": "typecheck pass | lint pass | build pass",
+      "checkpoints": ["CP-45", "CP-46", "CP-47", "CP-48", "CP-49"],
+      "newRoutes": ["/home/integrations"],
+      "newPackages": ["@kit/integrations"],
+      "summary": "AG-UI SSE chat endpoint (POST /api/integrations/builder) with 4 registered tools. @kit/integrations package: IntegrationConnector interface + ConnectWise, NinjaRMM, Stripe connector implementations. OcsfNormalizer mapping to OCSF 1.3.0 event classes (2001/3002/6003). integrations + integration_events DB schema with full RLS and enums (integration_type, integration_status). Integration builder page with D3 force-directed topology graph and SSE-based chat panel. Azure Speech SDK voice mode (useVoiceMode hook, STT+TTS, GET /api/integrations/speech-config credential gate, graceful fallback). 21 files, 2113 insertions."
+    }
+  ],
+  "wave_1": {
+    "title": "Wave 1 \u2014 Foundation (DONE)",
+    "description": "Multi-tenant schema (accounts_extensions + clients tables with ltree hierarchy), GitHub Actions CI/CD pipeline (typecheck \u2192 lint \u2192 build), Terraform Azure workspace with remote state, MSSP portal navigation (6 sections: SOC, Compliance, RMM, Clients, Billing, Admin)."
+  },
+  "wave_2": {
+    "title": "Wave 2 \u2014 RBAC + Licensing (DONE)",
+    "description": "RBAC schema: mssp_role enum (20 roles from platform_owner to report_viewer), roles/permissions/account_role_assignments tables, check_mssp_admin_role() SECURITY DEFINER helper. Licensing engine (@kit/licensing): HMAC-SHA256 offline key validation, 4 service tiers (Starter/Professional/Enterprise/Sovereign), seat and endpoint quota enforcement."
+  },
+  "wave_3": {
+    "title": "Wave 3 \u2014 RLS Audit (DONE)",
+    "description": "Comprehensive RLS policy patch: idempotent DO block enables RLS on all public schema tables, full SELECT/INSERT/UPDATE/DELETE policies on accounts_extensions and clients via accounts_memberships, account_role_assignments write-restricted to mssp_admin+, immutable timestamp triggers, migration-time verification report."
+  },
+  "wave_4": {
+    "title": "Wave 4 \u2014 Client Actions + Dashboard (DONE)",
+    "description": "Client management server actions (createClient, listClients, updateClient) with Zod validation and ActionResult<T> discriminated unions. MSSP home dashboard: 6-card portal overview (SOC, Compliance, RMM, Clients, Billing, Admin), server component, responsive grid, Active/Coming Soon badges."
+  },
+  "wave_5": {
+    "title": "Wave 5 \u2014 Intelligence Layer (IN PROGRESS)",
+    "description": "Integration Builder shipped (Sprint 5): AG-UI SSE endpoint, @kit/integrations package with ConnectWise/NinjaRMM/Stripe connectors, OCSF 1.3.0 normalizer, D3 topology graph, Azure Speech voice mode. Remaining planned: Azure OpenAI for alert triage summarization, UEBA behavioral analytics, automated compliance reports, vCISO advisory tooling."
+  },
+  "sprint3_waves": {
+    "wave1": {
+      "title": "Sprint 3 Wave 1 \u2014 DB Migrations (DONE)",
+      "description": "rmm_endpoints table (agent status, OS info, patch tracking, RLS). alert_source_format enum on alerts (CEF/LEEF/syslog/API/webhook). onboarding_status enum + sla_status enum + sla_breached on security_incidents + clients."
+    },
+    "wave2": {
+      "title": "Sprint 3 Wave 2 \u2014 Server Actions (DONE)",
+      "description": "RMM server actions: listEndpoints, getEndpointStats. Incident workflow actions: assignIncident, updateIncidentStatus, addIncidentNote, getSLAStatus. Client onboarding actions: initiateOnboarding, updateOnboardingStep, completeOnboarding, getOnboardingStatus. All in @kit/mssp package."
+    },
+    "wave3": {
+      "title": "Sprint 3 Wave 3 \u2014 UI Enhancements (DONE)",
+      "description": "SOC page v2: SLA deadline badges (overdue/warning/ok) + assigned_to display. RMM page v2: live endpoint inventory table from DB. Clients page v2: onboarding status badges + service tier pills. Billing page v2: create invoice modal + invoice status badges."
+    },
+    "wave4": {
+      "title": "Sprint 3 Wave 4 \u2014 Quality Gates (DONE)",
+      "description": "typecheck: 0 errors. lint: 0 errors (3 pre-existing warnings). build: PASS (NEXT_PUBLIC_CI=true). 123 UAT tests written across all portal sections."
+    }
+  },
+  "sprint4_waves": {
+    "wave1": {
+      "title": "Sprint 4 Wave 1 \u2014 Foundation (PLANNED)",
+      "description": "CP-35: Client-scoped route group /home/clients/[clientId]/layout.tsx with account-ownership validation. CP-36: Client-scoped sidebar navigation (client name header, module nav, All Clients back link). CP-38: clientId filter added to all list queries + getClientKpis(). CP-44: Path constants helpers for client routes."
+    },
+    "wave2": {
+      "title": "Sprint 4 Wave 2 \u2014 Client-Scoped Pages (PLANNED)",
+      "description": "CP-37: Client detail overview page with 4 KPIs and quick-nav cards. CP-39: /home/clients/[clientId]/soc. CP-40: /home/clients/[clientId]/rmm. CP-41: /home/clients/[clientId]/billing. CP-42: /home/clients/[clientId]/support."
+    },
+    "wave3": {
+      "title": "Sprint 4 Wave 3 \u2014 Client List Enhancement (PLANNED)",
+      "description": "CP-43: Clients list v3 with per-client live badges (incidents/endpoints/invoices) and View Client navigation. Final quality gates: typecheck + lint + build all pass."
+    }
+  },
+  "internal": {
+    "headline": "Building 3VS Vantage's Operating Platform",
+    "pitch": "Vantage Portal is the operational backbone of 3VS Vantage's managed security business. Built on Elixir/Phoenix for fault-tolerant event processing, NATS JetStream for decoupled service communication, and Next.js 15 for a responsive analyst experience \u2014 this platform replaces a patchwork of third-party tools with a unified, owned system. Every component is designed for multi-tenancy from day one, with PostgreSQL RLS enforcing strict isolation and 30+ RBAC roles spanning every operational persona.",
+    "slides": [
+      {
+        "id": "INT-01",
+        "title": "Architecture Overview",
+        "talking_points": [
+          "Elixir/Phoenix backend handles all event ingestion, SOAR execution, and background jobs via OTP supervision trees",
+          "NATS JetStream provides the event spine \u2014 all services communicate through subject-scoped streams, not direct HTTP calls",
+          "Next.js 15 App Router frontend with Supabase Realtime for live incident and alert dashboards",
+          "PostgreSQL RLS enforces tenant isolation at the database layer \u2014 application bugs cannot leak cross-tenant data"
+        ],
+        "speaker_notes": "Emphasize that the Elixir choice was deliberate for fault tolerance \u2014 a crashed SOAR worker doesn't take down the web tier. NATS gives us horizontal scalability without Kafka's operational overhead.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INT-02",
+        "title": "RMM Integration & Endpoint Telemetry",
+        "talking_points": [
+          "Tactical RMM bidirectional sync populates endpoint inventory, patch status, and agent health automatically",
+          "Webhook-driven real-time updates \u2014 no polling; endpoint state changes propagate within seconds",
+          "MeshCentral integration (Wave 2) will provide browser-based remote control proxied through the portal for full session audit logging",
+          "Custom field mapping allows MSSP-specific metadata to flow through without schema changes"
+        ],
+        "speaker_notes": "Tactical RMM was chosen as the initial integration target due to its open API and strong MSP adoption. MeshCentral's self-hosted nature aligns with our security posture for remote access.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "INT-03",
+        "title": "SOC Operations & Incident Lifecycle",
+        "talking_points": [
+          "Alert ingestion pipeline normalizes CEF, LEEF, syslog, and JSON from 50+ vendor parsers",
+          "Incident lifecycle from detection to closure with P1\u2013P5 severity SLAs and automated breach notifications",
+          "SOAR playbook engine (Wave 2) uses Elixir GenServer state machines \u2014 playbooks are version-controlled and rollback-capable",
+          "Analyst workbench integrates MISP, OTX, and VirusTotal for threat enrichment without leaving the portal"
+        ],
+        "speaker_notes": "The GenServer-based playbook engine gives us true fault isolation per playbook execution. If an enrichment step times out, the state machine can retry or branch without blocking other incidents.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INT-04",
+        "title": "Compliance Targets: SOC 2 / ISO 27001",
+        "talking_points": [
+          "Control mapping covers SOC 2 Type II, ISO 27001, NIST CSF, and CIS Controls v8",
+          "Evidence collection is automated from connected RMM and EDR sources \u2014 no manual uploads for covered controls",
+          "Immutable audit log with cryptographic integrity verification and 7-year retention for WORM compliance",
+          "Gap analysis engine generates remediation tasks directly linked to framework controls"
+        ],
+        "speaker_notes": "Our compliance coverage is a direct competitive advantage \u2014 most MSSP platforms require a separate GRC tool. Owning this reduces client tool spend and increases our stickiness.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "INT-05",
+        "title": "Development Progress & Sprint Roadmap",
+        "talking_points": [
+          "Sprint 1 (Foundation): Multi-tenancy, RBAC (20 roles), licensing engine (HMAC-SHA256), RLS audit \u2014 all 9 stories shipped",
+          "Sprint 2 (Portal Sections): All 7 MSSP portal pages live \u2014 SOC, Compliance, RMM, Clients, Billing, Admin, Support \u2014 18 stories shipped",
+          "Sprint 3 (Workflows): Live data across all 7 sections \u2014 SLA badges, endpoint inventory, onboarding flows, invoice creation. 123 UAT tests. 10 stories shipped.",
+          "Sprint 4 (Multi-Tenant Client Scoping): Cookie-based global client context switcher, ClientSwitcher dropdown, per-section context banners, Clients list v3 with live KPI badges. 10 checkpoints shipped.",
+          "Sprint 5 (Integration Builder): AG-UI SSE chat endpoint, @kit/integrations package (ConnectWise/NinjaRMM/Stripe), OCSF 1.3.0 normalizer, D3 topology graph, Azure Speech voice mode. New /home/integrations route. 5 checkpoints shipped.",
+          "Sprint 6+ (planned): SOAR playbook engine, Azure OpenAI triage co-pilot, UEBA behavioral analytics, Tactical RMM sync, MeshCentral remote control"
+        ],
+        "speaker_notes": "Five sprints complete: full portal operational with live workflow data, global client context, and an AI-native integration builder with voice input. The AG-UI SSE pattern positions us well for the SOAR playbook engine coming in Sprint 6+.",
+        "duration_seconds": 90
+      }
+    ]
+  },
+  "partner": {
+    "headline": "White-Label MSSP Platform for MSP Partners",
+    "pitch": "Vantage Portal offers MSP partners a fully white-labeled security operations platform they can resell under their own brand \u2014 without the multi-year investment of building one. Full CSS theming, custom domain routing, and co-branded email templates mean clients never see Vantage branding unless you want them to. A comprehensive REST and GraphQL API surface connects to the PSA tools your team already runs: ConnectWise, Autotask, and HaloPSA.",
+    "slides": [
+      {
+        "id": "PRT-01",
+        "title": "White-Label Capabilities",
+        "talking_points": [
+          "CSS variable theming system covers all UI surfaces \u2014 apply your brand palette, logo, and favicon through the admin panel",
+          "Per-tenant subdomain routing with automatic TLS provisioning \u2014 your clients access their portal at client.yourmssp.com",
+          "Branded PDF reports with your logo and color scheme \u2014 clients see your brand, not ours",
+          "Dark/light mode defaults configurable per tenant; admin live preview before publishing"
+        ],
+        "speaker_notes": "The white-label system was designed co-first with the platform itself \u2014 not bolted on afterward. Every API response, email, and PDF runs through the tenant branding context.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "PRT-02",
+        "title": "PSA Integration Surface",
+        "talking_points": [
+          "Native ticket sync with ConnectWise Manage, Autotask PSA, and HaloPSA \u2014 incidents create tickets, tickets close incidents",
+          "Time entry synchronization for accurate billing against managed service agreements",
+          "Asset sync ensures PSA and portal inventory stay aligned without manual reconciliation",
+          "Configurable field mapping handles custom PSA schemas without code changes"
+        ],
+        "speaker_notes": "PSA integration is table stakes for MSP adoption. We support the three dominant platforms by market share. Kaseya BMS and Syncro are on the roadmap based on partner demand.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "PRT-03",
+        "title": "API Surface & Extensibility",
+        "talking_points": [
+          "RESTful and GraphQL APIs cover 100% of platform capabilities \u2014 anything the UI can do, the API can do",
+          "Per-tenant API keys with scoped permissions allow partners to build custom integrations safely",
+          "Outbound webhooks with HMAC signature verification for real-time event delivery to partner systems",
+          "OpenAPI 3.1 spec auto-generated and published; Postman collection available for rapid integration development"
+        ],
+        "speaker_notes": "The GraphQL layer is particularly valuable for partners building custom dashboards or mobile apps \u2014 they can fetch exactly the data shape they need in a single request.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "PRT-04",
+        "title": "Onboarding & Client Provisioning",
+        "talking_points": [
+          "Client onboarding wizard automates tenant creation, RMM agent deployment instructions, and initial asset import",
+          "License tier assignment determines feature availability \u2014 upsell paths are clear and self-service",
+          "Partner admin staff can manage multiple sub-tenants through a single pane without context-switching logins",
+          "Delegated admin model allows partners to grant clients scoped self-service access"
+        ],
+        "speaker_notes": "Time-to-value for new clients is a key metric. The onboarding wizard targets under 30 minutes from contract signature to first alert ingesting.",
+        "duration_seconds": 90
+      },
+      {
+        "id": "PRT-05",
+        "title": "Co-Brand Potential & Revenue Share",
+        "talking_points": [
+          "White-label tier partners can resell Vantage Portal under their own product name",
+          "Per-endpoint pricing model translates directly to MSP managed service agreement structures",
+          "Usage metering data available via API for partners to build their own billing overlays",
+          "Volume discounts at 500, 2000, and 10,000 managed endpoints"
+        ],
+        "speaker_notes": "We want partners to succeed selling this as their own product. The commercial model is designed to make the Vantage margin invisible while keeping partner margins healthy.",
+        "duration_seconds": 90
+      }
+    ]
+  },
+  "investor": {
+    "headline": "The MSSP Operating System",
+    "pitch": "A unified platform for Managed Security Service Providers to run their entire business \u2014 RMM, SOC, billing, compliance, and client portal \u2014 from a single, AI-powered interface.",
+    "slides": [
+      {
+        "id": "INV-01",
+        "title": "Market Opportunity",
+        "talking_points": [
+          "Global MSSP market exceeds $45B and is growing at 14% CAGR driven by SMB security outsourcing and regulatory pressure",
+          "Over 15,000 MSPs in North America are actively adding security services to their portfolio \u2014 creating immediate demand for MSSP tooling",
+          "Current tooling landscape is fragmented: MSSPs average 7\u201312 point solutions to replicate what Vantage Portal delivers in one platform",
+          "Compliance mandates (CMMC, FTC Safeguards Rule, state privacy laws) are forcing SMBs into MSSP relationships at an accelerating rate"
+        ],
+        "speaker_notes": "The $45B figure covers pure-play MSSPs. When you include MSPs adding security services, the addressable market for MSSP tooling platforms exceeds $8B annually.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INV-02",
+        "title": "Sticky SaaS Revenue Model",
+        "talking_points": [
+          "Per-endpoint SaaS pricing aligns with how MSSPs sell to clients \u2014 revenue scales with customer growth automatically",
+          "Multi-year contracts standard in the MSP/MSSP channel: average contract length 2.3 years with high renewal rates",
+          "Platform switching costs are extremely high \u2014 RMM integrations, custom playbooks, and compliance evidence vaults create deep lock-in",
+          "Expansion revenue built in: as clients add endpoints or upgrade license tiers, ARPU grows without additional sales motion"
+        ],
+        "speaker_notes": "The compliance evidence vault is particularly powerful for retention \u2014 a client leaving would need to migrate years of immutable audit records. This is a structural moat, not just a switching cost.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INV-03",
+        "title": "Compliance Moat",
+        "talking_points": [
+          "SOC 2, ISO 27001, NIST CSF, and CIS Controls coverage built into the platform \u2014 not an add-on module",
+          "Automated evidence collection eliminates the primary labor cost of compliance maintenance for MSSP clients",
+          "Compliance attestation becomes a competitive differentiator for MSSP sales cycles \u2014 clients choose the MSSP whose platform proves coverage",
+          "Regulatory expansion (DORA in EU, CMMC in US DoD supply chain) continuously expands the compliance addressable market"
+        ],
+        "speaker_notes": "Competitors offer compliance bolt-ons at $15\u201330/endpoint/month. By building it into the platform, we make compliance a retention driver rather than an upsell that clients might skip.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INV-04",
+        "title": "AI-Powered Differentiation",
+        "talking_points": [
+          "Azure AI integration (Wave 5) enables alert triage summarization, reducing analyst mean time to respond by targeting 40%",
+          "UEBA behavioral analytics surfaces high-risk entities automatically \u2014 scaling analyst capacity without headcount growth",
+          "vCISO tooling allows MSSPs to offer advisory services at scale, opening a new revenue line without proportional cost",
+          "AI features are per-tenant token-budgeted \u2014 margin-positive at all license tiers"
+        ],
+        "speaker_notes": "The AI layer is not window dressing \u2014 it directly addresses the #1 MSSP scaling problem: analyst shortage. Every alert summary and risk score our AI generates is an analyst-hour saved.",
+        "duration_seconds": 120
+      },
+      {
+        "id": "INV-05",
+        "title": "Go-To-Market & Traction",
+        "talking_points": [
+          "3VS Vantage is the flagship customer and design partner \u2014 platform built against real MSSP operational requirements",
+          "White-label partner channel creates a multiplier: each MSP partner brings their own client base onto the platform",
+          "Initial target: 50 MSP partners in Year 1, each managing 200+ endpoints, reaching 10,000 endpoints under management",
+          "Channel sales through existing MSP distributor relationships accelerates partner acquisition without direct enterprise sales motion"
+        ],
+        "speaker_notes": "Using 3VS Vantage as the anchor customer de-risks the product \u2014 every feature ships against a paying, demanding internal customer before partner release.",
+        "duration_seconds": 120
+      }
+    ]
+  },
+  "sprintProgress": {
+    "sprint": "Sprint 5: Integration Builder",
+    "branch": "feat/mssp-sprint5-integration-builder",
+    "wave1": {
+      "status": "DONE",
+      "completedAt": "2026-03-27",
+      "stories": [
+        "CP-45: integrations + integration_events schema migration with full RLS, integration_type enum, integration_status enum"
+      ]
+    },
+    "wave2": {
+      "status": "DONE",
+      "completedAt": "2026-03-27",
+      "stories": [
+        "CP-46: @kit/integrations package \u2014 IntegrationConnector interface, OcsfNormalizer (OCSF 1.3.0 classes 2001/3002/6003), ConnectWise/NinjaRMM/Stripe connectors, server actions (listIntegrations, createIntegration, deleteIntegration, syncIntegration, getEventLog)"
+      ]
+    },
+    "wave3": {
+      "status": "DONE",
+      "completedAt": "2026-03-27",
+      "stories": [
+        "CP-47: POST /api/integrations/builder AG-UI SSE endpoint with 4 tools",
+        "CP-48: Integration builder page \u2014 D3 force-directed topology graph + SSE chat panel"
+      ]
+    },
+    "wave4": {
+      "status": "DONE",
+      "completedAt": "2026-03-27",
+      "stories": [
+        "CP-49: Voice mode \u2014 Azure Speech STT+TTS via useVoiceMode hook, GET /api/integrations/speech-config credential gate, graceful fallback when AZURE_SPEECH_KEY absent"
+      ]
+    },
+    "qualityGates": {
+      "typecheck": "PASS",
+      "lint": "PASS",
+      "build": "PASS"
+    },
+    "uatTests": 123,
+    "overall": "5/5 checkpoints complete (100%)",
+    "typecheckGate": "PASS",
+    "lintGate": "PASS",
+    "buildGate": "PASS",
+    "sprint1": {
+      "sprint": "Sprint 1: MSSP Platform Foundation",
+      "branch": "feat/mssp-foundation-sprint1",
+      "overall": "9/9 stories complete (100%)",
+      "commits": [
+        "186935d wave1",
+        "eab05f5 wave2",
+        "43f6a42 wave3+4",
+        "02c2d05 checkpoint marks"
+      ]
+    },
+    "sprint2": {
+      "sprint": "Sprint 2: MSSP Portal Sections",
+      "branch": "feat/mssp-sprint2-portal-sections",
+      "overall": "18/18 stories complete (100%)",
+      "qualityGates": "typecheck 16/16 | lint 14/14 | build PASS | 8 routes live-tested"
+    },
+    "sprint3": {
+      "sprint": "Sprint 3: MSSP Workflows",
+      "branch": "feat/mssp-sprint3-workflows",
+      "overall": "10/10 stories complete (100%)",
+      "qualityGates": "typecheck 0 errors | lint 0 errors (3 pre-existing warnings) | build PASS"
+    },
+    "sprint4": {
+      "sprint": "Sprint 4: Multi-Tenant Client Scoping",
+      "branch": "feat/mssp-sprint4-client-scoping",
+      "overall": "10/10 checkpoints complete (100%)",
+      "commits": ["e6ad9c8"],
+      "qualityGates": "typecheck pass | lint pass | build pass"
+    }
+  },
+  "next": {
+    "sprint": "Sprint 6 \u2014 TBD",
+    "architecture_note": "Five sprints complete. Next sprint scope TBD. Candidates: SOAR playbook engine (Elixir GenServer state machines), Azure OpenAI triage co-pilot, UEBA behavioral analytics, Tactical RMM bidirectional sync, MeshCentral remote control integration.",
+    "completed_to_date": {
+      "sprints": 5,
+      "portal_sections": 8,
+      "packages": ["@kit/licensing", "@kit/mssp", "@kit/integrations"],
+      "routes": ["/home", "/home/soc", "/home/compliance", "/home/rmm", "/home/clients", "/home/billing", "/home/admin", "/home/support", "/home/integrations"],
+      "uat_tests": 123,
+      "branches_shipped": [
+        "feat/mssp-foundation-sprint1",
+        "feat/mssp-sprint2-portal-sections",
+        "feat/mssp-sprint3-workflows",
+        "feat/mssp-sprint4-client-scoping",
+        "feat/mssp-sprint5-integration-builder"
+      ]
+    }
+  }
+}

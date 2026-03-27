@@ -1,0 +1,34 @@
+{
+  "slides": [
+    {
+      "id": 1,
+      "title": "Problem Statement",
+      "notes": "Job applications are time-intensive: 8-12 minutes each for Easy Apply, most are poor fits. Manual evaluation is inconsistent. No persistent learning across sessions. This system automates the entire pipeline with quality-first scoring."
+    },
+    {
+      "id": 2,
+      "title": "Architecture Overview",
+      "notes": "Three-layer architecture: Claude browser agent (scrape + score + apply), file-based IPC bridge (400ms poll), Python watcher (execute + persist). No external APIs, no cloud dependencies. SQLite WAL mode for concurrent reads. Everything checkpointed for crash recovery."
+    },
+    {
+      "id": 3,
+      "title": "Scoring Engine Deep Dive",
+      "notes": "5-factor scoring on 100-point scale. Skills overlap is highest weight (30pt) because direct skill match is the strongest signal. Taxonomy Jaccard (25pt) catches domain alignment even without exact keyword match. TF-IDF cosine (20pt) provides semantic similarity. Title and seniority round it out. 65-point threshold validated: only 2/25 jobs qualified, both genuine DLP/security roles."
+    },
+    {
+      "id": 4,
+      "title": "Results & Metrics",
+      "notes": "First run: 25 jobs evaluated in NYC Metro DLP search. Score distribution clusters around 30-45 (correct rejections). Two qualifying matches: Zscaler DLP consultant (74.0) and Blue Team principal lead (68.0). Zero false positives. Application throughput: ~45 seconds vs 8-12 minutes manual."
+    },
+    {
+      "id": 5,
+      "title": "Knowledge Bank & Learning",
+      "notes": "Q&A bank stores normalized question/answer pairs with confidence scores and usage tracking. Lookup-first strategy ensures consistent answers. Every new question encountered during applications gets stored. Over time, the system requires less generation and more retrieval — compounding efficiency."
+    },
+    {
+      "id": 6,
+      "title": "Roadmap",
+      "notes": "Expand search profiles: cloud security, security architect, director-level roles. Multi-session knowledge transfer. Score weight tuning based on application outcomes. Integration with CCEM APM for real-time monitoring. Potential: multi-candidate scaling."
+    }
+  ]
+}

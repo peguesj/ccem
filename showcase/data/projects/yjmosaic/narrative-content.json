@@ -36,6 +36,63 @@
     "title": "Wave 6: Advanced Features",
     "description": "Patterns (hex, Voronoi, spiral), Masks, Adaptive Tile Splitting, Video Mosaic via AVFoundation, and PSD Layer Export -- extending beyond the original AndreaMosaic feature set."
   },
+  "wave_7": {
+    "title": "Wave 7: iOS Foundation",
+    "description": "Multi-platform SPM restructure, iOS app entry point with adaptive TabView/NavigationSplitView, PhotoProvider protocol, iCloud Photos adapter, and Google Photos REST adapter with OAuth 2.0 PKCE."
+  },
+  "wave_8": {
+    "title": "Wave 8: iOS UI",
+    "description": "Photo library browser with provider picker and scope filtering, PHAsset tile import in batches of 50, iOS mosaic builder with PhotosPicker and preset buttons, and PHAsset-to-CGImage bridge via PHImageManager."
+  },
+  "wave_9": {
+    "title": "Wave 9: iOS Output",
+    "description": "iOS mosaic preview with Canvas rendering and pinch-zoom (0.25x–5x), gallery view with LazyVGrid thumbnails and MosaicStorage, HEIC export format, and Photos library save via PHAssetCreationRequest."
+  },
+  "wave_10": {
+    "title": "Wave 10: iOS Advanced",
+    "description": "iPad adaptive layout with NavigationSplitView sidebar, adaptive grid columns (3 iPhone / 5 iPad / 7 iPad landscape), thermal manager for mobile CPU/GPU tuning, app icons for all iPhone/iPad sizes, and full iOS localization."
+  },
+  "media_compatibility": {
+    "title": "Media Format Compatibility",
+    "description": "YJMosaic's I/O layer is built entirely on Apple platform frameworks — ImageIO, AVFoundation, and Core Image. This determines which formats are natively supported and which are not.",
+    "formats": [
+      {
+        "format": "JPEG / PNG / TIFF / BMP",
+        "direction": "Input + Output",
+        "status": "full",
+        "framework": "ImageIO (CGImageSource / CGImageDestination)",
+        "notes": "Primary tile and source image formats. EXIF orientation auto-applied on load. CMYK and Grayscale inputs normalized to sRGB."
+      },
+      {
+        "format": "HEIC",
+        "direction": "Export only (iOS)",
+        "status": "partial",
+        "framework": "ImageIO via UTType + PHAssetCreationRequest",
+        "notes": "HEIC export added in v0.8.0 (IOS-012) for iOS mosaic output using UTType(filenameExtension: \"heic\"). ImageLoader.supportedExtensions on macOS does not include HEIC — source images and tiles must be JPEG/PNG/TIFF. HEIC is Apple-native and requires HEVC codec license; macOS ImageIO can decode HEIC but the extension guard was not opened for tile import."
+      },
+      {
+        "format": "WebP",
+        "direction": "Not supported",
+        "status": "none",
+        "framework": "N/A",
+        "notes": "WebP is not listed in ImageLoader.supportedExtensions. Although macOS 14+ ImageIO can decode WebP via the system codec, the extension guard explicitly rejects it. WebP tile import would require adding 'webp' to supportedExtensions — a one-line change — but has not been prioritized."
+      },
+      {
+        "format": "MPEG-4 (MP4 / MOV / M4V)",
+        "direction": "Input + Output",
+        "status": "full",
+        "framework": "AVFoundation (AVURLAsset / AVAssetImageGenerator / AVAssetWriter)",
+        "notes": "VideoExtractor uses AVURLAsset which natively supports MP4, MOV, and M4V containers with H.264 and HEVC tracks. Frames are extracted at configurable intervals (default: 1 frame/sec) with static-scene skipping via pixel-variance threshold. VideoMosaicExporter writes output as H.264/HEVC .mov via AVAssetWriter. Full AVFoundation codec pass-through — no transcoding on read."
+      },
+      {
+        "format": "WEBM",
+        "direction": "Not supported",
+        "status": "none",
+        "framework": "N/A",
+        "notes": "WebM (VP8/VP9 video, Vorbis/Opus audio) is not supported by AVFoundation on macOS or iOS. Apple's media stack does not include a VP8/VP9 decoder. Supporting WebM would require bundling libvpx and a container demuxer — a substantial dependency not currently in scope."
+      }
+    ]
+  },
   "technology_mapping": {
     "title": "Technology Port Mapping",
     "description": "Original C++/MFC components mapped to their Swift/macOS equivalents",

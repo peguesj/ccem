@@ -466,3 +466,23 @@ This is a hard rule with no exceptions.
 - [x] **CP-167**: `pre_tool_use.sh` — `plugin_context` enrichment: detects plugin engine paths/actions, emits `{engine, plugin_name}` in heartbeat context
 - [x] **CP-168**: v7.3.0 — mix.exs bump, CHANGELOG, CLAUDE.md checkpoints
 - After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+## Implementation Checkpoints — session-management + ccemhelper-settings (v8.1.0)
+
+### Wave 1: Session Manager (CCEM↔APM connector)
+- [x] **CP-169**: `ApmV5.SessionManager` — GenServer + ETS `:session_manager_cache`, polls `~/Developer/ccem/apm/sessions/*.json` every 30s, enriches with agents/ports/plugins/claude_config, PubSub `"apm:sessions"`
+- [x] **CP-170**: `ApmV5Web.SessionManagerLive` — `/sessions` + `/sessions/:id`, split-panel, 5 tabs (Overview/Claude Config/Agents/Ports/Plugins), 10s refresh
+- [x] **CP-171**: Router + sidebar — `live "/sessions"` + `live "/sessions/:id"` routes; `hero-computer-desktop` Sessions nav item
+- [x] **CP-172**: Supervision tree — `ApmV5.SessionManager` after `ClaudeUsageStore`
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: CCEMHelper Settings/About/Help
+- [x] **CP-173**: `Views/SettingsView.swift` — APM URL + connection test, notification toggles, Launch at Login, `@AppStorage` keys `io.pegues.ccem.*`
+- [x] **CP-174**: `Views/AboutView.swift` — version/build from bundle, GitHub link, Open APM Dashboard
+- [x] **CP-175**: `Views/HelpView.swift` — Quick Start, Keyboard Shortcuts, Troubleshooting; private sub-views
+- [x] **CP-176**: `MenuBarView.swift` — footer section with Settings/About/Help sheet buttons; 3 `@State` vars
+- After Wave 2: `swift build -c release` ✓ PASS
+
+### Wave 3: Release
+- [x] **CP-177**: v8.1.0 — mix.exs bump, @server_version, @app_version, CHANGELOG, CLAUDE.md checkpoints
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS

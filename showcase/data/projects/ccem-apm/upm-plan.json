@@ -89,5 +89,96 @@
       "cps": ["CP-158 features.json + showcase.js", "CP-159 v7.0.0 bump"],
       "gate": "mix compile PASS + swift build PASS + showcase renders v7.0.0"
     }
-  ]
+  ],
+  "next_initiative": {
+    "version": "8.0.0",
+    "title": "Maximal Modularization — Plugin/Integration Engine Standard",
+    "branch": "ralph/ccem-v8-0-0-modularization",
+    "status": "planned",
+    "initiated": "2026-03-25",
+    "formation_id": "fmt-ccem-v8-modularization",
+    "formation_agents": 32,
+    "formation_squadrons": 5,
+    "design_decision": "dd-plugin-integration-standard",
+    "objective": "Decompose all non-foundational APM features into a formal Plugin/Integration engine standard, establishing stable extension points and enabling per-feature lifecycle management.",
+    "taxonomy": {
+      "foundation": {
+        "description": "Core observability layer. Always on, non-removable. No external dependencies.",
+        "modules": ["AgentRegistry", "SessionParser", "ConnectionTracker", "Correlation", "EventStream", "MetricsCollector", "AuditLog", "DashboardStore", "AnalyticsStore", "ConfigLoader", "Uptime", "ApiKeyStore", "NotificationStore"]
+      },
+      "plugins": {
+        "description": "Self-contained APM features. Own GenServers, LiveViews, API routes. Enable/disable via PluginRegistry.",
+        "contract": "ApmV5.Plugins.PluginBehaviour (extended v2 — adds supervisor_children/0, live_views/0, on_enable/0, on_disable/0, default_enabled?/0)",
+        "path": "lib/apm_v5/plugins/<name>/",
+        "items": [
+          {"name": "plane", "status": "shipped", "version": "7.3.0", "source": "plugins/plane/"},
+          {"name": "ralph", "status": "planned", "source": "ralph.ex → plugins/ralph/"},
+          {"name": "formations", "status": "planned", "source": "formation_store → plugins/formations/"},
+          {"name": "uat", "status": "planned", "source": "intake/watchers/uat_watcher.ex → plugins/uat/"},
+          {"name": "skills", "status": "planned", "source": "skills_registry_store.ex → plugins/skills/"},
+          {"name": "ports", "status": "planned", "source": "port_manager.ex → plugins/ports/"},
+          {"name": "usage", "status": "planned", "source": "claude_usage_store.ex → plugins/usage/"},
+          {"name": "devops", "status": "planned", "source": "background_tasks_store + project_scanner + action_engine → plugins/devops/"},
+          {"name": "alerting", "status": "planned", "source": "slo_engine + alert_rules_engine → plugins/alerting/"}
+        ]
+      },
+      "integrations": {
+        "description": "External protocol/system bridges. Own supervisor, event adapter, API routes. Connect APM to outside world.",
+        "contract": "ApmV5.Integrations.IntegrationBehaviour (new — integration_name/0, protocol/0, connect/1, disconnect/0, status/0, handle_event/2, supervisor_children/0)",
+        "path": "lib/apm_v5/integrations/<name>/",
+        "items": [
+          {"name": "agentlock", "status": "planned", "protocol": "custom", "source": "auth/ subsystem (8 modules) → integrations/agentlock/"},
+          {"name": "ag_ui", "status": "planned", "protocol": "ag_ui", "source": "ag_ui/ subsystem (15+ modules) → integrations/ag_ui/"},
+          {"name": "linear", "status": "future", "protocol": "rest"},
+          {"name": "github", "status": "future", "protocol": "rest"}
+        ]
+      }
+    },
+    "formation": {
+      "id": "fmt-ccem-v8-modularization",
+      "total_agents": 32,
+      "squadrons": [
+        {
+          "id": "SQ1-ARCH", "name": "Architecture Squadron", "agents": 6,
+          "mission": "Catalog all 90+ modules, define Plugin/Integration taxonomy, extend PluginBehaviour, author IntegrationBehaviour",
+          "wave": 1,
+          "outputs": ["module-taxonomy.json", "extended plugin_behaviour.ex", "new integration_behaviour.ex"]
+        },
+        {
+          "id": "SQ2-PLUGIN", "name": "Plugin Extraction Swarm", "agents": 8,
+          "mission": "Extract 8 existing modules as conformant plugins (ralph, formations, uat, skills, ports, usage, devops, alerting)",
+          "wave": 2,
+          "structure": "swarm — each agent owns one plugin extraction end-to-end"
+        },
+        {
+          "id": "SQ3-INTEGRATION", "name": "Integration Extraction Squadron", "agents": 6,
+          "mission": "Extract auth/ and ag_ui/ subsystems as integrations; build IntegrationRegistry GenServer",
+          "wave": 2,
+          "structure": "parallel agents per integration + shared registry"
+        },
+        {
+          "id": "SQ4-INFRA", "name": "Infrastructure Squadron", "agents": 7,
+          "mission": "Plugin/Integration lifecycle: PluginRegistry v2 (dynamic enable/disable), IntegrationRegistry, Application.ex supervision refactor, Router auto-registration, PluginDashboardLive integrations tab",
+          "wave": 3
+        },
+        {
+          "id": "SQ5-QUALITY", "name": "Quality & Release Squadron", "agents": 5,
+          "mission": "mix compile --warnings-as-errors, OpenAPI spec update, v8.0.0 CHANGELOG + mix.exs, showcase features + design decisions",
+          "wave": 4
+        }
+      ],
+      "gate_checks": [
+        "mix compile --warnings-as-errors after each wave",
+        "GET /api/v2/plugins returns all 9 plugins registered",
+        "GET /api/v2/integrations returns agentlock + ag_ui registered",
+        "All existing LiveViews continue to render",
+        "mix test — 0 regressions"
+      ]
+    },
+    "plane_issues_to_create": {
+      "epic": "CCEM v8.0.0 — Plugin/Integration Engine Standard",
+      "stories_count": 35,
+      "story_range": "CCEM-261 through CCEM-295 (estimated)"
+    }
+  }
 }

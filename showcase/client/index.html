@@ -724,7 +724,8 @@
       populateProjectSwitcher(projectRegistry, project);
 
       const { source, data } = await loadProjectData(project, projectRegistry);
-      const features = data.features || [];
+      const _rawFeatures = data.features || [];
+      const features = Array.isArray(_rawFeatures) ? _rawFeatures : (_rawFeatures.features || []);
       const narratives = data.narratives || {};
       const designSystem = data.design_system || {};
       const version = narratives.version || data.version || '--';
@@ -867,8 +868,8 @@
 
         // Feature classification: CCEM-core vs APM vs Both
         // Wave 1-3: APM core protocol/server   Wave 4: CCEM native/skills   Wave 5+: both
-        const CCEM_CORE_VERSIONS = ['5.3.0', '6.4.0', '7.0.0'];
-        const APM_VERSIONS = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0'];
+        const CCEM_CORE_VERSIONS = ['5.3.0', '6.4.0', '7.0.0', '7.3.0', '8.0.0', '8.1.0'];
+        const APM_VERSIONS = ['5.0.0', '5.1.0', '5.3.0', '6.0.0', '6.1.0', '6.2.0', '6.3.0', '6.4.0'];
         const LAST_VERSION = '6.4.0'; // v6.x = "last version" before v7
 
         function filterFeaturesByTab(tab, allFeatures) {

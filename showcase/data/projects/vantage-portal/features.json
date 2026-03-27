@@ -1,0 +1,598 @@
+[
+  {
+    "id": "VP-001",
+    "wave": 1,
+    "title": "Multi-Tenant Architecture",
+    "category": "foundation",
+    "status": "done",
+    "version": "0.1.0-sprint1",
+    "description": "PostgreSQL RLS-enforced tenant isolation. Shared-schema with per-tenant encryption. Hierarchical org model (MSSP \u2192 Client \u2192 Sub-client). ltree hierarchy for delegated admin.",
+    "tags": [
+      "rls",
+      "postgresql",
+      "multi-tenant"
+    ]
+  },
+  {
+    "id": "VP-002",
+    "wave": 1,
+    "title": "Auth & RBAC (30+ Roles)",
+    "category": "foundation",
+    "status": "done",
+    "version": "0.1.0-sprint1",
+    "description": "Supabase Auth with email, OAuth, MFA. Role hierarchy spanning MSSP staff, client admins, technicians, auditors, and read-only viewers. Permission inheritance with scope-limited delegation. JWT claims carry tenant and role context.",
+    "tags": [
+      "auth",
+      "rbac",
+      "supabase",
+      "mfa",
+      "jwt"
+    ]
+  },
+  {
+    "id": "VP-003",
+    "wave": 1,
+    "title": "Supabase Schema & Migrations",
+    "category": "foundation",
+    "status": "done",
+    "version": "0.1.0-sprint1",
+    "description": "Full PostgreSQL schema with RLS policies on all tenant-scoped tables. Versioned migrations via Supabase CLI. Realtime subscriptions for live dashboard updates. Indexed foreign keys for sub-100ms cross-tenant queries.",
+    "tags": [
+      "supabase",
+      "postgresql",
+      "migrations",
+      "realtime"
+    ]
+  },
+  {
+    "id": "VP-004",
+    "wave": 1,
+    "title": "Licensing Engine",
+    "category": "foundation",
+    "status": "done",
+    "version": "0.1.0-sprint1",
+    "description": "Feature-flag licensing with per-tenant capability sets. License tiers: Starter, Professional, Enterprise, White-Label. Seat-count enforcement and endpoint quota management. Expiry, grace period, and suspension lifecycle.",
+    "tags": [
+      "licensing",
+      "feature-flags",
+      "quotas",
+      "saas"
+    ]
+  },
+  {
+    "id": "VP-005",
+    "wave": 1,
+    "title": "Elixir/Phoenix Backend",
+    "category": "foundation",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "Phoenix 1.7 API server handling event ingestion, SOAR orchestration, and background job processing. OTP supervision trees for fault-tolerant worker pools. GenServer-based state machines for incident lifecycle. Deployed as Fly.io distributed cluster.",
+    "tags": [
+      "elixir",
+      "phoenix",
+      "otp",
+      "fly.io",
+      "genserver"
+    ]
+  },
+  {
+    "id": "VP-006",
+    "wave": 2,
+    "title": "Tactical RMM Integration",
+    "category": "core",
+    "status": "planned",
+    "version": "0.1.0",
+    "description": "Bidirectional sync with Tactical RMM via REST and webhook. Agent status, patch compliance, and script execution surfaced in the portal. Endpoint inventory auto-populated per client. Supports custom field mapping and tag synchronization.",
+    "tags": [
+      "tactical-rmm",
+      "rmm",
+      "endpoints",
+      "webhooks"
+    ]
+  },
+  {
+    "id": "VP-007",
+    "wave": 2,
+    "title": "MeshCentral Remote Control",
+    "category": "core",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "Embedded MeshCentral agent relay for browser-based remote desktop access. Session proxied through Vantage Portal for full audit logging. Per-client mesh server isolation. Technician access gated by RBAC and client approval workflows.",
+    "tags": [
+      "meshcentral",
+      "remote-control",
+      "rdp",
+      "vnc"
+    ]
+  },
+  {
+    "id": "VP-008",
+    "wave": 2,
+    "title": "NATS Event Bus",
+    "category": "core",
+    "status": "active",
+    "version": "0.1.0",
+    "description": "JetStream-backed NATS cluster as the platform event spine. All internal service communication decoupled through subject-scoped streams. Consumer groups for durable alert processing. At-least-once delivery with deduplication headers.",
+    "tags": [
+      "nats",
+      "jetstream",
+      "event-bus",
+      "messaging"
+    ]
+  },
+  {
+    "id": "VP-009",
+    "wave": 2,
+    "title": "Alert Ingestion (CEF/LEEF/JSON)",
+    "category": "core",
+    "status": "active",
+    "version": "0.1.0",
+    "description": "Normalized ingestion pipeline for CEF, LEEF, syslog, and JSON alert formats. 50+ pre-built parsers covering major EDR, firewall, and SIEM vendors. Field normalization to internal schema. Rate-limiting and back-pressure per tenant.",
+    "tags": [
+      "cef",
+      "leef",
+      "syslog",
+      "parsing",
+      "normalization"
+    ]
+  },
+  {
+    "id": "VP-010",
+    "wave": 2,
+    "title": "SOAR Playbook Engine",
+    "category": "core",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "Visual playbook builder backed by Elixir state machines. Trigger conditions on alert fields, asset context, and threat intel. Built-in action blocks: isolate endpoint, create ticket, notify, enrich, escalate. Version-controlled playbooks with rollback.",
+    "tags": [
+      "soar",
+      "playbooks",
+      "automation",
+      "state-machine"
+    ]
+  },
+  {
+    "id": "VP-011",
+    "wave": 3,
+    "title": "Incident Lifecycle Management",
+    "category": "security",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Full incident lifecycle from detection to closure. Severity tiers (P1\u2013P5) with SLA enforcement and breach notifications. Analyst assignment, handoff, and collaboration thread. Timeline view with correlated alerts, evidence, and analyst notes.",
+    "tags": [
+      "incidents",
+      "sla",
+      "triage",
+      "soc"
+    ]
+  },
+  {
+    "id": "VP-012",
+    "wave": 3,
+    "title": "Threat Analysis Workbench",
+    "category": "security",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "Analyst workspace for enriching alerts with threat intel feeds (MISP, OTX, VirusTotal). IOC extraction and pivot tooling. MITRE ATT&CK technique tagging. Graphical kill-chain visualizer. Bulk IOC export to STIX/TAXII.",
+    "tags": [
+      "threat-intel",
+      "mitre-attack",
+      "ioc",
+      "stix",
+      "misp"
+    ]
+  },
+  {
+    "id": "VP-013",
+    "wave": 3,
+    "title": "Compliance Framework Mapping",
+    "category": "security",
+    "status": "planned",
+    "version": "0.3.0",
+    "description": "Control mapping for SOC 2 Type II, ISO 27001, NIST CSF, and CIS Controls. Automated evidence collection linked to framework controls. Gap analysis with remediation task generation. Framework coverage heatmaps per client.",
+    "tags": [
+      "soc2",
+      "iso27001",
+      "nist-csf",
+      "cis",
+      "compliance"
+    ]
+  },
+  {
+    "id": "VP-014",
+    "wave": 3,
+    "title": "Evidence Collection",
+    "category": "security",
+    "status": "planned",
+    "version": "0.3.0",
+    "description": "Automated evidence capture from RMM, EDR, and SIEM sources mapped to compliance controls. Immutable evidence vault with chain-of-custody hashing. Auditor-facing read-only view. Scheduled evidence refresh with drift detection.",
+    "tags": [
+      "evidence",
+      "compliance",
+      "chain-of-custody",
+      "audit"
+    ]
+  },
+  {
+    "id": "VP-015",
+    "wave": 3,
+    "title": "Audit Logs",
+    "category": "security",
+    "status": "active",
+    "version": "0.1.0",
+    "description": "Immutable append-only audit log for all user actions, API calls, and system events. WORM-compliant storage with cryptographic integrity verification. Structured export (CSV, JSON, CEF) for SIEM ingestion. 7-year retention policy configurable per tenant.",
+    "tags": [
+      "audit",
+      "worm",
+      "immutable",
+      "compliance",
+      "logging"
+    ]
+  },
+  {
+    "id": "VP-016",
+    "wave": 4,
+    "title": "Billing Engine",
+    "category": "platform",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Flexible pricing models: per-endpoint, per-seat, and tiered volume. Stripe integration with usage-based metering. Automated invoice generation with line-item detail per service. Client self-service payment portal. Multi-currency support. Billing portal page with KPI dashboard and invoice list live.",
+    "tags": [
+      "billing",
+      "stripe",
+      "metering",
+      "invoicing",
+      "saas"
+    ]
+  },
+  {
+    "id": "VP-017",
+    "wave": 4,
+    "title": "Client Portal",
+    "category": "platform",
+    "status": "active",
+    "version": "0.1.0",
+    "description": "White-labeled self-service portal for MSSP clients. Dashboard showing asset inventory, open incidents, compliance posture, and recent activity. Invoice and contract management. Customizable branding per client with subdomain routing.",
+    "tags": [
+      "client-portal",
+      "white-label",
+      "self-service",
+      "dashboard"
+    ]
+  },
+  {
+    "id": "VP-018",
+    "wave": 4,
+    "title": "Support Ticketing",
+    "category": "platform",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Integrated helpdesk with email-to-ticket ingestion and client portal submission. SLA tiers with escalation rules. Ticket templates for common request types. Integration with RMM for automatic endpoint context. PSA sync (ConnectWise, Autotask, HaloPSA). Support portal page with ticket queue live.",
+    "tags": [
+      "ticketing",
+      "helpdesk",
+      "psa",
+      "sla",
+      "connectwise"
+    ]
+  },
+  {
+    "id": "VP-019",
+    "wave": 4,
+    "title": "Admin Panel",
+    "category": "platform",
+    "status": "active",
+    "version": "0.1.0",
+    "description": "MSSP staff operations dashboard. Client onboarding wizard with automated provisioning. Staff management with shift scheduling and on-call rotations. System health monitoring, integration status, and alert queue metrics. License and quota management.",
+    "tags": [
+      "admin",
+      "provisioning",
+      "staff-management",
+      "operations"
+    ]
+  },
+  {
+    "id": "VP-020",
+    "wave": 4,
+    "title": "API Integration Hub",
+    "category": "platform",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "RESTful and GraphQL API surface for all platform capabilities. Per-tenant API key management with scoped permissions. Webhook outbound delivery with retry logic and signature verification. OpenAPI 3.1 spec auto-generated. Postman collection published.",
+    "tags": [
+      "api",
+      "graphql",
+      "webhooks",
+      "openapi",
+      "integration"
+    ]
+  },
+  {
+    "id": "VP-021",
+    "wave": 5,
+    "title": "Azure AI Integration",
+    "category": "intelligence",
+    "status": "planned",
+    "version": "0.3.0",
+    "description": "Azure OpenAI integration for alert triage summarization, incident narrative generation, and analyst co-pilot. GPT-4o used for natural-language query over SIEM data. Content Safety filters applied to all AI outputs. Per-tenant token budget controls.",
+    "tags": [
+      "azure-ai",
+      "openai",
+      "gpt-4o",
+      "llm",
+      "ai-triage"
+    ]
+  },
+  {
+    "id": "VP-022",
+    "wave": 5,
+    "title": "Behavioral Analytics",
+    "category": "intelligence",
+    "status": "planned",
+    "version": "0.4.0",
+    "description": "UEBA baseline modeling per endpoint and user. Anomaly scoring on authentication patterns, lateral movement indicators, and data exfiltration signals. Risk score aggregation surfaces high-priority entities in SOC dashboard. Configurable sensitivity per client.",
+    "tags": [
+      "ueba",
+      "behavioral-analytics",
+      "anomaly-detection",
+      "risk-scoring"
+    ]
+  },
+  {
+    "id": "VP-023",
+    "wave": 5,
+    "title": "Automated Reporting",
+    "category": "intelligence",
+    "status": "planned",
+    "version": "0.3.0",
+    "description": "Scheduled report generation for executive, technical, and compliance audiences. Branded PDF output with client logo and MSSP co-branding. Reports cover incident trends, compliance posture, asset health, and SLA performance. Email delivery and portal publishing.",
+    "tags": [
+      "reporting",
+      "pdf",
+      "scheduled",
+      "executive",
+      "compliance"
+    ]
+  },
+  {
+    "id": "VP-024",
+    "wave": 5,
+    "title": "vCISO Advisory Tools",
+    "category": "intelligence",
+    "status": "planned",
+    "version": "0.4.0",
+    "description": "AI-assisted vCISO workflow tooling. Automated risk register maintenance linked to compliance gaps. Roadmap generation based on posture gaps and industry benchmarks. Board-ready summary reports. Findings linked to evidence and remediation tasks.",
+    "tags": [
+      "vciso",
+      "risk-register",
+      "roadmap",
+      "ai",
+      "advisory"
+    ]
+  },
+  {
+    "id": "VP-025",
+    "wave": 5,
+    "title": "White-Label Theming",
+    "category": "intelligence",
+    "status": "planned",
+    "version": "0.2.0",
+    "description": "Full CSS variable-based theming system. Per-tenant color palettes, logo assets, and favicon management. Custom domain and subdomain routing with TLS auto-provisioning. Email template branding. Dark/light mode per tenant default. Admin live preview.",
+    "tags": [
+      "white-label",
+      "theming",
+      "custom-domain",
+      "branding"
+    ]
+  },
+  {
+    "id": "VP-026",
+    "wave": 2,
+    "title": "SOC Portal Dashboard",
+    "category": "security",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "SOC dashboard page with KPI stat cards (open incidents, critical, alerts, resolved today), incident queue table, and alert summary. Server component with empty-state for pre-data.",
+    "tags": ["soc", "dashboard", "incidents", "alerts", "portal"]
+  },
+  {
+    "id": "VP-027",
+    "wave": 2,
+    "title": "Compliance Framework Dashboard",
+    "category": "security",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Compliance portal page showing SOC 2 Type II, ISO 27001:2022, NIST CSF 2.0, and CIS Controls v8.1 framework coverage cards with progress bars and control counts.",
+    "tags": ["compliance", "soc2", "iso27001", "nist-csf", "cis", "dashboard"]
+  },
+  {
+    "id": "VP-028",
+    "wave": 2,
+    "title": "Client Management Portal",
+    "category": "platform",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Client management page with KPI stats, client list table with service tier and status badges, and add-client flow. Server actions: createClient, listClients, updateClient.",
+    "tags": ["clients", "onboarding", "crud", "portal"]
+  },
+  {
+    "id": "VP-029",
+    "wave": 2,
+    "title": "RMM & Devices Portal",
+    "category": "core",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "RMM endpoint inventory portal page with KPIs (total endpoints, online, patch overdue, managed clients) and device table. Ready for Tactical RMM integration.",
+    "tags": ["rmm", "endpoints", "inventory", "dashboard"]
+  },
+  {
+    "id": "VP-030",
+    "wave": 2,
+    "title": "Admin Operations Dashboard",
+    "category": "platform",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Admin panel with platform health KPIs, staff management, license/quota management, integrations, audit log, settings, and system health section cards.",
+    "tags": ["admin", "staff", "licensing", "operations", "dashboard"]
+  },
+  {
+    "id": "VP-031",
+    "wave": 2,
+    "title": "Support Ticketing Portal",
+    "category": "platform",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Support helpdesk page with ticket queue KPIs, ticket list table with priority/status badges. Server actions: createTicket, listTickets, replyToTicket, getTicketStats.",
+    "tags": ["support", "ticketing", "helpdesk", "portal"]
+  },
+  {
+    "id": "VP-032",
+    "wave": 2,
+    "title": "Docker Containerization",
+    "category": "infrastructure",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Multi-stage production Dockerfile (deps → builder → runner on node:22-alpine), Dockerfile.dev for hot-reload dev workflow, docker-compose.yml with web + postgres:16 + nats:2.10 + nginx:1.27 health checks, docker-compose.prod.yml with resource limits, Nginx upstream config with WebSocket upgrade and RFC-1918 NATS admin restriction, NATS JetStream config (1GB memory / 10GB file), .env.docker template, .dockerignore, and Makefile with up/down/logs/db-reset/nats-shell/prod-up targets.",
+    "tags": ["docker", "containerization", "nginx", "nats", "infrastructure", "devops"]
+  },
+  {
+    "id": "VP-033",
+    "wave": 2,
+    "title": "Supabase MCP Integration",
+    "category": "infrastructure",
+    "status": "done",
+    "version": "0.2.0-sprint2",
+    "description": "Supabase MCP server configured via .mcp.json at project root using @supabase/mcp-server-supabase@latest in local mode connected to postgresql://postgres:postgres@127.0.0.1:54322/postgres. Enables Claude Code to query schema, run migrations, and inspect RLS policies directly during development sessions.",
+    "tags": ["supabase", "mcp", "developer-experience", "tooling"]
+  },
+  {
+    "id": "VP-034",
+    "wave": 3,
+    "title": "RMM Endpoints Schema + Live Inventory",
+    "category": "core",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "rmm_endpoints table with agent status, OS info, patch tracking, and RLS. RMM page v2: live endpoint inventory table (hostname, OS, status, last_seen, patches_pending) fetched from DB via server actions listEndpoints + getEndpointStats in @kit/mssp package.",
+    "tags": ["rmm", "endpoints", "postgresql", "rls", "server-actions"]
+  },
+  {
+    "id": "VP-035",
+    "wave": 3,
+    "title": "Incident Workflow Actions",
+    "category": "security",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "assignIncident, updateIncidentStatus, addIncidentNote, getSLAStatus server actions. SLA deadline badges on active incidents table: overdue/warning/ok color-coded by breach proximity. Assigned analyst display. alert_source_format enum added (CEF, LEEF, syslog, API, webhook).",
+    "tags": ["incidents", "sla", "workflow", "server-actions", "soc"]
+  },
+  {
+    "id": "VP-036",
+    "wave": 3,
+    "title": "Client Onboarding Actions",
+    "category": "platform",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "initiateOnboarding, updateOnboardingStep, completeOnboarding, getOnboardingStatus server actions. onboarding_status enum added to clients table. Clients page v2: onboarding status badges and service tier pills displayed per client.",
+    "tags": ["clients", "onboarding", "server-actions", "workflow"]
+  },
+  {
+    "id": "VP-037",
+    "wave": 3,
+    "title": "Billing Invoice Creation Modal",
+    "category": "platform",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "Create invoice modal with client selector, amount, due date, and line items. createInvoice, listInvoices, updateInvoice, getBillingStats server actions. Invoice status badges (draft/sent/paid/overdue). Billing page v2 with full CRUD interaction.",
+    "tags": ["billing", "invoicing", "modal", "crud", "server-actions"]
+  },
+  {
+    "id": "VP-038",
+    "wave": 3,
+    "title": "SLA Schema + Onboarding Schema",
+    "category": "foundation",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "sla_status enum + sla_breached column on security_incidents. onboarding_status enum + field on clients. alert_source_format enum (CEF, LEEF, syslog, API, webhook) on alerts. All three migrations idempotent with DOWN sections.",
+    "tags": ["schema", "migrations", "sla", "onboarding", "postgresql"]
+  },
+  {
+    "id": "VP-039",
+    "wave": 3,
+    "title": "UAT Test Suite — 123 Tests",
+    "category": "developer-tools",
+    "status": "done",
+    "version": "0.3.0-sprint3",
+    "description": "123 Playwright UAT tests across all portal sections. Covers authentication flow, all 8 portal routes (/home, /home/soc, /home/compliance, /home/rmm, /home/clients, /home/billing, /home/admin, /home/support), server action error boundaries, and responsive layout breakpoints.",
+    "tags": ["playwright", "uat", "testing", "e2e", "coverage"]
+  },
+  {
+    "id": "VP-040",
+    "wave": 4,
+    "title": "Global Client Context Switcher",
+    "category": "platform",
+    "status": "done",
+    "version": "0.4.0-sprint4",
+    "description": "Cookie-based global client context (active_client_id / active_client_name, httpOnly: false). ClientContextProvider wraps home layout. setActiveClient server action writes cookies. ClientSwitcher header dropdown renders client list with active indicator. All portal sections read active client cookie server-side and filter data accordingly.",
+    "tags": ["routing", "multi-tenant", "client-scoping", "cookies", "sprint4"]
+  },
+  {
+    "id": "VP-041",
+    "wave": 4,
+    "title": "Client-Scoped Portal Sections",
+    "category": "platform",
+    "status": "done",
+    "version": "0.4.0-sprint4",
+    "description": "SOC, RMM, Billing, and Support pages read active client cookie and show a context banner when a client is selected. All list/stats server actions updated with optional clientId filter. getClientKpis() aggregate action returns live incident/endpoint/invoice counts per client.",
+    "tags": ["soc", "rmm", "billing", "support", "client-scoping", "server-actions", "sprint4"]
+  },
+  {
+    "id": "VP-042",
+    "wave": 4,
+    "title": "Clients List v3 — Live KPI Badges",
+    "category": "platform",
+    "status": "done",
+    "version": "0.4.0-sprint4",
+    "description": "Clients list page upgraded with per-client live KPI badges (open incidents, online endpoints, outstanding invoices) loaded via getClientKpis() and a View Client context-switch button that sets active_client_id cookie and navigates to the SOC page.",
+    "tags": ["clients", "kpis", "badges", "sprint4"]
+  },
+  {
+    "id": "VP-043",
+    "wave": 5,
+    "title": "Integration Builder — AG-UI SSE Endpoint",
+    "category": "intelligence",
+    "status": "done",
+    "version": "0.5.0-sprint5",
+    "description": "POST /api/integrations/builder implements the AG-UI SSE protocol. Streams TextMessageStart/TextMessageContent/TextMessageEnd events. Registers 4 tools: list_integrations, create_integration, test_connection, get_event_log. Tool calls dispatched to @kit/integrations server actions. Response fully streamed; no buffering.",
+    "tags": ["ag-ui", "sse", "integration-builder", "sprint5"]
+  },
+  {
+    "id": "VP-044",
+    "wave": 5,
+    "title": "@kit/integrations — OCSF Normalizer + Connectors",
+    "category": "intelligence",
+    "status": "done",
+    "version": "0.5.0-sprint5",
+    "description": "New package with IntegrationConnector interface and three implementations: ConnectWise (tickets/devices), NinjaRMM (devices/alerts), Stripe (invoices/payments). OcsfNormalizer maps raw connector events to OCSF 1.3.0 classes: 2001 (Security Finding), 3002 (Network Activity), 6003 (API Activity). Server actions: listIntegrations, createIntegration, deleteIntegration, syncIntegration, getEventLog.",
+    "tags": ["ocsf", "normalizer", "connectwise", "ninjarmm", "stripe", "package", "sprint5"]
+  },
+  {
+    "id": "VP-045",
+    "wave": 5,
+    "title": "Integration Builder Page — D3 Topology Graph",
+    "category": "intelligence",
+    "status": "done",
+    "version": "0.5.0-sprint5",
+    "description": "/home/integrations page with split layout: left SSE-driven chat panel (AG-UI client), right D3 force-directed topology graph rendering integration nodes and event-flow edges. Graph updates reactively as integrations are added/removed via chat. New navigation entry added to sidebar.",
+    "tags": ["d3", "topology", "integration-builder", "portal", "sprint5"]
+  },
+  {
+    "id": "VP-046",
+    "wave": 5,
+    "title": "Voice Mode — Azure Speech STT + TTS",
+    "category": "intelligence",
+    "status": "done",
+    "version": "0.5.0-sprint5",
+    "description": "useVoiceMode() hook integrates microsoft-cognitiveservices-speech-sdk for microphone speech-to-text input and TTS playback of assistant responses in the integration builder. GET /api/integrations/speech-config gates Azure credentials server-side. Mic + volume controls wired into chat input area. Graceful fallback: buttons hidden when AZURE_SPEECH_KEY/REGION env vars absent.",
+    "tags": ["voice", "azure-speech", "stt", "tts", "integration-builder", "sprint5"]
+  }
+]

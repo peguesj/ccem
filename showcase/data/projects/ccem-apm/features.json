@@ -502,5 +502,41 @@
     "status": "shipped",
     "version": "8.0.0",
     "description": "Integration bridging APM to the AG-UI open protocol via ag_ui_ex Hex SDK — emit_event, stats, replay_since actions. Translates APM lifecycle events to 33-type AG-UI event model. Protocol: :ag_ui."
+  },
+  {
+    "id": "US-v8-013",
+    "wave": 8,
+    "title": "Session Manager",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "8.1.0",
+    "description": "ApmV5.SessionManager GenServer polls ~/Developer/ccem/apm/sessions/*.json every 30s. Enriches sessions with live agents (AgentRegistry), ports (PortManager), plugins (PluginRegistry), and .claude config directory counts. Broadcasts 'apm:sessions' PubSub. The CCEM↔APM connector — links each Claude Code session to its project, agents, and infrastructure."
+  },
+  {
+    "id": "US-v8-014",
+    "wave": 8,
+    "title": "Session Manager LiveView",
+    "category": "ui",
+    "status": "shipped",
+    "version": "8.1.0",
+    "description": "Split-panel LiveView at /sessions and /sessions/:id. Left: session list with active/inactive badges and pulse animation. Right: 5-tab detail panel — Overview (stat cards + metadata), Claude Config (CLAUDE.md preview + memory/skills/hooks counts), Agents, Ports, Plugins. 10s auto-refresh via PubSub subscription to 'apm:sessions'."
+  },
+  {
+    "id": "US-v8-015",
+    "wave": 8,
+    "title": "CCEMHelper Settings",
+    "category": "ccemhelper",
+    "status": "shipped",
+    "version": "8.1.0",
+    "description": "SettingsView sheet in CCEMHelper menu bar app. APM URL field with live latency test button. Notification toggles for agent lifecycle, AgentLock approvals, formation events. Launch at Login toggle (SMAppService). Open Dashboard on Connect. All settings persisted via @AppStorage with io.pegues.ccem.* key prefix."
+  },
+  {
+    "id": "US-v8-016",
+    "wave": 8,
+    "title": "CCEMHelper About + Help",
+    "category": "ccemhelper",
+    "status": "shipped",
+    "version": "8.1.0",
+    "description": "AboutView: version/build from Bundle.main.infoDictionary, GitHub link to ccem-apm repo, Open APM Dashboard button. HelpView: scrollable Quick Start bullets, Keyboard Shortcuts (monospaced key badges), Troubleshooting items for APM connection, notifications, login item. Footer section in MenuBarView with Settings/About/Help sheet triggers."
   }
 ]

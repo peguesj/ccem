@@ -1,0 +1,47 @@
+{
+  "project_name": "LinkedIn Job Automation",
+  "tagline": "AI-native job application automation with multi-factor fit scoring",
+  "version": "2.0.0",
+  "scenarios": {
+    "investor": {
+      "title": "Investor Narrative",
+      "narrative": "This system demonstrates AI-native job automation — a Claude agent operating inside a real browser, evaluating jobs against a candidate profile using multi-factor scoring (TF-IDF vectorization, taxonomy Jaccard overlap, skills matching). Each application takes ~45 seconds vs 8-12 minutes manually — a 10-16x throughput multiplier. The scoring engine ensures quality: only high-fit roles (65+ threshold) proceed. The persistent Q&A knowledge bank improves with every application, creating a compounding data asset. Architecture moat: file-based IPC bridge, no external services, fully self-contained.",
+      "key_metrics": [
+        {"label": "Throughput Multiplier", "value": "10-16x"},
+        {"label": "Scoring Dimensions", "value": "5"},
+        {"label": "Quality Threshold", "value": "65/100"},
+        {"label": "Application Time", "value": "~45s"}
+      ]
+    },
+    "partner": {
+      "title": "Technical Architecture",
+      "narrative": "Stack: Python 3 watcher (file-based IPC), SQLite WAL-mode database, JSON config files, Claude browser agent. Scoring pipeline: TF-IDF cosine similarity (20pt), Jaccard coefficient over taxonomy domains (25pt), direct skills overlap (30pt), title keyword matching (15pt), seniority level alignment (10pt). IPC design: Claude writes command JSON to ~/Downloads, watcher polls at 400ms, executes, writes response JSON. Watcher v2.0 auto-persists all responses for auditability. Resilience: checkpoint after every action, WAL mode, normalized Q&A dedup, rate limiting, 3 retries.",
+      "key_metrics": [
+        {"label": "DB Tables", "value": "6"},
+        {"label": "Operations", "value": "10 types"},
+        {"label": "Poll Interval", "value": "400ms"},
+        {"label": "Token Vocab", "value": "60+ terms"}
+      ]
+    },
+    "product": {
+      "title": "Product Demo",
+      "narrative": "Step 1: Resume ingestion builds a vectorized, taxonomy-tagged candidate profile with 60+ searchable tokens. Step 2: Search profiles define keywords, location, and filters for LinkedIn Easy Apply listings. Step 3: Each job scored on a 100-point scale across 5 dimensions — most cluster 30-45, genuine matches score 65+. Step 4: Qualifying jobs get automated application via Q&A knowledge bank with self-improving answers. Step 5: Every operation logged, responses persisted, state checkpointed.",
+      "key_metrics": [
+        {"label": "Pipeline Phases", "value": "7"},
+        {"label": "Security Domains", "value": "6"},
+        {"label": "Tool Registry", "value": "25+ vendors"},
+        {"label": "Seniority Tiers", "value": "7"}
+      ]
+    },
+    "internal": {
+      "title": "Internal Review",
+      "narrative": "Current run: run_20260324_001 targeting DLP Easy Apply roles in NYC Metro. 25 jobs evaluated, 1 applied (Kforce — Principal Security Incident Lead, fit 68.0), 1 qualified (Pyramid Consulting — Zscaler DLP SOC Consultant, fit 74.0). Score analysis: 65-point threshold well-calibrated, 23/25 correctly identified as mismatches (avg 34.2). System health: Watcher v2.0 running, auto-persist active, SQLite WAL healthy, checkpoint current. Next steps: expand search profiles, tune weights if false negatives appear, build Q&A coverage.",
+      "key_metrics": [
+        {"label": "Jobs Evaluated", "value": "25"},
+        {"label": "Applications", "value": "1"},
+        {"label": "Avg Score", "value": "37.1"},
+        {"label": "Max Score", "value": "74.0"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "project": "lily-ai-phx",
+  "title": "Lily AI — Open Beta Readiness",
+  "version": "v1.14.0",
+  "release_type": "Open Beta",
+  "template": "engine",
+  "audience": "product-demo",
+  "redaction_level": "light",
+  "formation_id": "fmt-open-beta-readiness",
+  "apm_url": "http://localhost:3032",
+  "generated_at": "2026-03-22T14:00:00Z",
+  "environments": {
+    "production": "https://lily-ai-app.yellowocean-031a09f8.eastus2.azurecontainerapps.io",
+    "staging": "https://lily-ai-app-staging.gentletree-f65e7f15.eastus2.azurecontainerapps.io",
+    "local": "http://localhost:4010"
+  },
+  "plane": {
+    "project_id": "2b6977ee-89fa-4540-9f6c-bdc3d225aadf",
+    "workspace": "lgtm",
+    "url": "https://plane.lgtm.build"
+  },
+  "notion_parent": "318e700d-dfac-8110-a4e0-d5c61ce89243",
+  "github": {
+    "repo": "peguesj/lily-ai-phx",
+    "pr": 60
+  },
+  "waves": [
+    {"id": 1, "name": "Org Invites", "status": "complete", "stories": 5, "color": "#34d399"},
+    {"id": 2, "name": "Safety & UX", "status": "complete", "stories": 5, "color": "#60a5fa"},
+    {"id": 3, "name": "Infrastructure", "status": "complete", "stories": 4, "color": "#a78bfa"},
+    {"id": 4, "name": "Release", "status": "complete", "stories": 2, "color": "#fbbf24"}
+  ],
+  "uat": {
+    "total_submissions": 2,
+    "resolved": 1,
+    "open": 1,
+    "synced_plane": 2,
+    "synced_github": 2
+  }
+}

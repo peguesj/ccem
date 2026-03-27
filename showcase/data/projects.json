@@ -9,6 +9,7 @@
             "badge": "CCEM",
             "badge_color": "indigo",
             "status": "shipped",
+            "version": "8.1.0",
             "data_path": "projects/ccem-apm",
             "alias": "ccem-apm",
             "sections": ["CCEM", "APM", "Both", "Last Version"]
@@ -31,6 +32,21 @@
             "status": "scaffolded",
             "data_path": "projects/yjmosaic",
             "canonical_url": "http://localhost:3032/showcase/yjmosaic"
+        },
+        {
+            "id": "vantage-portal",
+            "name": "Vantage Portal",
+            "tagline": "Complete MSSP Platform — RMM, SOC, Billing, Compliance, Integrations",
+            "badge": "VP",
+            "badge_color": "blue",
+            "status": "active",
+            "data_path": "projects/vantage-portal",
+            "version": "0.5.0-sprint5",
+            "sprints_complete": 5,
+            "active_sprint": "Sprint 6 — TBD",
+            "uat_tests": 123,
+            "portal_sections_live": 8,
+            "sections": ["Foundation", "Core", "Security", "Platform", "Intelligence"]
         }
     ]
 }
