@@ -99,7 +99,31 @@ fi
 
 # If explicitly denied, block the tool call
 if [ "$ALLOWED" = "false" ]; then
-  echo "[AgentLock] Authorization denied for $TOOL_NAME: $DETAIL ($REASON)" >&2
+  # Check if this is an approval_required escalation (not a hard deny)
+  if [ "$REASON" = "approval_required" ]; then
+    REQUEST_ID=$(echo "$DETAIL" | grep -oE 'pending-[a-f0-9]+' | head -1)
+    if [ -n "$REQUEST_ID" ]; then
+      echo "[AgentLock] Waiting for human approval: $REQUEST_ID ($TOOL_NAME)" >&2
+      for attempt in 1 2; do
+        POLL_RESULT=$(curl -s --max-time 35 "$APM_URL/api/v2/auth/pending/$REQUEST_ID?wait=30" 2>/dev/null)
+        POLL_STATUS=$(echo "$POLL_RESULT" | _jq "" -r '.entry.status // .status // ""')
+        POLL_TOKEN=$(echo "$POLL_RESULT" | _jq "" -r '.entry.token_id // .token_id // ""')
+        if [ "$POLL_STATUS" = "approved" ] && [ -n "$POLL_TOKEN" ]; then
+          mkdir -p "$STATE_DIR"
+          echo "$POLL_TOKEN" > "$STATE_DIR/${TOOL_USE_ID}.atk"
+          echo "[AgentLock] Approved by human, token stored: $POLL_TOKEN" >&2
+          exit 0
+        elif [ "$POLL_STATUS" = "denied" ]; then
+          echo "[AgentLock] Denied by human for $TOOL_NAME" >&2
+          exit 2
+        fi
+        echo "[AgentLock] Poll attempt $attempt: no decision yet for $REQUEST_ID" >&2
+      done
+      echo "[AgentLock] Approval timeout for $TOOL_NAME ($REQUEST_ID)" >&2
+    fi
+  else
+    echo "[AgentLock] Authorization denied for $TOOL_NAME: $DETAIL ($REASON)" >&2
+  fi
   exit 2
 fi
 

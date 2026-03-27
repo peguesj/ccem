@@ -8,6 +8,8 @@ struct MenuBarView: View {
     @Bindable var formationMonitor: FormationMonitor
     @Bindable var upmMonitor: UPMMonitor
 
+    @Environment(\.openSettings) private var openSettings
+
     @State private var agentActions = AgentActionsManager()
     @State private var multiServer = MultiServerManager()
     @State private var showServerSettings = false
@@ -80,6 +82,15 @@ struct MenuBarView: View {
                 Text(monitor.connectionState.label)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                Button {
+                    openSettings()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Open Settings")
             }
 
             if monitor.connectionState == .connected {
@@ -938,7 +949,7 @@ struct MenuBarView: View {
             }
 
             Button {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                openSettings()
             } label: {
                 Label("Notification Settings…", systemImage: "bell.badge")
                     .frame(maxWidth: .infinity, alignment: .leading)
