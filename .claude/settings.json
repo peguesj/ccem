@@ -9,6 +9,15 @@
             "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/lessons_logger.sh"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/apm/hooks/version_bump_reminder.sh"
+          }
+        ]
       }
     ]
   }
