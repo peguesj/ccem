@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "description": "Web UI for Claude Code Environment Manager",
   "type": "module",
-  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

@@ -45,4 +45,33 @@ curl -s -X POST "$APM_URL/api/heartbeat" \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD" >> "$LOG" 2>&1 &
 
+# Gate subagent spawning through AgentLock — Agent tool is risk=low, requires_auth=true.
+# Fail-open (3s timeout): if APM unreachable, always allow spawn.
+AUTH_PAYLOAD=$(jq -n \
+  --arg tool "Agent" \
+  --arg tool_use_id "subagent-${CHILD_SESSION_ID}" \
+  --arg session_id "auth_sess_${SESSION_ID}" \
+  --arg user_id "jeremiah" \
+  --arg child "$CHILD_SESSION_ID" \
+  --arg project "$PROJECT_NAME" \
+  '{
+    tool_name: $tool,
+    tool_use_id: $tool_use_id,
+    session_id: $session_id,
+    user_id: $user_id,
+    params: {child_session_id: $child, project: $project}
+  }' 2>/dev/null)
+
+AUTH_RESP=$(curl -s --max-time 3 -X POST "$APM_URL/api/v2/auth/authorize" \
+  -H "Content-Type: application/json" \
+  -d "$AUTH_PAYLOAD" 2>/dev/null || echo '{"status":"granted"}')
+
+AUTH_STATUS=$(echo "$AUTH_RESP" | jq -r '.status // "granted"' 2>/dev/null || echo "granted")
+
+if [ "$AUTH_STATUS" = "denied" ]; then
+  REASON=$(echo "$AUTH_RESP" | jq -r '.reason // "AgentLock denied subagent spawn"' 2>/dev/null)
+  echo "[AgentLock] Subagent spawn DENIED: $REASON" >&2
+  exit 2
+fi
+
 exit 0

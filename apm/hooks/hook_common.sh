@@ -58,6 +58,12 @@ now_iso() {
 }
 
 # Current time in milliseconds since epoch
+# Note: macOS BSD date does not support %N (nanoseconds), so date +%s%3N returns a
+# literal "N" suffix rather than milliseconds. Use python3 directly on macOS.
 now_ms() {
-  date +%s%3N 2>/dev/null || python3 -c "import time; print(int(time.time()*1000))"
+  if python3 -c "import time; print(int(time.time()*1000))" 2>/dev/null; then
+    return 0
+  fi
+  # Fallback for systems without python3: use seconds * 1000
+  echo $(( $(date +%s) * 1000 ))
 }
