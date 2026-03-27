@@ -24,14 +24,26 @@ final class EnvironmentMonitor {
     var agUiEvents: [AgUiEvent] = []
     var usageSummary: UsageSummary?
     var authorizationSummary: AuthorizationSummary?
+    var pendingDecisions: [PendingDecision] = []
 
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
     private var notificationPollTask: Task<Void, Never>?
     private let notificationPollInterval: TimeInterval = 5
 
+    // AgentLock audit polling state
+    private var seenAuditEntryIds: Set<String> = []
+    private var authAuditPollTask: Task<Void, Never>?
+
+    // AgentLock pending decisions polling state
+    private var seenPendingIds: Set<String> = []
+    private var pendingPollTask: Task<Void, Never>?
+
     static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
     static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
+    static let agentlockCategory = "io.pegues.agent-j.labs.ccem.helper.agentlock"
+    static let approveActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
+    static let denyActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
 
     var filteredEnvironments: [APMEnvironment] {
         switch filter {
@@ -66,6 +78,26 @@ final class EnvironmentMonitor {
                 try? await Task.sleep(for: .seconds(self.notificationPollInterval))
             }
         }
+
+        // Start AgentLock audit polling (every 10 seconds)
+        authAuditPollTask?.cancel()
+        authAuditPollTask = Task {
+            try? await Task.sleep(for: .seconds(3))
+            while !Task.isCancelled {
+                await self.pollAuthAudit()
+                try? await Task.sleep(for: .seconds(10))
+            }
+        }
+
+        // Start AgentLock pending decisions polling (every 8 seconds)
+        pendingPollTask?.cancel()
+        pendingPollTask = Task {
+            try? await Task.sleep(for: .seconds(4))
+            while !Task.isCancelled {
+                await self.pollPendingDecisions()
+                try? await Task.sleep(for: .seconds(8))
+            }
+        }
     }
 
     func stop() {
@@ -73,6 +105,10 @@ final class EnvironmentMonitor {
         pollTask = nil
         notificationPollTask?.cancel()
         notificationPollTask = nil
+        authAuditPollTask?.cancel()
+        authAuditPollTask = nil
+        pendingPollTask?.cancel()
+        pendingPollTask = nil
     }
 
     func requestNotificationPermission() {
@@ -88,7 +124,23 @@ final class EnvironmentMonitor {
         let formationCategory = UNNotificationCategory(
             identifier: Self.formationLifecycleCategory, actions: [], intentIdentifiers: [], options: []
         )
-        center.setNotificationCategories([agentCategory, formationCategory])
+        let approveAction = UNNotificationAction(
+            identifier: Self.approveActionIdentifier,
+            title: "Approve",
+            options: [.foreground]
+        )
+        let denyAction = UNNotificationAction(
+            identifier: Self.denyActionIdentifier,
+            title: "Deny",
+            options: [.destructive]
+        )
+        let agentlockCategory = UNNotificationCategory(
+            identifier: Self.agentlockCategory,
+            actions: [approveAction, denyAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        center.setNotificationCategories([agentCategory, formationCategory, agentlockCategory])
     }
 
     func refresh() async {
@@ -260,6 +312,122 @@ final class EnvironmentMonitor {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
             print("[CCEMHelper] Failed to post notification: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - AgentLock Audit Polling
+
+    private func pollAuthAudit() async {
+        guard connectionState == .connected else { return }
+
+        do {
+            let entries = try await client.fetchAuthAuditEntries(limit: 20)
+            let newEntries = entries.filter { !seenAuditEntryIds.contains($0.id) }
+            guard !newEntries.isEmpty else { return }
+
+            for entry in newEntries {
+                seenAuditEntryIds.insert(entry.id)
+            }
+            // Cap set growth
+            if seenAuditEntryIds.count > 500 {
+                seenAuditEntryIds = Set(seenAuditEntryIds.prefix(250))
+            }
+
+            // Post macOS notifications only for denial and escalation events
+            for entry in newEntries where entry.isDenial || entry.isEscalation {
+                await postAgentLockNotification(entry)
+            }
+        } catch {
+            // Non-critical: silently skip auth audit poll failures
+        }
+    }
+
+    private func postAgentLockNotification(_ entry: AuthAuditEntry) async {
+        let content = UNMutableNotificationContent()
+
+        switch entry.eventType {
+        case "auth:authorization_denied":
+            content.title = "[AgentLock] Tool DENIED"
+            content.body = "\(entry.toolName) — risk: \(entry.riskLevel)"
+            content.sound = UNNotificationSound.defaultCritical
+        case "auth:rate_limited":
+            content.title = "[AgentLock] Rate limit hit"
+            content.body = "\(entry.toolName) — rate limited"
+            content.sound = UNNotificationSound.default
+        case "auth:authorization_escalated":
+            content.title = "[AgentLock] Approval required"
+            content.body = "\(entry.toolName) — escalated for approval"
+            content.sound = UNNotificationSound.default
+        default:
+            return
+        }
+
+        content.categoryIdentifier = Self.agentlockCategory
+        content.threadIdentifier = "ccem-agentlock"
+
+        let request = UNNotificationRequest(
+            identifier: entry.id,
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            print("[CCEMHelper] Failed to post AgentLock notification: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - AgentLock Pending Decisions Polling
+
+    private func pollPendingDecisions() async {
+        guard connectionState == .connected else { return }
+
+        do {
+            let decisions = try await client.fetchPendingDecisions()
+
+            // Update observable list (only pending items)
+            pendingDecisions = decisions.filter { $0.isPending }
+
+            // Notify for newly seen pending decisions
+            let newDecisions = decisions.filter { $0.isPending && !seenPendingIds.contains($0.requestId) }
+            guard !newDecisions.isEmpty else { return }
+
+            for decision in newDecisions {
+                seenPendingIds.insert(decision.requestId)
+            }
+            if seenPendingIds.count > 500 {
+                seenPendingIds = Set(seenPendingIds.prefix(250))
+            }
+
+            for decision in newDecisions {
+                await postPendingDecisionNotification(decision)
+            }
+        } catch {
+            // Non-critical: silently skip pending poll failures
+        }
+    }
+
+    private func postPendingDecisionNotification(_ decision: PendingDecision) async {
+        let content = UNMutableNotificationContent()
+        content.title = decision.notificationTitle
+        content.body = decision.notificationBody
+        content.categoryIdentifier = Self.agentlockCategory
+        content.threadIdentifier = "ccem-agentlock-pending"
+        content.sound = UNNotificationSound.defaultCritical
+        // Embed request_id so the action handler can submit the decision
+        content.userInfo = ["request_id": decision.requestId, "type": "agentlock_pending"]
+
+        let request = UNNotificationRequest(
+            identifier: "pending-\(decision.requestId)",
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            print("[CCEMHelper] Failed to post pending decision notification: \(error.localizedDescription)")
         }
     }
 

@@ -53,15 +53,30 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound])
     }
 
-    /// Called when the user clicks a delivered notification.
-    /// Opens the APM dashboard in the in-app window.
+    /// Called when the user interacts with a delivered notification.
+    /// Handles AgentLock approve/deny actions; all other taps open the dashboard.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        Task { @MainActor in
-            APMWindowManager.shared.openDashboard()
+        let actionId = response.actionIdentifier
+        let userInfo = response.notification.request.content.userInfo
+
+        let approveId = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
+        let denyId = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
+
+        if (actionId == approveId || actionId == denyId),
+           let requestId = userInfo["request_id"] as? String {
+            let decision = actionId == approveId ? "approve" : "deny"
+            Task {
+                let apmClient = APMClient()
+                try? await apmClient.submitDecision(requestId: requestId, decision: decision)
+            }
+        } else {
+            Task { @MainActor in
+                APMWindowManager.shared.openDashboard()
+            }
         }
         completionHandler()
     }

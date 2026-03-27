@@ -272,6 +272,17 @@ actor APMClient {
 
     // MARK: - AgentLock Authorization (v7.0.0)
 
+    func fetchAuthAuditEntries(limit: Int = 20) async throws -> [AuthAuditEntry] {
+        var components = URLComponents(string: "\(baseURL.absoluteString)/api/v2/auth/audit")!
+        components.queryItems = [URLQueryItem(name: "limit", value: String(limit))]
+        let (data, response) = try await session.data(from: components.url!)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let wrapper = try decoder.decode(AuthAuditResponse.self, from: data)
+        return wrapper.entries
+    }
+
     func fetchAuthorizationSummary() async throws -> AuthorizationSummary {
         let url = baseURL.appendingPathComponent("api/v2/auth/summary")
         let (data, response) = try await session.data(from: url)
@@ -280,6 +291,30 @@ actor APMClient {
         }
         let wrapper = try decoder.decode(AuthorizationSummaryResponse.self, from: data)
         return wrapper.summary
+    }
+
+    // MARK: - AgentLock Pending Decisions (v7.0.0 W6)
+
+    func fetchPendingDecisions() async throws -> [PendingDecision] {
+        let url = baseURL.appendingPathComponent("api/v2/auth/pending")
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        let wrapper = try decoder.decode(PendingDecisionsResponse.self, from: data)
+        return wrapper.pending
+    }
+
+    func submitDecision(requestId: String, decision: String) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/decide"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: String] = ["request_id": requestId, "decision": decision]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
     }
 }
 

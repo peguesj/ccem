@@ -147,3 +147,154 @@ struct AuthorizationSummaryResponse: Codable {
     let ok: Bool
     let summary: AuthorizationSummary
 }
+
+/// Single auth audit log entry from GET /api/v2/auth/audit
+struct AuthAuditEntry: Codable, Identifiable {
+    var id: String { "\(eventType)-\(timestamp ?? "")-\(resource ?? "")" }
+    let eventType: String
+    let resource: String?
+    let timestamp: String?
+    let details: [String: AnyCodable]?
+
+    enum CodingKeys: String, CodingKey {
+        case eventType = "event_type"
+        case resource
+        case timestamp
+        case details
+    }
+
+    var isDenial: Bool {
+        eventType == "auth:authorization_denied" || eventType == "auth:rate_limited"
+    }
+
+    var isEscalation: Bool {
+        eventType == "auth:authorization_escalated"
+    }
+
+    var toolName: String {
+        resource ?? details?["tool_name"]?.stringValue ?? "unknown"
+    }
+
+    var riskLevel: String {
+        details?["risk_level"]?.stringValue ?? "unknown"
+    }
+}
+
+/// Flexible value container for audit entry details
+struct AnyCodable: Codable {
+    let value: Any
+
+    init(_ value: Any) { self.value = value }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let s = try? container.decode(String.self) { value = s; return }
+        if let i = try? container.decode(Int.self) { value = i; return }
+        if let d = try? container.decode(Double.self) { value = d; return }
+        if let b = try? container.decode(Bool.self) { value = b; return }
+        value = ""
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch value {
+        case let s as String: try container.encode(s)
+        case let i as Int: try container.encode(i)
+        case let d as Double: try container.encode(d)
+        case let b as Bool: try container.encode(b)
+        default: try container.encode("")
+        }
+    }
+
+    var stringValue: String? { value as? String }
+}
+
+/// Response wrapper for audit log endpoint
+struct AuthAuditResponse: Codable {
+    let ok: Bool
+    let entries: [AuthAuditEntry]
+    let count: Int
+}
+
+// MARK: - AgentLock Pending Decisions (v7.0.0 W6)
+
+/// Pending authorization decision awaiting human approval from GET /api/v2/auth/pending
+struct PendingDecision: Codable, Identifiable {
+    let requestId: String
+    let toolName: String
+    let sessionId: String
+    let agentId: String
+    let riskLevel: String
+    let params: [String: AnyCodable]?
+    let status: String
+    let decision: String?
+    let decidedAt: String?
+    let insertedAt: String
+    let expiresAt: String
+
+    var id: String { requestId }
+
+    enum CodingKeys: String, CodingKey {
+        case requestId = "request_id"
+        case toolName = "tool_name"
+        case sessionId = "session_id"
+        case agentId = "agent_id"
+        case riskLevel = "risk_level"
+        case params
+        case status
+        case decision
+        case decidedAt = "decided_at"
+        case insertedAt = "inserted_at"
+        case expiresAt = "expires_at"
+    }
+
+    var isPending: Bool { status == "pending" }
+
+    var notificationTitle: String { "[AgentLock] Approval Required" }
+
+    var notificationBody: String {
+        "\(toolName) — risk: \(riskLevel) | Agent: \(agentId)"
+    }
+}
+
+/// Response wrapper for GET /api/v2/auth/pending
+struct PendingDecisionsResponse: Codable {
+    let ok: Bool
+    let pending: [PendingDecision]
+    let count: Int
+}
+
+// MARK: - AgentLock Decision (notification surface)
+
+/// Real-time authorization decision from AgentLock, sourced from APM notification polling
+struct AgentLockDecision: Codable {
+    let tool: String
+    let status: String   // "granted" | "denied" | "rate_limited" | "escalated"
+    let riskLevel: String
+    let sessionId: String
+    let timestamp: String
+
+    enum CodingKeys: String, CodingKey {
+        case tool, status, timestamp
+        case riskLevel = "risk_level"
+        case sessionId = "session_id"
+    }
+
+    /// True when this decision warrants a macOS system notification
+    var requiresSystemNotification: Bool {
+        status == "denied" || status == "rate_limited"
+    }
+
+    var notificationTitle: String {
+        switch status {
+        case "denied":       return "AgentLock: Access Denied"
+        case "rate_limited": return "AgentLock: Rate Limited"
+        case "escalated":    return "AgentLock: Approval Required"
+        default:             return "AgentLock: \(tool) authorized"
+        }
+    }
+
+    var notificationBody: String {
+        "\(tool) — risk level: \(riskLevel)"
+    }
+}
