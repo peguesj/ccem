@@ -6,14 +6,64 @@ import UserNotifications
 struct CCEMHelperApp: App {
     @State private var monitor = EnvironmentMonitor()
     @State private var launchManager = LaunchManager()
-    @State private var notificationReceiver = APMNotificationReceiver()
+    @State private var notificationReceiver: APMNotificationReceiver
     @State private var serverManager = APMServerManager()
     @State private var formationMonitor = FormationMonitor()
     @State private var upmMonitor = UPMMonitor()
 
     init() {
-        // Request notification permission early
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+        // CRITICAL: Delegate MUST be set before requestAuthorization.
+        // For MenuBarExtra apps the process is always "in foreground", so
+        // willPresent must be registered early or banners are silently suppressed.
+        // Apple: "Set the delegate as early as possible in the launch sequence."
+        let receiver = MainActor.assumeIsolated { APMNotificationReceiver() }
+        _notificationReceiver = State(wrappedValue: receiver)
+
+        let center = UNUserNotificationCenter.current()
+        center.delegate = receiver
+
+        // Register categories on every launch — the OS does not persist them.
+        let approveAction = UNNotificationAction(
+            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.approve",
+            title: "Approve",
+            options: [.foreground]
+        )
+        let denyAction = UNNotificationAction(
+            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.deny",
+            title: "Deny",
+            options: [.destructive]
+        )
+        let agentlockCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.agentlockCategory,
+            actions: [approveAction, denyAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        let lifecycleCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.agentLifecycleCategory,
+            actions: [],
+            intentIdentifiers: [],
+            options: []
+        )
+        let formationCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.formationLifecycleCategory,
+            actions: [],
+            intentIdentifiers: [],
+            options: []
+        )
+        center.setNotificationCategories([agentlockCat, lifecycleCat, formationCat])
+
+        // Request authorization after delegate and categories are configured.
+        // Log result so permission issues are diagnosable without rebuilding.
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error {
+                print("[CCEMHelper] Notification auth error: \(error.localizedDescription)")
+            }
+            print("[CCEMHelper] Notification permission granted: \(granted)")
+            center.getNotificationSettings { settings in
+                print("[CCEMHelper] Auth status=\(settings.authorizationStatus.rawValue) alertSetting=\(settings.alertSetting.rawValue) ncSetting=\(settings.notificationCenterSetting.rawValue)")
+            }
+        }
     }
 
     var body: some Scene {
@@ -26,6 +76,7 @@ struct CCEMHelperApp: App {
                 upmMonitor: upmMonitor
             )
                 .task {
+                    // Delegate already registered in init(); start() is idempotent.
                     notificationReceiver.start()
                     monitor.requestNotificationPermission()
                     await serverManager.checkRunning()
@@ -51,6 +102,11 @@ struct CCEMHelperApp: App {
                 )
         }
         .menuBarExtraStyle(.window)
+
+        Settings {
+            SettingsView()
+                .frame(width: 400)
+        }
     }
 
     private func postSystemNotification(title: String, body: String, type: String) {

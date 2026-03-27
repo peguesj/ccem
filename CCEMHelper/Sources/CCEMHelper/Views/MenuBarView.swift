@@ -938,6 +938,16 @@ struct MenuBarView: View {
             }
 
             Button {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            } label: {
+                Label("Notification Settings…", systemImage: "bell.badge")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+
+            Button {
                 Task { await monitor.refresh() }
             } label: {
                 Label("Refresh", systemImage: "arrow.clockwise")
