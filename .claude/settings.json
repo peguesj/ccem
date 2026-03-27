@@ -18,6 +18,15 @@
             "command": "bash /Users/jeremiah/Developer/ccem/apm/hooks/version_bump_reminder.sh"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/openapi_sync_reminder.sh"
+          }
+        ]
       }
     ]
   }
