@@ -12,6 +12,17 @@ struct CCEMHelperApp: App {
     @State private var upmMonitor = UPMMonitor()
 
     init() {
+        // Register default values so AppStorage reads return correct defaults
+        // before the user has ever opened Settings.
+        UserDefaults.standard.register(defaults: [
+            "io.pegues.ccem.notifyAgentLifecycle": true,
+            "io.pegues.ccem.notifyAgentLock": true,
+            "io.pegues.ccem.notifyFormation": true,
+            "io.pegues.ccem.notifySystem": true,
+            "io.pegues.ccem.apmPort": 3032,
+            "io.pegues.ccem.apmHost": "localhost"
+        ])
+
         // CRITICAL: Delegate MUST be set before requestAuthorization.
         // For MenuBarExtra apps the process is always "in foreground", so
         // willPresent must be registered early or banners are silently suppressed.

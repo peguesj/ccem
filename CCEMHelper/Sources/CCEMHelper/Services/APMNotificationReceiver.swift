@@ -23,7 +23,9 @@ final class APMNotificationReceiver: NSObject {
     // MARK: - Lifecycle
 
     func start() {
-        UNUserNotificationCenter.current().delegate = self
+        // Delegate is already set in CCEMHelperApp.init() — setting it again here is a no-op
+        // but kept as a safety guard in case start() is ever called in isolation.
+        // The delegate assignment in init() is what matters for early banner delivery.
         Task { await requestPermission() }
     }
 
@@ -54,7 +56,7 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
     }
 
     /// Called when the user interacts with a delivered notification.
-    /// Handles AgentLock approve/deny actions; all other taps open the dashboard.
+    /// Handles AgentLock approve/deny actions; all other taps open the /authorization tab.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -72,10 +74,15 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
             Task {
                 let apmClient = APMClient()
                 try? await apmClient.submitDecision(requestId: requestId, decision: decision)
+                // Navigate to the authorization tab so the user can see the result.
+                await MainActor.run {
+                    APMWindowManager.shared.openDashboard(path: "/authorization")
+                }
             }
         } else {
+            // Default tap (no action button) — open authorization tab directly.
             Task { @MainActor in
-                APMWindowManager.shared.openDashboard()
+                APMWindowManager.shared.openDashboard(path: "/authorization")
             }
         }
         completionHandler()

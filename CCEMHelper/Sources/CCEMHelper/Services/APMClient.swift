@@ -5,8 +5,10 @@ actor APMClient {
     private let session: URLSession
     private let decoder: JSONDecoder
 
-    static let portKey = "apmPort"
+    static let portKey = "io.pegues.ccem.apmPort"
+    static let hostKey = "io.pegues.ccem.apmHost"
     static let defaultPort = 3032
+    static let defaultHost = "localhost"
 
     var currentPort: Int {
         Int(baseURL.port ?? Self.defaultPort)
@@ -15,7 +17,8 @@ actor APMClient {
     init(port: Int? = nil) {
         let resolvedPort = port ?? UserDefaults.standard.integer(forKey: Self.portKey)
         let effectivePort = resolvedPort > 0 ? resolvedPort : Self.defaultPort
-        self.baseURL = URL(string: "http://localhost:\(effectivePort)")!
+        let host = UserDefaults.standard.string(forKey: Self.hostKey) ?? Self.defaultHost
+        self.baseURL = URL(string: "http://\(host):\(effectivePort)")!
         // Use ephemeral to prevent URL cache accumulation over long-running sessions.
         // Default config caches responses to disk+memory indefinitely, causing GB of growth.
         let config = URLSessionConfiguration.ephemeral
@@ -28,7 +31,8 @@ actor APMClient {
     /// Update the port without restarting the client
     func updatePort(_ port: Int) {
         UserDefaults.standard.set(port, forKey: Self.portKey)
-        self.baseURL = URL(string: "http://localhost:\(port)")!
+        let host = UserDefaults.standard.string(forKey: Self.hostKey) ?? Self.defaultHost
+        self.baseURL = URL(string: "http://\(host):\(port)")!
     }
 
     func checkHealth() async throws -> HealthStatus {

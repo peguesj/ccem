@@ -150,17 +150,32 @@ struct AuthorizationSummaryResponse: Codable {
 
 /// Single auth audit log entry from GET /api/v2/auth/audit
 struct AuthAuditEntry: Codable, Identifiable {
-    var id: String { "\(eventType)-\(timestamp ?? "")-\(resource ?? "")" }
+    let id: String
     let eventType: String
     let resource: String?
     let timestamp: String?
     let details: [String: AnyCodable]?
 
     enum CodingKeys: String, CodingKey {
+        case id
         case eventType = "event_type"
         case resource
         case timestamp
         case details
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // Fall back to a deterministic composite key if server omits the id field.
+        let eventType = try container.decode(String.self, forKey: .eventType)
+        let resource = try container.decodeIfPresent(String.self, forKey: .resource)
+        let timestamp = try container.decodeIfPresent(String.self, forKey: .timestamp)
+        let details = try container.decodeIfPresent([String: AnyCodable].self, forKey: .details)
+        self.id = (try? container.decodeIfPresent(String.self, forKey: .id)) ?? "\(eventType)-\(timestamp ?? "")-\(resource ?? "")"
+        self.eventType = eventType
+        self.resource = resource
+        self.timestamp = timestamp
+        self.details = details
     }
 
     var isDenial: Bool {

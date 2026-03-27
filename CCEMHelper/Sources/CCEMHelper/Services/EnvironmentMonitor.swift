@@ -112,35 +112,14 @@ final class EnvironmentMonitor {
     }
 
     func requestNotificationPermission() {
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        // Categories are already registered in CCEMHelperApp.init() — do not re-register here
+        // as it can race with the initial setup and clobber the agentlock category's actions.
+        // This method is retained for the requestAuthorization call only.
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error {
                 print("[CCEMHelper] Notification permission error: \(error.localizedDescription)")
             }
         }
-        let agentCategory = UNNotificationCategory(
-            identifier: Self.agentLifecycleCategory, actions: [], intentIdentifiers: [], options: []
-        )
-        let formationCategory = UNNotificationCategory(
-            identifier: Self.formationLifecycleCategory, actions: [], intentIdentifiers: [], options: []
-        )
-        let approveAction = UNNotificationAction(
-            identifier: Self.approveActionIdentifier,
-            title: "Approve",
-            options: [.foreground]
-        )
-        let denyAction = UNNotificationAction(
-            identifier: Self.denyActionIdentifier,
-            title: "Deny",
-            options: [.destructive]
-        )
-        let agentlockCategory = UNNotificationCategory(
-            identifier: Self.agentlockCategory,
-            actions: [approveAction, denyAction],
-            intentIdentifiers: [],
-            options: []
-        )
-        center.setNotificationCategories([agentCategory, formationCategory, agentlockCategory])
     }
 
     func refresh() async {
@@ -264,6 +243,12 @@ final class EnvironmentMonitor {
                       category == "agent" || category == "formation" else {
                     continue
                 }
+                // Respect per-category notification toggles from Settings
+                if category == "formation" {
+                    guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyFormation") else { continue }
+                } else {
+                    guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLifecycle") else { continue }
+                }
                 await postLifecycleNotification(notification)
             }
         } catch {
@@ -334,6 +319,8 @@ final class EnvironmentMonitor {
             }
 
             // Post macOS notifications only for denial and escalation events
+            // and only if the AgentLock notification toggle is enabled.
+            guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLock") else { return }
             for entry in newEntries where entry.isDenial || entry.isEscalation {
                 await postAgentLockNotification(entry)
             }
@@ -364,6 +351,11 @@ final class EnvironmentMonitor {
 
         content.categoryIdentifier = Self.agentlockCategory
         content.threadIdentifier = "ccem-agentlock"
+
+        // Embed request_id if present so approve/deny actions can submit the decision
+        if let requestId = entry.details?["request_id"]?.stringValue {
+            content.userInfo = ["request_id": requestId, "type": "agentlock_audit"]
+        }
 
         let request = UNNotificationRequest(
             identifier: entry.id,
@@ -400,6 +392,7 @@ final class EnvironmentMonitor {
                 seenPendingIds = Set(seenPendingIds.prefix(250))
             }
 
+            guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLock") else { return }
             for decision in newDecisions {
                 await postPendingDecisionNotification(decision)
             }
