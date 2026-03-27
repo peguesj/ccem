@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v7.3.0
+## Current Version: v8.4.0
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -486,3 +486,31 @@ This is a hard rule with no exceptions.
 ### Wave 3: Release
 - [x] **CP-177**: v8.1.0 — mix.exs bump, @server_version, @app_version, CHANGELOG, CLAUDE.md checkpoints
 - After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+## Implementation Checkpoints — v8.2.0–v8.4.0
+
+### v8.2.0 (AgentLock Refinements)
+- [x] agent_name propagated through auth pipeline; tool_input forwarded; destructive command detection
+- [x] POST /api/v2/notifications/test endpoint; CCEMHelper delivers macOS banner within 10s
+- [x] CCEMHelper Settings {} scene; UNUserNotificationCenter delegate in init()
+- [x] agentlock_pre_tool.sh Gap9 fix — polls pending/:id?wait=30, receives token_id on approval
+- [x] PendingDecisions TTL filter; UserDefaults register(defaults:) with all toggles true
+- [x] APMClient portKey aligned to io.pegues.ccem.apmPort; AuthAuditEntry.id stored let
+
+### v8.3.0 (Notification Coverage + GettingStarted SVG)
+- [x] Universal notification coverage — all 19 subsystems broadcast to PubSub via NotificationBroadcaster
+- [x] GettingStartedShowcase: SVG_FALLBACKS[5] inline SVGs per slide; Lottie replaces on CDN load
+- [x] CoWork awareness in SessionManager; reads ~/.claude/teams/ + ~/.claude/tasks/
+
+### v8.4.0 (Agent Inspector + Showcase Sync + UPM Decision Gate + Formation Views + UPM Inspector)
+- [x] UPM plan inspector pull-out column in WorkflowLive — toggle_inspector / select_story / close_inspector
+- [x] Formation multi-view modes: Graph TD/LR, Hierarchical List, Card Grid (formation_live.ex)
+- [x] ApmV5.AgUi.AgentContextStore GenServer — tracks AG-UI context per agent_id
+- [x] ApmV5.Upm.DecisionGate GenServer — interactive decision gating (CCEMHelper notify + osascript)
+- [x] ApmV5Web.ShowcaseChannel Phoenix Channel — WebSocket sync for showcase (showcase:* topic)
+- [x] ShowcaseSyncHook / ShowcaseSyncClient — JS hook + client for real-time showcase sync
+- [x] AgentPanel enhanced — activity label, formation hierarchy badges, AG-UI context
+- [x] DashboardLive inspector tab — AG-UI context panel, formation breadcrumb, UPM decision banner
+- [x] Coalesce foundation: CoalesceOrchestrator, CoalesceSupervisor, SkillLogicEngine, SwarmCoordinator
+- [x] mix.exs bumped to 8.4.0; @server_version / @app_version updated
+- After: `mix compile --warnings-as-errors` ✓ PASS
