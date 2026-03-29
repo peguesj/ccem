@@ -391,6 +391,24 @@ Never include "Generated with Claude Code", "Co-Authored-By: Claude", or any AI/
 
 This is a hard rule with no exceptions.
 
+## Implementation Checkpoints — ralph/agentlock-notifications-namespace-ux
+
+### Wave 1: Foundation (3 parallel — independent)
+- [x] **CP-178**: `ApmV5.NamespaceResolver` GenServer + ETS cache — agent_label/session_label/gate_label (US-001) [CCEM-297]
+- [x] **CP-179**: 20s default timeouts — PendingDecisions @ttl_seconds 20, DecisionGate @default_timeout_ms 20_000, hook single 15s poll (US-002) [CCEM-298]
+- [x] **CP-180**: `PendingDecisions.add/5` fires immediate `POST /api/notify` fire-and-forget Task (US-003) [CCEM-299]
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: UI + CCEMHelper (depends on Wave 1)
+- [x] **CP-181**: `AuthorizationLive` countdown approval banners — PubSub subscribe, countdown-timer JS hook, inline Approve/Deny (US-004) [CCEM-300]
+- [x] **CP-182**: Human-readable display names — AgentPanel + SessionManagerLive + DashboardLive + AuthorizationLive audit log (US-005) [CCEM-301]
+- [x] **CP-183**: CCEMHelper pendingPollTask 8s→3s + `PendingDecision.displayName` + human-readable notification body (US-006) [CCEM-302]
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
+### Wave 3: Release
+- [x] **CP-184**: v8.5.0 — mix.exs bump, CHANGELOG, OpenAPI display_name fields, CCEMHelper rebuild (US-007) [CCEM-303]
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS
+
 ## Implementation Checkpoints — ralph/ccem-skills-ux-v640
 
 ### Wave 1: Foundation (4 parallel agents)

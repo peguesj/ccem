@@ -104,8 +104,8 @@ if [ "$ALLOWED" = "false" ]; then
     REQUEST_ID=$(echo "$DETAIL" | grep -oE 'pending-[a-f0-9]+' | head -1)
     if [ -n "$REQUEST_ID" ]; then
       echo "[AgentLock] Waiting for human approval: $REQUEST_ID ($TOOL_NAME)" >&2
-      for attempt in 1 2; do
-        POLL_RESULT=$(curl -s --max-time 35 "$APM_URL/api/v2/auth/pending/$REQUEST_ID?wait=30" 2>/dev/null)
+      for attempt in 1; do
+        POLL_RESULT=$(curl -s --max-time 18 "$APM_URL/api/v2/auth/pending/$REQUEST_ID?wait=15" 2>/dev/null)
         POLL_STATUS=$(echo "$POLL_RESULT" | _jq "" -r '.entry.status // .status // ""')
         POLL_TOKEN=$(echo "$POLL_RESULT" | _jq "" -r '.entry.token_id // .token_id // ""')
         if [ "$POLL_STATUS" = "approved" ] && [ -n "$POLL_TOKEN" ]; then

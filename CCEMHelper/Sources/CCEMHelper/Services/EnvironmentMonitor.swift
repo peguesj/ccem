@@ -89,13 +89,13 @@ final class EnvironmentMonitor {
             }
         }
 
-        // Start AgentLock pending decisions polling (every 8 seconds)
+        // Start AgentLock pending decisions polling (every 3 seconds)
         pendingPollTask?.cancel()
         pendingPollTask = Task {
             try? await Task.sleep(for: .seconds(4))
             while !Task.isCancelled {
                 await self.pollPendingDecisions()
-                try? await Task.sleep(for: .seconds(8))
+                try? await Task.sleep(for: .seconds(3))
             }
         }
     }

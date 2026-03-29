@@ -246,6 +246,7 @@ struct PendingDecision: Codable, Identifiable {
     let decidedAt: String?
     let insertedAt: String
     let expiresAt: String
+    var displayName: String?  // human-readable label from APM, may be nil
 
     var id: String { requestId }
 
@@ -261,6 +262,7 @@ struct PendingDecision: Codable, Identifiable {
         case decidedAt = "decided_at"
         case insertedAt = "inserted_at"
         case expiresAt = "expires_at"
+        case displayName = "display_name"
     }
 
     var isPending: Bool { status == "pending" }
@@ -268,7 +270,8 @@ struct PendingDecision: Codable, Identifiable {
     var notificationTitle: String { "[AgentLock] Approval Required" }
 
     var notificationBody: String {
-        "\(toolName) — risk: \(riskLevel) | Agent: \(agentId)"
+        let agentDisplay = displayName ?? String(agentId.suffix(8))
+        return "\(toolName) · \(agentDisplay) — \(riskLevel) risk"
     }
 }
 
