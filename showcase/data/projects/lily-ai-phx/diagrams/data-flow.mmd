@@ -1,0 +1,24 @@
+%% Data Flow - Quiz to Match Pipeline
+graph LR
+    quiz["Quiz Answers<br/>5 questions"]
+    profile["Client Profile<br/>demographics, goals,<br/>insurance, modality"]
+    engine["Matching Engine<br/>weighted scoring:<br/>specialty 30%<br/>demographics 25%<br/>insurance 20%<br/>availability 15%<br/>distance 10%"]
+    candidates["Candidate Pool<br/>filtered therapists"]
+    ranked["Ranked Results<br/>sorted by match %"]
+    swipe["Therapy Connect<br/>swipe interface"]
+    booking["Booking System<br/>calendar + confirmation"]
+
+    quiz -->|"normalize<br/>+ enrich"| profile
+    profile -->|"vector<br/>encode"| engine
+    engine -->|"top 20<br/>matches"| candidates
+    candidates -->|"re-rank<br/>by distance"| ranked
+    ranked -->|"paginated<br/>cards"| swipe
+    swipe -->|"selected<br/>therapist"| booking
+
+    classDef input fill:#6366f1,stroke:#4f46e5,color:#fff
+    classDef process fill:#1e293b,stroke:#475569,color:#e2e8f0
+    classDef output fill:#059669,stroke:#047857,color:#fff
+
+    class quiz input
+    class profile,engine,candidates,ranked process
+    class swipe,booking output

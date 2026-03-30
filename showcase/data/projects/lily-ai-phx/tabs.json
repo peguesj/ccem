@@ -1,0 +1,29 @@
+[
+  {
+    "id": "market-research",
+    "label": "Market Research",
+    "source": "market-research.json",
+    "type": "object",
+    "queryable": true,
+    "icon": "chart-bar",
+    "description": "Facebook group analysis: 5,869 posts across 17 therapist communities. Referral matching, specialization search, and insurance filtering signals."
+  },
+  {
+    "id": "references",
+    "label": "References",
+    "source": "references.json",
+    "type": "object",
+    "queryable": true,
+    "icon": "bookmark",
+    "description": "External references, research sources, and documentation links for the Lily AI therapy platform."
+  },
+  {
+    "id": "features",
+    "label": "Features",
+    "source": "features.json",
+    "type": "list",
+    "queryable": true,
+    "icon": "list-bullet",
+    "description": "39 features across 7 waves: Quiz funnel, directory, scheduling, practice management, analytics, AI matching."
+  }
+]
