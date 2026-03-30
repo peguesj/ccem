@@ -47,12 +47,16 @@ final class APMNotificationReceiver: NSObject {
 extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
 
     /// Allow notifications to appear even when the app is in the foreground (menubar is active).
+    /// For MenuBarExtra apps on macOS, we return both .banner (for toast) and .list (for Notification Center).
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .sound])
+        // .banner = macOS toast notification
+        // .list = appears in Notification Center (top-right corner on macOS)
+        // .sound = audio alert
+        completionHandler([.banner, .list, .sound])
     }
 
     /// Called when the user interacts with a delivered notification.
@@ -67,6 +71,7 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
 
         let approveId = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
         let denyId = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
+        let restartId = "io.pegues.agent-j.labs.ccem.helper.restart.now"
 
         // Accept both "pending_id" (US-001 AGENTLOCK_APPROVAL category) and legacy "request_id"
         let resolvedRequestId = (userInfo["pending_id"] as? String) ?? (userInfo["request_id"] as? String)
@@ -77,11 +82,13 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
             Task {
                 let apmClient = APMClient()
                 try? await apmClient.submitDecision(requestId: requestId, decision: decision)
-                // Navigate to the authorization tab so the user can see the result.
                 await MainActor.run {
                     APMWindowManager.shared.openDashboard(path: "/authorization")
                 }
             }
+        } else if actionId == restartId {
+            // User tapped "Restart APM" on a version-update or restart-request notification
+            NotificationCenter.default.post(name: .apmRestartRequested, object: nil)
         } else {
             // Default tap (no action button) — open authorization tab directly.
             Task { @MainActor in

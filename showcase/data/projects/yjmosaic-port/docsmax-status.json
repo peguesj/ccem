@@ -1,0 +1,14 @@
+{
+  "panel": "docsmax",
+  "project": "YJMosaic",
+  "providers": {
+    "github":  { "status": "unconfigured" },
+    "plane":   { "status": "unconfigured" },
+    "notion":  { "status": "unconfigured" },
+    "wiki":    { "status": "unconfigured" }
+  },
+  "last_run": null,
+  "conflicts": 0,
+  "sections_synced": 0,
+  "note": "Run /docsmax init to configure providers"
+}

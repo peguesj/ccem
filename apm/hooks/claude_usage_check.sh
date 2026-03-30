@@ -1,5 +1,12 @@
 #!/bin/bash
 # PreToolUse hook: check usage thresholds, warn if intensive usage detected
+
+# DevDrive: ensure HooksEnv is mounted
+HOOKS_ENV="/Volumes/HooksEnv"
+if [ ! -d "$HOOKS_ENV" ] && [ -f "$HOME/DevDrive/hooks-env.dmg.sparseimage" ]; then
+  hdiutil attach "$HOME/DevDrive/hooks-env.dmg.sparseimage" -mountpoint "$HOOKS_ENV" -quiet -nobrowse 2>/dev/null || true
+fi
+[ -d "$HOOKS_ENV" ] && export PATH="$HOOKS_ENV/python-venv/bin:$HOOKS_ENV/npm-global/bin:$PATH"
 # This hook NEVER blocks execution (always exits 0).
 # It writes a warning to stderr if the current project is at intensive effort level.
 

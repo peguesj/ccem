@@ -1,0 +1,122 @@
+[
+  {
+    "id": "lfg-001",
+    "title": "WTFS Disk Usage Scanner",
+    "wave": 1,
+    "status": "shipped",
+    "tags": ["scan", "disk", "html-viewer"],
+    "description": "Where's The Free Space — directory-level disk usage analysis with segmented bar charts (deps/cache/source) and WebKit HTML viewer"
+  },
+  {
+    "id": "lfg-002",
+    "title": "DTF Cache Cleaner",
+    "wave": 1,
+    "status": "shipped",
+    "tags": ["clean", "cache", "dry-run"],
+    "description": "Delete Temp Files — multi-target cache discovery with dry-run/force modes, progressive cleanup levels, Docker/sudo support"
+  },
+  {
+    "id": "lfg-003",
+    "title": "BTAU Backup Manager",
+    "wave": 1,
+    "status": "shipped",
+    "tags": ["backup", "sparse-image", "mount"],
+    "description": "Back That App Up — sparse disk image discovery, mount/unmount, backup scheduling with progress tracking"
+  },
+  {
+    "id": "lfg-004",
+    "title": "DEVDRIVE Volume Manager",
+    "wave": 2,
+    "status": "shipped",
+    "tags": ["devdrive", "apfs", "volumes", "finder"],
+    "description": "Developer drive management with multi-volume APFS support, cache protection, inbox protocol, and Finder integration"
+  },
+  {
+    "id": "lfg-005",
+    "title": "SSD Spotlight Manager",
+    "wave": 2,
+    "status": "shipped",
+    "tags": ["spotlight", "mds", "cpu", "indexing"],
+    "description": "Slows Sh*t Down — mds CPU monitoring, volume index status, scan/exclude commands with WebKit HTML dashboard"
+  },
+  {
+    "id": "lfg-006",
+    "title": "STFU Source Tree Forensics",
+    "wave": 2,
+    "status": "shipped",
+    "tags": ["forensics", "deps", "duplicates", "archive"],
+    "description": "Source Tree Forensics Utility — dependency analysis, fingerprinting, duplicate detection, project archival"
+  },
+  {
+    "id": "lfg-007",
+    "title": "macOS Finder Integration",
+    "wave": 3,
+    "status": "shipped",
+    "tags": ["finder", "icons", "sidebar", "quick-actions"],
+    "description": "CloudMounter-level native integration: custom .VolumeIcon.icns, Finder sidebar entries, 5 Automator Quick Actions, automount LaunchAgent"
+  },
+  {
+    "id": "lfg-008",
+    "title": "Menubar Helper Daemon",
+    "wave": 3,
+    "status": "shipped",
+    "tags": ["menubar", "swift", "daemon", "monitoring"],
+    "description": "Swift AppKit menubar app with multi-domain health monitoring, volume status (df -k for APFS accuracy), WebKit viewer IPC"
+  },
+  {
+    "id": "lfg-009",
+    "title": "Inbox Work Queue",
+    "wave": 3,
+    "status": "shipped",
+    "tags": ["inbox", "json", "cross-project", "watcher"],
+    "description": "Cross-project work queue with JSON protocol for cache relocation, DTF protection, volume queries, and prefetch hooks"
+  },
+  {
+    "id": "lfg-010",
+    "title": ".pkg Installer Package",
+    "wave": 4,
+    "status": "shipped",
+    "tags": ["installer", "pkg", "distribution", "launchagent"],
+    "description": "macOS .pkg installer with preinstall/postinstall, launchctl bootstrap, real user detection, portable path patching across 38 payload files"
+  },
+  {
+    "id": "lfg-011",
+    "title": "Code Review Fixes",
+    "wave": 4,
+    "status": "shipped",
+    "tags": ["security", "bash-compat", "python-injection"],
+    "description": "3 CRITICAL + 1 HIGH fixes: state.sh readonly ordering, scan.sh div-by-zero, Python triple-quote injection via env vars, state_done logging"
+  },
+  {
+    "id": "lfg-012",
+    "title": "Integration Test Suite",
+    "wave": 4,
+    "status": "shipped",
+    "tags": ["testing", "headless", "state-validation"],
+    "description": "12/12 headless module tests: all modules exit 0, state.json valid, HTML generation verified in viewer mode"
+  },
+  {
+    "id": "lfg-013",
+    "title": "INSTALL.md Documentation",
+    "wave": 4,
+    "status": "shipped",
+    "tags": ["docs", "install", "troubleshooting"],
+    "description": "8-section installation guide covering .pkg install, manual install, post-install verification, LaunchAgent management, uninstall, troubleshooting"
+  },
+  {
+    "id": "lfg-014",
+    "title": "SwiftUI Native Port Wave 2",
+    "wave": 5,
+    "status": "shipped",
+    "tags": ["swiftui", "native", "macos", "views"],
+    "description": "5 module views (WTFS/DTF/BTAU/DevDrive/SSD), DashboardView with 5-card grid, NavigationSplitView routing, VolumeWatcher live data — 914 insertions, 9/9 tests pass"
+  },
+  {
+    "id": "lfg-015",
+    "title": "DEVDRIVE Formation Showcase",
+    "wave": 5,
+    "status": "shipped",
+    "tags": ["showcase", "apm", "formation", "interactive"],
+    "description": "Interactive formation tree at localhost:3001 with live APM polling, agent inspector, volume monitoring, AgentLock integration, wave gate progress"
+  }
+]

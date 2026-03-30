@@ -12,12 +12,19 @@
 
 set -euo pipefail
 
+# ── DevDrive: mount DDRV900 (900HOOKS) sparse image if not already mounted ──────────────
+_HOOKS_ENV="/Volumes/DDRV900"
+_SPARSEIMAGE="$HOME/DevDrive/900HOOKS.dmg.sparseimage"
+if [ ! -d "$_HOOKS_ENV" ] && [ -f "$_SPARSEIMAGE" ]; then
+  hdiutil attach "$_SPARSEIMAGE" -mountpoint "$_HOOKS_ENV" -quiet -nobrowse 2>/dev/null || true
+fi
+
 APM_DIR="$HOME/Developer/ccem/apm"
 APM_V4_DIR="$HOME/Developer/ccem/apm-v4"
 APM_PORT=3032
 SESSIONS_DIR="$APM_DIR/sessions"
 LOG_FILE="$APM_DIR/hooks/apm_hook.log"
-PID_FILE="$APM_V4_DIR/.apm.pid"
+PID_FILE="/Volumes/DDRV902/pid/.apm.pid"
 CONFIG_FILE="$APM_DIR/apm_config.json"
 
 mkdir -p "$SESSIONS_DIR" "$(dirname "$LOG_FILE")"
@@ -105,10 +112,16 @@ start_apm() {
     fi
 
     log "Starting APM v4 Phoenix on port $APM_PORT..."
-    (cd "$APM_V4_DIR" && PORT=$APM_PORT nohup mix phx.server > "$APM_DIR/hooks/apm_server.log" 2>&1) &
+    (cd "$APM_V4_DIR" && PORT=$APM_PORT \
+      TUNNEL_RELAY_URL="wss://ccem-relay.wonderfulflower-c29529fc.eastus.azurecontainerapps.io/ws" \
+      TUNNEL_SECRET="da53c96eee10ea9289900a7dd0cf647ee28cfebfa84254e3b03a247fdce545bd" \
+      nohup mix phx.server > "/Volumes/DDRV902/logs/apm_server.log" 2>&1) &
     local pid=$!
     echo "$pid" > "$PID_FILE"
     log "APM v4 Phoenix started (PID: $pid)"
+
+    # Launch CCEMHelper alongside APM (mandatory per CLAUDE.md)
+    open -a CCEMHelper 2>/dev/null || true
 
     # Wait for server to initialize with timeout (max 10s)
     local attempts=0
@@ -122,7 +135,7 @@ start_apm() {
         fi
         # Check if the process died during startup
         if ! kill -0 "$pid" 2>/dev/null; then
-            log "ERROR: APM process (PID $pid) died during startup — check $APM_DIR/hooks/apm_server.log"
+            log "ERROR: APM process (PID $pid) died during startup — check /Volumes/DDRV902/logs/apm_server.log"
             rm -f "$PID_FILE"
             return 1
         fi

@@ -466,5 +466,77 @@
     "status": "shipped",
     "version": "7.0.0",
     "description": "PreToolUse hook: POST /api/v2/auth/authorize, store token, 3s timeout, fail-open. PostToolUse hook: consume token, fire-and-forget. Context hook: trust tracking for Write/Edit/WebFetch. CCEMAgent: AuthorizationModels.swift, authorization section in MenuBarView."
+  },
+  {
+    "id": "US-053",
+    "wave": 12,
+    "title": "Notification Buffer Cap + Grouped View",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "Notification ring buffer expanded from 200 to 2,000 events — supports high-frequency agentic formations without losing audit trail. Grouped view UI collapses notifications by category (lifecycle/auth/formation/task/tool/system) with per-group expand/collapse. derive_category/1 infers group from notification type field."
+  },
+  {
+    "id": "US-054",
+    "wave": 12,
+    "title": "Native Conversation Monitor",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "SessionManager multi-path scan covers both APM session files and Claude Code JSONL conversation logs (~/.claude/projects/*/*.jsonl). ConversationMonitorLive reuses SessionManager.list_sessions/0 as single source of truth. source: :claude_native badge distinguishes native Claude Code sessions from APM-registered agents."
+  },
+  {
+    "id": "US-055",
+    "wave": 12,
+    "title": "Agent Identity Taxonomy",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "Structured agent identity fields added to AgentRegistry: agent_name (human-readable label), agent_type (normalized enum: orchestrator|squadron_lead|swarm_agent|cluster_agent|individual|persistent_service|quality_agent|unknown), agent_definition (instance purpose). normalize_agent_type/1 validates and coerces raw strings. NamespaceResolver uses agent_name as primary display label when available."
+  },
+  {
+    "id": "US-056",
+    "wave": 12,
+    "title": "Formation Graph TB Layout + Namespace Bounding",
+    "category": "ui",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "Fourth formation layout mode: TB (top-to-bottom with session columns). Namespace-scoped bounding rectangles rendered behind node clusters for visual grouping. Auto-collapse: namespaces with >50 nodes reduce to summary node. ?scope= URL param for namespace filtering. ?layout=tb param selects TB mode."
+  },
+  {
+    "id": "US-057",
+    "wave": 12,
+    "title": "Modular Sidebar + Plugin/Integration Nav",
+    "category": "platform",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "Sidebar reorganized into 5 fixed sections: CORE, AUTHORIZATION, PLUGINS (dynamic), INTEGRATIONS (dynamic), SYSTEM. PluginBehaviour optional callbacks (nav_items/0, settings_path/0, plugin_live_module/0) allow plugins to inject nav items. IntegrationBehaviour optional callbacks (target_native_feature/0, required_plugin/0) wire integrations to native features. safe_list_plugins/0 and safe_list_integrations/0 guard against GenServer unavailability."
+  },
+  {
+    "id": "US-058",
+    "wave": 12,
+    "title": "Persistent Plane-PM Align Agent",
+    "category": "platform",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "ApmV5.PlanePmAlign GenServer in supervision tree polls Plane API every 5 minutes. Broadcasts plane:sync PubSub on each sync cycle. Auto-registers with APM AgentRegistry using agent_type: persistent_service. REST: GET /api/v2/plane/sync-status (status, last_sync_at, next_sync_in_seconds, issues_synced), POST /api/v2/plane/sync (on-demand immediate sync)."
+  },
+  {
+    "id": "US-059",
+    "wave": 12,
+    "title": "Timeline Swim-Lane Redesign",
+    "category": "ui",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "SessionTimelineLive redesigned with category swim lanes: lifecycle, auth, formation, task, tool, system. Time window selector with presets (15m/30m/1h/6h/24h). Drill-down side panel opens on event selection with full payload viewer. Lanes are color-coded and independently scrollable."
+  },
+  {
+    "id": "US-060",
+    "wave": 12,
+    "title": "AG-UI EventBus + A2A Router Scale-Up",
+    "category": "ag-ui",
+    "status": "shipped",
+    "version": "8.9.0",
+    "description": "EventBus replay buffer expanded 500 → 20,000 events for high-throughput formation monitoring. A2A Router history cap expanded 200 → 2,000 entries. Both changes support large formations (50+ agents) without replay loss. BackgroundTasksStore add/1 alias added for register_task/1 compatibility."
   }
 ]

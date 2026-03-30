@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peppy&#8482; — Showcase</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #060d0a; --surface: #0c1a12; --border: rgba(5,150,105,0.18);
+      --accent: #059669; --accent-bright: #10b981; --text: #e2f0eb;
+      --muted: #7aad93; --dim: #3f6b52;
+      --w1: #059669; --w2: #0d9488; --w3: #0284c7; --w4: #7c3aed; --w5: #db2777;
+      --success: #059669; --warning: #f59e0b; --error: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; line-height:1.5; min-height:100vh; }
+
+    /* ── Header ── */
+    header { position:sticky; top:0; z-index:200; background:rgba(6,13,10,0.94); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; gap:12px; }
+    .badge { background:var(--accent); color:#fff; font-size:10px; font-weight:700; letter-spacing:.08em; padding:2px 8px; border-radius:4px; text-transform:uppercase; flex-shrink:0; }
+    .project-logo { width:30px; height:30px; border-radius:7px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:#fff; flex-shrink:0; }
+    .header-title { font-size:14px; font-weight:700; }
+    .header-sub { font-size:10px; color:var(--muted); }
+    .header-links { margin-left:auto; display:flex; align-items:center; gap:6px; }
+    .header-link { font-size:10px; color:var(--muted); text-decoration:none; padding:3px 9px; border:1px solid var(--border); border-radius:5px; transition:border-color .15s,color .15s; }
+    .header-link:hover { border-color:var(--accent); color:var(--text); }
+    .apm-dot { width:6px; height:6px; border-radius:50%; background:var(--warning); flex-shrink:0; }
+    .apm-dot.online { background:var(--accent); animation:pulse-dot 3s ease-in-out infinite; }
+    .apm-dot.offline { background:var(--error); }
+
+    /* ── Tab bar ── */
+    .tab-bar { position:sticky; top:51px; z-index:150; background:rgba(6,13,10,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 20px; display:flex; align-items:flex-end; gap:0; }
+    .tab-btn { font-size:11px; font-weight:600; padding:9px 16px; border:none; background:none; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:color .15s, border-color .15s; letter-spacing:.02em; }
+    .tab-btn:hover { color:var(--text); }
+    .tab-btn.active { color:var(--accent-bright); border-bottom-color:var(--accent); }
+    .tab-pill { font-size:8px; background:rgba(5,150,105,0.15); color:var(--accent); border-radius:3px; padding:1px 5px; margin-left:5px; font-weight:700; letter-spacing:.08em; }
+
+    /* ── View switching ── */
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ── 3-col layout (shared) ── */
+    .layout { display:grid; grid-template-columns:300px 1fr 280px; height:calc(100vh - 87px); overflow:hidden; }
+    .col { overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; scrollbar-color:rgba(5,150,105,0.25) transparent; }
+    .col::-webkit-scrollbar { width:3px; }
+    .col::-webkit-scrollbar-thumb { background:rgba(5,150,105,0.25); border-radius:2px; }
+    .col-left { border-right:1px solid var(--border); padding:14px 12px; }
+    .col-center { padding:14px 16px; border-right:1px solid var(--border); }
+    .col-right { padding:12px 12px; background:rgba(12,26,18,0.4); }
+
+    /* ── Section labels ── */
+    .section-label { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+
+    /* ── Wave filter pills ── */
+    .wave-filters { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; }
+    .wave-pill { font-size:9px; font-weight:600; padding:2px 8px; border-radius:10px; border:1px solid var(--border); color:var(--muted); cursor:pointer; transition:all .12s; background:none; }
+    .wave-pill:hover, .wave-pill.active { color:#fff; border-color:currentColor; }
+    .wave-pill.wave-all.active { color:var(--text); border-color:var(--accent); background:rgba(5,150,105,0.12); }
+    .wave-pill.wave-1.active { color:#10b981; border-color:#10b981; background:rgba(16,185,129,0.1); }
+    .wave-pill.wave-2.active { color:#2dd4bf; border-color:#2dd4bf; background:rgba(45,212,191,0.1); }
+    .wave-pill.wave-3.active { color:#38bdf8; border-color:#38bdf8; background:rgba(56,189,248,0.1); }
+
+    /* ── Feature cards ── */
+    .wave-group { margin-bottom:10px; }
+    .wave-header { display:flex; align-items:center; gap:5px; margin-bottom:5px; padding:0 2px; }
+    .wave-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+    .wave-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+    .wave-count { margin-left:auto; font-size:9px; color:var(--dim); }
+    .feature-card { border-left:2px solid var(--border); background:var(--surface); border-radius:0 5px 5px 0; padding:7px 9px; margin-bottom:3px; transition:background .1s; }
+    .feature-card:hover { background:rgba(5,150,105,0.06); }
+    .feature-card.wave-1 { border-left-color:#059669; }
+    .feature-card.wave-2 { border-left-color:#0d9488; }
+    .feature-card.wave-3 { border-left-color:#0284c7; }
+    .fc-header { display:flex; align-items:flex-start; justify-content:space-between; gap:5px; margin-bottom:2px; }
+    .fc-title { font-size:11px; font-weight:600; line-height:1.3; }
+    .fc-meta { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+    .fc-status-dot { width:5px; height:5px; border-radius:50%; }
+    .fc-desc { font-size:10px; color:var(--muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .fc-footer { display:flex; align-items:center; gap:4px; margin-top:4px; }
+    .fc-id { font-size:8px; font-family:'SF Mono',monospace; padding:1px 5px; border-radius:3px; }
+
+    /* ── Mermaid diagram container ── */
+    .mmd-wrap { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin:10px 0; overflow:hidden; }
+    .mmd-wrap svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+    .mmd-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
+    .mmd-loading { font-size:10px; color:var(--dim); text-align:center; padding:20px; }
+    .mmd-error { font-size:10px; color:var(--error); text-align:center; padding:12px; }
+
+    /* ── Architecture (Platform tab) ── */
+    .arch-section { margin-bottom:18px; }
+
+    /* ── Wave progress ── */
+    .progress-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:18px; }
+    .progress-card { border-radius:7px; border:1px solid; padding:9px; }
+    .progress-card .pct { font-size:18px; font-weight:800; }
+    .progress-card .sub { font-size:9px; color:var(--muted); margin:2px 0 5px; }
+    .progress-bar-bg { width:100%; height:3px; background:rgba(5,150,105,0.12); border-radius:2px; overflow:hidden; }
+    .progress-bar-fill { height:100%; border-radius:2px; transition:width .5s; }
+
+    /* ── Narrative ── */
+    .narrative-section { margin-bottom:18px; }
+    .narrative-headline { font-size:19px; font-weight:800; line-height:1.3; margin-bottom:4px; }
+    .narrative-sub { font-size:11px; color:var(--muted); line-height:1.5; margin-bottom:14px; }
+    .narrative-blocks { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+    .narrative-block { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:9px; }
+    .nb-title { font-size:10px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
+    .nb-body { font-size:10px; color:var(--muted); line-height:1.5; }
+    .stats-row { display:flex; gap:7px; }
+    .stat-card { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:9px; text-align:center; }
+    .stat-value { font-size:19px; font-weight:800; color:var(--accent); }
+    .stat-label { font-size:9px; color:var(--muted); margin-top:1px; }
+    .stat-note { font-size:8px; color:var(--dim); margin-top:1px; }
+
+    /* ── Right panel ── */
+    .rp-section { margin-bottom:13px; }
+    .rp-title { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+    .rp-row { display:flex; align-items:center; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(5,150,105,0.07); }
+    .rp-row:last-child { border-bottom:none; }
+    .rp-key { font-size:10px; color:var(--dim); }
+    .rp-val { font-size:10px; text-align:right; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .rp-status { display:flex; align-items:center; gap:5px; }
+    .status-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .status-dot.online { background:var(--accent); animation:pulse-dot 3s ease-in-out infinite; }
+    .status-dot.offline { background:var(--error); }
+    .status-dot.unknown { background:var(--warning); }
+
+    /* ── Version history ── */
+    .version-entry { background:var(--surface); border:1px solid var(--border); border-radius:5px; padding:7px 9px; margin-bottom:5px; }
+    .ve-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+    .ve-version { font-size:11px; font-weight:700; color:var(--accent); font-family:'SF Mono',monospace; }
+    .ve-date { font-size:9px; color:var(--dim); }
+    .ve-label { font-size:8px; color:var(--muted); background:rgba(5,150,105,0.12); padding:1px 5px; border-radius:4px; }
+    .ve-notes { font-size:10px; color:var(--muted); line-height:1.4; }
+
+    /* ── IDFW-specific styles ── */
+    .phase-nav { margin-bottom:14px; }
+    .phase-btn { width:100%; text-align:left; background:none; border:1px solid transparent; border-radius:6px; padding:8px 10px; cursor:pointer; transition:all .12s; color:var(--muted); font-size:11px; margin-bottom:3px; display:flex; align-items:center; gap:8px; }
+    .phase-btn:hover { background:rgba(5,150,105,0.06); color:var(--text); }
+    .phase-btn.active { border-color:var(--accent); background:rgba(5,150,105,0.1); color:var(--text); }
+    .phase-num { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; flex-shrink:0; background:var(--surface); border:1px solid var(--border); }
+    .phase-btn.active .phase-num { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .phase-btn.done .phase-num { background:rgba(5,150,105,0.25); border-color:var(--accent); color:var(--accent); }
+    .phase-name { font-weight:600; font-size:11px; }
+    .phase-sub { font-size:9px; color:var(--dim); }
+    .phase-status { margin-left:auto; font-size:8px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .phase-status.complete { color:var(--accent); }
+    .phase-status.active { color:var(--warning); }
+
+    .context-card { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px; margin-top:12px; }
+    .context-card .cc-title { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+    .cc-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(5,150,105,0.07); font-size:10px; }
+    .cc-row:last-child { border-bottom:none; }
+    .cc-key { color:var(--dim); }
+    .cc-val { color:var(--text); text-align:right; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .formation-card { background:var(--surface); border:1px solid rgba(5,150,105,0.25); border-radius:7px; padding:10px; margin-top:10px; }
+    .formation-card .fc-title2 { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:7px; }
+
+    .phase-section { display:none; }
+    .phase-section.active { display:block; }
+
+    .phase-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .phase-badge { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; font-size:14px; font-weight:800; flex-shrink:0; }
+    .phase-title { font-size:16px; font-weight:800; }
+    .phase-subtitle { font-size:11px; color:var(--muted); margin-top:1px; }
+
+    .outcome-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+    .outcome-card { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px; }
+    .oc-label { font-size:9px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+    .oc-val { font-size:11px; color:var(--text); line-height:1.4; }
+    .oc-val.mono { font-family:'SF Mono',monospace; font-size:10px; color:var(--muted); }
+
+    .jtbd-list { list-style:none; margin-bottom:14px; }
+    .jtbd-list li { padding:6px 0; border-bottom:1px solid rgba(5,150,105,0.08); font-size:11px; color:var(--muted); display:flex; gap:8px; }
+    .jtbd-list li:last-child { border-bottom:none; }
+    .jtbd-tag { font-size:8px; font-weight:700; padding:1px 5px; border-radius:3px; flex-shrink:0; margin-top:2px; }
+    .jtbd-tag.fn { background:rgba(5,150,105,0.15); color:var(--accent); }
+    .jtbd-tag.em { background:rgba(2,132,199,0.15); color:#38bdf8; }
+    .jtbd-tag.so { background:rgba(124,58,237,0.15); color:#a78bfa; }
+
+    .story-table { width:100%; border-collapse:collapse; font-size:10px; margin-bottom:14px; }
+    .story-table th { font-size:9px; font-weight:700; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; text-align:left; padding:5px 6px; border-bottom:1px solid var(--border); }
+    .story-table td { padding:6px 6px; border-bottom:1px solid rgba(5,150,105,0.07); color:var(--muted); vertical-align:top; }
+    .story-table td:first-child { font-family:'SF Mono',monospace; color:var(--accent); font-size:9px; white-space:nowrap; }
+    .story-table tr:last-child td { border-bottom:none; }
+
+    .risk-table { width:100%; border-collapse:collapse; font-size:10px; }
+    .risk-table th { font-size:9px; font-weight:700; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; text-align:left; padding:4px 6px; border-bottom:1px solid var(--border); }
+    .risk-table td { padding:5px 6px; border-bottom:1px solid rgba(5,150,105,0.07); font-size:10px; vertical-align:top; }
+    .risk-table tr:last-child td { border-bottom:none; }
+    .risk-badge { font-size:8px; font-weight:700; padding:1px 5px; border-radius:3px; white-space:nowrap; }
+    .risk-high { background:rgba(239,68,68,0.15); color:#f87171; }
+    .risk-medium { background:rgba(245,158,11,0.15); color:#fbbf24; }
+    .risk-low { background:rgba(5,150,105,0.15); color:var(--accent); }
+
+    .market-metric { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:10px; margin-bottom:7px; }
+    .mm-label { font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); margin-bottom:2px; }
+    .mm-value { font-size:17px; font-weight:800; color:var(--accent); }
+    .mm-sub { font-size:9px; color:var(--muted); margin-top:1px; line-height:1.4; }
+
+    .assumption-row { padding:5px 0; border-bottom:1px solid rgba(5,150,105,0.07); display:flex; gap:7px; align-items:flex-start; }
+    .assumption-row:last-child { border-bottom:none; }
+    .conf-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+    .conf-high { background:var(--accent); }
+    .conf-medium { background:var(--warning); }
+    .conf-low { background:var(--dim); }
+    .assumption-text { font-size:10px; color:var(--muted); line-height:1.4; }
+
+    .diagram-gallery { display:grid; grid-template-columns:1fr; gap:12px; }
+
+    /* ── Animations ── */
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes fade-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation:fade-in .25s ease-out forwards; }
+
+    /* Mermaid SVG overrides — force dark fill */
+    .mmd-wrap .node rect, .mmd-wrap .node circle, .mmd-wrap .node ellipse, .mmd-wrap .node polygon { fill:var(--surface) !important; stroke:rgba(5,150,105,0.4) !important; }
+    .mmd-wrap text { fill:var(--text) !important; }
+    .mmd-wrap .edgePath path { stroke:var(--accent) !important; }
+    .mmd-wrap .arrowheadPath { fill:var(--accent) !important; }
+    .mmd-wrap .cluster rect { fill:rgba(12,26,18,0.8) !important; stroke:rgba(5,150,105,0.3) !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="project-logo">P</div>
+  <div>
+    <div class="header-title">Peppy&#8482;</div>
+    <div class="header-sub">DTC Telehealth + Peptide Compounding Platform</div>
+  </div>
+  <span class="badge">v0.1.0 Alpha</span>
+  <div style="display:flex;align-items:center;gap:5px;margin-left:6px;">
+    <div class="apm-dot" id="apm-dot"></div>
+    <span id="apm-status-text" style="font-size:10px;color:var(--muted)">APM</span>
+  </div>
+  <div class="header-links">
+    <a href="http://localhost:4001" target="_blank" class="header-link">Dev :4001</a>
+    <a href="https://peppy.greenflower-4eae5465.eastus2.azurecontainerapps.io" target="_blank" class="header-link">Azure</a>
+    <a href="http://localhost:3032" target="_blank" class="header-link">APM :3032</a>
+    <a href="index.html" class="header-link">All Projects</a>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('platform', this)">Platform <span class="tab-pill">v0.1.0</span></button>
+  <button class="tab-btn" onclick="switchTab('idfw', this)">IDFW — Inception <span class="tab-pill">IDEA</span></button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PLATFORM VIEW
+═══════════════════════════════════════════════════════════ -->
+<div id="view-platform" class="view active">
+  <div class="layout">
+
+    <!-- LEFT: Feature Cards -->
+    <div class="col col-left">
+      <div class="section-label">Feature Waves</div>
+      <div class="wave-filters">
+        <button class="wave-pill wave-all active" onclick="filterWave('all', this)">All</button>
+        <button class="wave-pill wave-1" onclick="filterWave(1, this)">W1 Foundation</button>
+        <button class="wave-pill wave-2" onclick="filterWave(2, this)">W2 Core</button>
+        <button class="wave-pill wave-3" onclick="filterWave(3, this)">W3 Platform</button>
+      </div>
+      <div id="feature-cards"></div>
+    </div>
+
+    <!-- CENTER: Architecture (Mermaid) + Progress + Narrative -->
+    <div class="col col-center">
+
+      <div class="arch-section">
+        <div class="section-label">System Architecture</div>
+        <div class="mmd-wrap" id="arch-diagram">
+          <div class="mmd-loading">Rendering architecture diagram…</div>
+        </div>
+      </div>
+
+      <div class="section-label">Wave Progress</div>
+      <div class="progress-grid" id="wave-progress"></div>
+
+      <div class="narrative-section">
+        <div class="section-label">Platform Narrative</div>
+        <div class="narrative-headline" id="narrative-headline">Loading…</div>
+        <div class="narrative-sub" id="narrative-sub"></div>
+        <div class="narrative-blocks" id="narrative-blocks"></div>
+        <div class="stats-row" id="stats-row"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Resource Inspector -->
+    <div class="col col-right">
+      <div class="section-label">Resource Inspector</div>
+
+      <div class="rp-section">
+        <div class="rp-title">Services</div>
+        <div class="rp-row"><div class="rp-key">CCEM APM</div><div class="rp-status"><div class="status-dot unknown" id="svc-apm-dot"></div><span class="rp-val" id="svc-apm-val">checking</span></div></div>
+        <div class="rp-row"><div class="rp-key">Dev Server</div><div class="rp-status"><div class="status-dot unknown" id="svc-dev-dot"></div><span class="rp-val" id="svc-dev-val">:4001</span></div></div>
+        <div class="rp-row"><div class="rp-key">Azure</div><div class="rp-status"><div class="status-dot online"></div><span class="rp-val">live</span></div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">Stack</div>
+        <div class="rp-row"><div class="rp-key">Framework</div><div class="rp-val">Phoenix 1.8.3</div></div>
+        <div class="rp-row"><div class="rp-key">Language</div><div class="rp-val">Elixir 1.18.3</div></div>
+        <div class="rp-row"><div class="rp-key">LiveView</div><div class="rp-val">1.1.0</div></div>
+        <div class="rp-row"><div class="rp-key">Database</div><div class="rp-val">PostgreSQL 18</div></div>
+        <div class="rp-row"><div class="rp-key">Auth</div><div class="rp-val">Session (bcrypt)</div></div>
+        <div class="rp-row"><div class="rp-key">Jobs</div><div class="rp-val">Oban 2.18</div></div>
+        <div class="rp-row"><div class="rp-key">Billing</div><div class="rp-val">Stripity Stripe 3.2</div></div>
+        <div class="rp-row"><div class="rp-key">Email</div><div class="rp-val">Postmark</div></div>
+        <div class="rp-row"><div class="rp-key">Video</div><div class="rp-val">Daily.co (HIPAA)</div></div>
+        <div class="rp-row"><div class="rp-key">Deploy</div><div class="rp-val">Azure Container Apps</div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">Deployment</div>
+        <div class="rp-row"><div class="rp-key">Version</div><div class="rp-val">v0.1.0 Alpha</div></div>
+        <div class="rp-row"><div class="rp-key">Registry</div><div class="rp-val">ccemregistry.azurecr.io</div></div>
+        <div class="rp-row"><div class="rp-key">RG</div><div class="rp-val">rg-peppy-dev</div></div>
+        <div class="rp-row"><div class="rp-key">Region</div><div class="rp-val">East US 2</div></div>
+        <div class="rp-row"><div class="rp-key">Port</div><div class="rp-val">4001 (dev) / 4000 (prod)</div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">APM</div>
+        <div class="rp-row"><div class="rp-key">Status</div><div class="rp-val" id="apm-status-val">--</div></div>
+        <div class="rp-row"><div class="rp-key">Agents</div><div class="rp-val" id="apm-agents-val">--</div></div>
+        <div class="rp-row"><div class="rp-key">Uptime</div><div class="rp-val" id="apm-uptime-val">--</div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">Version History</div>
+        <div id="version-history"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     IDFW VIEW — Inception Discovery Framing Workflow
+═══════════════════════════════════════════════════════════ -->
+<div id="view-idfw" class="view">
+  <div class="layout">
+
+    <!-- LEFT: Phase Navigator + Context -->
+    <div class="col col-left">
+      <div class="section-label">IDEA Phases</div>
+      <div class="phase-nav">
+        <button class="phase-btn done active" onclick="switchPhase('overview', this)">
+          <span class="phase-num">★</span>
+          <div><div class="phase-name">Overview</div><div class="phase-sub">Lifecycle + Diagrams</div></div>
+          <span class="phase-status complete">DONE</span>
+        </button>
+        <button class="phase-btn done" onclick="switchPhase('discover', this)">
+          <span class="phase-num">1</span>
+          <div><div class="phase-name">Discover</div><div class="phase-sub">JTBD + Problem Statement</div></div>
+          <span class="phase-status complete">DONE</span>
+        </button>
+        <button class="phase-btn done" onclick="switchPhase('define', this)">
+          <span class="phase-num">2</span>
+          <div><div class="phase-name">Define</div><div class="phase-sub">PRD + prd.json</div></div>
+          <span class="phase-status complete">DONE</span>
+        </button>
+        <button class="phase-btn done" onclick="switchPhase('plan', this)">
+          <span class="phase-num">3</span>
+          <div><div class="phase-name">Plan</div><div class="phase-sub">Plane Issues + Risk Matrix</div></div>
+          <span class="phase-status complete">DONE</span>
+        </button>
+        <button class="phase-btn done" onclick="switchPhase('execute', this)">
+          <span class="phase-num">4</span>
+          <div><div class="phase-name">Execute</div><div class="phase-sub">Formation Deploy</div></div>
+          <span class="phase-status active">IN FLIGHT</span>
+        </button>
+      </div>
+
+      <div class="context-card">
+        <div class="cc-title">Project Context</div>
+        <div class="cc-row"><span class="cc-key">Project</span><span class="cc-val">Peppy™</span></div>
+        <div class="cc-row"><span class="cc-key">Type</span><span class="cc-val">Enterprise Platform</span></div>
+        <div class="cc-row"><span class="cc-key">Sizing</span><span class="cc-val">existing (v0.1.0)</span></div>
+        <div class="cc-row"><span class="cc-key">Stack</span><span class="cc-val">Elixir/Phoenix/PG18</span></div>
+        <div class="cc-row"><span class="cc-key">Compliance</span><span class="cc-val">HIPAA + 503A</span></div>
+        <div class="cc-row"><span class="cc-key">Geo</span><span class="cc-val">8-state launch</span></div>
+        <div class="cc-row"><span class="cc-key">Context file</span><span class="cc-val" style="font-family:monospace;font-size:9px">idea/contexts/peppy.json</span></div>
+      </div>
+
+      <div class="formation-card">
+        <div class="fc-title2">Formation Plan</div>
+        <div class="cc-row"><span class="cc-key">Formation ID</span><span class="cc-val" style="font-family:monospace;font-size:9px">fmt-peppy-20260330</span></div>
+        <div class="cc-row"><span class="cc-key">Squadrons</span><span class="cc-val">2 (W3 Platform, W4 Growth)</span></div>
+        <div class="cc-row"><span class="cc-key">Swarms</span><span class="cc-val">5</span></div>
+        <div class="cc-row"><span class="cc-key">Agents</span><span class="cc-val">9 impl + 4 QA = 13</span></div>
+        <div class="cc-row"><span class="cc-key">Stories</span><span class="cc-val">7 (PEPPY-01–07)</span></div>
+        <div class="cc-row"><span class="cc-key">Waves</span><span class="cc-val">W3 + W4</span></div>
+        <div class="cc-row"><span class="cc-key">CP Range</span><span class="cc-val">CP-02 → CP-08</span></div>
+      </div>
+    </div>
+
+    <!-- CENTER: Phase Content + Diagrams -->
+    <div class="col col-center">
+
+      <!-- Overview Phase -->
+      <div id="phase-overview" class="phase-section active fade-in">
+        <div class="phase-header">
+          <div class="phase-badge" style="background:rgba(5,150,105,0.15);color:var(--accent);">✦</div>
+          <div>
+            <div class="phase-title">IDEA Framework — Peppy™</div>
+            <div class="phase-subtitle">Inception → Discovery → Definition → Planning → Execution</div>
+          </div>
+        </div>
+
+        <div class="outcome-grid">
+          <div class="outcome-card"><div class="oc-label">Market Window</div><div class="oc-val">12–18 months before Hims longevity vertical launch (est. Q3 2026)</div></div>
+          <div class="outcome-card"><div class="oc-label">Regulatory Catalyst</div><div class="oc-val">HHS/RFK Category 1 reclassification signal, Feb 27 2026 — 14 peptides returning to 503A eligibility</div></div>
+          <div class="outcome-card"><div class="oc-label">Stories Generated</div><div class="oc-val mono">7 stories across W3 + W4<br>PEPPY-01 through PEPPY-07</div></div>
+          <div class="outcome-card"><div class="oc-label">Y1 SOM Target</div><div class="oc-val">$3.8M ARR · 1,819 active subscribers · $2,375 ARPU</div></div>
+        </div>
+
+        <div class="mmd-label">IDEA Lifecycle — Peppy™ v0.1.0</div>
+        <div class="mmd-wrap" id="diag-lifecycle"><div class="mmd-loading">Rendering…</div></div>
+
+        <div class="mmd-label" style="margin-top:16px">System Architecture — C4 L2 Container</div>
+        <div class="mmd-wrap" id="diag-container"><div class="mmd-loading">Rendering…</div></div>
+      </div>
+
+      <!-- Discover Phase -->
+      <div id="phase-discover" class="phase-section">
+        <div class="phase-header">
+          <div class="phase-badge" style="background:rgba(13,148,136,0.15);color:#2dd4bf;">1</div>
+          <div>
+            <div class="phase-title">Discover</div>
+            <div class="phase-subtitle">Jobs to be done · Problem statement · Scope · RACI</div>
+          </div>
+        </div>
+
+        <div class="mmd-label">User Journey — Pepp Consumer</div>
+        <div class="mmd-wrap" id="diag-journey"><div class="mmd-loading">Rendering…</div></div>
+
+        <div class="section-label" style="margin-top:14px">Jobs to Be Done</div>
+        <ul class="jtbd-list">
+          <li><span class="jtbd-tag fn">Functional</span>Get a legal Rx for evidence-backed peptides via telemedicine without a brick-and-mortar clinic</li>
+          <li><span class="jtbd-tag fn">Functional</span>Browse and select a curated peptide stack (Pepp Rally) matched to my specific goal</li>
+          <li><span class="jtbd-tag fn">Functional</span>Receive ongoing physician supervision and protocol adjustments over time</li>
+          <li><span class="jtbd-tag fn">Functional</span>Track outcomes against protocol milestones (Rally Stats)</li>
+          <li><span class="jtbd-tag em">Emotional</span>Feel legitimate — clinical-grade, physician-supervised, not gray-market</li>
+          <li><span class="jtbd-tag em">Emotional</span>Feel guided — Pepp Rally removes overwhelming self-research burden</li>
+          <li><span class="jtbd-tag em">Emotional</span>Feel confident in supply chain quality (503A vs. unregulated vendors)</li>
+          <li><span class="jtbd-tag so">Social</span>Be part of the educated longevity/optimization movement, not anonymous forums</li>
+        </ul>
+
+        <div class="section-label">Scope Statement</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px;font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+          Peppy is a physician-supervised DTC telehealth platform for peptide compounding therapy. It serves health-optimized adults seeking evidence-based optimization through curated peptide stacks (Pepp Rallies), licensed physician consultations (Pepp Talks), and ongoing protocol management. Peppy does not dispense unregulated peptides, operate as a pharmacy, provide prescriptions without physician review, or handle DEA-scheduled compounds directly. The platform delivers a compelling subscription experience while maintaining full 503A and HIPAA compliance as the ceiling, not the floor.
+        </div>
+
+        <div class="mmd-label">System Context — C4 L1</div>
+        <div class="mmd-wrap" id="diag-context"><div class="mmd-loading">Rendering…</div></div>
+      </div>
+
+      <!-- Define Phase -->
+      <div id="phase-define" class="phase-section">
+        <div class="phase-header">
+          <div class="phase-badge" style="background:rgba(2,132,199,0.15);color:#38bdf8;">2</div>
+          <div>
+            <div class="phase-title">Define</div>
+            <div class="phase-subtitle">PRD · User stories · Acceptance criteria · Wave mapping</div>
+          </div>
+        </div>
+
+        <div class="section-label">User Stories — Wave 3 (Platform Layer)</div>
+        <table class="story-table">
+          <thead><tr><th>ID</th><th>Story</th><th>Wave</th><th>Key Acceptance Criteria</th></tr></thead>
+          <tbody>
+            <tr><td>US-001<br>PEPPY-01</td><td>Stripe Subscription Billing</td><td>W3</td><td>3 tiers live; checkout session; webhooks (invoice.paid, subscription.updated, .deleted); BillingLive wired</td></tr>
+            <tr><td>US-002<br>PEPPY-02</td><td>Pepp Talk Consultation Engine</td><td>W3</td><td>Booking form; Daily.co room created on confirmation; physician intake review UI; Rx issuance form</td></tr>
+            <tr><td>US-003<br>PEPPY-03</td><td>Prescription Management</td><td>W3</td><td>Rx schema fully live; PrescriptionsLive; status lifecycle; physician-patient access control</td></tr>
+            <tr><td>US-004<br>PEPPY-04</td><td>Admin Portal — Wired</td><td>W3</td><td>AdminLive CRUD for peptides, rallies, users, subs, consultations; AdminAuth enforced; flash confirmations</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-label" style="margin-top:6px">User Stories — Wave 4 (Growth Layer)</div>
+        <table class="story-table">
+          <thead><tr><th>ID</th><th>Story</th><th>Wave</th><th>Key Acceptance Criteria</th></tr></thead>
+          <tbody>
+            <tr><td>US-005<br>PEPPY-05</td><td>Email Verification + Transactional</td><td>W4</td><td>Post-reg verification email; confirm/:token sets confirmed_at; welcome, consultation, Rx renewal templates</td></tr>
+            <tr><td>US-006<br>PEPPY-06</td><td>Outcome Tracking (Rally Stats)</td><td>W4</td><td>HealthProfile extended; sparkline chart in Dashboard; weekly Oban check-in job; physician-visible</td></tr>
+            <tr><td>US-007<br>PEPPY-07</td><td>iOS App — Foundation</td><td>W4</td><td>SwiftUI iOS 17+; Phoenix session auth; formulary browser; Pepp Talk deep-link; APNs push notifications</td></tr>
+          </tbody>
+        </table>
+
+        <div class="mmd-label" style="margin-top:14px">Auth Flow — Sign-up + Session Verification</div>
+        <div class="mmd-wrap" id="diag-auth"><div class="mmd-loading">Rendering…</div></div>
+      </div>
+
+      <!-- Plan Phase -->
+      <div id="phase-plan" class="phase-section">
+        <div class="phase-header">
+          <div class="phase-badge" style="background:rgba(124,58,237,0.15);color:#a78bfa;">3</div>
+          <div>
+            <div class="phase-title">Plan</div>
+            <div class="phase-subtitle">Plane issues · CLAUDE.md checkpoints · Risk matrix · Milestone timeline</div>
+          </div>
+        </div>
+
+        <div class="outcome-grid">
+          <div class="outcome-card"><div class="oc-label">Plane Issues</div><div class="oc-val mono">PEPPY-01 through PEPPY-07<br>plane.lgtm.build/lgtm</div></div>
+          <div class="outcome-card"><div class="oc-label">Checkpoints</div><div class="oc-val mono">CP-02 through CP-08<br>CLAUDE.md updated</div></div>
+          <div class="outcome-card"><div class="oc-label">Timeline Est.</div><div class="oc-val">~11 days total<br>W3: ~5 days · W4: ~6 days</div></div>
+          <div class="outcome-card"><div class="oc-label">Risk Summary</div><div class="oc-val">4 High · 4 Medium · 2 Low<br>Top: Hims launch timing (20)</div></div>
+        </div>
+
+        <div class="section-label">Risk Assessment Matrix</div>
+        <table class="risk-table">
+          <thead><tr><th>Category</th><th>Risk</th><th>L</th><th>I</th><th>Score</th></tr></thead>
+          <tbody>
+            <tr><td>Timeline</td><td>Hims launches longevity vertical</td><td>4</td><td>5</td><td><span class="risk-badge risk-high">20 HIGH</span></td></tr>
+            <tr><td>Regulatory</td><td>No formal FDA rule issued by H1 2027</td><td>3</td><td>4</td><td><span class="risk-badge risk-high">12 HIGH</span></td></tr>
+            <tr><td>Resource</td><td>Physician credentialing 60–90 days/state</td><td>4</td><td>3</td><td><span class="risk-badge risk-high">12 HIGH</span></td></tr>
+            <tr><td>Technical</td><td>HIPAA Cloak encryption not wired in prod</td><td>2</td><td>5</td><td><span class="risk-badge risk-high">10 HIGH</span></td></tr>
+            <tr><td>Integration</td><td>Daily.co API room lifecycle complexity</td><td>2</td><td>4</td><td><span class="risk-badge risk-medium">8 MED</span></td></tr>
+            <tr><td>Integration</td><td>Stripe webhook handler gap</td><td>2</td><td>4</td><td><span class="risk-badge risk-medium">8 MED</span></td></tr>
+            <tr><td>Market</td><td>GLP-1 alumni don't convert to peptides</td><td>2</td><td>3</td><td><span class="risk-badge risk-medium">6 MED</span></td></tr>
+            <tr><td>Integration</td><td>503A pharmacy API availability</td><td>2</td><td>3</td><td><span class="risk-badge risk-medium">6 MED</span></td></tr>
+            <tr><td>Technical</td><td>iOS auth cookie model vs native UX</td><td>2</td><td>2</td><td><span class="risk-badge risk-low">4 LOW</span></td></tr>
+            <tr><td>Compliance</td><td>Medical-legal copy review lag</td><td>1</td><td>4</td><td><span class="risk-badge risk-low">4 LOW</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="mmd-label" style="margin-top:16px">Deployment Topology</div>
+        <div class="mmd-wrap" id="diag-deploy"><div class="mmd-loading">Rendering…</div></div>
+      </div>
+
+      <!-- Execute Phase -->
+      <div id="phase-execute" class="phase-section">
+        <div class="phase-header">
+          <div class="phase-badge" style="background:rgba(219,39,119,0.15);color:#f472b6;">4</div>
+          <div>
+            <div class="phase-title">Execute</div>
+            <div class="phase-subtitle">Formation deployment · Wave agents · QA squadron</div>
+          </div>
+        </div>
+
+        <div class="outcome-grid">
+          <div class="outcome-card"><div class="oc-label">Formation</div><div class="oc-val mono">fmt-peppy-20260330<br>sizing: existing</div></div>
+          <div class="outcome-card"><div class="oc-label">Agents</div><div class="oc-val">9 implementation<br>4 QA (cross-wave)</div></div>
+          <div class="outcome-card"><div class="oc-label">Wave 3 Status</div><div class="oc-val">IN FLIGHT<br>PEPPY-01 → PEPPY-04</div></div>
+          <div class="outcome-card"><div class="oc-label">Wave 4 Status</div><div class="oc-val">QUEUED<br>PEPPY-05 → PEPPY-07</div></div>
+        </div>
+
+        <div class="mmd-label">Formation Topology — fmt-peppy-20260330</div>
+        <div class="mmd-wrap" id="diag-formation"><div class="mmd-loading">Rendering…</div></div>
+
+        <div style="margin-top:14px;background:var(--surface);border:1px solid rgba(5,150,105,0.25);border-radius:7px;padding:12px;">
+          <div class="section-label" style="margin-bottom:8px">QA Squadron — Cross-Wave Gate</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:rgba(5,150,105,0.08);border-radius:5px;padding:8px;font-size:10px;"><div style="font-weight:700;color:var(--accent);margin-bottom:2px;">Build Verifier</div><div style="color:var(--muted)">mix compile --warnings-as-errors → 0 errors required</div></div>
+            <div style="background:rgba(5,150,105,0.08);border-radius:5px;padding:8px;font-size:10px;"><div style="font-weight:700;color:var(--accent);margin-bottom:2px;">Git Verifier</div><div style="color:var(--muted)">Clean working tree, correct branch, no secrets staged</div></div>
+            <div style="background:rgba(5,150,105,0.08);border-radius:5px;padding:8px;font-size:10px;"><div style="font-weight:700;color:var(--accent);margin-bottom:2px;">Smoke Tester</div><div style="color:var(--muted)">Dev server :4001 starts; key routes return 2xx</div></div>
+            <div style="background:rgba(5,150,105,0.08);border-radius:5px;padding:8px;font-size:10px;"><div style="font-weight:700;color:var(--accent);margin-bottom:2px;">AC Auditor</div><div style="color:var(--muted)">All 7 stories: each acceptance criterion verified against code</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-center -->
+
+    <!-- RIGHT: Market Metrics + Assumptions -->
+    <div class="col col-right">
+      <div class="section-label">Market Sizing</div>
+
+      <div class="market-metric">
+        <div class="mm-label">TAM</div>
+        <div class="mm-value">$36.1B</div>
+        <div class="mm-sub">US DTC telehealth 2026 (IBIS World). Consumer segment $4–5B growing at 30% CAGR.</div>
+      </div>
+      <div class="market-metric">
+        <div class="mm-label">SAM</div>
+        <div class="mm-value">$4.8–8.2B</div>
+        <div class="mm-sub">Physician-supervised peptide compounding, DTC-addressable, post-reclassification 2026–2027.</div>
+      </div>
+      <div class="market-metric">
+        <div class="mm-label">SOM — Year 1</div>
+        <div class="mm-value">$3.8M ARR</div>
+        <div class="mm-sub">1,819 subs × $2,375 ARPU. CAC $185, LTV:CAC 20.5x, payback 11 months.</div>
+      </div>
+      <div class="market-metric">
+        <div class="mm-label">SOM — Year 3</div>
+        <div class="mm-value">$62M ARR</div>
+        <div class="mm-sub">26,000 subs, national coverage, iOS app, pharmacy partner expansion.</div>
+      </div>
+
+      <div class="rp-section" style="margin-top:10px">
+        <div class="rp-title">Unit Economics (Y1)</div>
+        <div class="rp-row"><div class="rp-key">ARPU</div><div class="rp-val">$2,375 / year</div></div>
+        <div class="rp-row"><div class="rp-key">CAC</div><div class="rp-val">$185 blended</div></div>
+        <div class="rp-row"><div class="rp-key">LTV (36mo)</div><div class="rp-val">$3,800</div></div>
+        <div class="rp-row"><div class="rp-key">LTV:CAC</div><div class="rp-val">20.5×</div></div>
+        <div class="rp-row"><div class="rp-key">Gross Margin</div><div class="rp-val">58% blended</div></div>
+        <div class="rp-row"><div class="rp-key">Monthly Churn</div><div class="rp-val">7% (target)</div></div>
+        <div class="rp-row"><div class="rp-key">Payback</div><div class="rp-val">11 months</div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">Subscription Tiers</div>
+        <div class="rp-row"><div class="rp-key">Starter</div><div class="rp-val">$79 / mo · 45% mix</div></div>
+        <div class="rp-row"><div class="rp-key">Pro</div><div class="rp-val">$149 / mo · 40% mix</div></div>
+        <div class="rp-row"><div class="rp-key">Elite</div><div class="rp-val">$299 / mo · 15% mix</div></div>
+        <div class="rp-row"><div class="rp-key">Pharmacy add-on</div><div class="rp-val">~$45 / mo avg</div></div>
+      </div>
+
+      <div class="section-label">Key Assumptions</div>
+      <div class="rp-section">
+        <div class="assumption-row"><span class="conf-dot conf-high"></span><span class="assumption-text">HHS reclassification becomes formal rule H2 2026–H1 2027</span></div>
+        <div class="assumption-row"><span class="conf-dot conf-high"></span><span class="assumption-text">Hims will not have specialist peptide brand by end of 2026</span></div>
+        <div class="assumption-row"><span class="conf-dot conf-medium"></span><span class="assumption-text">2–4M gray-market users ready to convert to legitimate platform</span></div>
+        <div class="assumption-row"><span class="conf-dot conf-medium"></span><span class="assumption-text">GLP-1 alumni (4M+) are warm acquisition targets for recomp stacks</span></div>
+        <div class="assumption-row"><span class="conf-dot conf-medium"></span><span class="assumption-text">CAC $185 blended achievable via podcast + SEO + paid social mix</span></div>
+      </div>
+
+      <div class="section-label">Key Constraints</div>
+      <div class="rp-section">
+        <div class="rp-row"><div class="rp-key" style="color:#f87171;">Critical</div><div class="rp-val">12–18mo category window</div></div>
+        <div class="rp-row"><div class="rp-key" style="color:#f87171;">Critical</div><div class="rp-val">HIPAA + 503A ceiling</div></div>
+        <div class="rp-row"><div class="rp-key" style="color:#fbbf24;">High</div><div class="rp-val">Physician credentialing 60–90d/state</div></div>
+        <div class="rp-row"><div class="rp-key" style="color:#fbbf24;">High</div><div class="rp-val">No formal FDA rule yet</div></div>
+        <div class="rp-row"><div class="rp-key" style="color:var(--muted);">Medium</div><div class="rp-val">Pharmacy partner lead time</div></div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-title">Competitive Positioning</div>
+        <div class="rp-row"><div class="rp-key">Hims & Hers</div><div class="rp-val">GLP-1 generalist pivoting</div></div>
+        <div class="rp-row"><div class="rp-key">Ro</div><div class="rp-val">GLP-1 infra, no formulary</div></div>
+        <div class="rp-row"><div class="rp-key">AgelessRx</div><div class="rp-val">Closest comp, 45+ treatments</div></div>
+        <div class="rp-row"><div class="rp-key">Mochi Health</div><div class="rp-val">GLP-1 only, Lilly lawsuit</div></div>
+        <div class="rp-row"><div class="rp-key">Peppy moat</div><div class="rp-val">Purpose-built specialist + brand</div></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /view-idfw -->
+
+<script>
+/* ─── Mermaid initialization ─── */
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  sequence: { useMaxWidth: true },
+  journey: { useMaxWidth: true },
+  themeVariables: {
+    background: '#060d0a',
+    primaryColor: '#0c1a12',
+    primaryBorderColor: 'rgba(5,150,105,0.45)',
+    primaryTextColor: '#e2f0eb',
+    secondaryColor: '#0d1e14',
+    tertiaryColor: '#060d0a',
+    lineColor: '#7aad93',
+    textColor: '#e2f0eb',
+    nodeBorder: 'rgba(5,150,105,0.4)',
+    clusterBkg: '#0d1e14',
+    clusterBorder: 'rgba(5,150,105,0.3)',
+    edgeLabelBackground: '#0c1a12',
+    titleColor: '#e2f0eb',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontSize: '12px',
+    attributeBackgroundColorEven: '#060d0a',
+    attributeBackgroundColorOdd: '#0c1a12',
+    fillType0: '#0c1a12', fillType1: '#0d1e14',
+    actorBkg: '#0c1a12', actorBorder: 'rgba(5,150,105,0.4)',
+    actorTextColor: '#e2f0eb', actorLineColor: 'rgba(5,150,105,0.3)',
+    signalColor: '#7aad93', signalTextColor: '#e2f0eb',
+    labelBoxBkgColor: '#0c1a12', labelBoxBorderColor: 'rgba(5,150,105,0.3)',
+    labelTextColor: '#e2f0eb', loopTextColor: '#7aad93',
+    noteBorderColor: 'rgba(5,150,105,0.3)', noteBkgColor: '#0d1e14', noteTextColor: '#e2f0eb'
+  }
+});
+
+const MMD = {
+  architecture: `graph TB
+    subgraph Browser["Browser Layer"]
+      LV["Phoenix LiveView"]
+      HEEx["HEEx Templates"]
+      iOS["SwiftUI iOS"]
+    end
+    subgraph Router["Router + Plugs"]
+      PHX["Phoenix Router"]
+      UA["UserAuth"]
+      AA["AdminAuth"]
+      DG["DevtoolsGate"]
+    end
+    subgraph Contexts["Domain Contexts (Elixir/OTP)"]
+      AC["Accounts"]
+      FM["Formulary"]
+      BI["Billing"]
+      CO["Consultations"]
+    end
+    subgraph Data["Data + Jobs"]
+      PG[("PostgreSQL 18")]
+      OB["Oban Workers"]
+    end
+    subgraph External["External Services"]
+      ST["Stripe"]
+      DA["Daily.co"]
+      PH["503A Pharmacy"]
+      PM["Postmark"]
+    end
+    Browser --> Router
+    Router --> Contexts
+    Contexts --> Data
+    Contexts -.-> External`,
+
+  lifecycle: `flowchart LR
+    N(["/idea new"]):::done --> D
+    D(["/idea discover"]):::done --> DF
+    DF(["/idea define"]):::done --> P
+    P(["/idea plan"]):::done --> E
+    E(["/idea execute"]):::active --> S
+    S(["/idea status"]):::pending
+    classDef done fill:#0c1a12,stroke:#059669,color:#e2f0eb
+    classDef active fill:#0c1a12,stroke:#f59e0b,color:#e2f0eb
+    classDef pending fill:#060d0a,stroke:#3f6b52,color:#7aad93`,
+
+  container: `graph TB
+    U1(["Pepp Consumer"]) --> WEB
+    U2(["Physician"]) --> WEB
+    subgraph Platform["Peppy Platform"]
+      WEB["Phoenix LiveView\\nElixir/OTP · WebSocket"]
+      API["Phoenix REST API\\n/api/v1 + /dev/api"]
+      OB["Oban Workers\\nEmail · Pharmacy · Reminders"]
+      DB[("PostgreSQL 18\\nUsers · Formulary · Rx · Sessions")]
+    end
+    WEB --> DB
+    API --> DB
+    API --> OB
+    OB --> ST["Stripe"]
+    OB --> DA["Daily.co"]
+    OB --> PH["503A Pharmacy"]
+    OB --> EM["Postmark"]`,
+
+  context: `graph LR
+    C1(["Pepp Consumer"])
+    C2(["Licensed Physician"])
+    SYS["Peppy Platform\\nDTC Telehealth +\\nPeptide Compounding"]
+    EX1["Stripe\\nBilling"]
+    EX2["Daily.co\\nHIPAA Video"]
+    EX3["503A Pharmacy\\nRx Dispensing"]
+    C1 -->|"Subscribes · browses · books"| SYS
+    C2 -->|"Reviews intake · issues Rx"| SYS
+    SYS -->|"Checkout + webhooks"| EX1
+    SYS -->|"Video rooms"| EX2
+    SYS -->|"Rx routing"| EX3`,
+
+  auth: `sequenceDiagram
+    participant U as Consumer
+    participant P as Phoenix Router
+    participant A as Accounts ctx
+    participant DB as PostgreSQL
+
+    note over U,DB: Registration
+    U->>P: POST /sign-up
+    P->>A: register_user(attrs)
+    A->>DB: INSERT users (bcrypt hash)
+    A->>DB: INSERT users_tokens (32-byte token)
+    A-->>P: ok, token
+    P-->>U: Set-Cookie + redirect /app/onboarding
+
+    note over U,DB: Every request
+    U->>P: GET /app/* (Cookie: user_token)
+    P->>A: get_user_by_session_token(token)
+    A->>DB: SELECT WHERE token AND age < 60 days
+    DB-->>A: User struct
+    P-->>U: 200 OK (current_user assigned)`,
+
+  journey: `journey
+    title Pepp Consumer Journey
+    section Discovery
+      Podcast / SEO find: 3: Consumer
+      Browses Formulary: 5: Consumer
+    section Conversion
+      Signs up: 5: Consumer
+      Health intake: 4: Consumer
+      Selects Pepp Rally: 5: Consumer
+      Subscribes: 5: Consumer, Stripe
+    section Value Delivery
+      Books Pepp Talk: 5: Consumer
+      Physician issues Rx: 5: Physician
+      Pharmacy ships peptides: 4: Consumer
+    section Retention
+      Monthly Rx refills: 5: Pharmacy
+      Physician follow-up: 5: Physician
+      Upgrades to Elite: 4: Consumer`,
+
+  deploy: `graph TB
+    DEV["Developer"] -->|az acr build| ACR["Azure Container Registry\\nccemregistry.azurecr.io"]
+    ACR -->|pull image| ACA
+    subgraph Azure["Azure East US 2 — rg-peppy-dev"]
+      ACA["Container App: peppy"]
+      MJ["Migration Job\\npeppy-migrate"]
+      PG[("PostgreSQL 18\\npeppy_prod")]
+      ACA --- PG
+      MJ -->|mix ecto.migrate| PG
+    end
+    CF["Cloudflare\\nSSL + DDoS"] --> ACA
+    USERS["Consumers"] --> CF
+    ACA -.->|webhooks| ST["Stripe"]
+    ACA -.->|video rooms| DA["Daily.co"]
+    ACA -.->|Rx routing| PH["503A Pharmacy"]`,
+
+  formation: `graph TD
+    F["Formation: fmt-peppy-20260330"]
+    F --> S1 & S2 & QA
+    S1["Squadron: Wave 3 Platform"] --> SW1 & SW2 & SW3
+    S2["Squadron: Wave 4 Growth"] --> SW4 & SW5 & SW6
+    SW1["Swarm: Billing"] --> A1["stripe-billing"] & A2["billing-qa"]
+    SW2["Swarm: Consultations"] --> A3["pepp-talk-engine"] & A4["prescription-mgmt"] & A5["consult-qa"]
+    SW3["Swarm: Admin"] --> A6["admin-wiring"] & A7["admin-qa"]
+    SW4["Swarm: Email & Auth"] --> A8["email-verification"] & A9["email-qa"]
+    SW5["Swarm: Outcomes"] --> A10["rally-stats"] & A11["stats-qa"]
+    SW6["Swarm: iOS"] --> A12["ios-foundation"] & A13["ios-qa"]
+    QA["QA Squadron"] --> Q1["build-verifier"] & Q2["git-verifier"] & Q3["smoke-tester"] & Q4["ac-auditor"]`
+};
+
+/* ─── Diagram rendering (lazy, deduped) ─── */
+const rendered = new Set();
+async function renderDiagram(containerId, code) {
+  if (rendered.has(containerId)) return;
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  try {
+    const id = 'mmd_' + containerId;
+    const { svg } = await mermaid.render(id, code);
+    el.innerHTML = svg;
+    const svgEl = el.querySelector('svg');
+    if (svgEl) { svgEl.style.maxWidth = '100%'; svgEl.style.height = 'auto'; }
+    rendered.add(containerId);
+  } catch(e) {
+    el.innerHTML = `<div class="mmd-error">Diagram: ${e.message || 'render error'}</div>`;
+  }
+}
+
+/* ─── Tab switching ─── */
+function switchTab(tab, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  btn.classList.add('active');
+
+  if (tab === 'platform') {
+    setTimeout(() => renderDiagram('arch-diagram', MMD.architecture), 50);
+  }
+  if (tab === 'idfw') {
+    const active = document.querySelector('.phase-section.active');
+    if (active) renderPhase(active.id.replace('phase-', ''));
+  }
+}
+
+/* ─── Phase switching (IDFW tab) ─── */
+function switchPhase(phase, btn) {
+  document.querySelectorAll('.phase-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  const section = document.getElementById('phase-' + phase);
+  if (section) { section.classList.add('active'); section.classList.add('fade-in'); }
+  if (btn) btn.classList.add('active');
+  renderPhase(phase);
+}
+
+function renderPhase(phase) {
+  const map = {
+    overview: [['diag-lifecycle', MMD.lifecycle], ['diag-container', MMD.container]],
+    discover: [['diag-journey', MMD.journey], ['diag-context', MMD.context]],
+    define:   [['diag-auth', MMD.auth]],
+    plan:     [['diag-deploy', MMD.deploy]],
+    execute:  [['diag-formation', MMD.formation]]
+  };
+  (map[phase] || []).forEach(([id, code]) => renderDiagram(id, code));
+}
+
+/* ─── Platform: Feature Cards ─── */
+const WAVE_COLORS = {
+  1: { dot:'#059669', text:'#10b981', bg:'rgba(5,150,105,0.08)', border:'#059669', label:'Wave 1 — Foundation' },
+  2: { dot:'#0d9488', text:'#2dd4bf', bg:'rgba(13,148,136,0.08)', border:'#0d9488', label:'Wave 2 — Core' },
+  3: { dot:'#0284c7', text:'#38bdf8', bg:'rgba(2,132,199,0.08)', border:'#0284c7', label:'Wave 3 — Platform' }
+};
+const STATUS_COLORS = { done:'#059669', active:'#f59e0b', planned:'#3f6b52', shipped:'#059669' };
+let allFeatures = [], narrativeData = null, currentFilter = 'all';
+
+async function loadData() {
+  try {
+    const [fr, nr] = await Promise.all([
+      fetch('../data/projects/peppy/features.json'),
+      fetch('../data/projects/peppy/narrative-content.json')
+    ]);
+    allFeatures = await fr.json();
+    narrativeData = await nr.json();
+  } catch(e) {
+    allFeatures = getFallbackFeatures();
+    narrativeData = getFallbackNarrative();
+  }
+  renderAll();
+}
+
+function renderAll() {
+  renderFeatureCards(allFeatures);
+  renderWaveProgress(allFeatures);
+  renderNarrative(narrativeData);
+  renderVersionHistory(narrativeData);
+}
+
+function filterWave(wave, btn) {
+  currentFilter = wave;
+  document.querySelectorAll('.wave-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeatureCards(wave === 'all' ? allFeatures : allFeatures.filter(f => f.wave == wave));
+}
+
+function renderFeatureCards(feats) {
+  const c = document.getElementById('feature-cards');
+  const byWave = {};
+  feats.forEach(f => { (byWave[f.wave] = byWave[f.wave] || []).push(f); });
+  c.innerHTML = '';
+  Object.keys(byWave).sort().forEach(w => {
+    const wc = WAVE_COLORS[w] || WAVE_COLORS[1];
+    const div = document.createElement('div');
+    div.className = 'wave-group';
+    div.innerHTML = `<div class="wave-header">
+      <div class="wave-dot" style="background:${wc.dot}"></div>
+      <div class="wave-label" style="color:${wc.text}">${wc.label}</div>
+      <div class="wave-count">${byWave[w].length}</div>
+    </div>` + byWave[w].map(f => `
+      <div class="feature-card wave-${w}">
+        <div class="fc-header">
+          <div class="fc-title">${f.title}</div>
+          <div class="fc-meta">
+            <div class="fc-status-dot" style="background:${STATUS_COLORS[f.status]||'#3f6b52'}"></div>
+            <span class="fc-version" style="color:${STATUS_COLORS[f.status]||'#3f6b52'}">${f.status.toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="fc-desc">${f.description||''}</div>
+        <div class="fc-footer">
+          <span class="fc-id" style="background:${wc.bg};color:${wc.text}">${f.id}</span>
+          <span class="fc-cat">${f.category||''}</span>
+        </div>
+      </div>`).join('');
+    c.appendChild(div);
+  });
+}
+
+function renderWaveProgress(feats) {
+  const c = document.getElementById('wave-progress');
+  const waves = [1,2,3];
+  c.innerHTML = waves.map(w => {
+    const wf = feats.filter(f => f.wave == w);
+    const done = wf.filter(f => f.status === 'done' || f.status === 'shipped').length;
+    const total = wf.length || 1;
+    const pct = Math.round((done/total)*100);
+    const wc = WAVE_COLORS[w];
+    return `<div class="progress-card" style="border-color:${wc.border}20;background:${wc.bg}">
+      <div class="pct" style="color:${wc.text}">${pct}%</div>
+      <div class="sub">${WAVE_COLORS[w].label.split(' — ')[1]}</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${wc.dot}"></div></div>
+      <div style="font-size:9px;color:var(--dim);margin-top:4px">${done}/${total} features</div>
+    </div>`;
+  }).join('');
+}
+
+function renderNarrative(nd) {
+  if (!nd) return;
+  document.getElementById('narrative-headline').textContent = nd.headline || 'Peppy™';
+  document.getElementById('narrative-sub').textContent = nd.subheadline || '';
+  const blocks = nd.sections || [];
+  document.getElementById('narrative-blocks').innerHTML = blocks.map(b => `
+    <div class="narrative-block">
+      <div class="nb-title">${b.title}</div>
+      <div class="nb-body">${b.body}</div>
+    </div>`).join('');
+  const stats = nd.stats || [];
+  document.getElementById('stats-row').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+      ${s.note ? `<div class="stat-note">${s.note}</div>` : ''}
+    </div>`).join('');
+}
+
+function renderVersionHistory(nd) {
+  const c = document.getElementById('version-history');
+  const versions = nd?.versions || [{ version:'0.1.0', date:'2026-03-30', label:'Alpha', status:'live', notes:['Phoenix 1.8.3 + LiveView 1.1.0 foundation','Session auth + Formulary + Pepp Rallies','Azure Container Apps deployment'] }];
+  c.innerHTML = versions.map(v => `
+    <div class="version-entry">
+      <div class="ve-header">
+        <div class="ve-version">v${v.version}</div>
+        <div class="ve-label">${v.label}</div>
+        <div class="ve-date">${v.date}</div>
+      </div>
+      <div class="ve-notes">${(v.notes||[]).slice(0,3).map(n => `• ${n}`).join('<br>')}</div>
+    </div>`).join('');
+}
+
+/* ─── APM polling ─── */
+async function pollAPM() {
+  try {
+    const r = await fetch('http://localhost:3032/api/status', { signal: AbortSignal.timeout(2000) });
+    const d = await r.json();
+    document.getElementById('apm-dot').className = 'apm-dot online';
+    document.getElementById('apm-status-text').textContent = 'APM live';
+    document.getElementById('svc-apm-dot').className = 'status-dot online';
+    document.getElementById('svc-apm-val').textContent = 'online';
+    document.getElementById('apm-status-val').textContent = 'online';
+    document.getElementById('apm-agents-val').textContent = d.agents || '--';
+    document.getElementById('apm-uptime-val').textContent = d.uptime || '--';
+  } catch {
+    document.getElementById('apm-dot').className = 'apm-dot offline';
+    document.getElementById('apm-status-text').textContent = 'APM offline';
+    document.getElementById('svc-apm-dot').className = 'status-dot offline';
+    document.getElementById('svc-apm-val').textContent = 'offline';
+    document.getElementById('apm-status-val').textContent = 'offline';
+  }
+  try {
+    await fetch('http://localhost:4001/', { mode:'no-cors', signal: AbortSignal.timeout(2000) });
+    document.getElementById('svc-dev-dot').className = 'status-dot online';
+    document.getElementById('svc-dev-val').textContent = 'online';
+  } catch {
+    document.getElementById('svc-dev-dot').className = 'status-dot offline';
+    document.getElementById('svc-dev-val').textContent = 'offline';
+  }
+}
+
+/* ─── Fallback data ─── */
+function getFallbackFeatures() {
+  return [
+    { id:'PEPPY-001', wave:1, version:'0.1.0', title:'Phoenix Platform Foundation', description:'Elixir/Phoenix/LiveView with HEEx templates, Bandit HTTP server, Telemetry.', status:'done', category:'platform' },
+    { id:'PEPPY-002', wave:1, version:'0.1.0', title:'Session Authentication', description:'bcrypt + DB-backed UserToken sessions, UserAuth plugs, 60-day TTL.', status:'done', category:'auth' },
+    { id:'PEPPY-003', wave:1, version:'0.1.0', title:'Peptide Formulary', description:'8+ FDA Category 1 peptides with tier system, full-text search, SEO metadata.', status:'done', category:'formulary' },
+    { id:'PEPPY-004', wave:1, version:'0.1.0', title:'Azure Deployment', description:'Docker multi-stage build, ACR, Container Apps, migration job.', status:'done', category:'infra' },
+    { id:'PEPPY-005', wave:2, version:'0.1.0', title:'Onboarding Flow', description:'Health intake LiveView — goals, conditions, medications, peptide experience.', status:'done', category:'ux' },
+    { id:'PEPPY-006', wave:2, version:'0.1.0', title:'Patient Dashboard', description:'Protocol overview, active stacks, upcoming consultations, prescription status.', status:'done', category:'ux' },
+    { id:'PEPPY-007', wave:2, version:'0.1.0', title:'Pepp Rally Stacks', description:'Longevity, Body Recomp, Focus & Calm — curated multi-peptide protocols.', status:'done', category:'formulary' },
+    { id:'PEPPY-008', wave:2, version:'0.1.0', title:'DevTools Panel', description:'Gated by DEVTOOLS_UUID, session-persisted, UAT API endpoints.', status:'done', category:'dev' },
+    { id:'PEPPY-009', wave:3, version:'0.2.0', title:'Stripe Billing', description:'3 subscription tiers ($79/$149/$299), checkout, webhooks, Customer Portal.', status:'planned', category:'billing' },
+    { id:'PEPPY-010', wave:3, version:'0.2.0', title:'Pepp Talk Consultations', description:'Daily.co video rooms, physician intake review, Rx issuance UI.', status:'planned', category:'consultations' },
+    { id:'PEPPY-011', wave:3, version:'0.2.0', title:'Admin Portal', description:'Full CRUD wiring: peptides, rallies, users, subscriptions, consultations.', status:'planned', category:'admin' },
+    { id:'PEPPY-012', wave:3, version:'0.3.0', title:'iOS App Foundation', description:'SwiftUI, Phoenix session auth, formulary browser, APNs push.', status:'planned', category:'ios' }
+  ];
+}
+
+function getFallbackNarrative() {
+  return {
+    headline: 'Physician-supervised peptide therapy, built for the optimization generation.',
+    subheadline: 'Peppy is the first purpose-built DTC platform for physician-supervised peptide compounding — meeting the 2–4M gray-market consumers exactly where they are, and giving them a legitimate path forward.',
+    sections: [
+      { title:'The Problem', body:'Millions of health-optimized adults source peptides from unregulated gray-market vendors without physician oversight, quality assurance, or legal protection.' },
+      { title:'The Catalyst', body:'HHS/RFK reclassified 14 peptides from FDA Category 2 to Category 1 (Feb 27, 2026), enabling 503A compounding pharmacies to legally prepare physician-prescribed formulations.' },
+      { title:'The Moat', body:'Incumbents (Hims, Ro) are GLP-1 generalists pivoting. Peppy is purpose-built: curated Pepp Rally stacks, peptide-specialist physicians, and brand warmth they cannot replicate quickly.' },
+      { title:'The Window', body:'12–18 months before Hims launches its longevity vertical. First-mover brand, SEO, and physician network advantages compound daily.' }
+    ],
+    stats: [
+      { value:'8+', label:'FDA Cat 1 Peptides', note:'v0.1.0 formulary' },
+      { value:'v0.1.0', label:'Alpha Deployed', note:'Azure · East US 2' },
+      { value:'$4.8B', label:'SAM (2026–27)', note:'post-reclassification' },
+      { value:'$3.8M', label:'Y1 ARR Target', note:'1,819 subs' }
+    ],
+    versions: [{ version:'0.1.0', date:'2026-03-30', label:'Alpha', status:'live', notes:['Phoenix 1.8.3 + LiveView 1.1.0','Session auth + Formulary + Pepp Rallies','Azure Container Apps · rg-peppy-dev'] }]
+  };
+}
+
+/* ─── Init ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  pollAPM();
+  setInterval(pollAPM, 10000);
+  // Render architecture diagram for Platform tab (default active)
+  setTimeout(() => renderDiagram('arch-diagram', MMD.architecture), 200);
+});
+</script>
+</body>
+</html>

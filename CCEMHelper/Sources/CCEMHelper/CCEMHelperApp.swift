@@ -2,6 +2,10 @@ import SwiftUI
 import AppKit
 import UserNotifications
 
+extension Notification.Name {
+    static let apmRestartRequested = Notification.Name("io.pegues.agent-j.labs.ccem.apmRestartRequested")
+}
+
 @main
 struct CCEMHelperApp: App {
     @State private var monitor = EnvironmentMonitor()
@@ -70,10 +74,29 @@ struct CCEMHelperApp: App {
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([agentlockCat, agentlockApprovalCat, lifecycleCat, formationCat])
+        let restartAction = UNNotificationAction(
+            identifier: "io.pegues.agent-j.labs.ccem.helper.restart.now",
+            title: "Restart APM",
+            options: [.foreground]
+        )
+        let restartCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.apmRestartCategory,
+            actions: [restartAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        // Version update uses same category (also shows Restart APM action)
+        let versionUpdateCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.apmVersionUpdateCategory,
+            actions: [restartAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        center.setNotificationCategories([agentlockCat, agentlockApprovalCat, lifecycleCat, formationCat, restartCat, versionUpdateCat])
 
         // Request authorization after delegate and categories are configured.
-        // Log result so permission issues are diagnosable without rebuilding.
+        // This MUST happen exactly once — subsequent calls are ignored by the OS.
+        // We do this in init() and not again elsewhere (EnvironmentMonitor.requestNotificationPermission has no-op).
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error {
                 print("[CCEMHelper] Notification auth error: \(error.localizedDescription)")
@@ -112,6 +135,9 @@ struct CCEMHelperApp: App {
                         postSystemNotification(title: "CCEM APM", body: "APM server connected", type: "success")
                     }
                 }
+                .onReceive(NotificationCenter.default.publisher(for: .apmRestartRequested)) { _ in
+                    Task { await serverManager.restartAPM() }
+                }
         } label: {
             Image(systemName: "server.rack")
                 .symbolRenderingMode(.palette)
@@ -144,7 +170,8 @@ struct CCEMHelperApp: App {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error {
-                print("[CCEMHelper] System notification error: \(error.localizedDescription)")
+                print("[CCEMHelper] UN failed: \(error.localizedDescription) — osascript fallback")
+                EnvironmentMonitor.osascriptNotify(title: title, body: body)
             }
         }
     }

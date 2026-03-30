@@ -16,7 +16,7 @@
 ```bash
 # Start APM
 cd ~/Developer/ccem/apm-v4
-nohup mix phx.server > ~/Developer/ccem/apm/hooks/apm_server.log 2>&1 &
+nohup mix phx.server > /Volumes/DDRV902/logs/apm_server.log 2>&1 &
 echo $! > .apm.pid
 
 # Start CCEMHelper immediately after - MANDATORY
@@ -65,7 +65,7 @@ pkill -9 -f "mix phx.server"
 |----------|------|
 | APM server | `~/Developer/ccem/apm-v4/` |
 | APM PID | `~/Developer/ccem/apm-v4/.apm.pid` |
-| APM log | `~/Developer/ccem/apm/hooks/apm_server.log` |
+| APM log | `/Volumes/DDRV902/logs/apm_server.log` |
 | APM config | `~/Developer/ccem/apm/apm_config.json` |
 | CCEMHelper source | `~/Developer/ccem/CCEMHelper/` |
 | ccem-apm skill | `~/.claude/skills/ccem-apm/SKILL.md` |
@@ -109,7 +109,7 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v8.4.0
+## Current Version: v8.10.1
 
 ## Implementation Checkpoints — ralph/upm-module-ccem-apm
 
@@ -375,7 +375,7 @@ automatically from user-scope settings.json.
 - **APM Config**: /Users/jeremiah/Developer/ccem/apm/apm_config.json
 - **APM Port**: 3032
 - **Skills Path**: ~/.claude/skills/
-- **APM Log**: ~/Developer/ccem/apm/hooks/apm_server.log
+- **APM Log**: /Volumes/DDRV902/logs/apm_server.log
 
 ## Formation Deploy
 
@@ -532,3 +532,154 @@ This is a hard rule with no exceptions.
 - [x] Coalesce foundation: CoalesceOrchestrator, CoalesceSupervisor, SkillLogicEngine, SwarmCoordinator
 - [x] mix.exs bumped to 8.4.0; @server_version / @app_version updated
 - After: `mix compile --warnings-as-errors` ✓ PASS
+
+## Implementation Checkpoints — v8.5.0 (AgentLock 20s + Namespace UX + Remote Tunnel)
+
+### AgentLock + Namespace UX
+- [x] ApmV5.NamespaceResolver GenServer — human-readable scoped labels (project/role/task-slug) via ETS :namespace_cache
+- [x] PendingDecisions TTL: 120s → 20s; sweep_ms: 15s → 3s
+- [x] DecisionGate default_timeout_ms: 120s → 20s; expire_check_ms: 15s → 3s
+- [x] AuthorizationLive: PubSub subscribe agentlock:pending; real-time countdown banners (CountdownTimer hook)
+- [x] agentlock_pre_tool.sh: poll loop reduced to 1 attempt, --max-time 18, ?wait=15
+- [x] CCEMHelper PendingDecision.displayName + notificationBody; pendingPollTask interval 8s → 3s
+- [x] mix.exs bumped to 8.5.0
+
+### ccem-relay (Azure Remote Tunnel)
+- [x] ccem-relay Phoenix project scaffolded at ~/Developer/ccem/ccem-relay/
+- [x] CcemRelay.TunnelRegistry GenServer + ETS :tunnel_registry (register_apm/deregister_apm/register_pending/pop_pending)
+- [x] CcemRelayWeb.UserSocket + TunnelChannel: tunnel:local (APM) + tunnel:browser:* (remote browsers)
+- [x] CcemRelayWeb.ProxyController: HTTP → WebSocket tunnel frame, 15s timeout receive loop
+- [x] HealthController + TunnelStatusController + Router (catch-all proxy)
+- [x] Dockerfile (hexpm/elixir:1.17.3 builder + debian:bookworm runtime) — BUILT ✓
+- [x] azure-deploy.sh (ACR + Container Apps + secrets + FQDN output)
+
+### apm-v4 Tunnel Client
+- [x] ApmV5.Tunnel.Client GenServer — :gun ~> 2.2 outbound WebSocket, Phoenix v2 framing, http_request proxy via :httpc, auto-reconnect
+- [x] ApmV5.Tunnel.Supervisor — conditional start (only if TUNNEL_RELAY_URL set)
+- [x] application.ex: ApmV5.Tunnel.Supervisor added before Endpoint
+- [x] mix.exs: {:gun, "~> 2.2"} dep added
+- After: `mix compile --warnings-as-errors` ✓ PASS (both projects)
+
+### Azure Deployment — COMPLETE ✓
+- [x] az login — device code auth completed
+- [x] ACR create + docker push ccemregistry.azurecr.io/ccem-relay:latest
+- [x] az containerapp create — ccem-relay in ccem-env, ccem-rg
+- [x] Public URL: https://ccem-relay.wonderfulflower-c29529fc.eastus.azurecontainerapps.io
+- [x] Set TUNNEL_SECRET + TUNNEL_RELAY_URL on local APM + session_init.sh (persistent)
+- [x] End-to-end proxy verified: `GET /api/status` returns local APM JSON through tunnel
+
+### Multi-Project Tunnel Routing — COMPLETE ✓ (ralph/ccem-multi-project-tunnel)
+- [x] ApmV5.Tunnel.Client: `target_project` routing in `proxy_request/3` → `resolve_project_port/1`
+- [x] `fetch_port_manifest/0`: queries `/api/ports` REST API for full project→port map, fallback to PortManager configs
+- [x] On channel join: sends `register_projects` frame to relay; refreshes every 60s
+- [x] ccem-relay: `/p/{project}/...` path prefix routing, strips prefix before forwarding
+- [x] ccem-relay TunnelRegistry: `register_project_ports/1`, `get_project_ports/0`, `get_project_port/1`
+- [x] ccem-relay TunnelChannel: `handle_in("register_projects", ...)` → TunnelRegistry storage
+- [x] ccem-relay: `GET /tunnel/projects` endpoint showing all registered project→port mappings
+- [x] Relay deployed: 8 projects auto-discovered, clean 60s refresh cycle
+- [x] Routing verified: `GET /p/apm/api/status`, `GET /api/status` (default) both work
+- [x] session_init.sh: CCEMHelper launch added alongside APM start
+
+## Implementation Checkpoints — v8.6.0 (AgentLock Notification Reliability + In-Browser Approval Modal)
+
+### AgentLock Notification Fixes
+- [x] NotificationLive: agentlock category now shows phx-click Approve/Reject buttons (was broken `<a href>` GET links)
+- [x] approve_action/reject_action handlers call PendingDecisions.decide/2 with request_id from notification metadata
+- [x] POST-method actions filtered from inline href list (no duplicate broken links)
+- [x] GET /api/v2/auth/decide route added — browser-clickable ?request_id=&decision=approve|deny → redirects to /authorization
+- [x] NamespaceResolver.cached/1 and put_cache/1 rescue ArgumentError — no crash when GenServer restarts
+
+### CCEMHelper Direct Notification Delivery (US-001)
+- [x] AGENTLOCK_APPROVAL UNNotificationCategory registered in CCEMHelperApp.init()
+- [x] Approve/Deny UNNotificationAction buttons in macOS banner (identifier: APPROVE / DENY)
+- [x] didReceive resolves pending_id from userInfo, calls POST /api/v2/auth/pending/:id/approve|deny
+- [x] Notification content: title "AgentLock: [displayName]", body "[tool] requires approval · [risk] risk"
+
+### CCEMHelper Test Notification (US-002)
+- [x] "Test Notification" button in SettingsView — fires direct UNUserNotificationContent, no APM round-trip
+- [x] Shows permission alert if not granted, links to System Settings > Notifications
+
+### APM In-Browser Approval Modal (US-003)
+- [x] AuthorizationLive: full-screen overlay modal (z-[9999], backdrop-blur) with agent name, tool, risk, 20s CountdownTimer, Approve/Deny
+- [x] DashboardLive: compact floating banner strip above UPM panel; subscribe agentlock:pending PubSub; inline Approve/Deny + deep-link
+- [x] approve_gate/deny_gate handle_event dispatches to PendingDecisions.decide/2
+
+### Release
+- [x] mix.exs bumped to 8.6.0; @server_version + @app_version updated
+- [x] CHANGELOG.md v8.6.0 entry
+- [x] swift build -c release ✓ PASS
+- [x] mix compile --warnings-as-errors ✓ PASS
+- [x] Plane: CCEM-304 through CCEM-307 → Done
+- After: `mix compile --warnings-as-errors` ✓ PASS | `swift build -c release` ✓ PASS | APM 8.6.0 running
+
+## Implementation Checkpoints — ralph/ccem-v890-platform-refactor (v8.9.0)
+
+### Wave 1: Behaviour Contracts + JS Graphs (Independent)
+- [x] **CP-185**: PluginBehaviour optional callbacks nav_items/0, settings_path/0, plugin_live_module/0, plugin_integrations/0 (US-002)
+- [x] **CP-186**: IntegrationBehaviour required_plugin/0 + target_native_feature/0; symbiosis wiring in IntegrationRegistry (US-016)
+- [x] **CP-187**: Formation graph TB layout mode + namespace bounding rectangle hulls + auto-collapse >50 nodes (US-007)
+- [x] **CP-188**: Dashboard dep graph project grouping + inactive project collapse; toggle_project_collapse handler (US-008)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: GenServer + UI (depends on Wave 1)
+- [x] **CP-189**: AgentRegistry agent_name/agent_type/agent_definition fields; normalize_agent_type/1; BackgroundTasksStore fire-and-forget on register (US-006)
+- [x] **CP-190**: NotificationLive grouped view by category; buffer cap 2000; RoutingLive recent_decisions (US-004/US-020)
+- [x] **CP-191**: SessionManager JSONL scan (load_jsonl_sessions/0); NamespaceResolver agent_name lookup (US-005/US-021)
+- [x] **CP-192**: SessionTimelineLive swim-lane redesign; time-window selector (US-013)
+- [x] **CP-193**: UsageLive token breakdown stacked bars; expanded_projects accordion (US-012)
+- [x] **CP-194**: SkillsLive fix wizard async preview; step navigation; duplicate defp fix (US-011)
+- [x] **CP-195**: RalphPluginLive at /plugins/ralph (US-009)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 3: PlanePmAlign + Release Prep (depends on Wave 2)
+- [x] **CP-196**: ApmV5.PlanePmAlign GenServer — persistent_service, 5min Plane poll, "plane:sync" PubSub (US-018)
+- [x] **CP-197**: V2.PlaneController — GET /api/v2/plane/sync-status + POST /api/v2/plane/sync (US-018)
+- [x] **CP-198**: Plugin/Integration symbiosis: AgUiIntegration, AgentLockIntegration, cross-reference helpers (US-016)
+- [x] **CP-199**: mix.exs → 8.9.0; @server_version/@app_version → "8.9.0"; CHANGELOG v8.9.0 entry (US-019)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 4: Docs + AG-UI Plugin (depends on Wave 3)
+- [x] **CP-200**: priv/docs changelog, api-reference, docs.json updated for v8.9.0 (US-015)
+- [x] **CP-201**: AgUiPluginLive at /plugins/ag_ui — Events/Agents/Config tabs; sidebar nav (US-017)
+- [x] **CP-202**: SimpleAgentsPlugin coalesced to v2.0.0 (11 actions: workspace_info, list_agents, list_tools, list_traces, get_trace, list_tasks, get_metrics, trace_summary, provider_stats, list_workflows, parity_status)
+- After Wave 4: `mix compile --warnings-as-errors` ✓ PASS | commit 44f47bb
+
+## Implementation Checkpoints -- ralph/ccem-v8-10-0-consolidated
+
+### Wave 1: Agent Alignment Registry + Dashboard Widget Design (Independent)
+- [x] **CP-220**: AgentIdentity module -- 67-agent manifest with referential integrity validation (US-220)
+- [x] **CP-221**: WidgetRegistry GenServer -- 8 core widget schemas (agent_fleet, formation_monitor, notification_hub, upm_status, metrics_overview, skill_health, port_status, recent_activity) (US-221)
+- [x] **CP-222**: LayoutStore GenServer -- 6 presets + 12 scenario layouts from priv/dashboard/presets.json (US-222)
+- [x] **CP-223**: AlignmentLive at /alignment -- D3.js agent dependency graph (US-220)
+- After Wave 1: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 2: AutoApproval Policies + Command Context Enrichment (Independent)
+- [x] **CP-224**: AutoApprovalStore GenServer -- hierarchical scope matching (agent > formation > session > project), AND logic, TTL expiry, ETS-backed (US-223)
+- [x] **CP-225**: AutoApprovalController -- 6 REST endpoints at /api/v2/auth/auto-approval-policies (US-224)
+- [x] **CP-226**: AutoApprovalStore tests -- 27 comprehensive tests, 100% passing (US-225)
+- [x] **CP-227**: CommandContextExtractor -- 40+ patterns, action_type/action_detail/approval_reasoning (US-226)
+- [x] **CP-228**: CommandContextExtractor tests -- 28 comprehensive tests, 100% passing (US-227)
+- After Wave 2: `mix compile --warnings-as-errors` ✓ PASS | 55 tests, 0 failures
+
+### Wave 3: Authorization Pipeline Integration (depends on Wave 2)
+- [x] **CP-229**: PendingDecisions enrichment -- CommandContextExtractor.analyze/2 on all escalations (US-228)
+- [x] **CP-230**: AuthorizationGate auto-approval pipeline -- find_matching/6 before PendingDecisions escalation (US-231)
+- [x] **CP-231**: Audit log enrichment -- action_type, action_detail, approval_reasoning in all entries (US-232)
+- After Wave 3: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 4: Platform Integration (depends on Wave 1 + Wave 3)
+- [x] **CP-232**: Router -- auto-approval-policies routes + alignment live route wired (US-224)
+- [x] **CP-233**: AuthSupervisor -- AutoApprovalStore added to supervision tree (US-223)
+- [x] **CP-234**: Application.ex -- WidgetRegistry + LayoutStore in supervision tree (US-221)
+- After Wave 4: `mix compile --warnings-as-errors` ✓ PASS
+
+### Wave 5: Release + Documentation (depends on all waves)
+- [x] **CP-235**: mix.exs version bump 8.9.0 -> 8.10.0 (US-239)
+- [x] **CP-236**: @server_version + @app_version -> "8.10.0" (US-239)
+- [x] **CP-237**: priv/docs/changelog.md v8.10.0 entry (US-242)
+- [x] **CP-238**: priv/docs/versions.json v8.10.0 entry (US-242)
+- [x] **CP-239**: priv/docs/docs.json version bump + description updates (US-242)
+- [x] **CP-240**: priv/docs/developer/api-reference.md v8.10.0 additions (US-242)
+- [x] **CP-241**: CLAUDE.md checkpoints CP-220 through CP-244 (US-238)
+- [x] **CP-242**: CLAUDE.md current version -> v8.10.0 (US-238)
+- After Wave 5: `mix compile --warnings-as-errors` ✓ PASS

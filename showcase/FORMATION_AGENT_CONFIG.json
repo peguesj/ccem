@@ -1,0 +1,91 @@
+{
+  "formation_id": "fmt-20260330-showcase-fleet",
+  "project": "lily-ai-phx",
+  "formation_started": "2026-03-30T00:00:00Z",
+  "coordination_notes": "All generated files must be written to output_base_path for immediate web access",
+
+  "critical_paths": {
+    "output_base_path": "/Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx",
+    "diagrams_path": "/Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx/diagrams",
+    "web_root": "/Users/jeremiah/Developer/ccem/showcase/client",
+    "http_port": 3001,
+    "apm_base_url": "http://localhost:3032",
+    "project_id": "lily-ai-phx"
+  },
+
+  "web_access_urls": {
+    "showcase_client": "http://localhost:3001/client/index.html?project=lily-ai-phx",
+    "apm_api_endpoint": "http://localhost:3032/api/showcase/lily-ai-phx",
+    "data_directory": "http://localhost:3001/client/data/projects/lily-ai-phx/",
+    "diagrams_url": "http://localhost:3001/client/data/projects/lily-ai-phx/diagrams/"
+  },
+
+  "agent_output_files": {
+    "wave_1_discovery": {
+      "architecture_report": "output_base_path/architecture-report.json",
+      "narrative_arcs": "output_base_path/narrative-arcs.json"
+    },
+    "wave_2_generation": {
+      "diagrams": "diagrams_path/*.mmd (c4-context, c4-container, process-flow, deployment, journey)",
+      "narrative_content": "output_base_path/narrative-content.json",
+      "content_blocks": "output_base_path/content-blocks.json",
+      "speaker_notes": "output_base_path/speaker-notes.json",
+      "slides": "output_base_path/slides.json"
+    },
+    "wave_3_assembly": {
+      "validation_report": "output_base_path/validation-report.json",
+      "showcase_html": "output_base_path/showcase.html",
+      "presenter_html": "output_base_path/presenter.html",
+      "styles_css": "output_base_path/styles.css",
+      "showcase_js": "output_base_path/showcase.js"
+    }
+  },
+
+  "client_data_loading_flow": {
+    "priority_1": "APM API: GET http://localhost:3032/api/showcase/lily-ai-phx (primary source)",
+    "priority_2": "Local project files: /data/projects/lily-ai-phx/features.json + narrative-content.json + design-system.json",
+    "priority_3": "Default fallback: /data/features.json (generic defaults)"
+  },
+
+  "environment_variables_for_agents": {
+    "PROJECT_ID": "lily-ai-phx",
+    "OUTPUT_BASE": "/Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx",
+    "DIAGRAMS_PATH": "/Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx/diagrams",
+    "APM_BASE_URL": "http://localhost:3032",
+    "WEB_PORT": "3001",
+    "WEB_HOST": "http://localhost:3001",
+    "PROJECT_REPO": "https://github.com/peguesj/lily-ai-phx"
+  },
+
+  "verification_checklist": {
+    "http_server_running": "lsof -ti:3001 should return PID 84594",
+    "apm_running": "curl http://localhost:3032/api/status should return {status: ok}",
+    "project_dir_exists": "/Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx exists",
+    "project_dir_writable": "touch output_base_path/test.txt should succeed",
+    "web_symlink": "ls -la client/data should show -> ../data",
+    "apm_showcase_endpoint": "curl http://localhost:3032/api/showcase/lily-ai-phx should return project data"
+  },
+
+  "immediate_access_pattern": {
+    "step_1_agent_writes_file": "Agent writes to /Users/jeremiah/Developer/ccem/showcase/data/projects/lily-ai-phx/diagrams/foo.mmd",
+    "step_2_file_accessible_at_url": "Browser can immediately access http://localhost:3001/client/data/projects/lily-ai-phx/diagrams/foo.mmd",
+    "step_3_apm_serves_data": "APM /api/showcase/lily-ai-phx endpoint returns the file metadata in JSON",
+    "step_4_client_renders": "HTML client at http://localhost:3001/client/index.html?project=lily-ai-phx auto-loads and renders diagrams"
+  },
+
+  "failure_recovery": {
+    "if_port_3001_blocked": "Kill python3 -m http.server 3001 and restart from /Users/jeremiah/Developer/ccem/showcase",
+    "if_apm_unreachable": "Verify http://localhost:3032/api/status returns ok; check CCEM APM on port 3032 not 3031",
+    "if_files_dont_appear": "Verify agent wrote to correct path and refresh browser with Cmd+Shift+R",
+    "if_data_not_in_json": "Check agent populated APM intake or check local file modification times"
+  },
+
+  "url_query_parameters": {
+    "project": "Set to 'lily-ai-phx' to load this project's data",
+    "apm": "Optional; override APM endpoint (default: http://localhost:3032)",
+    "example_url": "http://localhost:3001/client/index.html?project=lily-ai-phx&apm=http://localhost:3032"
+  },
+
+  "last_verified": "2026-03-30T03:00:00Z",
+  "verified_by": "agent-coordinator"
+}

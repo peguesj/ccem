@@ -320,6 +320,20 @@ actor APMClient {
             throw APMClientError.badResponse
         }
     }
+    /// Fetch model capability limits from GET /api/usage/limits
+    func fetchUsageLimits(project: String? = nil) async throws -> UsageLimitsResponse {
+        var url = baseURL.appendingPathComponent("api/usage/limits")
+        if let project = project {
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            components.queryItems = [URLQueryItem(name: "project", value: project)]
+            url = components.url!
+        }
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        return try decoder.decode(UsageLimitsResponse.self, from: data)
+    }
 }
 
 enum APMClientError: Error, LocalizedError {

@@ -2,6 +2,17 @@
 # Common variables and functions for all CCEM APM hooks
 # Source this file from other hooks: source "$HOME/Developer/ccem/apm/hooks/hook_common.sh"
 
+# DevDrive: ensure HooksEnv is mounted and PATH includes devdrive binaries
+HOOKS_ENV="/Volumes/DDRV900"
+SPARSEIMAGE="$HOME/DevDrive/900HOOKS.dmg.sparseimage"
+if [ ! -d "$HOOKS_ENV" ] && [ -f "$SPARSEIMAGE" ]; then
+  hdiutil attach "$SPARSEIMAGE" -mountpoint "$HOOKS_ENV" -quiet -nobrowse 2>/dev/null || true
+fi
+if [ -d "$HOOKS_ENV" ]; then
+  export PATH="$HOOKS_ENV/npm-global/bin:$HOOKS_ENV/python-venv/bin:$PATH"
+  export VIRTUAL_ENV="$HOOKS_ENV/python-venv"
+fi
+
 APM_URL="http://localhost:3032"
 LOG_DIR="$HOME/Developer/ccem/apm/hooks"
 LOG="$LOG_DIR/apm_hook.log"
