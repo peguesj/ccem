@@ -69,19 +69,53 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
         let actionId = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo
 
-        let approveId = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
-        let denyId = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
+        let prefix = "io.pegues.agent-j.labs.ccem.helper.agentlock."
         let restartId = "io.pegues.agent-j.labs.ccem.helper.restart.now"
 
         // Accept both "pending_id" (US-001 AGENTLOCK_APPROVAL category) and legacy "request_id"
         let resolvedRequestId = (userInfo["pending_id"] as? String) ?? (userInfo["request_id"] as? String)
+        let toolName = userInfo["tool_name"] as? String
 
-        if (actionId == approveId || actionId == denyId),
-           let requestId = resolvedRequestId {
-            let decision = actionId == approveId ? "approve" : "deny"
+        if actionId.hasPrefix(prefix), let requestId = resolvedRequestId {
+            let action = String(actionId.dropFirst(prefix.count))
             Task {
                 let apmClient = APMClient()
-                try? await apmClient.submitDecision(requestId: requestId, decision: decision)
+
+                switch action {
+                case "approve":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+
+                case "allow5min":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                    if let tool = toolName {
+                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 5)
+                    }
+
+                case "allow30min":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                    if let tool = toolName {
+                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 30)
+                    }
+
+                case "always_allow":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                    if let tool = toolName {
+                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 1440)
+                    }
+
+                case "deny":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "deny")
+
+                case "always_deny":
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "deny")
+                    if let tool = toolName {
+                        try? await apmClient.createPolicyRule(toolName: tool, rule: "always_deny")
+                    }
+
+                default:
+                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                }
+
                 await MainActor.run {
                     APMWindowManager.shared.openDashboard(path: "/authorization")
                 }

@@ -320,6 +320,39 @@ actor APMClient {
             throw APMClientError.badResponse
         }
     }
+
+    /// Create a time-limited auto-approval policy for a tool
+    func createAutoApprovalPolicy(toolName: String, minutes: Int) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/auto-approval-policies"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = [
+            "allowed_tools": [toolName],
+            "allowed_risk_levels": "all",
+            "ttl_minutes": minutes,
+            "created_by": "ccemhelper",
+            "reason": "Allowed \(toolName) for \(minutes)min via macOS notification"
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    /// Create a permanent policy rule (always_allow or always_deny)
+    func createPolicyRule(toolName: String, rule: String) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/policy-rules"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: String] = ["tool_name": toolName, "rule": rule]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
     /// Fetch model capability limits from GET /api/usage/limits
     func fetchUsageLimits(project: String? = nil) async throws -> UsageLimitsResponse {
         var url = baseURL.appendingPathComponent("api/usage/limits")

@@ -505,6 +505,7 @@ final class EnvironmentMonitor {
         content.userInfo = [
             "pending_id": decision.requestId,
             "request_id": decision.requestId,
+            "tool_name": decision.toolName,
             "type": "agentlock_pending"
         ]
 
