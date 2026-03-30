@@ -50,6 +50,14 @@ struct CCEMHelperApp: App {
             intentIdentifiers: [],
             options: []
         )
+        // Dedicated category for pending AgentLock decisions (US-001).
+        // Uses the same Approve/Deny actions; userInfo["pending_id"] carries request_id.
+        let agentlockApprovalCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.agentlockApprovalCategory,
+            actions: [approveAction, denyAction],
+            intentIdentifiers: [],
+            options: []
+        )
         let lifecycleCat = UNNotificationCategory(
             identifier: EnvironmentMonitor.agentLifecycleCategory,
             actions: [],
@@ -62,7 +70,7 @@ struct CCEMHelperApp: App {
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([agentlockCat, lifecycleCat, formationCat])
+        center.setNotificationCategories([agentlockCat, agentlockApprovalCat, lifecycleCat, formationCat])
 
         // Request authorization after delegate and categories are configured.
         // Log result so permission issues are diagnosable without rebuilding.

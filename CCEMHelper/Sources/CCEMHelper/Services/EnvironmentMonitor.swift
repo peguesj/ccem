@@ -42,6 +42,10 @@ final class EnvironmentMonitor {
     static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
     static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
     static let agentlockCategory = "io.pegues.agent-j.labs.ccem.helper.agentlock"
+    /// Dedicated category for pending AgentLock approval decisions.
+    /// Approve/Deny actions are registered in CCEMHelperApp.init().
+    /// userInfo["pending_id"] carries the request_id for decision submission.
+    static let agentlockApprovalCategory = "AGENTLOCK_APPROVAL"
     static let approveActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
     static let denyActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
 
@@ -403,13 +407,26 @@ final class EnvironmentMonitor {
 
     private func postPendingDecisionNotification(_ decision: PendingDecision) async {
         let content = UNMutableNotificationContent()
-        content.title = decision.notificationTitle
-        content.body = decision.notificationBody
-        content.categoryIdentifier = Self.agentlockCategory
+
+        // Title: "AgentLock: [displayName]" using human-readable label when available.
+        let displayName = decision.displayName ?? String(decision.agentId.suffix(8))
+        content.title = "AgentLock: \(displayName)"
+
+        // Body: "[tool] requires approval" with risk context.
+        content.body = "\(decision.toolName) requires approval · \(decision.riskLevel) risk"
+
+        // Use the dedicated AGENTLOCK_APPROVAL category so Approve/Deny actions appear.
+        content.categoryIdentifier = Self.agentlockApprovalCategory
         content.threadIdentifier = "ccem-agentlock-pending"
         content.sound = UNNotificationSound.defaultCritical
-        // Embed request_id so the action handler can submit the decision
-        content.userInfo = ["request_id": decision.requestId, "type": "agentlock_pending"]
+
+        // Embed pending_id (per US-001 spec) AND request_id (legacy compat) so the
+        // action handler in APMNotificationReceiver can submit the decision to APM.
+        content.userInfo = [
+            "pending_id": decision.requestId,
+            "request_id": decision.requestId,
+            "type": "agentlock_pending"
+        ]
 
         let request = UNNotificationRequest(
             identifier: "pending-\(decision.requestId)",

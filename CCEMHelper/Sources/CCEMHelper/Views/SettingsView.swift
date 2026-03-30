@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     // Notification toggles — keys must match EnvironmentMonitor guard checks
@@ -12,6 +13,9 @@ struct SettingsView: View {
 
     @State private var connectionStatus: String = ""
     @State private var isTesting = false
+    @State private var isTestingNotif = false
+    @State private var notifTestStatus: String = ""
+    @State private var showPermissionAlert = false
 
     var body: some View {
         Form {
@@ -44,11 +48,35 @@ struct SettingsView: View {
                 Toggle("AgentLock authorization events", isOn: $notifyAgentLock)
                 Toggle("Formation state changes", isOn: $notifyFormation)
                 Toggle("System events (connect/disconnect)", isOn: $notifySystem)
+
+                HStack {
+                    // US-002: Direct local test notification — bypasses APM round-trip.
+                    // Proves the permission/delegate chain works end-to-end.
+                    Button(isTestingNotif ? "Sending…" : "Test Notification") {
+                        Task { await sendTestNotification() }
+                    }
+                    .disabled(isTestingNotif)
+                    if !notifTestStatus.isEmpty {
+                        Text(notifTestStatus)
+                            .foregroundStyle(notifTestStatus.hasPrefix("✓") ? .green : .red)
+                            .font(.caption)
+                    }
+                }
             }
         }
         .formStyle(.grouped)
         .frame(width: 400)
         .padding()
+        .alert("Notifications Disabled", isPresented: $showPermissionAlert) {
+            Button("Open System Settings") {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("CCEMHelper notifications are disabled. Enable them in System Settings > Notifications > CCEMHelper.")
+        }
     }
 
     private func testConnection() async {
@@ -66,6 +94,42 @@ struct SettingsView: View {
             connectionStatus = code == 200 ? "✓ Connected" : "✗ HTTP \(code)"
         } catch {
             connectionStatus = "✗ Unreachable"
+        }
+    }
+
+    /// US-002: Fires a direct macOS notification without going through APM.
+    /// This validates the UNUserNotificationCenter permission + delegate chain.
+    private func sendTestNotification() async {
+        isTestingNotif = true
+        notifTestStatus = ""
+        defer { isTestingNotif = false }
+
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        guard settings.authorizationStatus == .authorized else {
+            showPermissionAlert = true
+            notifTestStatus = "✗ Permission denied"
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = "CCEMHelper Test"
+        content.body = "Notifications are working"
+        content.sound = .default
+        content.categoryIdentifier = EnvironmentMonitor.agentLifecycleCategory
+
+        let request = UNNotificationRequest(
+            identifier: "ccem-test-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await center.add(request)
+            notifTestStatus = "✓ Sent"
+        } catch {
+            notifTestStatus = "✗ \(error.localizedDescription)"
         }
     }
 }

@@ -68,8 +68,11 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
         let approveId = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
         let denyId = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
 
+        // Accept both "pending_id" (US-001 AGENTLOCK_APPROVAL category) and legacy "request_id"
+        let resolvedRequestId = (userInfo["pending_id"] as? String) ?? (userInfo["request_id"] as? String)
+
         if (actionId == approveId || actionId == denyId),
-           let requestId = userInfo["request_id"] as? String {
+           let requestId = resolvedRequestId {
             let decision = actionId == approveId ? "approve" : "deny"
             Task {
                 let apmClient = APMClient()
