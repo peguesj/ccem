@@ -49,8 +49,12 @@ final class EnvironmentMonitor {
     /// Approve/Deny actions are registered in CCEMHelperApp.init().
     /// userInfo["pending_id"] carries the request_id for decision submission.
     static let agentlockApprovalCategory = "AGENTLOCK_APPROVAL"
+    static let agentlockGroupedApprovalCategory = "AGENTLOCK_GROUPED_APPROVAL"
     static let approveActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
     static let denyActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
+    static let approveAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve_all"
+    static let denyAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny_all"
+    static let reviewActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.review"
 
     var filteredEnvironments: [APMEnvironment] {
         switch filter {
@@ -477,8 +481,14 @@ final class EnvironmentMonitor {
             }
 
             guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLock") else { return }
-            for decision in newDecisions {
-                await postPendingDecisionNotification(decision)
+
+            // Grouped notification when multiple pending decisions arrive
+            if newDecisions.count > 1 {
+                await postGroupedPendingNotification(newDecisions)
+            } else {
+                for decision in newDecisions {
+                    await postPendingDecisionNotification(decision)
+                }
             }
         } catch {
             // Non-critical: silently skip pending poll failures
@@ -511,6 +521,40 @@ final class EnvironmentMonitor {
 
         let request = UNNotificationRequest(
             identifier: "pending-\(decision.requestId)",
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            Self.osascriptNotify(title: content.title, body: content.body)
+        }
+    }
+
+    private func postGroupedPendingNotification(_ decisions: [PendingDecision]) async {
+        let content = UNMutableNotificationContent()
+        content.title = "AgentLock: \(decisions.count) approvals pending"
+
+        // Show first few tool names as summary
+        let toolSummary = decisions.prefix(3).map { $0.toolName }.joined(separator: ", ")
+        let suffix = decisions.count > 3 ? " + \(decisions.count - 3) more" : ""
+        content.body = "\(toolSummary)\(suffix)"
+
+        content.categoryIdentifier = Self.agentlockGroupedApprovalCategory
+        content.threadIdentifier = "ccem-agentlock-pending"
+        content.sound = UNNotificationSound.defaultCritical
+
+        // Embed all pending IDs so approve-all/deny-all can resolve them
+        let pendingIds = decisions.map { $0.requestId }
+        content.userInfo = [
+            "pending_ids": pendingIds,
+            "type": "agentlock_grouped_pending",
+            "count": decisions.count
+        ]
+
+        let request = UNNotificationRequest(
+            identifier: "grouped-pending-\(Date().timeIntervalSince1970)",
             content: content,
             trigger: nil
         )

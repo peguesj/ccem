@@ -83,6 +83,28 @@ struct CCEMHelperApp: App {
             intentIdentifiers: [],
             options: []
         )
+        // Grouped approval category with Approve All / Deny All actions (US-325).
+        let approveAllAction = UNNotificationAction(
+            identifier: EnvironmentMonitor.approveAllActionIdentifier,
+            title: "Approve All",
+            options: []
+        )
+        let denyAllAction = UNNotificationAction(
+            identifier: EnvironmentMonitor.denyAllActionIdentifier,
+            title: "Deny All",
+            options: [.destructive]
+        )
+        let reviewAction = UNNotificationAction(
+            identifier: EnvironmentMonitor.reviewActionIdentifier,
+            title: "Review",
+            options: [.foreground]
+        )
+        let groupedApprovalCat = UNNotificationCategory(
+            identifier: EnvironmentMonitor.agentlockGroupedApprovalCategory,
+            actions: [approveAllAction, denyAllAction, reviewAction],
+            intentIdentifiers: [],
+            options: []
+        )
         let lifecycleCat = UNNotificationCategory(
             identifier: EnvironmentMonitor.agentLifecycleCategory,
             actions: [],
@@ -113,7 +135,7 @@ struct CCEMHelperApp: App {
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([agentlockCat, agentlockApprovalCat, lifecycleCat, formationCat, restartCat, versionUpdateCat])
+        center.setNotificationCategories([agentlockCat, agentlockApprovalCat, groupedApprovalCat, lifecycleCat, formationCat, restartCat, versionUpdateCat])
 
         // Request authorization after delegate and categories are configured.
         // This MUST happen exactly once — subsequent calls are ignored by the OS.

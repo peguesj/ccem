@@ -71,6 +71,26 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
 
         let prefix = "io.pegues.agent-j.labs.ccem.helper.agentlock."
         let restartId = "io.pegues.agent-j.labs.ccem.helper.restart.now"
+        let notificationType = userInfo["type"] as? String
+
+        // Handle grouped approve-all / deny-all actions
+        if notificationType == "agentlock_grouped_pending",
+           let pendingIds = userInfo["pending_ids"] as? [String],
+           actionId.hasPrefix(prefix) {
+            let action = String(actionId.dropFirst(prefix.count))
+            let decision = (action == "deny_all" || action == "deny") ? "deny" : "approve"
+            Task {
+                let apmClient = APMClient()
+                for reqId in pendingIds {
+                    try? await apmClient.submitDecision(requestId: reqId, decision: decision)
+                }
+                await MainActor.run {
+                    APMWindowManager.shared.openDashboard(path: "/authorization")
+                }
+            }
+            completionHandler()
+            return
+        }
 
         // Accept both "pending_id" (US-001 AGENTLOCK_APPROVAL category) and legacy "request_id"
         let resolvedRequestId = (userInfo["pending_id"] as? String) ?? (userInfo["request_id"] as? String)
