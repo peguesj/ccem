@@ -26,8 +26,22 @@ struct DockerSocketRepair {
 
     // MARK: - Status
 
-    static func status() -> DockerSocketStatus {
-        // Check if Docker Desktop is running
+    /// Check Docker socket health with a hard timeout on `docker info`.
+    ///
+    /// IMPORTANT: `docker info` can hang indefinitely when the Docker daemon is
+    /// unresponsive (stuck VM, crashed backend, etc). The old synchronous
+    /// `status()` called `process.waitUntilExit()` with no deadline, which would
+    /// wedge the caller's thread forever. When called from SwiftUI's main actor
+    /// (e.g. `.onAppear`), this froze the entire app — including
+    /// `EnvironmentMonitor`'s poll tasks, since @MainActor tasks are cooperatively
+    /// scheduled and a blocked main thread starves all of them.
+    ///
+    /// This async variant:
+    /// 1. Uses `shellWithTimeout` to kill `docker info` after `timeoutSeconds`
+    /// 2. Yields the actor between polls via `Task.sleep` so other work runs
+    /// 3. Is the ONLY approved way to probe Docker status from UI code paths
+    static func asyncStatus(timeoutSeconds: TimeInterval = 2.0) async -> DockerSocketStatus {
+        // Check if Docker Desktop is running (pgrep is bounded fast)
         let dockerRunning = isProcessRunning("Docker Desktop")
 
         // Check raw socket
@@ -40,19 +54,27 @@ struct DockerSocketRepair {
             return .missingSymlink
         }
 
-        // Verify docker info works
-        let (exitCode, _) = shell("/usr/local/bin/docker", ["info"])
+        // Verify docker info works — WITH HARD TIMEOUT
+        let (exitCode, _) = await shellWithTimeout(
+            "/usr/local/bin/docker",
+            ["info"],
+            timeoutSeconds: timeoutSeconds
+        )
         if exitCode == 0 { return .ok }
 
         // Try with homebrew path
-        let (exitCode2, _) = shell("/opt/homebrew/bin/docker", ["info"])
+        let (exitCode2, _) = await shellWithTimeout(
+            "/opt/homebrew/bin/docker",
+            ["info"],
+            timeoutSeconds: timeoutSeconds
+        )
         return exitCode2 == 0 ? .ok : .missingSymlink
     }
 
     // MARK: - Repair
 
     static func repair() async -> Bool {
-        let currentStatus = status()
+        let currentStatus = await asyncStatus()
 
         switch currentStatus {
         case .ok:
@@ -151,5 +173,51 @@ struct DockerSocketRepair {
         } catch {
             return (-1, nil)
         }
+    }
+
+    /// Run a subprocess with a HARD deadline. If the process does not exit within
+    /// `timeoutSeconds`, it is terminated (SIGTERM, then SIGKILL) and `(-1, nil)` is
+    /// returned. This is the ONLY safe way to invoke commands that may hang (e.g.
+    /// `docker info` when the Docker daemon is wedged).
+    ///
+    /// The async poll loop yields the actor via `Task.sleep` between checks, so
+    /// callers on `@MainActor` do not block the main thread.
+    private static func shellWithTimeout(
+        _ command: String,
+        _ args: [String],
+        timeoutSeconds: TimeInterval
+    ) async -> (Int32, String?) {
+        let process = Process()
+        let pipe = Pipe()
+        process.executableURL = URL(fileURLWithPath: command)
+        process.arguments = args
+        process.standardOutput = pipe
+        process.standardError = pipe
+
+        do {
+            try process.run()
+        } catch {
+            return (-1, nil)
+        }
+
+        let deadline = Date().addingTimeInterval(timeoutSeconds)
+        while process.isRunning && Date() < deadline {
+            try? await Task.sleep(for: .milliseconds(50))
+        }
+
+        if process.isRunning {
+            // Graceful SIGTERM, then short wait, then SIGKILL if still alive.
+            process.terminate()
+            try? await Task.sleep(for: .milliseconds(300))
+            if process.isRunning {
+                kill(process.processIdentifier, SIGKILL)
+                // waitUntilExit() is bounded after SIGKILL (kernel reaps quickly).
+                process.waitUntilExit()
+            }
+            return (-1, nil)
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        return (process.terminationStatus, String(data: data, encoding: .utf8))
     }
 }

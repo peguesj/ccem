@@ -8,12 +8,12 @@ extension Notification.Name {
 
 @main
 struct CCEMHelperApp: App {
-    @State private var monitor = EnvironmentMonitor()
+    @State private var monitor: EnvironmentMonitor
     @State private var launchManager = LaunchManager()
     @State private var notificationReceiver: APMNotificationReceiver
     @State private var serverManager = APMServerManager()
-    @State private var formationMonitor = FormationMonitor()
-    @State private var upmMonitor = UPMMonitor()
+    @State private var formationMonitor: FormationMonitor
+    @State private var upmMonitor: UPMMonitor
 
     init() {
         // Register default values so AppStorage reads return correct defaults
@@ -33,6 +33,27 @@ struct CCEMHelperApp: App {
         // Apple: "Set the delegate as early as possible in the launch sequence."
         let receiver = MainActor.assumeIsolated { APMNotificationReceiver() }
         _notificationReceiver = State(wrappedValue: receiver)
+
+        // PERMANENT FIX: Start monitors in init() rather than MenuBarView.task {}.
+        // Background: MenuBarExtra(.window) instantiates its content view LAZILY
+        // on first click, so any .task{} modifier on MenuBarView never fires for
+        // launchd-spawned instances — until the user manually clicks the menu bar
+        // icon. That's why freshly-booted CCEMHelper appeared "stalled": it was
+        // alive but had never called monitor.start(). We own these instances
+        // before the scene graph does, so constructing them here and kicking off
+        // their poll loops guarantees polling begins within milliseconds of
+        // process launch regardless of user interaction.
+        let monitorInstance = MainActor.assumeIsolated { EnvironmentMonitor() }
+        let formationInstance = MainActor.assumeIsolated { FormationMonitor() }
+        let upmInstance = MainActor.assumeIsolated { UPMMonitor() }
+        _monitor = State(wrappedValue: monitorInstance)
+        _formationMonitor = State(wrappedValue: formationInstance)
+        _upmMonitor = State(wrappedValue: upmInstance)
+        MainActor.assumeIsolated {
+            monitorInstance.start()
+            formationInstance.start()
+            upmInstance.start()
+        }
 
         let center = UNUserNotificationCenter.current()
         center.delegate = receiver

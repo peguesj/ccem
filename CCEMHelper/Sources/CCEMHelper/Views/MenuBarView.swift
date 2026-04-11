@@ -1067,7 +1067,7 @@ struct MenuBarView: View {
                     isRepairingDocker = true
                     Task {
                         let success = await DockerSocketRepair.repair()
-                        dockerStatus = success ? .ok : DockerSocketRepair.status()
+                        dockerStatus = success ? .ok : await DockerSocketRepair.asyncStatus()
                         isRepairingDocker = false
                     }
                 } label: {
@@ -1086,7 +1086,15 @@ struct MenuBarView: View {
                 .padding(.vertical, 6)
             }
         }
-        .onAppear { dockerStatus = DockerSocketRepair.status() }
+        // PERMANENT FIX: must use .task (async) not .onAppear (sync).
+        // `.onAppear` ran `status()` which shelled out to `docker info` and called
+        // `waitUntilExit()` synchronously on the main thread. When the Docker daemon
+        // was wedged, this blocked the main actor forever, starving all 4
+        // EnvironmentMonitor poll tasks and causing CCEMHelper to appear "stalled"
+        // even though the process was alive. `.task` runs on the concurrency system
+        // and `asyncStatus()` kills `docker info` after 2s, so the main actor is
+        // never blocked regardless of Docker daemon health.
+        .task { dockerStatus = await DockerSocketRepair.asyncStatus() }
     }
 
     // MARK: - Background Tasks Section
