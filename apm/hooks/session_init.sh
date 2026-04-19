@@ -1,7 +1,8 @@
 #!/bin/bash
-# CCEM APM v4 Session Initialization Hook
+# CCEM APM v9.0.0 Session Initialization Hook
 # Called from Claude Code SessionStart hook to ensure APM server is running
 # and register the current session within the multi-project config.
+# Max-payload: session_id, project, working_dir, git_branch, timestamp.
 #
 # Architecture: Single server on port 3032 with multi-project namespacing.
 # Config uses v4 schema with projects array -- sessions APPEND, never overwrite.
@@ -89,11 +90,15 @@ cleanup_stale_beam() {
 }
 
 # Start APM v4 Phoenix server if not running
+# Uses flock to prevent concurrent invocations from racing (CCEM-392)
 start_apm() {
     if [ ! -d "$APM_V4_DIR" ]; then
         log "ERROR: APM v4 dir not found at $APM_V4_DIR"
         return 1
     fi
+
+    # Pre-flight: ensure epmd is running (BEAM distributed-protocol daemon)
+    epmd -daemon 2>/dev/null || true
 
     # Pre-flight: clean up any zombie BEAM processes holding the port
     cleanup_stale_beam
@@ -349,10 +354,33 @@ main() {
         log "Hook state TTL cleanup: removed files older than 24h from $STATE_DIR"
     fi
 
+    # CCEM-392: mkdir mutex prevents concurrent session_init calls from
+    # racing to start multiple BEAM instances on the same port.
+    # mkdir is atomic on POSIX — only one process succeeds.
+    local lock_dir="/tmp/.ccem-apm-init.lock"
     if is_apm_running; then
         log "APM server already running on port $APM_PORT"
     else
-        start_apm || log "WARN: Could not start APM server (non-fatal)"
+        if mkdir "$lock_dir" 2>/dev/null; then
+            # We hold the lock — clean up on exit
+            trap 'rmdir "$lock_dir" 2>/dev/null' EXIT
+            # Double-check after acquiring lock
+            if ! is_apm_running; then
+                start_apm || log "WARN: Could not start APM server (non-fatal)"
+            fi
+            rmdir "$lock_dir" 2>/dev/null
+            trap - EXIT
+        else
+            # Another init is running — stale lock safety valve (60s)
+            local lock_age
+            lock_age=$(( $(date +%s) - $(stat -f %m "$lock_dir" 2>/dev/null || echo "0") ))
+            if [ "$lock_age" -gt 60 ]; then
+                log "WARN: Stale lock (${lock_age}s old) — removing"
+                rmdir "$lock_dir" 2>/dev/null
+            else
+                log "Another session_init is starting APM — skipping"
+            fi
+        fi
     fi
 
     init_trace_context

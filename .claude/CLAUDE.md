@@ -109,11 +109,11 @@ pkill -9 -f "mix phx.server"
 
 ## OpenAPI Endpoints
 
-Both serve the full 56-path OpenAPI 3.0.3 spec:
+Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v9.0.0
+## Current Version: v9.1.1
 
 
 ## Implementation Checkpoints
@@ -156,3 +156,26 @@ Both serve the full 56-path OpenAPI 3.0.3 spec:
 ### Wave 3: Tests (depends on Wave 2)
 - [x] **CP-70**: 41-test suite for `SecurityGuidancePlugin` — contract, endpoints, all actions, nav, widgets (US-333)
 - After Wave 3: `mix test test/apm_v5/plugins/security/` ✓ (41/41)
+
+---
+
+## Hooks Max-Payload Upgrade v9.0.0 — apm_hooks_max_payload
+
+### Wave 1: Identity & Base Payload (4 stories, independent)
+- [x] **CP-71**: Hook version headers v7→v9 across all 9 hooks (US-334)
+- [x] **CP-72**: Max-payload: session_id + project + working_dir in all hook payloads (US-335)
+- [x] **CP-73**: Max-payload: git_branch resolution in pre/post tool hooks (US-336)
+- [x] **CP-74**: Agent identity resolution chain in agentlock hooks (US-337)
+- After Wave 1: all hooks emit v9 payloads with identity + context fields ✓
+
+### Wave 2: Detection & Enrichment (4 stories, depends on Wave 1)
+- [x] **CP-75**: Memory write detection in pre/post tool hooks (US-338)
+- [x] **CP-76**: Skill invocation tracking in pre/post tool hooks (US-339)
+- [x] **CP-77**: Pattern heartbeat emission every 10 tool calls (US-340)
+- [x] **CP-78**: Expanded tool mapping + context enrichment in agentlock_context (US-341)
+- After Wave 2: memory writes, skill invocations, and patterns tracked in APM ✓
+
+### Wave 3: Audit & Cleanup (2 stories, depends on Wave 2)
+- [x] **CP-79**: Notification audit trail in agentlock_post_tool (US-342)
+- [x] **CP-80**: Session end summary with tool count and cleanup (US-343)
+- After Wave 3: full audit trail and session lifecycle complete ✓
