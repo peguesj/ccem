@@ -1,0 +1,628 @@
+{
+  "phase": "plan",
+  "generated": "2026-03-30",
+  "formation_id": "fmt-20260330-idea-reveng",
+  "source_project": "lily-ai-phx",
+  "plane_project_id": "2b6977ee-89fa-4540-9f6c-bdc3d225aadf",
+  "roadmap": {
+    "now": [
+      {
+        "epic": "Progressive Assessment Funnel",
+        "raps_score": 9.55,
+        "investment": "$17.5K",
+        "timeline": "Weeks 1-4",
+        "revenue_potential": "$6.2M enabler",
+        "roi": "354x"
+      },
+      {
+        "epic": "Therapeutic Zestimate V1",
+        "raps_score": 8.08,
+        "investment": "$33.8K",
+        "timeline": "Weeks 3-8",
+        "revenue_potential": "$14.3M",
+        "roi": "424x"
+      },
+      {
+        "epic": "Therapy Connect Enhancement",
+        "raps_score": 8.80,
+        "investment": "$16.9K",
+        "timeline": "Weeks 6-8",
+        "revenue_potential": "$4.5M",
+        "roi": "267x"
+      },
+      {
+        "epic": "Supply-First Metro Launch",
+        "raps_score": 7.74,
+        "investment": "$65K",
+        "timeline": "Weeks 2-12 (parallel GTM)",
+        "revenue_potential": "$25.6M enabler",
+        "roi": "394x"
+      }
+    ],
+    "next": [
+      {
+        "epic": "Coach AI Enhancement",
+        "raps_score": 6.72,
+        "investment": "$14K",
+        "revenue_potential": "$3.89M",
+        "roi": "278x"
+      },
+      {
+        "epic": "Longitudinal Outcome Dashboard Phase 1",
+        "raps_score": 5.36,
+        "investment": "$56.3K",
+        "revenue_potential": "$7.25M",
+        "roi": "129x"
+      },
+      {
+        "epic": "Org ROI Dashboard",
+        "raps_score": 7.10,
+        "investment": "$37.5K",
+        "revenue_potential": "$9.13M",
+        "roi": "243x"
+      },
+      {
+        "workstream": "Freemium Paywall"
+      },
+      {
+        "workstream": "Therapist Premium"
+      },
+      {
+        "workstream": "Credential Verification"
+      }
+    ],
+    "later": [
+      {
+        "epic": "ML Pipeline + Clinical Validation"
+      },
+      {
+        "epic": "Multi-Metro Expansion",
+        "metros": ["Denver", "Portland", "Raleigh-Durham"]
+      },
+      {
+        "epic": "Therapist Referral Loop"
+      },
+      {
+        "epic": "AI Profile Quality Scoring"
+      }
+    ],
+    "decision_gates": [
+      {
+        "gate": "A",
+        "week": 12,
+        "criteria": "Zestimate A/B test: GO if 30%+ satisfaction improvement"
+      },
+      {
+        "gate": "B",
+        "week": 16,
+        "criteria": "Metro expansion: GO if 50+ therapists per metro"
+      },
+      {
+        "gate": "C",
+        "week": 20,
+        "criteria": "Org sales: GO if 3 pilot contracts signed"
+      },
+      {
+        "gate": "D",
+        "week": 24,
+        "criteria": "Series A readiness: GO if $1M+ ARR run-rate"
+      }
+    ],
+    "pivot_playbook": [
+      "Therapist SaaS",
+      "B2B-Only",
+      "Coach AI Platform"
+    ],
+    "total_investment_range": "$383K-$542K over 18 months",
+    "expected_roi": "21.6x"
+  },
+  "phases_completed": [
+    {
+      "phase": 1,
+      "name": "Initial Phoenix Scaffold",
+      "stories": 1,
+      "version": "0.1.0",
+      "commit": "3bbdb25",
+      "description": "Phoenix scaffold + project management infrastructure"
+    },
+    {
+      "phase": 2,
+      "name": "Auth Scaffold & Design System",
+      "stories": 1,
+      "version": "0.2.0",
+      "commit": "9392584",
+      "description": "Wave 1 - auth scaffold and Lily design system (US-001)"
+    },
+    {
+      "phase": 3,
+      "name": "Core Database Schema",
+      "stories": 1,
+      "version": "0.3.0",
+      "commit": "8578cc1",
+      "description": "Wave 2 - core database schema (US-002)"
+    },
+    {
+      "phase": 4,
+      "name": "Core Features",
+      "stories": 5,
+      "version": "0.4.0",
+      "commit": "8ab4b94",
+      "description": "Wave 3 - core features (5 stories)"
+    },
+    {
+      "phase": 5,
+      "name": "Advanced Features",
+      "stories": 5,
+      "version": "0.5.0",
+      "commit": "4ec0ca4",
+      "description": "Wave 4 - advanced features (5 stories)"
+    },
+    {
+      "phase": 6,
+      "name": "PERMA-V Analytics & GA4",
+      "stories": 1,
+      "version": "0.6.0",
+      "commit": "12071f1",
+      "description": "Wave 5 - PERMA-V analytics and GA4 (US-015)"
+    },
+    {
+      "phase": 7,
+      "name": "Visual Design & Lottie",
+      "stories": 2,
+      "version": "0.7.0",
+      "commit": "93a2372",
+      "description": "Lottie animation integration, branded homepage, visual design system port"
+    },
+    {
+      "phase": 8,
+      "name": "Seed Data & Admin Dashboard",
+      "stories": 14,
+      "version": "0.8.0",
+      "commit": "363c8df",
+      "description": "Seed data, dev tools, admin dashboard (14 stories, Waves 1-3)"
+    },
+    {
+      "phase": 9,
+      "name": "Style Consistency Epic",
+      "stories": 8,
+      "version": "0.9.0",
+      "commit": "95dfdfe",
+      "description": "Style consistency (US-040 through US-047)"
+    },
+    {
+      "phase": 10,
+      "name": "Quiz System & Therapist Profiles",
+      "stories": 12,
+      "version": "0.10.0",
+      "commit": "eda92a9",
+      "description": "Quiz system, therapist profiles, search, crisis support (US-048 through US-059)"
+    },
+    {
+      "phase": 11,
+      "name": "UAT Tools Port & Gap Resolution",
+      "stories": 12,
+      "version": "0.11.0",
+      "commit": "3b69273",
+      "description": "UAT tools port + gap resolution (US-060 through US-071)"
+    },
+    {
+      "phase": 12,
+      "name": "Azure Deployment Infrastructure",
+      "stories": 10,
+      "version": "0.12.0",
+      "commit": "da483f1",
+      "description": "Azure deployment infrastructure (US-072 through US-081)"
+    },
+    {
+      "phase": 13,
+      "name": "UAT Interactivity System",
+      "stories": 12,
+      "version": "0.13.0",
+      "commit": "77c7832",
+      "description": "UAT interactivity system (US-082 through US-093)"
+    },
+    {
+      "phase": 14,
+      "name": "Multi-Portal Architecture",
+      "stories": 26,
+      "version": "0.14.0",
+      "commit": "f845d55",
+      "description": "Admin portal, org portal, therapist dashboard, public pages, auth selectors, MFA (US-094 through US-119, 5 waves)"
+    },
+    {
+      "phase": 15,
+      "name": "Real DB Queries & Data Parity",
+      "stories": 31,
+      "version": "v1.0.3",
+      "commit": "b333a8d",
+      "description": "Replace all mock data with real DB queries (LILY-171 through LILY-201, 4 waves)"
+    },
+    {
+      "phase": 16,
+      "name": "CMS WYSIWYG & Asset Port",
+      "stories": 10,
+      "version": "v1.3.0",
+      "commit": "fbe42f2",
+      "description": "CMS WYSIWYG, UAT dashboard, email settings, icon assets UI, feature flags (CP-120 to CP-126)"
+    },
+    {
+      "phase": 17,
+      "name": "Platform Enhancements",
+      "stories": 13,
+      "version": "v1.4.0",
+      "commit": "81ac41d",
+      "description": "Notification tray, 2FA badges, WYSIWYG for org/therapist portals, production readiness"
+    },
+    {
+      "phase": 18,
+      "name": "Core Features Verified",
+      "stories": 7,
+      "version": "v1.5.0",
+      "commit": "e2476f4",
+      "description": "Demo mode DB, 2FA TOTP, Stripe real checkout, compliance DB, quiz import + builder, feature flag rules UI"
+    },
+    {
+      "phase": 19,
+      "name": "Editor, Payments, UAT",
+      "stories": 5,
+      "version": "v1.6.0",
+      "commit": "9bb6ccd",
+      "description": "TipTap WYSIWYG, PayPal Orders API v2, 2FA enforcement, UAT email Swoosh, SendGrid mailer"
+    },
+    {
+      "phase": 20,
+      "name": "Messaging, Scoring, Paywalls, Analytics",
+      "stories": 5,
+      "version": "v1.7.0",
+      "commit": "0f60e0f",
+      "description": "Therapist-user messaging LiveView, quiz scoring engine, subscription paywalls, org analytics, therapist schedule tab"
+    },
+    {
+      "phase": 21,
+      "name": "UAT Critical Fixes",
+      "stories": 8,
+      "version": "v1.8.0",
+      "commit": "9c273bd",
+      "description": "RBAC admin_only live_session, TipTap Firefox fix, Coach AI max_tokens 4096, org seat count refresh, quiz filters, Retina srcset"
+    },
+    {
+      "phase": 22,
+      "name": "UAT Critical Fixes + Widget",
+      "stories": 9,
+      "version": "v1.9.0",
+      "commit": "c998f0a",
+      "description": "Dashboard nil crash fix, XSS audit, is_demo migration, directory ?q=, client roster pagination, QuizDraft hook, UAT widget RACI"
+    },
+    {
+      "phase": 23,
+      "name": "UAT Bug Fixes",
+      "stories": 8,
+      "version": "v1.10.0",
+      "commit": "2138ceb",
+      "description": "Quiz, modal, swipe, SVG, pricing, 2FA, UX bug fixes"
+    },
+    {
+      "phase": 24,
+      "name": "Cosmetic Fixes + Minor Logic",
+      "stories": 5,
+      "version": "v1.11.0",
+      "commit": "b755f70",
+      "description": "Cosmetic fixes and minor logic improvements"
+    },
+    {
+      "phase": 25,
+      "name": "Enhanced UAT Testing",
+      "stories": 7,
+      "version": "v1.12.0",
+      "commit": "b1aed7d",
+      "description": "Interactive checklists, guided execution, attach-to-submission"
+    },
+    {
+      "phase": 26,
+      "name": "Homepage Search & Directory Marketing",
+      "stories": 7,
+      "version": "v1.13.0",
+      "commit": "b000835",
+      "description": "Homepage search enhancements, directory marketing hero, OpsDOC strategy report"
+    },
+    {
+      "phase": "open-beta",
+      "name": "Open Beta v1.14.0",
+      "stories": 16,
+      "version": "v1.14.0",
+      "commit": "0ed8499",
+      "description": "Org invitations, Coach AI crisis detection, search autocomplete, beta flags, E2E smoke tests, staging infra"
+    },
+    {
+      "phase": "cms-preview",
+      "name": "CMS Live Preview",
+      "stories": 5,
+      "version": "v1.14.x",
+      "commit": "97fe7b7",
+      "description": "CMS live preview pane, real-time WYSIWYG page rendering"
+    },
+    {
+      "phase": 27,
+      "name": "Homepage CTA Redesign + Style Guide + AG-UI",
+      "stories": 8,
+      "version": "v1.15.0",
+      "commit": "3aa800e",
+      "description": "Role/seeking CTA dropdowns, visual style guide, AG-UI doc panel, What's New modal, AI Research module"
+    },
+    {
+      "phase": 28,
+      "name": "Quiz > Match Funnel Gating",
+      "stories": 7,
+      "version": "v1.15.2",
+      "commit": "5ccf26d",
+      "description": "Quiz completion guard, directory access gating, quiz-to-match funnel enforcement"
+    }
+  ],
+  "total_stories_shipped": 252,
+  "total_plane_issues": 413,
+  "total_commits": 145,
+  "version_history": [
+    "v1.4.0", "v1.5.0", "v1.6.0", "v1.7.0", "v1.8.0", "v1.9.0",
+    "v1.10.0", "v1.11.0", "v1.12.0", "v1.13.0", "v1.14.0", "v1.15.0", "v1.15.1"
+  ],
+  "current_version": "v1.15.1",
+  "epics": [
+    {
+      "id": 1,
+      "name": "Progressive Assessment Funnel",
+      "raps_score": 9.55,
+      "stories": 7,
+      "points": 31,
+      "sprints": "1-4",
+      "investment": "$17.5K",
+      "split_patterns": ["Workflow Steps", "Role"],
+      "critical_path": "US-1.1 > US-1.2 > US-1.3 > US-1.4"
+    },
+    {
+      "id": 2,
+      "name": "Therapeutic Zestimate V1",
+      "raps_score": 8.08,
+      "stories": 7,
+      "points": 36,
+      "sprints": "3-5",
+      "investment": "$33.8K",
+      "split_patterns": ["Workflow Steps", "Business Rule Variation", "Happy Path"],
+      "critical_path": "US-2.1 > US-2.2 > US-2.3 > US-2.6"
+    },
+    {
+      "id": 3,
+      "name": "Therapy Connect Enhancement",
+      "raps_score": 8.80,
+      "stories": 5,
+      "points": 23,
+      "sprints": "5-6",
+      "investment": "$16.9K",
+      "split_patterns": ["Interface Complexity", "Role"],
+      "critical_path": "US-3.1 > US-3.2"
+    },
+    {
+      "id": 4,
+      "name": "Supply-First Metro Launch",
+      "raps_score": 7.74,
+      "stories": 7,
+      "points": 34,
+      "sprints": "2-6 (parallel GTM)",
+      "investment": "$65K",
+      "split_patterns": ["Workflow Steps", "Role", "Happy Path"],
+      "critical_path": "US-4.1 > US-4.3 > US-4.4"
+    },
+    {
+      "id": 5,
+      "name": "Coach AI Enhancement",
+      "raps_score": 6.72,
+      "stories": 6,
+      "points": 31,
+      "sprints": "7-9 (gated on Gate A at Week 12)",
+      "investment": "$14K",
+      "split_patterns": ["Business Rule Variation", "Happy Path"],
+      "critical_path": "US-5.1 > US-5.2 > US-5.3"
+    }
+  ],
+  "user_story_map": {
+    "dimensions": {
+      "total_stories": 96,
+      "activities": 8,
+      "tasks": 32,
+      "slices": 4,
+      "personas": 4
+    },
+    "activities": [
+      "A1: Discover",
+      "A2: Profile",
+      "A3: Assess",
+      "A4: Match",
+      "A5: Engage",
+      "A6: Track",
+      "A7: Admin",
+      "A8: Grow"
+    ],
+    "personas": [
+      {
+        "name": "Anxious Annie",
+        "role": "Client",
+        "stories": 43,
+        "percentage": "47%"
+      },
+      {
+        "name": "Dr. Digital Dave",
+        "role": "Therapist",
+        "stories": 26,
+        "percentage": "28%"
+      },
+      {
+        "name": "HR Hannah",
+        "role": "Org Admin",
+        "stories": 11,
+        "percentage": "12%"
+      },
+      {
+        "name": "Ops Oscar",
+        "role": "Platform Admin",
+        "stories": 13,
+        "percentage": "14%"
+      }
+    ],
+    "slices": [
+      {
+        "name": "MVP - Fit-Confidence Signal",
+        "stories": 28,
+        "goal": ">60% match-to-session",
+        "personas": ["Annie", "Dave"],
+        "scope": "1 metro"
+      },
+      {
+        "name": "v1 - Trust & Engagement",
+        "stories": 31,
+        "goal": "85%+ match satisfaction",
+        "scope": "First revenue"
+      },
+      {
+        "name": "v2 - Enterprise & Scale",
+        "stories": 23,
+        "goal": "3-5 org pilots, 1K+ therapists"
+      },
+      {
+        "name": "v3 - Intelligence & Ecosystem",
+        "stories": 10,
+        "goal": "ML matching v2, multi-metro"
+      }
+    ],
+    "highest_leverage": "Activity 3 (Assess & Generate Fit Signal) - core intervention point",
+    "mvp_critical_path": {
+      "sprints": 7,
+      "weeks": 14,
+      "sequence": [
+        "Sprint 1: Assessment engine + therapist signup (foundation)",
+        "Sprint 2-3: Scoring algorithm + Therapy Connect overlay",
+        "Sprint 4-5: Mutual matching + booking flow",
+        "Sprint 6-7: Coach AI + admin dashboard + polish"
+      ]
+    },
+    "key_tradeoffs": [
+      "Annie + Dave first (B2C marketplace) over Hannah (enterprise sales)",
+      "4-min essential assessment over full 72-instrument battery",
+      "Fully explainable scores over black-box algorithm",
+      "Telehealth deferred to v2 (partner model)"
+    ]
+  },
+  "prd_count": 9,
+  "prd_files": [
+    {"name": "prd.json", "stories": 15, "branch": "ralph/lily-ai-phoenix-port", "status": "all done"},
+    {"name": "prd-phase-17.json", "stories": 13, "branch": "feat/phase-17-platform-enhancements"},
+    {"name": "prd-phase-18.json", "stories": 7, "branch": "ralph/phase-18-core-features"},
+    {"name": "prd-phase-19.json", "stories": 5, "branch": "ralph/phase-19-editor-payments-uat"},
+    {"name": "prd-phase-21.json", "stories": 8, "branch": "ralph/phase-21-uat-critical-major-fixes"},
+    {"name": "prd-phase-22.json", "stories": 9, "branch": "ralph/phase-22-uat-critical-fixes"},
+    {"name": "prd-phase-23.json", "stories": 8, "branch": "ralph/phase-23-uat-fixes"},
+    {"name": "prd-cms-preview.json", "stories": 5, "branch": "ralph/cms-live-preview"},
+    {"name": "prd-open-beta.json", "stories": 16, "branch": "ralph/open-beta-readiness"}
+  ],
+  "sprint_history": {
+    "methodology": "Richard Lawrence Humanizing Work story splitting flowchart",
+    "total_stories": 35,
+    "total_points": 155,
+    "total_sprints": 9,
+    "master_plan": [
+      {
+        "sprints": "1-2",
+        "theme": "Foundation",
+        "focus": "Assessment + Supply",
+        "points": 49
+      },
+      {
+        "sprints": "3-5",
+        "theme": "Core Product",
+        "focus": "Zestimate + Therapy Connect",
+        "points": 59
+      },
+      {
+        "sprints": "5-6",
+        "theme": "Marketplace",
+        "focus": "Metro Launch + Enhancement",
+        "points": 23
+      },
+      {
+        "sprints": "7-9",
+        "theme": "Enhancement",
+        "focus": "Coach AI (gated on Week 12 data)",
+        "points": 31
+      }
+    ],
+    "cross_epic_dependencies": 9,
+    "absolute_critical_path": "US-1.1 > US-2.6 + 4-week data collection (Weeks 1-12 to Gate A)"
+  },
+  "story_splitting": {
+    "methodology": "Richard Lawrence (Humanizing Work) - 6 patterns",
+    "oversized_stories_decomposed": 5,
+    "sub_stories_created": 30,
+    "total_points": 66,
+    "decompositions": [
+      {"story": "Therapeutic Zestimate Score", "sub_stories": 6, "points": 13},
+      {"story": "Practice Management Dashboard", "sub_stories": 7, "points": 16},
+      {"story": "ROI Analytics for Org Admins", "sub_stories": 6, "points": 14},
+      {"story": "Progressive Assessment Onboarding", "sub_stories": 6, "points": 12},
+      {"story": "Supply-Side Marketplace Management", "sub_stories": 5, "points": 11}
+    ],
+    "sprint_allocation": [
+      {"sprint": 1, "points": 19, "stories": 9, "note": "All zero-dependency, can start immediately"},
+      {"sprint": 2, "points": 30, "stories": 13},
+      {"sprint": 3, "points": 14, "stories": 7},
+      {"sprint": 4, "points": 3, "stories": 1}
+    ],
+    "platform_linchpin": "Story 1.2 (core compatibility algorithm) - soft dependency for onboarding match preview (4.4)"
+  },
+  "strategy_formation": {
+    "formation_id": "fmt-product-strategy-suite",
+    "version": "v1.13.0",
+    "waves_total": 9,
+    "waves_complete": 9,
+    "skills_executed": 30,
+    "waves": [
+      {"number": 1, "name": "Foundation", "skills": 5, "status": "complete"},
+      {"number": 2, "name": "Discovery", "skills": 5, "status": "complete"},
+      {"number": 3, "name": "Positioning & Analysis", "skills": 6, "status": "complete"},
+      {"number": 4, "name": "Strategy", "skills": 3, "status": "complete"},
+      {"number": 5, "name": "Economics", "skills": 3, "status": "complete"},
+      {"number": 6, "name": "Planning", "skills": 3, "status": "complete"},
+      {"number": 7, "name": "Execution", "skills": 4, "status": "complete"},
+      {"number": 8, "name": "Validation", "skills": 1, "status": "complete"},
+      {"number": 9, "name": "Market Research", "skills": 1, "status": "complete"}
+    ]
+  },
+  "kpis": {
+    "tam": "$77.4B",
+    "sam": "$8.9B",
+    "som_y3": "$89M",
+    "gross_margin": "90.7%",
+    "ltv_cac_ratio": "17:1",
+    "y1_arr": "$807K",
+    "y3_arr": "$18.6M",
+    "cac_payback_months": 0.6,
+    "nrr_y3": "125%",
+    "rule_of_40": "294+",
+    "quick_ratio_y3": 4.2,
+    "portfolio_roi": "21.6x",
+    "north_star": "85%+ first-match 8-week retention"
+  },
+  "validation": {
+    "product_alignment_score": "71%",
+    "fully_aligned": 14,
+    "partially_aligned": 6,
+    "not_yet_implemented": 7,
+    "e2e_test_scenarios": 20,
+    "risk_items": 17,
+    "formation_skills_validated": 30,
+    "fb_market_research": {
+      "posts_analyzed": 5869,
+      "unique_authors": 2153,
+      "groups_scraped": 17,
+      "referral_requests": 853,
+      "pre_launch_feature_coverage": "75%"
+    }
+  }
+}

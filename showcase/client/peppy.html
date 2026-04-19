@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peppy&#8482; — Showcase</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <style>
     :root {
       --bg: #060d0a; --surface: #0c1a12; --border: rgba(5,150,105,0.18);
@@ -80,12 +80,22 @@
     .fc-footer { display:flex; align-items:center; gap:4px; margin-top:4px; }
     .fc-id { font-size:8px; font-family:'SF Mono',monospace; padding:1px 5px; border-radius:3px; }
 
-    /* ── Mermaid diagram container ── */
-    .mmd-wrap { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin:10px 0; overflow:hidden; }
-    .mmd-wrap svg { max-width:100%; height:auto; display:block; margin:0 auto; }
+    /* ── SVG Diagram containers ── */
+    .svg-diag { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 8px; margin:10px 0; overflow:hidden; }
+    .svg-diag svg { width:100%; height:auto; display:block; }
     .mmd-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
-    .mmd-loading { font-size:10px; color:var(--dim); text-align:center; padding:20px; }
-    .mmd-error { font-size:10px; color:var(--error); text-align:center; padding:12px; }
+
+    /* ── SVG animation keyframes ── */
+    @keyframes dash-flow { to { stroke-dashoffset: -8; } }
+    @keyframes dash-slow  { to { stroke-dashoffset: -12; } }
+    @keyframes node-pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+    @keyframes node-appear { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+    @keyframes edge-draw { from{stroke-dashoffset:200} to{stroke-dashoffset:0} }
+    .flow-edge { stroke-dasharray:5 3; animation: dash-flow .9s linear infinite; }
+    .flow-edge-slow { stroke-dasharray:6 4; animation: dash-slow 1.4s linear infinite; }
+    .node-active-pulse { animation: node-pulse 2.4s ease-in-out infinite; }
+    .node-reveal { animation: node-appear .35s ease-out both; }
+    .edge-reveal { stroke-dasharray:200; animation: edge-draw .6s ease-out both; }
 
     /* ── Architecture (Platform tab) ── */
     .arch-section { margin-bottom:18px; }
@@ -214,12 +224,8 @@
     @keyframes fade-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
     .fade-in { animation:fade-in .25s ease-out forwards; }
 
-    /* Mermaid SVG overrides — force dark fill */
-    .mmd-wrap .node rect, .mmd-wrap .node circle, .mmd-wrap .node ellipse, .mmd-wrap .node polygon { fill:var(--surface) !important; stroke:rgba(5,150,105,0.4) !important; }
-    .mmd-wrap text { fill:var(--text) !important; }
-    .mmd-wrap .edgePath path { stroke:var(--accent) !important; }
-    .mmd-wrap .arrowheadPath { fill:var(--accent) !important; }
-    .mmd-wrap .cluster rect { fill:rgba(12,26,18,0.8) !important; stroke:rgba(5,150,105,0.3) !important; }
+    /* ── Diagram gallery ── */
+    .diagram-gallery { display:grid; grid-template-columns:1fr; gap:12px; }
   </style>
 </head>
 <body>
@@ -271,8 +277,79 @@
 
       <div class="arch-section">
         <div class="section-label">System Architecture</div>
-        <div class="mmd-wrap" id="arch-diagram">
-          <div class="mmd-loading">Rendering architecture diagram…</div>
+        <div class="svg-diag" id="arch-diagram">
+          <svg viewBox="0 0 720 265" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,BlinkMacSystemFont,sans-serif">
+            <defs>
+              <marker id="arr-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="arr-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker>
+            </defs>
+            <!-- Layer 1: Browser -->
+            <rect x="8" y="8" width="485" height="44" rx="5" fill="#060d0a" stroke="rgba(5,150,105,0.35)" stroke-width="1"/>
+            <text x="16" y="20" fill="#3f6b52" font-size="7" font-weight="700" letter-spacing=".08em" text-anchor="start">BROWSER LAYER</text>
+            <rect x="16" y="24" width="145" height="22" rx="3" fill="#0c1a12" stroke="#059669" stroke-width="1" class="node-reveal" style="animation-delay:0ms"/>
+            <text x="88" y="39" fill="#e2f0eb" font-size="8" font-weight="600" text-anchor="middle">Phoenix LiveView</text>
+            <rect x="172" y="24" width="120" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:60ms"/>
+            <text x="232" y="39" fill="#7aad93" font-size="8" text-anchor="middle">HEEx Templates</text>
+            <rect x="304" y="24" width="108" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:120ms"/>
+            <text x="358" y="39" fill="#7aad93" font-size="8" text-anchor="middle">SwiftUI iOS</text>
+            <rect x="424" y="24" width="58" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.3)" stroke-width="1" class="node-reveal" style="animation-delay:180ms"/>
+            <text x="453" y="39" fill="#3f6b52" font-size="7.5" text-anchor="middle">WebSocket</text>
+            <!-- Arrow down -->
+            <line x1="246" y1="52" x2="246" y2="66" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-g)" class="edge-reveal" style="animation-delay:300ms"/>
+            <!-- Layer 2: Router + Plugs -->
+            <rect x="8" y="68" width="485" height="44" rx="5" fill="#060d0a" stroke="rgba(5,150,105,0.3)" stroke-width="1"/>
+            <text x="16" y="80" fill="#3f6b52" font-size="7" font-weight="700" letter-spacing=".08em">ROUTER + PLUGS</text>
+            <rect x="16" y="84" width="106" height="22" rx="3" fill="#0c1a12" stroke="#059669" stroke-width="1" class="node-reveal" style="animation-delay:250ms"/>
+            <text x="69" y="99" fill="#e2f0eb" font-size="8" font-weight="600" text-anchor="middle">Phoenix Router</text>
+            <rect x="130" y="84" width="80" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:310ms"/>
+            <text x="170" y="99" fill="#7aad93" font-size="8" text-anchor="middle">UserAuth</text>
+            <rect x="220" y="84" width="82" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:370ms"/>
+            <text x="261" y="99" fill="#7aad93" font-size="8" text-anchor="middle">AdminAuth</text>
+            <rect x="312" y="84" width="96" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.3)" stroke-width="1" class="node-reveal" style="animation-delay:430ms"/>
+            <text x="360" y="99" fill="#3f6b52" font-size="7.5" text-anchor="middle">DevtoolsGate</text>
+            <!-- Arrow down -->
+            <line x1="246" y1="112" x2="246" y2="126" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-g)" class="edge-reveal" style="animation-delay:500ms"/>
+            <!-- Layer 3: Domain Contexts -->
+            <rect x="8" y="128" width="485" height="44" rx="5" fill="#060d0a" stroke="rgba(5,150,105,0.3)" stroke-width="1"/>
+            <text x="16" y="140" fill="#3f6b52" font-size="7" font-weight="700" letter-spacing=".08em">DOMAIN CONTEXTS (ELIXIR/OTP)</text>
+            <rect x="16" y="144" width="100" height="22" rx="3" fill="#0c1a12" stroke="#0284c7" stroke-width="1" class="node-reveal" style="animation-delay:400ms"/>
+            <text x="66" y="159" fill="#38bdf8" font-size="8" text-anchor="middle">Accounts</text>
+            <rect x="126" y="144" width="100" height="22" rx="3" fill="#0c1a12" stroke="#0d9488" stroke-width="1" class="node-reveal" style="animation-delay:460ms"/>
+            <text x="176" y="159" fill="#2dd4bf" font-size="8" text-anchor="middle">Formulary</text>
+            <rect x="236" y="144" width="100" height="22" rx="3" fill="#0c1a12" stroke="#7c3aed" stroke-width="1" class="node-reveal" style="animation-delay:520ms"/>
+            <text x="286" y="159" fill="#a78bfa" font-size="8" text-anchor="middle">Billing</text>
+            <rect x="346" y="144" width="130" height="22" rx="3" fill="#0c1a12" stroke="#db2777" stroke-width="1" class="node-reveal" style="animation-delay:580ms"/>
+            <text x="411" y="159" fill="#f472b6" font-size="8" text-anchor="middle">Consultations</text>
+            <!-- Arrow down-left -->
+            <line x1="130" y1="172" x2="130" y2="186" stroke="#059669" stroke-width="1.5" marker-end="url(#arr-g)" class="edge-reveal" style="animation-delay:640ms"/>
+            <!-- Arrow dashed to external -->
+            <line x1="411" y1="172" x2="580" y2="172" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#arr-d)"/>
+            <!-- Layer 4: Data + Jobs -->
+            <rect x="8" y="188" width="230" height="70" rx="5" fill="#060d0a" stroke="rgba(5,150,105,0.25)" stroke-width="1"/>
+            <text x="16" y="200" fill="#3f6b52" font-size="7" font-weight="700" letter-spacing=".08em">DATA + JOBS</text>
+            <rect x="16" y="206" width="100" height="44" rx="4" fill="#0c1a12" stroke="#059669" stroke-width="1.5" class="node-reveal" style="animation-delay:640ms"/>
+            <text x="66" y="226" fill="#6ee7b7" font-size="8" font-weight="700" text-anchor="middle">PostgreSQL 18</text>
+            <text x="66" y="238" fill="#3f6b52" font-size="7" text-anchor="middle">binary UUIDs · HIPAA</text>
+            <rect x="126" y="206" width="100" height="44" rx="4" fill="#0c1a12" stroke="rgba(5,150,105,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:700ms"/>
+            <text x="176" y="226" fill="#7aad93" font-size="8" font-weight="600" text-anchor="middle">Oban Workers</text>
+            <text x="176" y="238" fill="#3f6b52" font-size="7" text-anchor="middle">email · pharmacy</text>
+            <!-- External Services -->
+            <rect x="510" y="128" width="202" height="130" rx="5" fill="#120c1e" stroke="rgba(124,58,237,0.35)" stroke-width="1"/>
+            <text x="518" y="140" fill="#7c3aed" font-size="7" font-weight="700" letter-spacing=".08em">EXTERNAL SERVICES</text>
+            <rect x="518" y="146" width="88" height="20" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:640ms"/>
+            <text x="562" y="160" fill="#a78bfa" font-size="7.5" text-anchor="middle">Stripe Billing</text>
+            <rect x="616" y="146" width="88" height="20" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:700ms"/>
+            <text x="660" y="160" fill="#a78bfa" font-size="7.5" text-anchor="middle">Daily.co HIPAA</text>
+            <rect x="518" y="174" width="88" height="20" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:760ms"/>
+            <text x="562" y="188" fill="#a78bfa" font-size="7.5" text-anchor="middle">503A Pharmacy</text>
+            <rect x="616" y="174" width="88" height="20" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:820ms"/>
+            <text x="660" y="188" fill="#a78bfa" font-size="7.5" text-anchor="middle">Postmark Email</text>
+            <!-- Legend -->
+            <rect x="8" y="262" width="8" height="8" rx="1" fill="none" stroke="#059669" stroke-width="1.5"/>
+            <text x="20" y="269" fill="#3f6b52" font-size="7">Core data flow</text>
+            <line x1="88" y1="266" x2="104" y2="266" stroke="#7c3aed" stroke-dasharray="4 3" stroke-width="1"/>
+            <text x="108" y="269" fill="#3f6b52" font-size="7">External integration</text>
+          </svg>
         </div>
       </div>
 
@@ -418,10 +495,105 @@
         </div>
 
         <div class="mmd-label">IDEA Lifecycle — Peppy™ v0.1.0</div>
-        <div class="mmd-wrap" id="diag-lifecycle"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-lifecycle">
+          <svg viewBox="0 0 700 68" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="lc-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+            </defs>
+            <!-- Phase nodes -->
+            <g class="node-reveal" style="animation-delay:0ms">
+              <rect x="4" y="12" width="90" height="44" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5"/>
+              <text x="49" y="33" fill="#e2f0eb" font-size="7.5" font-weight="700" text-anchor="middle">/idea new</text>
+              <text x="49" y="47" fill="#059669" font-size="6.5" text-anchor="middle" font-weight="600">DONE</text>
+            </g>
+            <line x1="94" y1="34" x2="112" y2="34" stroke="#059669" stroke-width="1.5" marker-end="url(#lc-arr)" class="flow-edge"/>
+            <g class="node-reveal" style="animation-delay:100ms">
+              <rect x="112" y="12" width="90" height="44" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5"/>
+              <text x="157" y="33" fill="#e2f0eb" font-size="7.5" font-weight="700" text-anchor="middle">discover</text>
+              <text x="157" y="47" fill="#059669" font-size="6.5" text-anchor="middle" font-weight="600">DONE</text>
+            </g>
+            <line x1="202" y1="34" x2="220" y2="34" stroke="#059669" stroke-width="1.5" marker-end="url(#lc-arr)" class="flow-edge"/>
+            <g class="node-reveal" style="animation-delay:200ms">
+              <rect x="220" y="12" width="90" height="44" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5"/>
+              <text x="265" y="33" fill="#e2f0eb" font-size="7.5" font-weight="700" text-anchor="middle">define</text>
+              <text x="265" y="47" fill="#059669" font-size="6.5" text-anchor="middle" font-weight="600">DONE</text>
+            </g>
+            <line x1="310" y1="34" x2="328" y2="34" stroke="#059669" stroke-width="1.5" marker-end="url(#lc-arr)" class="flow-edge"/>
+            <g class="node-reveal" style="animation-delay:300ms">
+              <rect x="328" y="12" width="90" height="44" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5"/>
+              <text x="373" y="33" fill="#e2f0eb" font-size="7.5" font-weight="700" text-anchor="middle">plan</text>
+              <text x="373" y="47" fill="#059669" font-size="6.5" text-anchor="middle" font-weight="600">DONE</text>
+            </g>
+            <line x1="418" y1="34" x2="436" y2="34" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#lc-arr)" class="flow-edge"/>
+            <g class="node-reveal node-active-pulse" style="animation-delay:400ms">
+              <rect x="436" y="12" width="90" height="44" rx="5" fill="#1a1200" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="481" y="33" fill="#fde68a" font-size="7.5" font-weight="700" text-anchor="middle">execute</text>
+              <text x="481" y="47" fill="#f59e0b" font-size="6.5" text-anchor="middle" font-weight="700">IN FLIGHT</text>
+            </g>
+            <line x1="526" y1="34" x2="544" y2="34" stroke="#3f6b52" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#lc-arr)"/>
+            <g class="node-reveal" style="animation-delay:500ms">
+              <rect x="544" y="12" width="90" height="44" rx="5" fill="#060d0a" stroke="#3f6b52" stroke-width="1"/>
+              <text x="589" y="33" fill="#7aad93" font-size="7.5" text-anchor="middle">status</text>
+              <text x="589" y="47" fill="#3f6b52" font-size="6.5" text-anchor="middle">PENDING</text>
+            </g>
+            <!-- Formation badge -->
+            <rect x="636" y="8" width="62" height="52" rx="4" fill="rgba(5,150,105,0.06)" stroke="rgba(5,150,105,0.2)" stroke-width="1"/>
+            <text x="667" y="28" fill="#3f6b52" font-size="6.5" text-anchor="middle">Formation</text>
+            <text x="667" y="42" fill="#059669" font-size="7" font-weight="700" text-anchor="middle">9 agents</text>
+            <text x="667" y="54" fill="#3f6b52" font-size="6" text-anchor="middle">2 squadrons</text>
+          </svg>
+        </div>
 
         <div class="mmd-label" style="margin-top:16px">System Architecture — C4 L2 Container</div>
-        <div class="mmd-wrap" id="diag-container"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-container">
+          <svg viewBox="0 0 700 225" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="ct-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="ct-arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker>
+            </defs>
+            <!-- Users -->
+            <ellipse cx="100" cy="20" rx="50" ry="12" fill="#0c1a12" stroke="#0284c7" stroke-width="1"/>
+            <text x="100" y="24" fill="#38bdf8" font-size="7.5" text-anchor="middle">Pepp Consumer</text>
+            <ellipse cx="220" cy="20" rx="50" ry="12" fill="#0c1a12" stroke="#0d9488" stroke-width="1"/>
+            <text x="220" y="24" fill="#2dd4bf" font-size="7.5" text-anchor="middle">Licensed Physician</text>
+            <!-- Arrows to platform -->
+            <line x1="100" y1="32" x2="100" y2="52" stroke="#059669" stroke-width="1" marker-end="url(#ct-arr)" class="edge-reveal" style="animation-delay:200ms"/>
+            <line x1="220" y1="32" x2="220" y2="52" stroke="#059669" stroke-width="1" marker-end="url(#ct-arr)" class="edge-reveal" style="animation-delay:250ms"/>
+            <!-- Platform box -->
+            <rect x="8" y="52" width="450" height="120" rx="6" fill="rgba(12,26,18,0.5)" stroke="rgba(5,150,105,0.4)" stroke-dasharray="5 3" stroke-width="1"/>
+            <text x="16" y="65" fill="#059669" font-size="6.5" font-weight="700" letter-spacing=".1em">PEPPY PLATFORM (Elixir/OTP)</text>
+            <rect x="16" y="70" width="130" height="40" rx="4" fill="#0c1a12" stroke="#059669" stroke-width="1.5" class="node-reveal" style="animation-delay:300ms"/>
+            <text x="81" y="88" fill="#e2f0eb" font-size="8" font-weight="600" text-anchor="middle">Phoenix LiveView</text>
+            <text x="81" y="100" fill="#3f6b52" font-size="7" text-anchor="middle">WebSocket · HEEx</text>
+            <rect x="156" y="70" width="130" height="40" rx="4" fill="#0c1a12" stroke="rgba(5,150,105,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:360ms"/>
+            <text x="221" y="88" fill="#7aad93" font-size="8" text-anchor="middle">REST API</text>
+            <text x="221" y="100" fill="#3f6b52" font-size="7" text-anchor="middle">/api/v1 + /dev/api</text>
+            <rect x="296" y="70" width="120" height="40" rx="4" fill="#0c1a12" stroke="rgba(5,150,105,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:420ms"/>
+            <text x="356" y="88" fill="#7aad93" font-size="8" text-anchor="middle">Oban Workers</text>
+            <text x="356" y="100" fill="#3f6b52" font-size="7" text-anchor="middle">email · pharmacy</text>
+            <!-- PostgreSQL below platform center -->
+            <line x1="220" y1="110" x2="220" y2="130" stroke="#059669" stroke-width="1" marker-end="url(#ct-arr)" class="edge-reveal" style="animation-delay:500ms"/>
+            <rect x="120" y="130" width="200" height="36" rx="4" fill="#0c1a12" stroke="#059669" stroke-width="1.5" class="node-reveal" style="animation-delay:560ms"/>
+            <text x="220" y="150" fill="#6ee7b7" font-size="8.5" font-weight="700" text-anchor="middle">PostgreSQL 18</text>
+            <text x="220" y="163" fill="#3f6b52" font-size="7" text-anchor="middle">Users · Formulary · Rx · Sessions</text>
+            <!-- External services -->
+            <rect x="475" y="52" width="218" height="120" rx="6" fill="#120c1e" stroke="rgba(124,58,237,0.35)" stroke-width="1"/>
+            <text x="484" y="65" fill="#7c3aed" font-size="6.5" font-weight="700" letter-spacing=".1em">EXTERNAL</text>
+            <rect x="484" y="70" width="95" height="26" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:480ms"/>
+            <text x="531" y="86" fill="#a78bfa" font-size="7.5" text-anchor="middle">Stripe Billing</text>
+            <rect x="589" y="70" width="95" height="26" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:540ms"/>
+            <text x="636" y="86" fill="#a78bfa" font-size="7.5" text-anchor="middle">Daily.co</text>
+            <rect x="484" y="104" width="95" height="26" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:600ms"/>
+            <text x="531" y="120" fill="#a78bfa" font-size="7.5" text-anchor="middle">503A Pharmacy</text>
+            <rect x="589" y="104" width="95" height="26" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.45)" stroke-width="1" class="node-reveal" style="animation-delay:660ms"/>
+            <text x="636" y="120" fill="#a78bfa" font-size="7.5" text-anchor="middle">Postmark</text>
+            <!-- Dashed arrows to external -->
+            <line x1="458" y1="90" x2="475" y2="83" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3 3" class="flow-edge-slow" marker-end="url(#ct-arrd)"/>
+            <line x1="458" y1="90" x2="475" y2="117" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3 3" class="flow-edge-slow" marker-end="url(#ct-arrd)"/>
+            <!-- Stats row -->
+            <text x="8" y="184" fill="#3f6b52" font-size="7">Binary UUIDs · HIPAA PHI encryption (Cloak in prod) · Oban 2.18 · Bandit HTTP</text>
+          </svg>
+        </div>
       </div>
 
       <!-- Discover Phase -->
@@ -435,7 +607,66 @@
         </div>
 
         <div class="mmd-label">User Journey — Pepp Consumer</div>
-        <div class="mmd-wrap" id="diag-journey"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-journey">
+          <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="jrn-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="rgba(5,150,105,0.5)"/></marker>
+            </defs>
+            <!-- Phase headers -->
+            <rect x="4" y="4" width="162" height="20" rx="3" fill="rgba(5,150,105,0.08)" stroke="rgba(5,150,105,0.2)" stroke-width="1"/>
+            <text x="85" y="18" fill="#059669" font-size="7.5" font-weight="700" text-anchor="middle">Discovery</text>
+            <rect x="174" y="4" width="162" height="20" rx="3" fill="rgba(2,132,199,0.08)" stroke="rgba(2,132,199,0.2)" stroke-width="1"/>
+            <text x="255" y="18" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle">Conversion</text>
+            <rect x="344" y="4" width="162" height="20" rx="3" fill="rgba(124,58,237,0.08)" stroke="rgba(124,58,237,0.2)" stroke-width="1"/>
+            <text x="425" y="18" fill="#a78bfa" font-size="7.5" font-weight="700" text-anchor="middle">Value Delivery</text>
+            <rect x="514" y="4" width="182" height="20" rx="3" fill="rgba(219,39,119,0.08)" stroke="rgba(219,39,119,0.2)" stroke-width="1"/>
+            <text x="605" y="18" fill="#f472b6" font-size="7.5" font-weight="700" text-anchor="middle">Retention</text>
+            <!-- Journey track -->
+            <line x1="4" y1="70" x2="696" y2="70" stroke="rgba(5,150,105,0.12)" stroke-width="1"/>
+            <!-- Discovery dots -->
+            <circle cx="45" cy="70" r="6" fill="#059669" class="node-reveal" style="animation-delay:0ms"/>
+            <text x="45" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Podcast/SEO</text>
+            <text x="45" y="50" fill="#059669" font-size="8.5" font-weight="700" text-anchor="middle">★★★</text>
+            <circle cx="125" cy="62" r="6" fill="#059669" class="node-reveal" style="animation-delay:80ms"/>
+            <text x="125" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Formulary</text>
+            <text x="125" y="46" fill="#059669" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <!-- Conversion dots -->
+            <circle cx="200" cy="58" r="6" fill="#38bdf8" class="node-reveal" style="animation-delay:160ms"/>
+            <text x="200" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Sign up</text>
+            <text x="200" y="42" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <circle cx="255" cy="64" r="6" fill="#38bdf8" class="node-reveal" style="animation-delay:220ms"/>
+            <text x="255" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Intake</text>
+            <text x="255" y="48" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">★★★★</text>
+            <circle cx="310" cy="58" r="6" fill="#38bdf8" class="node-reveal" style="animation-delay:280ms"/>
+            <text x="310" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Rally Stack</text>
+            <text x="310" y="42" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <!-- Value Delivery dots -->
+            <circle cx="378" cy="55" r="6" fill="#a78bfa" class="node-reveal" style="animation-delay:340ms"/>
+            <text x="378" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Pepp Talk</text>
+            <text x="378" y="39" fill="#a78bfa" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <circle cx="435" cy="58" r="6" fill="#a78bfa" class="node-reveal" style="animation-delay:400ms"/>
+            <text x="435" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Rx Issued</text>
+            <text x="435" y="42" fill="#a78bfa" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <circle cx="490" cy="61" r="6" fill="#a78bfa" class="node-reveal" style="animation-delay:460ms"/>
+            <text x="490" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Shipment</text>
+            <text x="490" y="45" fill="#a78bfa" font-size="8.5" font-weight="700" text-anchor="middle">★★★★</text>
+            <!-- Retention dots -->
+            <circle cx="553" cy="55" r="6" fill="#f472b6" class="node-reveal" style="animation-delay:520ms"/>
+            <text x="553" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Refills</text>
+            <text x="553" y="39" fill="#f472b6" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <circle cx="612" cy="58" r="6" fill="#f472b6" class="node-reveal" style="animation-delay:580ms"/>
+            <text x="612" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">MD Follow-up</text>
+            <text x="612" y="42" fill="#f472b6" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <circle cx="668" cy="52" r="6" fill="#f472b6" class="node-reveal" style="animation-delay:640ms"/>
+            <text x="668" y="85" fill="#7aad93" font-size="6.5" text-anchor="middle">Upgrade</text>
+            <text x="668" y="36" fill="#f472b6" font-size="8.5" font-weight="700" text-anchor="middle">★★★★★</text>
+            <!-- Journey line connecting dots -->
+            <polyline points="45,70 125,62 200,58 255,64 310,58 378,55 435,58 490,61 553,55 612,58 668,52" fill="none" stroke="rgba(5,150,105,0.3)" stroke-width="1.5" class="edge-reveal" style="animation-delay:700ms"/>
+            <!-- Satisfaction labels -->
+            <text x="4" y="110" fill="#3f6b52" font-size="7">Consumer satisfaction rating per touchpoint (1–5 ★)</text>
+            <text x="4" y="122" fill="#3f6b52" font-size="7">Gray-market conversion path: 2–4M potential users · GLP-1 alumni 4M+ warm leads</text>
+          </svg>
+        </div>
 
         <div class="section-label" style="margin-top:14px">Jobs to Be Done</div>
         <ul class="jtbd-list">
@@ -455,7 +686,49 @@
         </div>
 
         <div class="mmd-label">System Context — C4 L1</div>
-        <div class="mmd-wrap" id="diag-context"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-context">
+          <svg viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="cx-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="cx-arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker>
+            </defs>
+            <!-- Actors left -->
+            <ellipse cx="70" cy="38" rx="58" ry="18" fill="#0c1a12" stroke="#0284c7" stroke-width="1.5" class="node-reveal" style="animation-delay:0ms"/>
+            <text x="70" y="42" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle">Pepp Consumer</text>
+            <ellipse cx="70" cy="95" rx="58" ry="18" fill="#0c1a12" stroke="#0d9488" stroke-width="1.5" class="node-reveal" style="animation-delay:80ms"/>
+            <text x="70" y="99" fill="#2dd4bf" font-size="7.5" font-weight="700" text-anchor="middle">Licensed Physician</text>
+            <ellipse cx="70" cy="152" rx="58" ry="18" fill="#0c1a12" stroke="#3f6b52" stroke-width="1.5" class="node-reveal" style="animation-delay:160ms"/>
+            <text x="70" y="156" fill="#7aad93" font-size="7.5" text-anchor="middle">Platform Admin</text>
+            <!-- Arrows to center -->
+            <line x1="130" y1="38" x2="202" y2="80" stroke="#059669" stroke-width="1" marker-end="url(#cx-arr)" class="flow-edge"/>
+            <line x1="130" y1="95" x2="202" y2="95" stroke="#059669" stroke-width="1" marker-end="url(#cx-arr)" class="flow-edge"/>
+            <line x1="130" y1="152" x2="202" y2="110" stroke="#059669" stroke-width="1" marker-end="url(#cx-arr)" class="flow-edge"/>
+            <!-- Arrow labels -->
+            <text x="155" y="54" fill="#3f6b52" font-size="6.5" text-anchor="middle">subscribes · browses</text>
+            <text x="155" y="107" fill="#3f6b52" font-size="6.5" text-anchor="middle">reviews · issues Rx</text>
+            <!-- Center: Peppy Platform -->
+            <rect x="202" y="56" width="200" height="78" rx="8" fill="#0c1a12" stroke="#059669" stroke-width="2" class="node-reveal" style="animation-delay:200ms"/>
+            <text x="302" y="90" fill="#e2f0eb" font-size="10" font-weight="800" text-anchor="middle">Peppy™</text>
+            <text x="302" y="106" fill="#059669" font-size="7.5" text-anchor="middle">DTC Telehealth</text>
+            <text x="302" y="119" fill="#3f6b52" font-size="7" text-anchor="middle">Peptide Compounding · HIPAA · 503A</text>
+            <!-- Arrows to external -->
+            <line x1="402" y1="80" x2="472" y2="38" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#cx-arrd)"/>
+            <line x1="402" y1="95" x2="472" y2="95" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#cx-arrd)"/>
+            <line x1="402" y1="110" x2="472" y2="152" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#cx-arrd)"/>
+            <!-- External right -->
+            <rect x="472" y="20" width="120" height="36" rx="5" fill="#120c1e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:300ms"/>
+            <text x="532" y="39" fill="#a78bfa" font-size="7.5" font-weight="600" text-anchor="middle">Stripe</text>
+            <text x="532" y="51" fill="#7c3aed" font-size="6.5" text-anchor="middle">subscription billing</text>
+            <rect x="472" y="77" width="120" height="36" rx="5" fill="#120c1e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:360ms"/>
+            <text x="532" y="96" fill="#a78bfa" font-size="7.5" font-weight="600" text-anchor="middle">Daily.co</text>
+            <text x="532" y="108" fill="#7c3aed" font-size="6.5" text-anchor="middle">HIPAA video rooms</text>
+            <rect x="472" y="134" width="120" height="36" rx="5" fill="#120c1e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:420ms"/>
+            <text x="532" y="153" fill="#a78bfa" font-size="7.5" font-weight="600" text-anchor="middle">503A Pharmacy</text>
+            <text x="532" y="165" fill="#7c3aed" font-size="6.5" text-anchor="middle">Rx dispensing</text>
+            <!-- Boundary labels -->
+            <text x="4" y="182" fill="#3f6b52" font-size="7">8-state launch: CA · TX · FL · NY · IL · CO · WA · GA — physician network credentialing 60–90 days/state</text>
+          </svg>
+        </div>
       </div>
 
       <!-- Define Phase -->
@@ -490,7 +763,64 @@
         </table>
 
         <div class="mmd-label" style="margin-top:14px">Auth Flow — Sign-up + Session Verification</div>
-        <div class="mmd-wrap" id="diag-auth"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-auth">
+          <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="au-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="au-arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7aad93"/></marker>
+            </defs>
+            <!-- Swimlane headers -->
+            <rect x="4" y="4" width="158" height="22" rx="3" fill="#0c1a12" stroke="rgba(2,132,199,0.5)" stroke-width="1"/>
+            <text x="83" y="19" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle">Consumer</text>
+            <rect x="171" y="4" width="158" height="22" rx="3" fill="#0c1a12" stroke="rgba(5,150,105,0.5)" stroke-width="1"/>
+            <text x="250" y="19" fill="#e2f0eb" font-size="7.5" font-weight="700" text-anchor="middle">Phoenix Router</text>
+            <rect x="338" y="4" width="158" height="22" rx="3" fill="#0c1a12" stroke="rgba(13,148,136,0.5)" stroke-width="1"/>
+            <text x="417" y="19" fill="#2dd4bf" font-size="7.5" font-weight="700" text-anchor="middle">Accounts Context</text>
+            <rect x="505" y="4" width="188" height="22" rx="3" fill="#0c1a12" stroke="rgba(124,58,237,0.5)" stroke-width="1"/>
+            <text x="599" y="19" fill="#a78bfa" font-size="7.5" font-weight="700" text-anchor="middle">PostgreSQL</text>
+            <!-- Swimlane vertical lines -->
+            <line x1="83" y1="26" x2="83" y2="236" stroke="rgba(2,132,199,0.1)" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="250" y1="26" x2="250" y2="236" stroke="rgba(5,150,105,0.1)" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="417" y1="26" x2="417" y2="236" stroke="rgba(13,148,136,0.1)" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="599" y1="26" x2="599" y2="236" stroke="rgba(124,58,237,0.1)" stroke-width="1" stroke-dasharray="3 3"/>
+            <!-- Note: Registration -->
+            <rect x="170" y="38" width="334" height="13" rx="2" fill="rgba(5,150,105,0.06)" stroke="rgba(5,150,105,0.2)" stroke-width="1"/>
+            <text x="337" y="48" fill="#3f6b52" font-size="7" font-weight="600" text-anchor="middle">REGISTRATION</text>
+            <!-- Message 1: POST /sign-up -->
+            <line x1="83" y1="62" x2="238" y2="62" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:100ms"/>
+            <text x="160" y="58" fill="#7aad93" font-size="6.5" text-anchor="middle">POST /sign-up</text>
+            <!-- Message 2: register_user -->
+            <line x1="262" y1="78" x2="405" y2="78" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:200ms"/>
+            <text x="334" y="74" fill="#7aad93" font-size="6.5" text-anchor="middle">register_user(attrs)</text>
+            <!-- Message 3: INSERT users -->
+            <line x1="429" y1="94" x2="587" y2="94" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:300ms"/>
+            <text x="508" y="90" fill="#7aad93" font-size="6.5" text-anchor="middle">INSERT users (bcrypt)</text>
+            <!-- Message 4: INSERT token -->
+            <line x1="429" y1="108" x2="587" y2="108" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:400ms"/>
+            <text x="508" y="104" fill="#7aad93" font-size="6.5" text-anchor="middle">INSERT users_tokens</text>
+            <!-- Return: ok, token -->
+            <line x1="405" y1="122" x2="262" y2="122" stroke="#7aad93" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#au-arrr)" class="edge-reveal" style="animation-delay:500ms"/>
+            <text x="334" y="118" fill="#3f6b52" font-size="6.5" text-anchor="middle">ok, token</text>
+            <!-- Return: Set-Cookie -->
+            <line x1="238" y1="136" x2="95" y2="136" stroke="#7aad93" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#au-arrr)" class="edge-reveal" style="animation-delay:600ms"/>
+            <text x="165" y="132" fill="#3f6b52" font-size="6.5" text-anchor="middle">Set-Cookie · redirect /app</text>
+            <!-- Note: Every Request -->
+            <rect x="170" y="150" width="334" height="13" rx="2" fill="rgba(2,132,199,0.06)" stroke="rgba(2,132,199,0.2)" stroke-width="1"/>
+            <text x="337" y="160" fill="#3f6b52" font-size="7" font-weight="600" text-anchor="middle">EVERY REQUEST (on_mount guard)</text>
+            <!-- Message 5: GET /app/* -->
+            <line x1="83" y1="174" x2="238" y2="174" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:700ms"/>
+            <text x="160" y="170" fill="#7aad93" font-size="6.5" text-anchor="middle">GET /app/* (Cookie)</text>
+            <!-- Message 6: get_user_by_token -->
+            <line x1="262" y1="188" x2="405" y2="188" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:800ms"/>
+            <text x="334" y="184" fill="#7aad93" font-size="6.5" text-anchor="middle">get_user_by_session_token</text>
+            <!-- Message 7: SELECT -->
+            <line x1="429" y1="202" x2="587" y2="202" stroke="#059669" stroke-width="1" marker-end="url(#au-arr)" class="edge-reveal" style="animation-delay:900ms"/>
+            <text x="508" y="198" fill="#7aad93" font-size="6.5" text-anchor="middle">SELECT WHERE age &lt; 60d</text>
+            <!-- Return: 200 OK -->
+            <line x1="238" y1="218" x2="95" y2="218" stroke="#7aad93" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#au-arrr)" class="edge-reveal" style="animation-delay:1000ms"/>
+            <text x="165" y="214" fill="#3f6b52" font-size="6.5" text-anchor="middle">200 OK · assigns.current_user</text>
+          </svg>
+        </div>
       </div>
 
       <!-- Plan Phase -->
@@ -528,7 +858,66 @@
         </table>
 
         <div class="mmd-label" style="margin-top:16px">Deployment Topology</div>
-        <div class="mmd-wrap" id="diag-deploy"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-deploy">
+          <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="dp-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="dp-arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3f6b52"/></marker>
+            </defs>
+            <!-- Developer -->
+            <rect x="4" y="68" width="90" height="40" rx="5" fill="#0c1a12" stroke="#3f6b52" stroke-width="1" class="node-reveal" style="animation-delay:0ms"/>
+            <text x="49" y="85" fill="#7aad93" font-size="7.5" font-weight="700" text-anchor="middle">Developer</text>
+            <text x="49" y="97" fill="#3f6b52" font-size="7" text-anchor="middle">local / CI</text>
+            <!-- Arrow: az acr build -->
+            <line x1="94" y1="88" x2="126" y2="88" stroke="#059669" stroke-width="1.5" marker-end="url(#dp-arr)" class="flow-edge"/>
+            <text x="110" y="83" fill="#3f6b52" font-size="6" text-anchor="middle">az acr</text>
+            <text x="110" y="94" fill="#3f6b52" font-size="6" text-anchor="middle">build</text>
+            <!-- ACR -->
+            <rect x="126" y="56" width="110" height="64" rx="5" fill="#0c1a12" stroke="#0284c7" stroke-width="1.5" class="node-reveal" style="animation-delay:200ms"/>
+            <text x="181" y="76" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle">Azure ACR</text>
+            <text x="181" y="90" fill="#3f6b52" font-size="6.5" text-anchor="middle">ccemregistry</text>
+            <text x="181" y="103" fill="#3f6b52" font-size="6.5" text-anchor="middle">.azurecr.io</text>
+            <!-- Arrow: pull image -->
+            <line x1="236" y1="88" x2="268" y2="88" stroke="#059669" stroke-width="1.5" marker-end="url(#dp-arr)" class="flow-edge"/>
+            <text x="252" y="83" fill="#3f6b52" font-size="6" text-anchor="middle">pull</text>
+            <!-- Azure box -->
+            <rect x="268" y="4" width="320" height="192" rx="6" fill="rgba(2,132,199,0.04)" stroke="rgba(2,132,199,0.25)" stroke-dasharray="5 3" stroke-width="1"/>
+            <text x="278" y="18" fill="#0284c7" font-size="7" font-weight="700" letter-spacing=".08em">AZURE — rg-peppy-dev (East US 2)</text>
+            <!-- Container App -->
+            <rect x="280" y="26" width="140" height="56" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5" class="node-reveal" style="animation-delay:400ms"/>
+            <text x="350" y="48" fill="#6ee7b7" font-size="8" font-weight="700" text-anchor="middle">Container App</text>
+            <text x="350" y="62" fill="#059669" font-size="7" text-anchor="middle">peppy · port 4000</text>
+            <text x="350" y="74" fill="#3f6b52" font-size="6.5" text-anchor="middle">peppy.greenflower-…</text>
+            <!-- Migration Job -->
+            <rect x="280" y="100" width="140" height="44" rx="5" fill="#0c1a12" stroke="rgba(5,150,105,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:460ms"/>
+            <text x="350" y="118" fill="#7aad93" font-size="7.5" font-weight="600" text-anchor="middle">Migration Job</text>
+            <text x="350" y="133" fill="#3f6b52" font-size="6.5" text-anchor="middle">peppy-migrate · ecto.migrate</text>
+            <!-- PostgreSQL -->
+            <rect x="280" y="158" width="140" height="32" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="1.5" class="node-reveal" style="animation-delay:520ms"/>
+            <text x="350" y="173" fill="#6ee7b7" font-size="7.5" font-weight="700" text-anchor="middle">PostgreSQL 18</text>
+            <text x="350" y="184" fill="#3f6b52" font-size="6.5" text-anchor="middle">peppy_prod</text>
+            <!-- Arrows inside Azure -->
+            <line x1="350" y1="82" x2="350" y2="100" stroke="#059669" stroke-width="1" marker-end="url(#dp-arr)" class="edge-reveal" style="animation-delay:580ms"/>
+            <line x1="350" y1="144" x2="350" y2="158" stroke="#059669" stroke-width="1" marker-end="url(#dp-arr)" class="edge-reveal" style="animation-delay:640ms"/>
+            <!-- Cloudflare / Users -->
+            <rect x="4" y="4" width="90" height="36" rx="4" fill="#0c1a12" stroke="#f59e0b" stroke-width="1" class="node-reveal" style="animation-delay:100ms"/>
+            <text x="49" y="20" fill="#fbbf24" font-size="7.5" font-weight="600" text-anchor="middle">Cloudflare</text>
+            <text x="49" y="33" fill="#3f6b52" font-size="6.5" text-anchor="middle">SSL + DDoS</text>
+            <rect x="4" y="148" width="90" height="36" rx="4" fill="#0c1a12" stroke="rgba(5,150,105,0.3)" stroke-width="1" class="node-reveal" style="animation-delay:100ms"/>
+            <text x="49" y="164" fill="#7aad93" font-size="7.5" text-anchor="middle">Consumers</text>
+            <text x="49" y="178" fill="#3f6b52" font-size="6.5" text-anchor="middle">peppy.io</text>
+            <!-- Arrows: consumers → cloudflare → container app -->
+            <line x1="49" y1="148" x2="49" y2="40" stroke="#059669" stroke-width="1" marker-end="url(#dp-arr)" class="edge-reveal" style="animation-delay:150ms"/>
+            <line x1="94" y1="22" x2="280" y2="40" stroke="#059669" stroke-width="1" marker-end="url(#dp-arr)" class="edge-reveal" style="animation-delay:350ms"/>
+            <!-- External dashed -->
+            <rect x="600" y="30" width="90" height="30" rx="3" fill="#120c1e" stroke="rgba(124,58,237,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:600ms"/>
+            <text x="645" y="49" fill="#a78bfa" font-size="7" text-anchor="middle">Stripe / Daily.co</text>
+            <rect x="600" y="70" width="90" height="30" rx="3" fill="#120c1e" stroke="rgba(124,58,237,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:660ms"/>
+            <text x="645" y="89" fill="#a78bfa" font-size="7" text-anchor="middle">503A Pharmacy</text>
+            <line x1="420" y1="48" x2="600" y2="45" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#dp-arrd)"/>
+            <line x1="420" y1="55" x2="600" y2="85" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" class="flow-edge-slow" marker-end="url(#dp-arrd)"/>
+          </svg>
+        </div>
       </div>
 
       <!-- Execute Phase -->
@@ -549,7 +938,81 @@
         </div>
 
         <div class="mmd-label">Formation Topology — fmt-peppy-20260330</div>
-        <div class="mmd-wrap" id="diag-formation"><div class="mmd-loading">Rendering…</div></div>
+        <div class="svg-diag" id="diag-formation">
+          <svg viewBox="0 0 700 295" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+            <defs>
+              <marker id="fm-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+              <marker id="fm-arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f87171"/></marker>
+            </defs>
+            <!-- Formation root -->
+            <rect x="240" y="4" width="220" height="30" rx="5" fill="#0c1a12" stroke="#059669" stroke-width="2" class="node-reveal" style="animation-delay:0ms"/>
+            <text x="350" y="24" fill="#6ee7b7" font-size="8.5" font-weight="800" text-anchor="middle">fmt-peppy-20260330</text>
+            <!-- Lines to squadrons -->
+            <line x1="270" y1="34" x2="140" y2="68" stroke="#059669" stroke-width="1" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:100ms"/>
+            <line x1="350" y1="34" x2="350" y2="68" stroke="#059669" stroke-width="1" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:120ms"/>
+            <line x1="430" y1="34" x2="560" y2="68" stroke="#f87171" stroke-width="1" marker-end="url(#fm-arrd)" class="edge-reveal" style="animation-delay:140ms"/>
+            <!-- Squadron W3 -->
+            <rect x="60" y="68" width="160" height="28" rx="4" fill="#0c1a12" stroke="#0284c7" stroke-width="1.5" class="node-reveal" style="animation-delay:200ms"/>
+            <text x="140" y="86" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle">SQ: Wave 3 Platform</text>
+            <!-- Squadron W4 -->
+            <rect x="270" y="68" width="160" height="28" rx="4" fill="#0c1a12" stroke="#7c3aed" stroke-width="1.5" class="node-reveal" style="animation-delay:250ms"/>
+            <text x="350" y="86" fill="#a78bfa" font-size="7.5" font-weight="700" text-anchor="middle">SQ: Wave 4 Growth</text>
+            <!-- QA Squadron -->
+            <rect x="480" y="68" width="160" height="28" rx="4" fill="#0c1a12" stroke="#ef4444" stroke-width="1.5" class="node-reveal" style="animation-delay:300ms"/>
+            <text x="560" y="86" fill="#f87171" font-size="7.5" font-weight="700" text-anchor="middle">SQ: QA Cross-Wave</text>
+            <!-- W3 agents -->
+            <line x1="100" y1="96" x2="60" y2="126" stroke="#0284c7" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:400ms"/>
+            <line x1="140" y1="96" x2="140" y2="126" stroke="#0284c7" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:420ms"/>
+            <line x1="180" y1="96" x2="216" y2="126" stroke="#0284c7" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:440ms"/>
+            <rect x="4" y="126" width="110" height="24" rx="3" fill="#0f1e30" stroke="rgba(2,132,199,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:500ms"/>
+            <text x="59" y="142" fill="#38bdf8" font-size="7" text-anchor="middle">stripe-billing</text>
+            <rect x="84" y="126" width="110" height="24" rx="3" fill="#0f1e30" stroke="rgba(2,132,199,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:540ms"/>
+            <text x="139" y="142" fill="#38bdf8" font-size="7" text-anchor="middle">pepp-talk-engine</text>
+            <rect x="164" y="126" width="110" height="24" rx="3" fill="#0f1e30" stroke="rgba(2,132,199,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:580ms"/>
+            <text x="219" y="142" fill="#38bdf8" font-size="7" text-anchor="middle">admin-wiring</text>
+            <!-- W4 agents -->
+            <line x1="310" y1="96" x2="285" y2="126" stroke="#7c3aed" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:460ms"/>
+            <line x1="350" y1="96" x2="350" y2="126" stroke="#7c3aed" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:480ms"/>
+            <line x1="390" y1="96" x2="415" y2="126" stroke="#7c3aed" stroke-width=".8" marker-end="url(#fm-arr)" class="edge-reveal" style="animation-delay:500ms"/>
+            <rect x="246" y="126" width="110" height="24" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:560ms"/>
+            <text x="301" y="142" fill="#a78bfa" font-size="7" text-anchor="middle">email-verification</text>
+            <rect x="296" y="126" width="110" height="24" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:600ms"/>
+            <text x="351" y="142" fill="#a78bfa" font-size="7" text-anchor="middle">rally-stats</text>
+            <rect x="376" y="126" width="110" height="24" rx="3" fill="#1a0c2e" stroke="rgba(124,58,237,0.5)" stroke-width="1" class="node-reveal" style="animation-delay:640ms"/>
+            <text x="431" y="142" fill="#a78bfa" font-size="7" text-anchor="middle">ios-foundation</text>
+            <!-- QA agents -->
+            <line x1="520" y1="96" x2="490" y2="126" stroke="#ef4444" stroke-width=".8" marker-end="url(#fm-arrd)" class="edge-reveal" style="animation-delay:520ms"/>
+            <line x1="550" y1="96" x2="540" y2="126" stroke="#ef4444" stroke-width=".8" marker-end="url(#fm-arrd)" class="edge-reveal" style="animation-delay:540ms"/>
+            <line x1="580" y1="96" x2="590" y2="126" stroke="#ef4444" stroke-width=".8" marker-end="url(#fm-arrd)" class="edge-reveal" style="animation-delay:560ms"/>
+            <line x1="610" y1="96" x2="640" y2="126" stroke="#ef4444" stroke-width=".8" marker-end="url(#fm-arrd)" class="edge-reveal" style="animation-delay:580ms"/>
+            <rect x="460" y="126" width="92" height="24" rx="3" fill="#1e0a0a" stroke="rgba(239,68,68,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:660ms"/>
+            <text x="506" y="142" fill="#f87171" font-size="6.5" text-anchor="middle">build-verifier</text>
+            <rect x="508" y="126" width="92" height="24" rx="3" fill="#1e0a0a" stroke="rgba(239,68,68,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:700ms"/>
+            <text x="554" y="142" fill="#f87171" font-size="6.5" text-anchor="middle">git-verifier</text>
+            <rect x="556" y="126" width="92" height="24" rx="3" fill="#1e0a0a" stroke="rgba(239,68,68,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:740ms"/>
+            <text x="602" y="142" fill="#f87171" font-size="6.5" text-anchor="middle">smoke-tester</text>
+            <rect x="604" y="126" width="88" height="24" rx="3" fill="#1e0a0a" stroke="rgba(239,68,68,0.4)" stroke-width="1" class="node-reveal" style="animation-delay:780ms"/>
+            <text x="648" y="142" fill="#f87171" font-size="6.5" text-anchor="middle">ac-auditor</text>
+            <!-- Wave progress bars -->
+            <rect x="4" y="170" width="700" height="2" rx="1" fill="rgba(5,150,105,0.08)"/>
+            <!-- W3 progress -->
+            <text x="4" y="190" fill="#3f6b52" font-size="7" font-weight="700">W3 Platform</text>
+            <rect x="70" y="182" width="200" height="8" rx="2" fill="rgba(2,132,199,0.12)"/>
+            <rect x="70" y="182" width="50" height="8" rx="2" fill="#0284c7" class="node-active-pulse"/>
+            <text x="278" y="191" fill="#38bdf8" font-size="7">IN FLIGHT · 4 stories · 0/4 done</text>
+            <!-- W4 progress -->
+            <text x="4" y="210" fill="#3f6b52" font-size="7" font-weight="700">W4 Growth</text>
+            <rect x="70" y="202" width="200" height="8" rx="2" fill="rgba(124,58,237,0.1)"/>
+            <text x="278" y="211" fill="#7c3aed" font-size="7">QUEUED · 3 stories · pending W3 completion</text>
+            <!-- QA gate -->
+            <text x="4" y="228" fill="#3f6b52" font-size="7" font-weight="700">QA Gate</text>
+            <rect x="70" y="220" width="200" height="8" rx="2" fill="rgba(239,68,68,0.08)"/>
+            <text x="278" y="229" fill="#f87171" font-size="7">Build · Git · Smoke · AC Audit — 4 agents · cross-wave</text>
+            <!-- Legend -->
+            <text x="4" y="252" fill="#3f6b52" font-size="7">Checkpoint range: CP-02 → CP-08 · Formation ID: fmt-peppy-20260330 · sizing: existing (v0.1.0 baseline)</text>
+            <text x="4" y="264" fill="#3f6b52" font-size="7">9 implementation agents + 4 QA agents = 13 total · Wave 3 (PEPPY-01–04) · Wave 4 (PEPPY-05–07)</text>
+          </svg>
+        </div>
 
         <div style="margin-top:14px;background:var(--surface);border:1px solid rgba(5,150,105,0.25);border-radius:7px;padding:12px;">
           <div class="section-label" style="margin-bottom:8px">QA Squadron — Cross-Wave Gate</div>
@@ -640,218 +1103,12 @@
 </div><!-- /view-idfw -->
 
 <script>
-/* ─── Mermaid initialization ─── */
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  flowchart: { useMaxWidth: true, htmlLabels: true },
-  sequence: { useMaxWidth: true },
-  journey: { useMaxWidth: true },
-  themeVariables: {
-    background: '#060d0a',
-    primaryColor: '#0c1a12',
-    primaryBorderColor: 'rgba(5,150,105,0.45)',
-    primaryTextColor: '#e2f0eb',
-    secondaryColor: '#0d1e14',
-    tertiaryColor: '#060d0a',
-    lineColor: '#7aad93',
-    textColor: '#e2f0eb',
-    nodeBorder: 'rgba(5,150,105,0.4)',
-    clusterBkg: '#0d1e14',
-    clusterBorder: 'rgba(5,150,105,0.3)',
-    edgeLabelBackground: '#0c1a12',
-    titleColor: '#e2f0eb',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    fontSize: '12px',
-    attributeBackgroundColorEven: '#060d0a',
-    attributeBackgroundColorOdd: '#0c1a12',
-    fillType0: '#0c1a12', fillType1: '#0d1e14',
-    actorBkg: '#0c1a12', actorBorder: 'rgba(5,150,105,0.4)',
-    actorTextColor: '#e2f0eb', actorLineColor: 'rgba(5,150,105,0.3)',
-    signalColor: '#7aad93', signalTextColor: '#e2f0eb',
-    labelBoxBkgColor: '#0c1a12', labelBoxBorderColor: 'rgba(5,150,105,0.3)',
-    labelTextColor: '#e2f0eb', loopTextColor: '#7aad93',
-    noteBorderColor: 'rgba(5,150,105,0.3)', noteBkgColor: '#0d1e14', noteTextColor: '#e2f0eb'
-  }
-});
-
-const MMD = {
-  architecture: `graph TB
-    subgraph Browser["Browser Layer"]
-      LV["Phoenix LiveView"]
-      HEEx["HEEx Templates"]
-      iOS["SwiftUI iOS"]
-    end
-    subgraph Router["Router + Plugs"]
-      PHX["Phoenix Router"]
-      UA["UserAuth"]
-      AA["AdminAuth"]
-      DG["DevtoolsGate"]
-    end
-    subgraph Contexts["Domain Contexts (Elixir/OTP)"]
-      AC["Accounts"]
-      FM["Formulary"]
-      BI["Billing"]
-      CO["Consultations"]
-    end
-    subgraph Data["Data + Jobs"]
-      PG[("PostgreSQL 18")]
-      OB["Oban Workers"]
-    end
-    subgraph External["External Services"]
-      ST["Stripe"]
-      DA["Daily.co"]
-      PH["503A Pharmacy"]
-      PM["Postmark"]
-    end
-    Browser --> Router
-    Router --> Contexts
-    Contexts --> Data
-    Contexts -.-> External`,
-
-  lifecycle: `flowchart LR
-    N(["/idea new"]):::done --> D
-    D(["/idea discover"]):::done --> DF
-    DF(["/idea define"]):::done --> P
-    P(["/idea plan"]):::done --> E
-    E(["/idea execute"]):::active --> S
-    S(["/idea status"]):::pending
-    classDef done fill:#0c1a12,stroke:#059669,color:#e2f0eb
-    classDef active fill:#0c1a12,stroke:#f59e0b,color:#e2f0eb
-    classDef pending fill:#060d0a,stroke:#3f6b52,color:#7aad93`,
-
-  container: `graph TB
-    U1(["Pepp Consumer"]) --> WEB
-    U2(["Physician"]) --> WEB
-    subgraph Platform["Peppy Platform"]
-      WEB["Phoenix LiveView\\nElixir/OTP · WebSocket"]
-      API["Phoenix REST API\\n/api/v1 + /dev/api"]
-      OB["Oban Workers\\nEmail · Pharmacy · Reminders"]
-      DB[("PostgreSQL 18\\nUsers · Formulary · Rx · Sessions")]
-    end
-    WEB --> DB
-    API --> DB
-    API --> OB
-    OB --> ST["Stripe"]
-    OB --> DA["Daily.co"]
-    OB --> PH["503A Pharmacy"]
-    OB --> EM["Postmark"]`,
-
-  context: `graph LR
-    C1(["Pepp Consumer"])
-    C2(["Licensed Physician"])
-    SYS["Peppy Platform\\nDTC Telehealth +\\nPeptide Compounding"]
-    EX1["Stripe\\nBilling"]
-    EX2["Daily.co\\nHIPAA Video"]
-    EX3["503A Pharmacy\\nRx Dispensing"]
-    C1 -->|"Subscribes · browses · books"| SYS
-    C2 -->|"Reviews intake · issues Rx"| SYS
-    SYS -->|"Checkout + webhooks"| EX1
-    SYS -->|"Video rooms"| EX2
-    SYS -->|"Rx routing"| EX3`,
-
-  auth: `sequenceDiagram
-    participant U as Consumer
-    participant P as Phoenix Router
-    participant A as Accounts ctx
-    participant DB as PostgreSQL
-
-    note over U,DB: Registration
-    U->>P: POST /sign-up
-    P->>A: register_user(attrs)
-    A->>DB: INSERT users (bcrypt hash)
-    A->>DB: INSERT users_tokens (32-byte token)
-    A-->>P: ok, token
-    P-->>U: Set-Cookie + redirect /app/onboarding
-
-    note over U,DB: Every request
-    U->>P: GET /app/* (Cookie: user_token)
-    P->>A: get_user_by_session_token(token)
-    A->>DB: SELECT WHERE token AND age < 60 days
-    DB-->>A: User struct
-    P-->>U: 200 OK (current_user assigned)`,
-
-  journey: `journey
-    title Pepp Consumer Journey
-    section Discovery
-      Podcast / SEO find: 3: Consumer
-      Browses Formulary: 5: Consumer
-    section Conversion
-      Signs up: 5: Consumer
-      Health intake: 4: Consumer
-      Selects Pepp Rally: 5: Consumer
-      Subscribes: 5: Consumer, Stripe
-    section Value Delivery
-      Books Pepp Talk: 5: Consumer
-      Physician issues Rx: 5: Physician
-      Pharmacy ships peptides: 4: Consumer
-    section Retention
-      Monthly Rx refills: 5: Pharmacy
-      Physician follow-up: 5: Physician
-      Upgrades to Elite: 4: Consumer`,
-
-  deploy: `graph TB
-    DEV["Developer"] -->|az acr build| ACR["Azure Container Registry\\nccemregistry.azurecr.io"]
-    ACR -->|pull image| ACA
-    subgraph Azure["Azure East US 2 — rg-peppy-dev"]
-      ACA["Container App: peppy"]
-      MJ["Migration Job\\npeppy-migrate"]
-      PG[("PostgreSQL 18\\npeppy_prod")]
-      ACA --- PG
-      MJ -->|mix ecto.migrate| PG
-    end
-    CF["Cloudflare\\nSSL + DDoS"] --> ACA
-    USERS["Consumers"] --> CF
-    ACA -.->|webhooks| ST["Stripe"]
-    ACA -.->|video rooms| DA["Daily.co"]
-    ACA -.->|Rx routing| PH["503A Pharmacy"]`,
-
-  formation: `graph TD
-    F["Formation: fmt-peppy-20260330"]
-    F --> S1 & S2 & QA
-    S1["Squadron: Wave 3 Platform"] --> SW1 & SW2 & SW3
-    S2["Squadron: Wave 4 Growth"] --> SW4 & SW5 & SW6
-    SW1["Swarm: Billing"] --> A1["stripe-billing"] & A2["billing-qa"]
-    SW2["Swarm: Consultations"] --> A3["pepp-talk-engine"] & A4["prescription-mgmt"] & A5["consult-qa"]
-    SW3["Swarm: Admin"] --> A6["admin-wiring"] & A7["admin-qa"]
-    SW4["Swarm: Email & Auth"] --> A8["email-verification"] & A9["email-qa"]
-    SW5["Swarm: Outcomes"] --> A10["rally-stats"] & A11["stats-qa"]
-    SW6["Swarm: iOS"] --> A12["ios-foundation"] & A13["ios-qa"]
-    QA["QA Squadron"] --> Q1["build-verifier"] & Q2["git-verifier"] & Q3["smoke-tester"] & Q4["ac-auditor"]`
-};
-
-/* ─── Diagram rendering (lazy, deduped) ─── */
-const rendered = new Set();
-async function renderDiagram(containerId, code) {
-  if (rendered.has(containerId)) return;
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  try {
-    const id = 'mmd_' + containerId;
-    const { svg } = await mermaid.render(id, code);
-    el.innerHTML = svg;
-    const svgEl = el.querySelector('svg');
-    if (svgEl) { svgEl.style.maxWidth = '100%'; svgEl.style.height = 'auto'; }
-    rendered.add(containerId);
-  } catch(e) {
-    el.innerHTML = `<div class="mmd-error">Diagram: ${e.message || 'render error'}</div>`;
-  }
-}
-
 /* ─── Tab switching ─── */
 function switchTab(tab, btn) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + tab).classList.add('active');
   btn.classList.add('active');
-
-  if (tab === 'platform') {
-    setTimeout(() => renderDiagram('arch-diagram', MMD.architecture), 50);
-  }
-  if (tab === 'idfw') {
-    const active = document.querySelector('.phase-section.active');
-    if (active) renderPhase(active.id.replace('phase-', ''));
-  }
 }
 
 /* ─── Phase switching (IDFW tab) ─── */
@@ -861,18 +1118,6 @@ function switchPhase(phase, btn) {
   const section = document.getElementById('phase-' + phase);
   if (section) { section.classList.add('active'); section.classList.add('fade-in'); }
   if (btn) btn.classList.add('active');
-  renderPhase(phase);
-}
-
-function renderPhase(phase) {
-  const map = {
-    overview: [['diag-lifecycle', MMD.lifecycle], ['diag-container', MMD.container]],
-    discover: [['diag-journey', MMD.journey], ['diag-context', MMD.context]],
-    define:   [['diag-auth', MMD.auth]],
-    plan:     [['diag-deploy', MMD.deploy]],
-    execute:  [['diag-formation', MMD.formation]]
-  };
-  (map[phase] || []).forEach(([id, code]) => renderDiagram(id, code));
 }
 
 /* ─── Platform: Feature Cards ─── */
@@ -1068,8 +1313,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData();
   pollAPM();
   setInterval(pollAPM, 10000);
-  // Render architecture diagram for Platform tab (default active)
-  setTimeout(() => renderDiagram('arch-diagram', MMD.architecture), 200);
 });
 </script>
 </body>

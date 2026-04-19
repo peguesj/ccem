@@ -538,5 +538,140 @@
     "status": "shipped",
     "version": "8.1.0",
     "description": "AboutView: version/build from Bundle.main.infoDictionary, GitHub link to ccem-apm repo, Open APM Dashboard button. HelpView: scrollable Quick Start bullets, Keyboard Shortcuts (monospaced key badges), Troubleshooting items for APM connection, notifications, login item. Footer section in MenuBarView with Settings/About/Help sheet triggers."
+  },
+  {
+    "id": "US-v9-001",
+    "wave": 9,
+    "title": "Agent Descriptor Mapping",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "AgentLockConfig extended with agent descriptor mapping — structured metadata per agent type with human-readable labels, risk profiles, and capability tags. Enables context-aware authorization decisions based on agent identity."
+  },
+  {
+    "id": "US-v9-002",
+    "wave": 9,
+    "title": "Execution Context Payload",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "Execution context payload schema integrated into AgentLock authorization flow. Tool invocations now carry structured context (session, project, formation, parent agent) enabling richer policy evaluation and audit trail correlation."
+  },
+  {
+    "id": "US-v9-003",
+    "wave": 9,
+    "title": "Notification Grouping + ApprovalQueue",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "ApprovalQueue GenServer with debounced notification grouping. Batches rapid-fire AgentLock approval requests into grouped notifications to reduce alert fatigue. Configurable debounce window and group-by-tool coalescing."
+  },
+  {
+    "id": "US-v9-004",
+    "wave": 9,
+    "title": "ApprovalModal UX",
+    "category": "ui",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "ApprovalModal titlebar with agent descriptor, keyboard shortcuts (Enter to approve, Escape to reject, Tab to cycle), and dismiss control. Full modal interaction redesign for rapid grouped approval workflows."
+  },
+  {
+    "id": "US-v9-005",
+    "wave": 9,
+    "title": "CCEMHelper Grouped Approval UI",
+    "category": "ccemhelper",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "CCEMHelper native macOS grouped approval UI with focus management. Approval requests rendered as grouped cards in the menu bar app with keyboard navigation, bulk approve/reject, and per-tool detail expansion. Focus ring management for accessibility."
+  },
+  {
+    "id": "US-v9-006",
+    "wave": 9,
+    "title": "ApprovalAuditLog",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "ApprovalAuditLog GenServer with persistent audit trail for all approval decisions. Records approve/reject/timeout with timestamp, session, agent, tool, and decision context. APM dashboard audit view at /approval-history with filterable log table."
+  },
+  {
+    "id": "US-v9-007",
+    "wave": 9,
+    "title": "AgentLock OpenAPI + Docs",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "OpenAPI 3.0.3 spec updated with AgentLock notification endpoints, approval queue operations, and audit log queries. Full AgentLock documentation section covering descriptor mapping, execution context, grouped approvals, and audit trail."
+  },
+  {
+    "id": "US-v9-008",
+    "wave": 9,
+    "title": "Approval Integration Tests",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "Integration test suite for the full approval workflow: request grouping, modal rendering, keyboard interaction, approve/reject paths, audit log persistence, and CCEMHelper notification delivery. Covers CP-56 through CP-63."
+  },
+  {
+    "id": "US-v9-009",
+    "wave": 9,
+    "title": "osascript Notification Fallback",
+    "category": "ccemhelper",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "Added osascript fallback for notification delivery on unsigned apps. When UNUserNotificationCenter is unavailable (unsigned builds), CCEMHelper falls back to osascript display notification for ApprovalQueue alerts."
+  },
+  {
+    "id": "US-v91-001",
+    "wave": 10,
+    "title": "Security Hook: Bash Injection Detection",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "Expanded security_reminder_hook.py with Bash command injection detection patterns and advisory-level alerts. Detects dangerous shell patterns (eval, curl|sh, base64 decode piping, env var injection) with critical-block or advisory severity."
+  },
+  {
+    "id": "US-v91-002",
+    "wave": 10,
+    "title": "Security Hook: SSRF Detection",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "WebFetch/WebSearch SSRF detection added to security hook. Blocks requests to IMDS endpoints (169.254.169.254), internal schemes (file://, gopher://), and advises on private IP ranges (10.x, 172.16-31.x, 192.168.x). Full coverage across WebFetch and WebSearch tool types."
+  },
+  {
+    "id": "US-v91-003",
+    "wave": 10,
+    "title": "Security Hook: Prompt Injection Detection",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "Agent/Skill prompt injection advisory detection. Scans for common injection patterns (ignore previous instructions, system prompt override, role reassignment) in Agent and Skill tool invocations with advisory-level alerts."
+  },
+  {
+    "id": "US-v91-004",
+    "wave": 10,
+    "title": "Security Hook: Expanded Tool Coverage",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "hooks.json matcher expanded to Edit|Write|MultiEdit|Bash|WebFetch|WebSearch|Agent|Skill — 8 native Claude Code tool types covered by security guidance patterns. All copies synced across claude-code-plugins/1.0.0, claude-plugins-official/104d39be10b7, and claude-plugins-official/unknown."
+  },
+  {
+    "id": "US-v91-005",
+    "wave": 10,
+    "title": "SecurityGuidancePlugin",
+    "category": "plugins",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "First-class :security plugin_scope added to PluginBehaviour. SecurityGuidancePlugin with 4 actions: hook_status (installation state + pattern counts), scan_history (recent debug log entries), covered_tools (8 tool types with severity levels), pattern_summary (category breakdown per tool type). Dashboard widget for security posture overview."
+  },
+  {
+    "id": "US-v91-006",
+    "wave": 10,
+    "title": "Security Plugin Test Suite",
+    "category": "developer-tools",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "41-test ExUnit suite for SecurityGuidancePlugin — contract compliance, endpoint listing, all 4 actions (hook_status, scan_history, covered_tools, pattern_summary), nav integration, dashboard widgets. Full coverage of security plugin lifecycle."
   }
 ]

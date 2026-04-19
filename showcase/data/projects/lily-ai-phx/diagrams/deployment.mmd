@@ -1,0 +1,29 @@
+graph TB
+    GitHub["GitHub<br/>Repository"]
+    GHA["GitHub Actions<br/>CI/CD Pipeline"]
+    ACR["Azure Container<br/>Registry"]
+    
+    subgraph Azure["Azure Cloud (eastus2)"]
+        CAI["Container App:<br/>lily-ai-app<br/>(Phoenix)"]
+        CAJ["Container App Job:<br/>lily-ai-migrate<br/>(Database)"]
+        CAP["Container App:<br/>Development<br/>(Dev)"]
+    end
+    
+    subgraph Data["Data Layer"]
+        PG["PostgreSQL<br/>Database"]
+        Redis["Redis<br/>Cache"]
+    end
+    
+    External["External APIs<br/>(Stripe, SendGrid, Claude)"]
+    
+    GitHub -->|Push| GHA
+    GHA -->|Build+Test| ACR
+    ACR -->|Deploy| CAI
+    ACR -->|Run Migration| CAJ
+    CAJ -->|Updates Schema| PG
+    CAI -->|Read/Write| PG
+    CAI -->|Cache| Redis
+    CAI -->|API Calls| External
+    
+    style CAI fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
+    style PG fill:#06B6D4,stroke:#0E7490,stroke-width:2px,color:#fff

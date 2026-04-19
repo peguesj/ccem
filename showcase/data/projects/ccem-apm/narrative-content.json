@@ -1,6 +1,6 @@
 {
-  "version": "8.1.0",
-  "description": "CCEM APM v8.1.0 — The Agentic Performance Monitor for Claude Code. Session management, AgentLock authorization, Plugin/Integration Engine, real-time formation telemetry, AG-UI protocol integration, UPM orchestration, and multi-project observability.",
+  "version": "9.1.0",
+  "description": "CCEM APM v9.1.0 — The Agentic Performance Monitor for Claude Code. AgentLock notifications with grouped approval UX, approval audit logging, security native types (Bash injection, SSRF, prompt injection detection), Plugin/Integration Engine with SecurityGuidancePlugin, session management, real-time formation telemetry, AG-UI protocol integration, UPM orchestration, and multi-project observability.",
   "investor": {
     "headline": "The Platform Layer for Agentic AI Development",
     "pitch": "CCEM APM is the observability and orchestration platform that makes multi-agent AI development tractable. Track formations of 10-100 agents in real-time, coordinate UPM project lifecycles, and maintain full auditability of all AG-UI events.",

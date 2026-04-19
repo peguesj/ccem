@@ -45,6 +45,15 @@
       "color": "cyan",
       "active": true,
       "description": "C4 L1/L2, process flow, data flow, user journey, deployment, formation topology"
+    },
+    {
+      "id": "idea",
+      "label": "IDEA",
+      "source": "idea-*.json",
+      "type": "idea-framework",
+      "color": "rose",
+      "active": true,
+      "description": "IDEA Framework: Discover, Define, Plan, Execute — reverse-engineered from codebase"
     }
   ],
   "sync": {

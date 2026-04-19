@@ -1,0 +1,151 @@
+{
+  "phase": "execute",
+  "deployment": {
+    "platform": "Azure Container Apps",
+    "registry": "lilyaiphxacr.azurecr.io",
+    "production_url": "https://lily-ai-app.yellowocean-031a09f8.eastus2.azurecontainerapps.io",
+    "staging_url": "https://lily-ai-app-staging.gentletree-f65e7f15.eastus2.azurecontainerapps.io",
+    "staging_registry": "lilyaistaging.azurecr.io",
+    "ci_cd": "GitHub Actions",
+    "ci_cd_workflow": "deploy.yml",
+    "ci_cd_pipeline": ["determine-environment", "build", "migrate", "deploy", "health-check"],
+    "ci_cd_triggers": {
+      "main": "production",
+      "develop": "staging",
+      "workflow_dispatch": true
+    },
+    "docker": true,
+    "dockerfile": "Dockerfile",
+    "base_image": "hexpm/elixir:1.18.3-erlang-27.3.3-debian-bookworm-20250428-slim",
+    "runtime_image": "mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim",
+    "architecture": "ARM64",
+    "healthcheck": {
+      "interval": "30s",
+      "timeout": "5s",
+      "start_period": "30s",
+      "retries": 3,
+      "method": "TCP port 4000"
+    },
+    "migration_strategy": "Azure Container Apps Job (lily-ai-migrate)",
+    "azure_resources": {
+      "production": {
+        "resource_group": "rg-lily-ai",
+        "container_app": "lily-ai-app",
+        "acr": "lilyaiphxacr",
+        "migrate_job": "lily-ai-migrate"
+      },
+      "staging": {
+        "resource_group": "rg-lily-ai-staging",
+        "container_app": "lily-ai-app-staging",
+        "acr": "lilyaistaging",
+        "migrate_job": "lily-ai-migrate-staging"
+      }
+    }
+  },
+  "testing": {
+    "framework": "ExUnit",
+    "test_file_count": 13,
+    "test_files": [
+      "test/lily_ai/accounts_test.exs",
+      "test/lily_ai/design_tokens_test.exs",
+      "test/lily_ai/doc_context_test.exs",
+      "test/lily_ai_web/controllers/error_html_test.exs",
+      "test/lily_ai_web/controllers/error_json_test.exs",
+      "test/lily_ai_web/controllers/page_controller_test.exs",
+      "test/lily_ai_web/controllers/user_registration_controller_test.exs",
+      "test/lily_ai_web/controllers/user_session_controller_test.exs",
+      "test/lily_ai_web/controllers/user_settings_controller_test.exs",
+      "test/lily_ai_web/live/directory_live/gating_test.exs",
+      "test/lily_ai_web/live/smoke_test.exs",
+      "test/lily_ai_web/live/style_guide_live_test.exs",
+      "test/lily_ai_web/user_auth_test.exs"
+    ],
+    "coverage_target": "85%"
+  },
+  "uat": {
+    "submission_syncer": true,
+    "plane_integration": true,
+    "github_integration": true,
+    "otp_auth": true,
+    "modules": [
+      "lib/lily_ai/uat/submission_syncer.ex",
+      "lib/lily_ai/uat/plane_client.ex",
+      "lib/lily_ai/uat/github_client.ex",
+      "lib/lily_ai/uat/notifier.ex",
+      "lib/lily_ai/uat/submission.ex",
+      "lib/lily_ai/uat/session.ex",
+      "lib/lily_ai/uat/tester.ex",
+      "lib/lily_ai/uat/test_case.ex",
+      "lib/lily_ai/uat/test_run.ex",
+      "lib/lily_ai/uat/integration_test.ex",
+      "lib/lily_ai/uat/bug_report.ex",
+      "lib/lily_ai/uat/route_mapping.ex"
+    ],
+    "two_factor_module": "lib/lily_ai/two_factor.ex"
+  },
+  "git_stats": {
+    "total_commits": 145,
+    "contributors": ["peguesj"],
+    "branches": {
+      "total": 17,
+      "local": ["develop", "feature/quiz-match-gating", "main", "ob/wave-1-org-invites", "ob/wave-2-safety-uat", "ralph/phase-22-uat-critical-fixes"],
+      "remote": [
+        "origin/develop",
+        "origin/feat/directory-explorer-enhancement",
+        "origin/feat/portal-gap-resolution",
+        "origin/feat/style-guide-agui-doc",
+        "origin/feat/uat-seed-showcase",
+        "origin/feature/quiz-match-gating",
+        "origin/fix/quiz-option-selection-bug",
+        "origin/main",
+        "origin/ralph/phase-22-uat-critical-fixes",
+        "origin/ralph/phase-23-uat-fixes"
+      ]
+    }
+  },
+  "current_version": "v1.15.2 (Open Beta)",
+  "version_details": {
+    "major": 1,
+    "minor": 15,
+    "patch": 2,
+    "release_type": "Open Beta"
+  },
+  "uptime": {
+    "production": "deployed (v1.0.3+ via CI/CD, last verified healthy)",
+    "staging": "deployed (develop branch, Container Apps)"
+  },
+  "monitoring": {
+    "apm": "CCEM APM on port 3032",
+    "hooks": [
+      "apm_project_events.sh",
+      "apm_subagent_enrich.sh",
+      "apm_session_end.sh",
+      "notion_sync_reminder.sh",
+      "uat_context_hook.sh",
+      "uat_sync.sh",
+      "post_tool_use.sh",
+      "pre_tool_use.sh",
+      "session_init.sh"
+    ]
+  },
+  "stack": {
+    "language": "Elixir 1.18.3",
+    "runtime": "Erlang/OTP 27.3.3",
+    "framework": "Phoenix 1.8.x",
+    "database": "PostgreSQL (via Ecto)",
+    "auth": "phx.gen.auth + TwoFactor (pot/TOTP)",
+    "payments": "Stripe (stripity_stripe)",
+    "mailer": "Swoosh (SendGrid adapter)",
+    "css": "Tailwind CSS",
+    "js_bundler": "esbuild",
+    "animations": "lottie-web ^5.12.2"
+  },
+  "plane_pm": {
+    "project": "LILY",
+    "workspace": "lgtm",
+    "url": "https://plane.lgtm.build",
+    "total_issues_delivered": "300+ (LILY-1..364+)"
+  },
+  "extracted_at": "2026-03-30T00:00:00Z",
+  "formation": "fmt-20260330-idea-reveng"
+}

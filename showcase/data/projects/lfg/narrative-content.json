@@ -1,0 +1,55 @@
+{
+  "project": "lfg",
+  "title": "LFG — Local File Guardian",
+  "subtitle": "Disk management suite with self-correcting DevDrive architecture",
+  "version": "0.12.0",
+  "updated_at": "2026-04-18",
+  "waves": [
+    { "num": 1, "title": "Wave 1 — Core Modules (WTFS/DTF/BTAU)", "color": "emerald" },
+    { "num": 2, "title": "Wave 2 — Volume Management (DEVDRIVE/SSD/STFU)", "color": "emerald" },
+    { "num": 3, "title": "Wave 3 — Native Integration (Finder/Menubar/Inbox)", "color": "emerald" },
+    { "num": 4, "title": "Wave 4 — Packaging & Review (PKG/Fixes/Tests/Docs)", "color": "emerald" },
+    { "num": 5, "title": "Wave 5 — SwiftUI Port + Formation Showcase", "color": "emerald" },
+    { "num": 6, "title": "Wave 6 — Native Services Layer (LFGKit + Async)", "color": "emerald" },
+    { "num": 7, "title": "Wave 7 — Permissions + Login Item + Settings", "color": "emerald" },
+    { "num": 8, "title": "Wave 8 — Full SwiftUI UI (Charts/Tables/Treemap)", "color": "amber" },
+    { "num": 9, "title": "Wave 9 — XPC Privileged Helper", "color": "amber" },
+    { "num": 10, "title": "Wave 10 — Notarization + DMG + Sparkle", "color": "amber" },
+    { "num": 11, "title": "Wave 11 — DevDrive v2 Self-Correcting Architecture", "color": "emerald" }
+  ],
+  "sections": [
+    {
+      "heading": "DevDrive v2 — Why",
+      "body": "Current DevDrive uses hdiutil sparseimage wrappers. Problems: monotonic growth (never shrinks automatically), opaque allocation (host sees one big file), double-buffered cache, no drift detection hooks, band files in sparsebundles are individually corruptible. Observed pathology: disk fluctuates 50GB -> 20GB -> 30GB during dev sessions — root cause is APFS purgeable space management racing compile-time writes, compounded by sparseimage inability to release space.",
+      "stats": [
+        { "label": "Sparseimage compaction", "value": "manual only" },
+        { "label": "Drift detection", "value": "none" },
+        { "label": "Kernel integration", "value": "host-level shim" }
+      ]
+    },
+    {
+      "heading": "DevDrive v2 — How",
+      "body": "Move to native APFS volumes in the root container via diskutil apfs addVolume -quota. Shared free-space pool. Native snapshots, CoW, TRIM. No mount/attach dance — volumes are always present. Reconcile loop reads authoritative state from diskutil. Rejected macFUSE (kext deprecated on Apple Silicon), fuse-t (NFS shim latency), ZFS (out-of-tree installation friction) in favor of kernel-native APFS.",
+      "stats": [
+        { "label": "Drift categories", "value": "8 (idempotent)" },
+        { "label": "State source", "value": "~/.config/lfg/devdrive_state.json" },
+        { "label": "Build waves", "value": "6" }
+      ]
+    },
+    {
+      "heading": "DevDrive v2 — Reconcile Loop",
+      "body": "Observe → Classify → Act → Record. Eight drift categories map to deterministic fix actions: MISSING_LINK (recreate), STALE_TARGET (repoint), REAL_DIR_DRIFT (move to volume + link), UNMOUNTED_VOL (mount or alert), OVERSIZED (prompt or shrink), BAND_BLOAT (schedule compact for legacy), SNAPSHOT_LOCKED (thin if pressure), SWAP_PRESSURE (escalate to menubar). All actions idempotent and safe to call on every loop tick. Runs via LaunchAgent io.lfg.devdrive-reconcile.",
+      "stats": [
+        { "label": "Cadence", "value": "N-minute LaunchAgent" },
+        { "label": "Rollback window", "value": "24h (default)" },
+        { "label": "Sawtooth discrimination", "value": "dF/dt ring buffer" }
+      ]
+    }
+  ],
+  "references": [
+    { "label": "DevDrive v2 Design Doc", "url": "file:///Users/jeremiah/tools/@yj/lfg/DEVDRIVE_V2_DESIGN.md", "type": "design" },
+    { "label": "Current DevDrive shell wrapper", "url": "file:///Users/jeremiah/tools/@yj/lfg/lib/devdrive.sh", "type": "source" },
+    { "label": "btau.core.devdrive (forest)", "url": "file:///Users/jeremiah/tools/yj-devdrive/btau/core/devdrive.py", "type": "source" },
+    { "label": "btau.core.sparse (legacy backend)", "url": "file:///Users/jeremiah/tools/yj-devdrive/btau/core/sparse.py", "type": "source" }
+  ]
+}

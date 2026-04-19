@@ -538,5 +538,23 @@
     "status": "shipped",
     "version": "8.9.0",
     "description": "EventBus replay buffer expanded 500 → 20,000 events for high-throughput formation monitoring. A2A Router history cap expanded 200 → 2,000 entries. Both changes support large formations (50+ agents) without replay loss. BackgroundTasksStore add/1 alias added for register_task/1 compatibility."
+  },
+  {
+    "id": "US-v9-001",
+    "wave": 13,
+    "title": "AgentLock Notification Grouping",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.0.0",
+    "description": "v9.0.0 feature set: Agent descriptor mapping, execution context payloads, ApprovalQueue debounced notification grouping, ApprovalModal keyboard shortcuts, CCEMHelper grouped approval UI with focus management, ApprovalAuditLog GenServer, osascript notification fallback, and full integration test suite. Covers CP-56 through CP-63."
+  },
+  {
+    "id": "US-v91-001",
+    "wave": 14,
+    "title": "Security Native Types",
+    "category": "security",
+    "status": "shipped",
+    "version": "9.1.0",
+    "description": "v9.1.0 feature set: security_reminder_hook.py expanded with Bash command injection, WebFetch/WebSearch SSRF detection, Agent/Skill prompt injection advisory. hooks.json covers 8 native tool types. SecurityGuidancePlugin with :security plugin_scope, 4 actions (hook_status, scan_history, covered_tools, pattern_summary), and 41-test ExUnit suite. Covers CP-64 through CP-70."
   }
 ]

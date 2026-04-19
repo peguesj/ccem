@@ -1,0 +1,47 @@
+[
+  {
+    "id": "statement-generator",
+    "title": "Jan/Feb 2026 Statement Generation",
+    "description": "Templates Citi bank statements from March 2026 source — date substitution, ADPRTS $277→$6347, offset-based balance recalculation across 3 accounts",
+    "status": "shipped",
+    "wave": 3,
+    "story": "US-006",
+    "tags": ["pdf", "forensics", "generation"]
+  },
+  {
+    "id": "tier-specimens",
+    "title": "9-Specimen Tier System",
+    "description": "18 total specimens (9 per doc): T1 font metric flaw, T2 XObject inventory, T3 balance $0.01, T4 Tj/TJ substitution, T5 clean baseline",
+    "status": "shipped",
+    "wave": 3,
+    "story": "US-007",
+    "tags": ["specimens", "forensics", "containment"]
+  },
+  {
+    "id": "containment-markers",
+    "title": "4-Layer Containment System",
+    "description": "XMP xmptk tag, invisible 1pt white text, producer string spoof (Adobe PDF Library 15.0), SHA-256 self-signed manifest",
+    "status": "shipped",
+    "wave": 2,
+    "story": "US-002/003",
+    "tags": ["xmp", "steganography", "markers"]
+  },
+  {
+    "id": "detection-runbook",
+    "title": "DETECTION.md — T1–T4 Runbook",
+    "description": "Progressive scrutiny: visual, exiftool/pdftotext, ledger reconciliation + ADPRTS cross-correlation, qpdf stream analysis",
+    "status": "shipped",
+    "wave": 4,
+    "story": "US-008",
+    "tags": ["documentation", "forensics", "detection"]
+  },
+  {
+    "id": "showcase-server",
+    "title": "Showcase HTTP Server",
+    "description": "Dark-theme HTML index + client-side markdown renderer (marked.js + DOMPurify) at http://localhost:3040",
+    "status": "shipped",
+    "wave": 4,
+    "story": "US-010",
+    "tags": ["server", "ui", "presentation"]
+  }
+]

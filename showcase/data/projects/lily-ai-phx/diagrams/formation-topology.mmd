@@ -1,0 +1,37 @@
+graph TD
+    Formation["🎯 fmt-20260330-showcase-fleet<br/>(Formation)"]
+    
+    subgraph Wave1["🔵 WAVE 1: Discovery"]
+        S1["[Squadron] Discovery"]
+        A1["Codebase Analyst"]
+        A2["Narrative Architect"]
+        S1 --> A1
+        S1 --> A2
+    end
+    
+    subgraph Wave2["🟡 WAVE 2: Generation"]
+        S2["[Squadron] Generation"]
+        A3["Diagram Renderer"]
+        A4["Redaction Engine"]
+        A5["Content Composer"]
+        S2 --> A3
+        S2 --> A4
+        S2 --> A5
+    end
+    
+    subgraph Wave3["🟢 WAVE 3: Presentation"]
+        S3["[Squadron] Presentation"]
+        A6["UI Builder"]
+        A7["QA Validator"]
+        S3 --> A6
+        S3 --> A7
+    end
+    
+    Formation --> S1
+    Formation --> S2
+    Formation --> S3
+    
+    style Formation fill:#4F46E5,stroke:#312E81,stroke-width:3px,color:#fff
+    style S1 fill:#06B6D4,stroke:#0E7490,stroke-width:2px,color:#fff
+    style S2 fill:#F59E0B,stroke:#B45309,stroke-width:2px,color:#fff
+    style S3 fill:#10B981,stroke:#065F46,stroke-width:2px,color:#fff

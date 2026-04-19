@@ -1,24 +1,28 @@
-%% Data Flow - Quiz to Match Pipeline
-graph LR
-    quiz["Quiz Answers<br/>5 questions"]
-    profile["Client Profile<br/>demographics, goals,<br/>insurance, modality"]
-    engine["Matching Engine<br/>weighted scoring:<br/>specialty 30%<br/>demographics 25%<br/>insurance 20%<br/>availability 15%<br/>distance 10%"]
-    candidates["Candidate Pool<br/>filtered therapists"]
-    ranked["Ranked Results<br/>sorted by match %"]
-    swipe["Therapy Connect<br/>swipe interface"]
-    booking["Booking System<br/>calendar + confirmation"]
-
-    quiz -->|"normalize<br/>+ enrich"| profile
-    profile -->|"vector<br/>encode"| engine
-    engine -->|"top 20<br/>matches"| candidates
-    candidates -->|"re-rank<br/>by distance"| ranked
-    ranked -->|"paginated<br/>cards"| swipe
-    swipe -->|"selected<br/>therapist"| booking
-
-    classDef input fill:#6366f1,stroke:#4f46e5,color:#fff
-    classDef process fill:#1e293b,stroke:#475569,color:#e2e8f0
-    classDef output fill:#059669,stroke:#047857,color:#fff
-
-    class quiz input
-    class profile,engine,candidates,ranked process
-    class swipe,booking output
+graph TB
+    Users["👥 Users<br/>Accounts"]
+    Therapists["👨‍⚕️ Therapists<br/>Profiles"]
+    Quizzes["📝 Quiz Answers<br/>Results"]
+    Matches["💕 Therapy Matches<br/>Status"]
+    Messages["💬 Messages<br/>Conversations"]
+    Subscriptions["💳 Subscriptions<br/>Billing"]
+    
+    PG["PostgreSQL<br/>Primary Data Store"]
+    Cache["Redis<br/>Session Cache"]
+    Analytics["Analytics Engine<br/>PERMA-V Scoring"]
+    Notifications["Notification Queue<br/>(Email, SMS)"]
+    
+    Users -->|store/query| PG
+    Therapists -->|store/query| PG
+    Quizzes -->|store/query| PG
+    Matches -->|store/query| PG
+    Messages -->|store/query| PG
+    Subscriptions -->|store/query| PG
+    
+    PG -->|session| Cache
+    Quizzes -->|score| Analytics
+    Analytics -->|updated scores| PG
+    Subscriptions -->|expired| Notifications
+    Matches -->|new match| Notifications
+    
+    style PG fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
+    style Analytics fill:#F59E0B,stroke:#B45309,stroke-width:2px,color:#fff
