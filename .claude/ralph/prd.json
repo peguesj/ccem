@@ -1,217 +1,326 @@
 {
   "project": "CCEM - Claude Code Environment Manager",
-  "branchName": "ralph/agentlock-notifications-v860",
-  "baseBranch": "main",
-  "description": "APM hooks max-payload upgrade v7\u2192v9: enrich all 9 hooks with session identity, git context, memory write detection, skill invocation tracking, pattern heartbeats, and notification audit trail",
+  "branchName": "ralph/dashboard-widgetization-engine",
+  "baseBranch": "ralph/coalesce-v911-skill-sync",
+  "description": "Dashboard Widgetization Engine: inline widget config editing, drag-to-reorder grid layout, context pinning with scope broadcast, Projects widget with user/project collapsible split, and full widget self-registration system",
   "upm": {
     "planeProjectId": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
-    "checkpointRange": "CP-71 to CP-80",
-    "builtWaves": 3,
-    "verifiedAt": "2026-04-18T22:10:00Z",
-    "shippedAt": "2026-04-18T22:30:00Z",
-    "prUrl": "https://github.com/peguesj/ccem/pull/8"
+    "checkpointRange": "CP-93 to CP-106",
+    "builtWaves": 4,
+    "verifiedAt": "2026-04-19T00:00:00Z",
+    "shippedAt": null,
+    "prUrl": null
   },
   "userStories": [
     {
-      "id": "US-334",
-      "title": "Hook version headers v7\u2192v9 across all 9 hooks",
-      "description": "Update version comment headers from 'CCEM APM v7.0.0' to 'CCEM APM v9.0.0' in all 9 hook files. Add max-payload description comments documenting the new fields each hook emits.",
+      "id": "US-356",
+      "title": "Widget config schema: add editable, pinnable, scopeable flags to WidgetRegistry",
+      "description": "Extend the WidgetRegistry widget definition schema to include: editable (bool, default true), pinnable (bool), supported_scopes ([\"global\",\"project\",\"formation\",\"agent\"]), default_config (map of defaults matching config_schema keys), and display_order (integer). Update @builtin_widgets to include these fields. Add WidgetRegistry.update_widget_config/2 and WidgetRegistry.pin_widget/2 public API calls.",
       "acceptanceCriteria": [
-        "All 9 hooks (agentlock_context, agentlock_pre_tool, agentlock_post_tool, pre_tool_use, post_tool_use, session_init, session_end, subagent_start, subagent_stop) have v9.0.0 header",
-        "Each hook header lists its max-payload fields",
-        "No functional changes in this story \u2014 header/comment only"
-      ],
-      "estimatedPoints": 1,
-      "dependencies": [],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "8e428254-d1ac-4ab7-97a6-f3773831f572",
-      "checkpointId": "CP-71",
-      "wave": 1
-    },
-    {
-      "id": "US-335",
-      "title": "Max-payload: session_id + project + working_dir in all hook payloads",
-      "description": "Add session_id, project (derived from CWD basename), and working_dir to every heartbeat/notification payload emitted by pre_tool_use, post_tool_use, session_init, session_end, subagent_start, and subagent_stop hooks.",
-      "acceptanceCriteria": [
-        "All 6 lifecycle hooks include session_id in their APM payloads",
-        "project field derived from basename of CWD",
-        "working_dir field contains full CWD path",
-        "Payloads validate against APM heartbeat schema"
-      ],
-      "estimatedPoints": 2,
-      "dependencies": [
-        "US-334"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "70e4547a-1fdf-40fb-a44a-74deae278f2d",
-      "checkpointId": "CP-72",
-      "wave": 1
-    },
-    {
-      "id": "US-336",
-      "title": "Max-payload: git_branch resolution in pre/post tool hooks",
-      "description": "Add non-blocking git branch detection to pre_tool_use and post_tool_use hooks. Resolve via 'git rev-parse --abbrev-ref HEAD' from CWD. Include git_branch in heartbeat payload context object.",
-      "acceptanceCriteria": [
-        "pre_tool_use.sh resolves git_branch from CWD",
-        "post_tool_use.sh resolves git_branch from CWD",
-        "git_branch appears in payload.context.git_branch",
-        "Non-blocking: gracefully returns empty string if not a git repo",
-        "session_end.sh also includes git_branch in final payload"
-      ],
-      "estimatedPoints": 1,
-      "dependencies": [
-        "US-335"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "91eb14f2-01c8-4a1f-b4a8-49cb6f792256",
-      "checkpointId": "CP-73",
-      "wave": 1
-    },
-    {
-      "id": "US-337",
-      "title": "Agent identity resolution chain in agentlock hooks",
-      "description": "Implement agent identity fallback chain: agent_id \u2192 parent_tool_use_id \u2192 session_id. Apply consistently in agentlock_context, agentlock_pre_tool, and agentlock_post_tool hooks. Ensures sub-agents are correctly attributed.",
-      "acceptanceCriteria": [
-        "EFFECTIVE_AGENT_ID resolves through 3-level fallback chain",
-        "agentlock_context uses EFFECTIVE_AGENT_ID in context write payload",
-        "agentlock_pre_tool uses EFFECTIVE_AGENT_ID in authorize payload",
-        "agentlock_post_tool uses EFFECTIVE_AGENT_ID in execute payload",
-        "Falls back to SESSION_ID when no agent_id or parent_tool_use_id available"
+        "WidgetRegistry schema includes editable, pinnable, supported_scopes, default_config, display_order",
+        "All @builtin_widgets include the new fields with sensible defaults",
+        "WidgetRegistry.update_widget_config/2 persists config override to ETS",
+        "mix compile --warnings-as-errors passes"
       ],
       "estimatedPoints": 2,
       "dependencies": [],
       "status": "done",
       "passes": true,
-      "planeIssueId": "f8538668-5fe3-4203-a6ae-3b38d1c286c2",
-      "checkpointId": "CP-74",
+      "planeIssueId": "317d4bc6-9179-4c2c-bc33-51d8ebb85074",
+      "checkpointId": "CP-93",
       "wave": 1
     },
     {
-      "id": "US-338",
-      "title": "Memory write detection in pre/post tool hooks",
-      "description": "Detect when Write/Edit/MultiEdit targets a memory file (path matching .claude/projects/*/memory/*.md). Set is_memory_write flag and memory_file_name. Emit notification to /api/notify with category 'memory' on completion.",
+      "id": "US-357",
+      "title": "LayoutStore: add widget_config overrides and pinned_widget persistence",
+      "description": "Extend LayoutStore to persist per-session widget config overrides and track which widget is currently pinned as scope source. Add: save_widget_config(session_id, widget_id, config_map), get_widget_config(session_id, widget_id), set_pinned_widget(session_id, widget_id | nil), get_pinned_widget(session_id). Broadcasts :widget_config_updated and :pinned_widget_changed on ApmV5.PubSub topic \"dashboard:session:{session_id}\".",
       "acceptanceCriteria": [
-        "pre_tool_use detects memory writes via regex on file_path",
-        "post_tool_use emits /api/notify with category=memory on completion",
-        "is_memory_write and memory_file fields in heartbeat tool_context",
-        "Non-memory writes have is_memory_write=false, memory_file=null"
+        "save_widget_config/get_widget_config round-trip in ETS",
+        "set_pinned_widget broadcasts :pinned_widget_changed via PubSub",
+        "get_pinned_widget returns nil when no widget pinned",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "74a80a81-95b2-422a-948a-eb3ab29a9b96",
+      "checkpointId": "CP-94",
+      "wave": 1
+    },
+    {
+      "id": "US-358",
+      "title": "WidgetConfigStore GenServer: durable in-memory widget config with ETS",
+      "description": "Create ApmV5.WidgetConfigStore GenServer backed by ETS table :widget_config_store. Stores per-session widget config overrides and pinned widget state. API: put_config(session_id, widget_id, config), get_config(session_id, widget_id), get_all_configs(session_id), set_pinned(session_id, widget_id), get_pinned(session_id), clear_session(session_id). Add to supervision tree under ApmV5.Application. Broadcasts changes via PubSub.",
+      "acceptanceCriteria": [
+        "WidgetConfigStore starts under supervision tree",
+        "put_config/get_config ETS round-trip verified",
+        "set_pinned broadcasts on \"dashboard:scope:{session_id}\" topic",
+        "clear_session removes all session keys from ETS",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "9d1a2c5f-d157-4df9-9cfd-f48edfb3beec",
+      "checkpointId": "CP-95",
+      "wave": 1
+    },
+    {
+      "id": "US-359",
+      "title": "DashboardScopeEngine: PubSub context pin and scope broadcast GenServer",
+      "description": "Create ApmV5.DashboardScopeEngine GenServer. Manages per-session pinned scope source. When a widget is pinned and emits a scope selection event, broadcasts scope context to \"dashboard:scope:{session_id}\" PubSub topic so all non-user-level widgets can filter their data. API: pin_scope_source(session_id, widget_id), unpin(session_id), broadcast_scope(session_id, scope_type, scope_value), get_active_scope(session_id). Scope types: :global, :project, :formation, :agent.",
+      "acceptanceCriteria": [
+        "DashboardScopeEngine GenServer starts under supervision tree",
+        "pin_scope_source stores pinned widget in ETS",
+        "broadcast_scope emits {:scope_changed, scope_type, scope_value} on PubSub",
+        "unpin resets to :global scope and broadcasts",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "d1cb3e0b-02fd-44e1-95c7-4447792a9c0c",
+      "checkpointId": "CP-96",
+      "wave": 1
+    },
+    {
+      "id": "US-360",
+      "title": "DashboardLive: subscribe to DashboardScopeEngine and wire scope broadcasts",
+      "description": "Update DashboardLive to subscribe to dashboard:scope:{session_id} PubSub topic. Handle :scope_changed message by updating socket assigns: active_scope, scope_type, scope_value, pinned_widget_id. Pass scope assigns down to widget component renders. When pinned_widget changes, re-render the header scope breadcrumb. Ensure existing scope:set event handler is merged with new pin-driven scope system.",
+      "acceptanceCriteria": [
+        "DashboardLive subscribes to dashboard:scope:{session_id} on connect",
+        "handle_info(:scope_changed) updates active_scope, scope_type, scope_value assigns",
+        "pinned_widget_id assign reflects current DashboardScopeEngine state",
+        "Existing scope:set event still works",
+        "mix compile --warnings-as-errors passes"
       ],
       "estimatedPoints": 2,
       "dependencies": [
-        "US-335"
+        "US-359"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "81a52b53-2479-41ee-b054-55ff416f5a06",
-      "checkpointId": "CP-75",
+      "planeIssueId": "c9e76028-957b-414e-b166-cd88880058af",
+      "checkpointId": "CP-97",
       "wave": 2
     },
     {
-      "id": "US-339",
-      "title": "Skill invocation tracking in pre/post tool hooks",
-      "description": "Detect skill invocations from both Bash (commands starting with /skill-name) and explicit Skill tool calls. Emit /api/skills/track on both pre and post tool hooks. Include working_dir, git_branch, and duration_ms in skill tracking payload.",
+      "id": "US-361",
+      "title": "WidgetEditPanelComponent LiveComponent: inline config editor for widget properties",
+      "description": "Create ApmV5Web.Live.WidgetEditPanelComponent LiveComponent. Renders an inline slide-over panel (daisyUI drawer or absolute-positioned panel) when a widget edit button is clicked. Fields: title (text input), size (col_span select: 3/4/6/8/12), refresh_interval (number input, ms), and any config_schema fields rendered dynamically based on type (boolean=toggle, string=text, enum=select, integer=number). On save, calls phx-target to parent with widget_config_saved event. Close button dismisses. Uses phx-update=ignore on JS-managed animation wrapper.",
       "acceptanceCriteria": [
-        "Bash commands matching /^/[a-zA-Z]/ detected as skill invocations",
-        "Explicit Skill tool calls detected via skill_name parameter",
-        "Both pre and post hooks emit to /api/skills/track",
-        "post_tool_use includes duration_ms in skill tracking args",
-        "is_skill_invoke and invoked_skill fields in heartbeat tool_context"
+        "WidgetEditPanelComponent renders with all config_schema fields",
+        "Boolean fields render as daisyUI toggle",
+        "Enum fields render as select with options parsed from \"enum:opt1,opt2\" schema",
+        "On save, sends widget_config_saved to parent LiveView",
+        "phx-update=ignore on animation wrapper",
+        "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 2,
+      "estimatedPoints": 3,
       "dependencies": [
-        "US-335"
+        "US-356",
+        "US-358"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "0b5dc70c-698a-4c17-9bd8-851a78293690",
-      "checkpointId": "CP-76",
+      "planeIssueId": "bc11986a-d69d-4747-910f-dc2570128a32",
+      "checkpointId": "CP-98",
       "wave": 2
     },
     {
-      "id": "US-340",
-      "title": "Pattern heartbeat emission every 10 tool calls",
-      "description": "Add tool call counter per session in post_tool_use. Every 10 calls, emit a pattern summary heartbeat to /api/heartbeat with tool_call_count, last_tool, and timestamp. Counter file cleanup on session end.",
+      "id": "US-362",
+      "title": "WidgetContainerComponent LiveComponent: wrapper with edit, pin, and title bar controls",
+      "description": "Create ApmV5Web.Live.WidgetContainerComponent LiveComponent. Wraps any widget content with: title bar (widget name + custom title if set), control bar (edit pencil button, pin pushpin button, resize handle affordance). Edit button toggles WidgetEditPanelComponent. Pin button calls scope engine to pin/unpin this widget. Visual pin indicator (badge) when pinned. Accepts slot for widget body content. Passes widget_id, config, is_pinned, is_edit_mode assigns. Uses phx-update=ignore on resizable content wrapper per existing WidgetResize hook.",
       "acceptanceCriteria": [
-        "Counter file created at $STATE_DIR/pattern_count_$SESSION_ID",
-        "Incremented on every post_tool_use invocation",
-        "Pattern heartbeat emitted when count % 10 == 0",
-        "session_end.sh reads final count and includes in end payload",
-        "session_end.sh cleans up counter file"
+        "WidgetContainerComponent renders title bar with edit and pin buttons",
+        "Edit button toggles WidgetEditPanelComponent visibility",
+        "Pin button sends widget_pin_toggle event to parent",
+        "is_pinned=true shows pin badge on title bar",
+        "phx-update=ignore on resizable wrapper",
+        "Inner slot content rendered correctly",
+        "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 2,
+      "estimatedPoints": 3,
       "dependencies": [
-        "US-335"
+        "US-361",
+        "US-359"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "3efa4ebc-a4be-413e-bbd7-968377ea7e1f",
-      "checkpointId": "CP-77",
+      "planeIssueId": "d33a03cc-8330-4253-84e1-f25a0c2562e6",
+      "checkpointId": "CP-99",
       "wave": 2
     },
     {
-      "id": "US-341",
-      "title": "Expanded tool mapping + context enrichment in agentlock_context",
-      "description": "Expand source_type mapping from 5 to 10 tool categories (file_write, file_read, web_content, shell_execution, peer_agent, task_management, mcp_tool). Add memory_entries, active_skills, and active_patterns to context payload via python3 lookups.",
+      "id": "US-363",
+      "title": "DashboardGridComponent LiveComponent: drag-to-reorder widget layout",
+      "description": "Create ApmV5Web.Live.DashboardGridComponent LiveComponent. Renders widgets in a CSS Grid (12-column) layout from LayoutStore placements. Each widget cell has a drag handle (daisyUI grab cursor). On drag-end, sends layout_reorder event to DashboardLive with new placement map. Uses Sortable.js (or pure JS drag events) via a new DashboardGrid JS hook. The hook uses phx-update=ignore on the grid container. Supports both preset layouts and user-customized layouts. Layout changes are saved to LayoutStore.save_user_layout/2.",
       "acceptanceCriteria": [
-        "10 source types mapped: file_write, file_read, web_content, shell_execution, peer_agent, task_management, mcp_tool, tool_output (default)",
-        "memory_entries: reads up to 8 lines from MEMORY.md",
-        "active_skills: lists up to 25 skill directories",
-        "active_patterns: reads up to 10 keys from reference-registry.json",
-        "All python3 lookups have try/except fallbacks"
+        "DashboardGridComponent renders placements as CSS grid cells",
+        "Each widget cell has data-widget-id attribute for JS hook",
+        "phx-hook=DashboardGrid on grid container",
+        "layout_reorder event received by DashboardLive with {order: [widget_ids]}",
+        "LayoutStore.save_user_layout called on reorder",
+        "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 2,
+      "estimatedPoints": 3,
       "dependencies": [
-        "US-337"
+        "US-362",
+        "US-357"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "865314ab-52fd-4e17-9111-73a605ec0f92",
-      "checkpointId": "CP-78",
+      "planeIssueId": "d738e653-d310-4fb0-9b9a-3ff1e8f89b2b",
+      "checkpointId": "CP-100",
       "wave": 2
     },
     {
-      "id": "US-342",
-      "title": "Notification audit trail in agentlock_post_tool",
-      "description": "After token consumption in agentlock_post_tool, emit full result summary to /api/v2/notifications for audit tracing. Payload built via python3 for safe JSON construction of nested tool results.",
+      "id": "US-364",
+      "title": "ContextPinDrillDownComponent: scope context panel with user/project split",
+      "description": "Create ApmV5Web.Live.ContextPinDrillDownComponent LiveComponent. When a widget is pinned as scope source and a scope value is selected (e.g. project:ccem), renders a collapsible scope context panel below the pinned widget showing: project-level data in expanded section, user-level data in collapsed section (expand on click). Subscribes to dashboard:scope:{session_id} PubSub. When scope changes, updates all other widgets via scope_filter assign. Shows scope badge in header breadcrumb. User section is collapsed by default with a toggle button.",
       "acceptanceCriteria": [
-        "POST /api/v2/notifications called after token consumption",
-        "Payload includes agent_id, tool_name, tool_use_id, timestamp, project, result summary",
-        "python3 used for safe JSON construction (handles nested results)",
-        "Fire-and-forget: backgrounded, never blocks"
+        "ContextPinDrillDownComponent renders when scope_type == :project",
+        "Project section expanded by default, user section collapsed",
+        "Toggle button expands/collapses user section",
+        "Scope badge shown in breadcrumb area",
+        "Subscribes to dashboard:scope PubSub and updates on change",
+        "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 2,
+      "estimatedPoints": 3,
       "dependencies": [
-        "US-337"
+        "US-359",
+        "US-362"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "11207af6-212c-4fe6-87fb-1c2f83f1c67d",
-      "checkpointId": "CP-79",
+      "planeIssueId": "38bad1e6-d499-4c62-82ff-fed0cd8e1a60",
+      "checkpointId": "CP-101",
       "wave": 3
     },
     {
-      "id": "US-343",
-      "title": "Session end summary with tool count and cleanup",
-      "description": "Enhance session_end.sh to include final tool call count, project, working_dir, git_branch, and timestamp in the done heartbeat. Clean up pattern counter file. Report total tool calls in session end message.",
+      "id": "US-365",
+      "title": "ProjectsWidget LiveComponent: projects list with pin-to-scope support",
+      "description": "Create ApmV5Web.Live.Widgets.ProjectsWidget LiveComponent. Displays active projects from ApmV5.ProjectStore as a list with project name, active session count, agent count, and status badge. Each row has a Select button \u2014 clicking broadcasts scope_selected event to DashboardScopeEngine with project scope. Widget declares pinnable: true and supported_scopes: [:project]. Subscribes to apm:config PubSub for live project updates. Register in WidgetRegistry with id: \"projects\", category: :monitoring, min_width: 3, min_height: 3.",
       "acceptanceCriteria": [
-        "session_end payload includes project, working_dir, git_branch, timestamp",
-        "FINAL_TOOL_COUNT read from pattern counter file",
-        "Message format: 'Session ended: {reason} | tools_called={count}'",
-        "Pattern counter file removed after reading",
-        "subagent_start and subagent_stop also include session_id and project"
+        "ProjectsWidget lists projects from ProjectStore",
+        "Each row shows name, session count, agent count, status badge",
+        "Select button broadcasts scope_selected with project:name scope",
+        "Widget registered in WidgetRegistry with id=\"projects\", pinnable=true",
+        "Live updates when apm:config PubSub fires",
+        "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 1,
+      "estimatedPoints": 3,
       "dependencies": [
-        "US-340"
+        "US-359",
+        "US-356"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "539596cd-0d97-4c88-affc-4423c84b62e5",
-      "checkpointId": "CP-80",
+      "planeIssueId": "e8e97f94-9ed5-47d3-8adb-bd2538bd07c1",
+      "checkpointId": "CP-102",
       "wave": 3
+    },
+    {
+      "id": "US-366",
+      "title": "DashboardGrid JS hook: drag-reorder with Sortable.js integration",
+      "description": "Create assets/js/hooks/dashboard_grid.js implementing the DashboardGrid LiveView hook. On mounted, initialize Sortable.js on the grid container element (import from assets/vendor or npm). On Sortable end event, collect new order of widget_id data attributes and pushEvent(\"layout_reorder\", {order: [...]}) to LiveView. On updated, re-initialize Sortable if grid children changed. Use phx-update=ignore on the sortable container. Add DashboardGrid to app.js Hooks registry. Handle destroyed to cleanly destroy Sortable instance.",
+      "acceptanceCriteria": [
+        "dashboard_grid.js created with mounted/updated/destroyed lifecycle",
+        "Sortable.js initialized on mount",
+        "Sortable end event fires pushEvent(\"layout_reorder\", {order: [...]})",
+        "DashboardGrid exported and imported in app.js Hooks",
+        "destroyed() calls sortable.destroy() to prevent memory leaks",
+        "mix compile --warnings-as-errors passes (JS assets build)"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-363"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "205569f4-60a5-4d31-895a-8900683dd770",
+      "checkpointId": "CP-103",
+      "wave": 3
+    },
+    {
+      "id": "US-367",
+      "title": "DashboardLive: wire WidgetContainer, DashboardGrid, and edit/pin event handlers",
+      "description": "Update DashboardLive to render all widgets through WidgetContainerComponent and DashboardGridComponent. Handle new events: widget_edit_open (set edit_panel_widget_id), widget_config_saved (persist to WidgetConfigStore, broadcast), widget_pin_toggle (call DashboardScopeEngine), layout_reorder (call LayoutStore.save_user_layout), layout_preset_select (load preset, update assigns). Pass scope_filter from active_scope assign down to each widget that declares supported_scopes. Ensure all widget state (configs, pinned, scope) survives reconnects via assigns.",
+      "acceptanceCriteria": [
+        "DashboardLive renders widgets via WidgetContainerComponent",
+        "widget_config_saved event persists to WidgetConfigStore",
+        "widget_pin_toggle calls DashboardScopeEngine.pin_scope_source or unpin",
+        "layout_reorder saves to LayoutStore",
+        "scope_filter passed to scoped widgets",
+        "State survives LiveView reconnect",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-362",
+        "US-363",
+        "US-360",
+        "US-364"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "7433caad-065b-4ea8-b38a-0d76b7bbccae",
+      "checkpointId": "CP-104",
+      "wave": 3
+    },
+    {
+      "id": "US-368",
+      "title": "API endpoints: GET /api/v2/widgets, PATCH /api/v2/widgets/:id/config, POST /api/v2/dashboard/layout",
+      "description": "Add REST API endpoints to ApmV5Web.Router and controller: GET /api/v2/widgets returns all registered widget definitions from WidgetRegistry. GET /api/v2/widgets/:id returns single widget. PATCH /api/v2/widgets/:id/config accepts {session_id, config} and calls WidgetConfigStore. GET /api/v2/dashboard/layout?session_id=X returns current layout (preset + user overrides). POST /api/v2/dashboard/layout accepts {session_id, placements} to save custom layout. POST /api/v2/dashboard/pin accepts {session_id, widget_id} to pin scope source. Update OpenAPI spec at /api/v2/openapi.json.",
+      "acceptanceCriteria": [
+        "GET /api/v2/widgets returns 13+ widget definitions as JSON array",
+        "GET /api/v2/widgets/:id returns single widget or 404",
+        "PATCH /api/v2/widgets/:id/config persists via WidgetConfigStore",
+        "GET /api/v2/dashboard/layout returns merged preset+user layout",
+        "POST /api/v2/dashboard/layout saves custom placements",
+        "POST /api/v2/dashboard/pin pins scope source",
+        "OpenAPI spec updated",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-356",
+        "US-358",
+        "US-357"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "15399640-97da-43bb-b5bd-f68d5bf9f5f5",
+      "checkpointId": "CP-105",
+      "wave": 3
+    },
+    {
+      "id": "US-369",
+      "title": "Integration tests: widget config, context pin, layout reorder, Projects widget scope",
+      "description": "Write ExUnit integration tests covering: (1) WidgetConfigStore.put_config/get_config round-trip, (2) DashboardScopeEngine.pin_scope_source broadcasts to PubSub, (3) LayoutStore.save_user_layout persists and retrieves placements, (4) WidgetRegistry.register_widget adds plugin widget to ETS, (5) LiveView integration: mount DashboardLive, trigger widget_pin_toggle, verify scope_changed PubSub message, (6) API: GET /api/v2/widgets returns 13+ widgets including \"projects\". Target: all tests pass with mix test --only widgetization.",
+      "acceptanceCriteria": [
+        "WidgetConfigStore round-trip test passes",
+        "DashboardScopeEngine PubSub broadcast test passes",
+        "LayoutStore user layout test passes",
+        "WidgetRegistry plugin registration test passes",
+        "DashboardLive LiveView pin/scope integration test passes",
+        "GET /api/v2/widgets API test passes with projects widget included",
+        "mix test --only widgetization: all pass"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-367",
+        "US-368",
+        "US-365"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "ebc46ad9-c9ec-4e9b-b765-95202f3087e0",
+      "checkpointId": "CP-106",
+      "wave": 4
     }
   ]
 }

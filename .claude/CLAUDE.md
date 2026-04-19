@@ -179,3 +179,58 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - [x] **CP-79**: Notification audit trail in agentlock_post_tool (US-342)
 - [x] **CP-80**: Session end summary with tool count and cleanup (US-343)
 - After Wave 3: full audit trail and session lifecycle complete ✓
+
+---
+
+## Coalesce v9.1.1 Skill Sync — coalesce_v911_skill_sync
+
+### Wave 1: Core APM Skills (4 stories, independent)
+- [x] **CP-81**: Coalesce: ccem-apm + apm — version refs + endpoint table (US-344)
+- [x] **CP-82**: Coalesce: apm-api-reference — OpenAPI alignment (US-345)
+- [x] **CP-83**: Coalesce: apm-auth + apm-telemetry — agent identity + telemetry (US-346)
+- [x] **CP-84**: Coalesce: formation + orchestrator — telemetry enrichment (US-347)
+- After Wave 1: core APM skills reference v9.1.1 max-payload ✓
+
+### Wave 2: Dependent Skills (5 stories, depends on Wave 1)
+- [x] **CP-85**: Coalesce: upm — hook telemetry alignment (US-348)
+- [x] **CP-86**: Coalesce: ralph + ship — pipeline awareness (US-349)
+- [x] **CP-87**: Coalesce: coalesce + doctor + elixir-architect — meta sync (US-350)
+- [x] **CP-88**: Coalesce: conversation-mgmt + live-all — notification pipeline (US-351)
+- [x] **CP-89**: Coalesce: showcase + idea + dev-vs-prod — peripheral sync (US-352)
+- After Wave 2: all dependent skills aligned to v9.1.1 ✓
+
+### Wave 3: Validation & Finalize (3 stories, depends on Wave 2)
+- [x] **CP-90**: Coalesce: safesecret + apm-usage — security + usage (US-353)
+- [x] **CP-91**: Coalesce: double-verify — regression + frontmatter validation (US-354)
+- [x] **CP-92**: Coalesce: CLAUDE.md + SkillsRegistry cache refresh (US-355)
+- After Wave 3: all skills validated, cache refreshed, coalesce_applied emitted ✓
+
+---
+
+## Dashboard Widgetization Engine — dashboard_widgetization_engine
+
+### Wave 1: Schema & Backend GenServers (4 stories, independent)
+- [x] **CP-93**: Widget config schema — add editable, pinnable, supported_scopes, default_config, display_order to WidgetRegistry (US-356)
+- [x] **CP-94**: LayoutStore — add save_widget_config, get_widget_config, set_pinned_widget, get_pinned_widget with PubSub broadcasts (US-357)
+- [x] **CP-95**: WidgetConfigStore GenServer — ETS-backed per-session widget config and pinned state (US-358)
+- [x] **CP-96**: DashboardScopeEngine GenServer — pin/unpin scope source, broadcast scope to dashboard:scope PubSub topic (US-359)
+- After Wave 1: `mix compile --warnings-as-errors` ✓
+
+### Wave 2: LiveView Components & DashboardLive Scope Wiring (4 stories, depends on Wave 1)
+- [x] **CP-97**: DashboardLive — subscribe to dashboard:scope PubSub, handle :scope_changed, wire scope assigns (US-360)
+- [x] **CP-98**: WidgetEditPanelComponent LiveComponent — inline config editor with dynamic config_schema fields (US-361)
+- [x] **CP-99**: WidgetContainerComponent LiveComponent — title bar with edit/pin controls, WidgetResize integration (US-362)
+- [x] **CP-100**: DashboardGridComponent LiveComponent — CSS Grid 12-col layout from LayoutStore placements, drag handle affordance (US-363)
+- After Wave 2: `mix compile --warnings-as-errors` ✓
+
+### Wave 3: Frontend, Context Pin, Projects Widget, API & DashboardLive Wiring (5 stories, parallel where independent)
+- [x] **CP-101**: ContextPinDrillDownComponent — collapsible user/project split panel, subscribes to scope PubSub (US-364)
+- [x] **CP-102**: ProjectsWidget LiveComponent — projects list with Select-to-scope, pinnable=true, registered in WidgetRegistry (US-365)
+- [x] **CP-103**: DashboardGrid JS hook — native HTML5 drag-reorder, pushEvent layout_reorder, registered in app.js (US-366)
+- [x] **CP-104**: DashboardLive — wire WidgetContainerComponent, DashboardGridComponent, all edit/pin/layout event handlers (US-367)
+- [x] **CP-105**: API endpoints — GET /api/v2/widgets, PATCH config, GET/POST /api/v2/dashboard/layout, POST /api/v2/dashboard/pin (US-368)
+- After Wave 3: `mix compile --warnings-as-errors` ✓
+
+### Wave 4: Integration Tests (depends on Wave 3)
+- [x] **CP-106**: Integration tests — WidgetConfigStore, DashboardScopeEngine PubSub, LayoutStore, WidgetRegistry, DashboardLive LiveView, API (US-369)
+- After Wave 4: `mix test --only widgetization` ✓ (43/43)
