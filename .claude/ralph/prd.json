@@ -1,0 +1,217 @@
+{
+  "project": "CCEM - Claude Code Environment Manager",
+  "branchName": "ralph/agentlock-notifications-v860",
+  "baseBranch": "main",
+  "description": "APM hooks max-payload upgrade v7\u2192v9: enrich all 9 hooks with session identity, git context, memory write detection, skill invocation tracking, pattern heartbeats, and notification audit trail",
+  "upm": {
+    "planeProjectId": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
+    "checkpointRange": "CP-71 to CP-80",
+    "builtWaves": 3,
+    "verifiedAt": "2026-04-18T22:10:00Z",
+    "shippedAt": null,
+    "prUrl": null
+  },
+  "userStories": [
+    {
+      "id": "US-334",
+      "title": "Hook version headers v7\u2192v9 across all 9 hooks",
+      "description": "Update version comment headers from 'CCEM APM v7.0.0' to 'CCEM APM v9.0.0' in all 9 hook files. Add max-payload description comments documenting the new fields each hook emits.",
+      "acceptanceCriteria": [
+        "All 9 hooks (agentlock_context, agentlock_pre_tool, agentlock_post_tool, pre_tool_use, post_tool_use, session_init, session_end, subagent_start, subagent_stop) have v9.0.0 header",
+        "Each hook header lists its max-payload fields",
+        "No functional changes in this story \u2014 header/comment only"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "8e428254-d1ac-4ab7-97a6-f3773831f572",
+      "checkpointId": "CP-71",
+      "wave": 1
+    },
+    {
+      "id": "US-335",
+      "title": "Max-payload: session_id + project + working_dir in all hook payloads",
+      "description": "Add session_id, project (derived from CWD basename), and working_dir to every heartbeat/notification payload emitted by pre_tool_use, post_tool_use, session_init, session_end, subagent_start, and subagent_stop hooks.",
+      "acceptanceCriteria": [
+        "All 6 lifecycle hooks include session_id in their APM payloads",
+        "project field derived from basename of CWD",
+        "working_dir field contains full CWD path",
+        "Payloads validate against APM heartbeat schema"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-334"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "70e4547a-1fdf-40fb-a44a-74deae278f2d",
+      "checkpointId": "CP-72",
+      "wave": 1
+    },
+    {
+      "id": "US-336",
+      "title": "Max-payload: git_branch resolution in pre/post tool hooks",
+      "description": "Add non-blocking git branch detection to pre_tool_use and post_tool_use hooks. Resolve via 'git rev-parse --abbrev-ref HEAD' from CWD. Include git_branch in heartbeat payload context object.",
+      "acceptanceCriteria": [
+        "pre_tool_use.sh resolves git_branch from CWD",
+        "post_tool_use.sh resolves git_branch from CWD",
+        "git_branch appears in payload.context.git_branch",
+        "Non-blocking: gracefully returns empty string if not a git repo",
+        "session_end.sh also includes git_branch in final payload"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-335"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "91eb14f2-01c8-4a1f-b4a8-49cb6f792256",
+      "checkpointId": "CP-73",
+      "wave": 1
+    },
+    {
+      "id": "US-337",
+      "title": "Agent identity resolution chain in agentlock hooks",
+      "description": "Implement agent identity fallback chain: agent_id \u2192 parent_tool_use_id \u2192 session_id. Apply consistently in agentlock_context, agentlock_pre_tool, and agentlock_post_tool hooks. Ensures sub-agents are correctly attributed.",
+      "acceptanceCriteria": [
+        "EFFECTIVE_AGENT_ID resolves through 3-level fallback chain",
+        "agentlock_context uses EFFECTIVE_AGENT_ID in context write payload",
+        "agentlock_pre_tool uses EFFECTIVE_AGENT_ID in authorize payload",
+        "agentlock_post_tool uses EFFECTIVE_AGENT_ID in execute payload",
+        "Falls back to SESSION_ID when no agent_id or parent_tool_use_id available"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "f8538668-5fe3-4203-a6ae-3b38d1c286c2",
+      "checkpointId": "CP-74",
+      "wave": 1
+    },
+    {
+      "id": "US-338",
+      "title": "Memory write detection in pre/post tool hooks",
+      "description": "Detect when Write/Edit/MultiEdit targets a memory file (path matching .claude/projects/*/memory/*.md). Set is_memory_write flag and memory_file_name. Emit notification to /api/notify with category 'memory' on completion.",
+      "acceptanceCriteria": [
+        "pre_tool_use detects memory writes via regex on file_path",
+        "post_tool_use emits /api/notify with category=memory on completion",
+        "is_memory_write and memory_file fields in heartbeat tool_context",
+        "Non-memory writes have is_memory_write=false, memory_file=null"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-335"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "81a52b53-2479-41ee-b054-55ff416f5a06",
+      "checkpointId": "CP-75",
+      "wave": 2
+    },
+    {
+      "id": "US-339",
+      "title": "Skill invocation tracking in pre/post tool hooks",
+      "description": "Detect skill invocations from both Bash (commands starting with /skill-name) and explicit Skill tool calls. Emit /api/skills/track on both pre and post tool hooks. Include working_dir, git_branch, and duration_ms in skill tracking payload.",
+      "acceptanceCriteria": [
+        "Bash commands matching /^/[a-zA-Z]/ detected as skill invocations",
+        "Explicit Skill tool calls detected via skill_name parameter",
+        "Both pre and post hooks emit to /api/skills/track",
+        "post_tool_use includes duration_ms in skill tracking args",
+        "is_skill_invoke and invoked_skill fields in heartbeat tool_context"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-335"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "0b5dc70c-698a-4c17-9bd8-851a78293690",
+      "checkpointId": "CP-76",
+      "wave": 2
+    },
+    {
+      "id": "US-340",
+      "title": "Pattern heartbeat emission every 10 tool calls",
+      "description": "Add tool call counter per session in post_tool_use. Every 10 calls, emit a pattern summary heartbeat to /api/heartbeat with tool_call_count, last_tool, and timestamp. Counter file cleanup on session end.",
+      "acceptanceCriteria": [
+        "Counter file created at $STATE_DIR/pattern_count_$SESSION_ID",
+        "Incremented on every post_tool_use invocation",
+        "Pattern heartbeat emitted when count % 10 == 0",
+        "session_end.sh reads final count and includes in end payload",
+        "session_end.sh cleans up counter file"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-335"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "3efa4ebc-a4be-413e-bbd7-968377ea7e1f",
+      "checkpointId": "CP-77",
+      "wave": 2
+    },
+    {
+      "id": "US-341",
+      "title": "Expanded tool mapping + context enrichment in agentlock_context",
+      "description": "Expand source_type mapping from 5 to 10 tool categories (file_write, file_read, web_content, shell_execution, peer_agent, task_management, mcp_tool). Add memory_entries, active_skills, and active_patterns to context payload via python3 lookups.",
+      "acceptanceCriteria": [
+        "10 source types mapped: file_write, file_read, web_content, shell_execution, peer_agent, task_management, mcp_tool, tool_output (default)",
+        "memory_entries: reads up to 8 lines from MEMORY.md",
+        "active_skills: lists up to 25 skill directories",
+        "active_patterns: reads up to 10 keys from reference-registry.json",
+        "All python3 lookups have try/except fallbacks"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-337"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "865314ab-52fd-4e17-9111-73a605ec0f92",
+      "checkpointId": "CP-78",
+      "wave": 2
+    },
+    {
+      "id": "US-342",
+      "title": "Notification audit trail in agentlock_post_tool",
+      "description": "After token consumption in agentlock_post_tool, emit full result summary to /api/v2/notifications for audit tracing. Payload built via python3 for safe JSON construction of nested tool results.",
+      "acceptanceCriteria": [
+        "POST /api/v2/notifications called after token consumption",
+        "Payload includes agent_id, tool_name, tool_use_id, timestamp, project, result summary",
+        "python3 used for safe JSON construction (handles nested results)",
+        "Fire-and-forget: backgrounded, never blocks"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-337"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "11207af6-212c-4fe6-87fb-1c2f83f1c67d",
+      "checkpointId": "CP-79",
+      "wave": 3
+    },
+    {
+      "id": "US-343",
+      "title": "Session end summary with tool count and cleanup",
+      "description": "Enhance session_end.sh to include final tool call count, project, working_dir, git_branch, and timestamp in the done heartbeat. Clean up pattern counter file. Report total tool calls in session end message.",
+      "acceptanceCriteria": [
+        "session_end payload includes project, working_dir, git_branch, timestamp",
+        "FINAL_TOOL_COUNT read from pattern counter file",
+        "Message format: 'Session ended: {reason} | tools_called={count}'",
+        "Pattern counter file removed after reading",
+        "subagent_start and subagent_stop also include session_id and project"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-340"
+      ],
+      "status": "done",
+      "passes": true,
+      "planeIssueId": "539596cd-0d97-4c88-affc-4423c84b62e5",
+      "checkpointId": "CP-80",
+      "wave": 3
+    }
+  ]
+}

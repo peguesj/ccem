@@ -14,11 +14,30 @@ actor APMClient {
         Int(baseURL.port ?? Self.defaultPort)
     }
 
+    /// Build a base URL safely from a (possibly corrupt) host string and port.
+    /// Sanitizes whitespace, rejects empty hosts, and falls back to the
+    /// hardcoded `localhost:3032` literal on any parse failure. This is the
+    /// single point of URL construction for the client — previously, a bad
+    /// UserDefault (e.g. `"resume "` with trailing space) made `URL(string:)`
+    /// return nil under macOS 15's strict RFC 3986 parser and crashed init.
+    private static func buildBaseURL(host: String, port: Int) -> URL {
+        var components = URLComponents()
+        components.scheme = "http"
+        let cleanHost = host.trimmingCharacters(in: .whitespacesAndNewlines)
+        components.host = cleanHost.isEmpty ? Self.defaultHost : cleanHost
+        components.port = port
+        if let url = components.url {
+            return url
+        }
+        // Last-resort literal fallback — guaranteed valid at compile time.
+        return URL(string: "http://\(Self.defaultHost):\(Self.defaultPort)")!
+    }
+
     init(port: Int? = nil) {
         let resolvedPort = port ?? UserDefaults.standard.integer(forKey: Self.portKey)
         let effectivePort = resolvedPort > 0 ? resolvedPort : Self.defaultPort
         let host = UserDefaults.standard.string(forKey: Self.hostKey) ?? Self.defaultHost
-        self.baseURL = URL(string: "http://\(host):\(effectivePort)")!
+        self.baseURL = Self.buildBaseURL(host: host, port: effectivePort)
         // Use ephemeral to prevent URL cache accumulation over long-running sessions.
         // Default config caches responses to disk+memory indefinitely, causing GB of growth.
         let config = URLSessionConfiguration.ephemeral
@@ -32,7 +51,7 @@ actor APMClient {
     func updatePort(_ port: Int) {
         UserDefaults.standard.set(port, forKey: Self.portKey)
         let host = UserDefaults.standard.string(forKey: Self.hostKey) ?? Self.defaultHost
-        self.baseURL = URL(string: "http://\(host):\(port)")!
+        self.baseURL = Self.buildBaseURL(host: host, port: port)
     }
 
     func checkHealth() async throws -> HealthStatus {
@@ -319,6 +338,53 @@ actor APMClient {
         guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
             throw APMClientError.badResponse
         }
+    }
+
+    /// Create a time-limited auto-approval policy for a tool
+    func createAutoApprovalPolicy(toolName: String, minutes: Int) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/auto-approval-policies"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: Any] = [
+            "allowed_tools": [toolName],
+            "allowed_risk_levels": "all",
+            "ttl_minutes": minutes,
+            "created_by": "ccemhelper",
+            "reason": "Allowed \(toolName) for \(minutes)min via macOS notification"
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    /// Create a permanent policy rule (always_allow or always_deny)
+    func createPolicyRule(toolName: String, rule: String) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/policy-rules"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body: [String: String] = ["tool_name": toolName, "rule": rule]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            throw APMClientError.badResponse
+        }
+    }
+
+    /// Fetch model capability limits from GET /api/usage/limits
+    func fetchUsageLimits(project: String? = nil) async throws -> UsageLimitsResponse {
+        var url = baseURL.appendingPathComponent("api/usage/limits")
+        if let project = project {
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            components.queryItems = [URLQueryItem(name: "project", value: project)]
+            url = components.url!
+        }
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            throw APMClientError.badResponse
+        }
+        return try decoder.decode(UsageLimitsResponse.self, from: data)
     }
 }
 

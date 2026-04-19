@@ -1,0 +1,13 @@
+{
+  "project": "peppy",
+  "version": "0.1.0",
+  "build": "passing",
+  "deployment": "live",
+  "last_deploy": "2026-03-30",
+  "azure_url": "https://peppy.greenflower-4eae5465.eastus2.azurecontainerapps.io",
+  "dev_server": "http://localhost:4001",
+  "features_shipped": 8,
+  "features_planned": 4,
+  "waves_complete": 2,
+  "waves_total": 3
+}

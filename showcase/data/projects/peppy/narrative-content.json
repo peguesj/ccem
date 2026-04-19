@@ -1,0 +1,35 @@
+{
+  "headline": "Peptide medicine made accessible.",
+  "subheadline": "FDA Category 1 peptides + physician oversight + AI-powered personalization \u2014 all in one DTC platform.",
+  "sections": [
+    {
+      "id": "problem",
+      "title": "The Problem",
+      "body": "Peptide therapy is fragmented across grey-market sources, opaque compounding pharmacies, and practitioners who lack digital infrastructure. Patients can\u2019t safely self-navigate; physicians lack tooling to scale oversight."
+    },
+    {
+      "id": "solution",
+      "title": "The Solution",
+      "body": "Peppy closes the loop: a curated formulary of FDA Category 1 peptides, a licensed physician consultation layer (Pepp Talk), and a personalized stack builder (Pepp Rally) \u2014 all within a HIPAA-compliant Phoenix LiveView platform."
+    },
+    {
+      "id": "traction",
+      "title": "Traction",
+      "body": "v0.1.0 live on Azure Container Apps. 8 peptides in Tier 1 formulary. DevTools + UAT pipeline active. iOS SwiftUI app in parallel development."
+    },
+    {
+      "id": "stack",
+      "title": "Technical Foundation",
+      "body": "Elixir/Phoenix for fault-tolerant real-time UI. PostgreSQL for HIPAA-compliant encrypted storage. Azure Container Apps for scalable deployment. bcrypt session auth with progressive token expiry."
+    }
+  ],
+  "stats": [
+    {"label": "Peptides Catalogued", "value": "8+", "note": "FDA Category 1 only"},
+    {"label": "Platform Version", "value": "v0.1.0", "note": "Azure live"},
+    {"label": "Auth System", "value": "Session", "note": "bcrypt + DB tokens"},
+    {"label": "Deploy Time", "value": "<5min", "note": "az acr build"}
+  ],
+  "versions": [
+    {"version": "0.1.0", "date": "2026-03-30", "label": "Alpha", "notes": "Initial Azure deployment. Formulary live. Session auth. DevTools active."}
+  ]
+}

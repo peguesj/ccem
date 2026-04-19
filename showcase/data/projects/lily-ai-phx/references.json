@@ -1,0 +1,56 @@
+{
+  "project": "lily-ai-phx",
+  "updated_at": "2026-03-30T09:30:00Z",
+  "tabs": [
+    {
+      "id": "roadmap",
+      "label": "Roadmap",
+      "source": "features.json",
+      "type": "local",
+      "color": "emerald",
+      "active": true
+    },
+    {
+      "id": "research",
+      "label": "Market Research",
+      "source": "market-research.json",
+      "type": "local",
+      "color": "amber",
+      "active": true,
+      "description": "5,869 posts from 17 therapist FB groups (2026-03-28)"
+    },
+    {
+      "id": "opsdoc",
+      "label": "OpsDOC",
+      "source": "strategy_data.ex",
+      "type": "elixir",
+      "color": "blue",
+      "active": true,
+      "description": "9-wave product strategy formation report"
+    },
+    {
+      "id": "notion",
+      "label": "Notion",
+      "source": "https://www.notion.so/Lily-AI-Product-Strategy-Suite-318e700ddfac8110a4e0d5c61ce89243",
+      "type": "external",
+      "color": "purple",
+      "active": true,
+      "description": "Lily AI Product Strategy Suite — bidirectional sync"
+    },
+    {
+      "id": "diagrams",
+      "label": "Diagrams",
+      "source": "diagrams/",
+      "type": "local",
+      "color": "cyan",
+      "active": true,
+      "description": "C4 L1/L2, process flow, data flow, user journey, deployment, formation topology"
+    }
+  ],
+  "sync": {
+    "notion_bidirectional": true,
+    "opsdoc_hook": "notion_sync_reminder.sh",
+    "viki_backfill": true,
+    "plane_pm_linked": true
+  }
+}
