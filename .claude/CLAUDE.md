@@ -234,3 +234,119 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 ### Wave 4: Integration Tests (depends on Wave 3)
 - [x] **CP-106**: Integration tests — WidgetConfigStore, DashboardScopeEngine PubSub, LayoutStore, WidgetRegistry, DashboardLive LiveView, API (US-369)
 - After Wave 4: `mix test --only widgetization` ✓ (43/43)
+
+---
+
+## @ccem/apm v3.0.0 Backfill — ccem_npm_backfill_v3
+
+### Wave 1: New Types (4 stories, independent)
+- [x] **CP-107**: Add auth types — AuthDecision, AuthSession, AuthTool Zod schemas (US-371)
+- [x] **CP-108**: Add coalesce types — CoalesceRunSummary, Gate, GateDecision Zod schemas (US-372)
+- [x] **CP-109**: Add agent-context and execution-context Zod schemas (US-373)
+- [x] **CP-110**: Add widget types and expand approval types with v9.0.0 fields (US-374)
+- After Wave 1: `npx tsc --noEmit` ✓
+
+### Wave 2: New Client API Classes (4 stories, depend on Wave 1)
+- [x] **CP-111**: Add AuthAPI class with 18 authorization endpoints (US-375)
+- [x] **CP-112**: Add CoalesceAPI class with 8 coalesce endpoints (US-376)
+- [x] **CP-113**: Add AgentContextAPI class with 3 context endpoints (US-377)
+- [x] **CP-114**: Extend UpmAPI with 5 gate endpoints and ApprovalsAPI with history/audit (US-378)
+- After Wave 2: `npx tsc --noEmit` ✓
+
+### Wave 3: Integration, Tests, Version Bump (3 stories, depend on Wave 2)
+- [x] **CP-115**: Update index.ts exports and client constructor for new API classes (US-379)
+- [x] **CP-116**: Add vitest tests — 51 tests covering all new types and API methods (US-380)
+- [x] **CP-117**: Version bump to 3.0.0, update package.json description (US-381)
+- After Wave 3: `npm test` ✓ (128/128), `npm run build` ✓
+
+### Wave 4: @ccem/core alignment (1 story)
+- [x] **CP-118**: Update @ccem/core version to 5.0.0, align src/index.ts version tag (US-382)
+- After Wave 4: `npx tsc --noEmit` ✓
+
+---
+
+## Orchestration System Type — orchestration_system_type
+
+### Wave 1: Core Engine (4 stories, independent)
+- [x] **CP-119**: Add :orchestration plugin_scope (US-389)
+- [x] **CP-120**: OrchestrationManager GenServer with DAG engine (US-390)
+- [x] **CP-121**: OrchestrationRunStore — run history + replay (US-391)
+- [x] **CP-122**: Skill topology declaration protocol (US-392)
+- After Wave 1: `mix compile --warnings-as-errors` ✓
+
+### Wave 2: LiveView + API + Plugin (4 stories, depends on Wave 1)
+- [x] **CP-123**: OrchestrationLive — /orchestration page with D3.js DAG (US-393)
+- [x] **CP-124**: API endpoints — /api/v2/orchestrations CRUD + replay (US-394)
+- [x] **CP-125**: Sidebar nav + orchestration widget (US-395)
+- [x] **CP-126**: OrchestrationPlugin — PluginBehaviour implementation (US-396)
+- After Wave 2: `mix compile --warnings-as-errors` ✓
+
+### Wave 3: Skill Integrations (7 stories, parallel)
+- [x] **CP-127**: formation topology declaration (US-397)
+- [x] **CP-128**: upm topology declaration (US-398)
+- [x] **CP-129**: ralph topology declaration (US-399)
+- [x] **CP-130**: orchestrator topology declaration (US-400)
+- [x] **CP-131**: feature-dev + deploy:agents + fleet topologies (US-401-403)
+- After Wave 3: `mix compile --warnings-as-errors` ✓
+
+### Wave 4: Tests + Ship (3 stories, depends on Wave 3)
+- [x] **CP-132**: Integration tests (US-404)
+- [x] **CP-133**: Skill topology tests (US-405)
+- [x] **CP-134**: Final gate + ship (US-406)
+- After Wave 4: `mix test --only orchestration` ✓ (69/69)
+
+---
+
+## Claude-Mem APM Plugin — claude_mem_apm_plugin
+
+### Wave 1: Scope & Infrastructure GenServers (3 stories, independent)
+- [x] **CP-135**: Add :memory plugin_scope atom to PluginBehaviour (US-410)
+- [x] **CP-136**: MemoryClientBridge GenServer — claude-mem worker HTTP + SQLite fallback (US-411)
+- [x] **CP-137**: ObservationCache ETS store — TTL, LRU eviction, PubSub (US-412)
+- After Wave 1: `mix compile --warnings-as-errors` ✓
+
+### Wave 2: Plugin Core, LiveView & Correlator (3 stories, depends on Wave 1)
+- [x] **CP-138**: MemoryPlugin — PluginBehaviour with 5 actions, nav, widget, supervisor children (US-413)
+- [x] **CP-139**: MemoryLive — /memory page with Browse, Search, Timeline tabs (US-414)
+- [x] **CP-140**: ConversationMemoryCorrelator — observation-session linking (US-415)
+- After Wave 2: `mix compile --warnings-as-errors` ✓
+
+### Wave 3: Detail Panel, Dashboard Widget & API (3 stories, depends on Wave 2)
+- [x] **CP-141**: MemoryLive observation detail panel with correlation (US-416)
+- [x] **CP-142**: Dashboard widget — observation summary, health indicator (US-417)
+- [x] **CP-143**: REST API — /api/v2/memory/* 5 endpoints (US-418)
+- After Wave 3: `mix compile --warnings-as-errors` ✓
+
+### Wave 4: Cross-Reference, Nav, Integration Upgrade (3 stories, depends on Wave 3)
+- [x] **CP-144**: ConversationMonitorLive Memory tab + MemoryLive Sessions section (US-419)
+- [x] **CP-145**: Sidebar nav + OpenAPI spec update (US-420)
+- [x] **CP-146**: ClaudeMemIntegration delegation to MemoryPlugin (US-421)
+- After Wave 4: `mix compile --warnings-as-errors` ✓
+
+### Wave 5: Tests & Final Gate (2 stories, depends on Wave 4)
+- [x] **CP-147**: Integration tests — plugin, bridge, cache, correlator, API (US-422)
+- [x] **CP-148**: Final compile gate + manual verification (US-423)
+- After Wave 5: `mix test --only memory` ✓ AND `mix compile --warnings-as-errors` ✓
+
+---
+
+## Testmaxxing Formation v2 Integration — testmaxxing_formation_v2
+
+### Wave 1: Edge Types, Channel Schema, Agent Metadata (3 stories, independent)
+- [x] **CP-149**: Add edge_type to D3 formation graph edges (US-424)
+- [x] **CP-150**: Add channel field to notification schema and API (US-425)
+- [x] **CP-154**: Agent registration accepts publishes/subscribes/exports/imports metadata (US-429)
+- After Wave 1: `mix compile --warnings-as-errors` required
+
+### Wave 2: Tree Builder, DOT Endpoint, Filters, Template, Legend (5 stories, depends on Wave 1)
+- [x] **CP-151**: Add pub/sub channel edges to formation tree builder (US-426)
+- [x] **CP-152**: DOT graph rendering endpoint and FormationLive tab (US-427)
+- [x] **CP-153**: Notification panel channel filter (US-428)
+- [x] **CP-155**: Testmaxxing formation template in UpmStore (US-430)
+- [x] **CP-156**: FormationLive legend for edge types (US-431)
+- After Wave 2: `mix compile --warnings-as-errors` required
+
+### Wave 3: Tests & Final Gate (2 stories, depends on Wave 2)
+- [x] **CP-157**: Integration tests — typed edges, channel notifications, DOT endpoint (US-432)
+- [x] **CP-158**: Final compile gate and LILY-554 closure (US-433)
+- After Wave 3: `mix test --only testmaxxing` ✓ AND `mix compile --warnings-as-errors` ✓

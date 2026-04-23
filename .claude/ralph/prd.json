@@ -1,326 +1,268 @@
 {
   "project": "CCEM - Claude Code Environment Manager",
-  "branchName": "ralph/dashboard-widgetization-engine",
-  "baseBranch": "ralph/coalesce-v911-skill-sync",
-  "description": "Dashboard Widgetization Engine: inline widget config editing, drag-to-reorder grid layout, context pinning with scope broadcast, Projects widget with user/project collapsible split, and full widget self-registration system",
+  "branchName": "ralph/testmaxxing-formation-v2",
+  "baseBranch": "ralph/claude-mem-apm-plugin",
+  "description": "Testmaxxing Formation v2 integration: pub/sub channel visualization, cross-wave data-flow edges, DOT graph rendering, and notification channel filtering in APM dashboard.",
   "upm": {
     "planeProjectId": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
-    "checkpointRange": "CP-93 to CP-106",
-    "builtWaves": 4,
-    "verifiedAt": "2026-04-19T00:00:00Z",
+    "checkpointRange": "CP-149 to CP-158",
+    "builtWaves": 3,
+    "verifiedAt": "2026-04-23T07:45:00Z",
     "shippedAt": null,
     "prUrl": null
   },
   "userStories": [
     {
-      "id": "US-356",
-      "title": "Widget config schema: add editable, pinnable, scopeable flags to WidgetRegistry",
-      "description": "Extend the WidgetRegistry widget definition schema to include: editable (bool, default true), pinnable (bool), supported_scopes ([\"global\",\"project\",\"formation\",\"agent\"]), default_config (map of defaults matching config_schema keys), and display_order (integer). Update @builtin_widgets to include these fields. Add WidgetRegistry.update_widget_config/2 and WidgetRegistry.pin_widget/2 public API calls.",
+      "id": "US-424",
+      "title": "Add edge_type to D3 formation graph edges",
+      "description": "Extend the formation graph edge schema to support typed edges: hierarchy (solid black), pubsub (dashed blue), aggregation (dashed green), and data_export (bold orange). The JS hook renders each type with distinct stroke/dash/color.",
       "acceptanceCriteria": [
-        "WidgetRegistry schema includes editable, pinnable, supported_scopes, default_config, display_order",
-        "All @builtin_widgets include the new fields with sensible defaults",
-        "WidgetRegistry.update_widget_config/2 persists config override to ETS",
-        "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 2,
-      "dependencies": [],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "317d4bc6-9179-4c2c-bc33-51d8ebb85074",
-      "checkpointId": "CP-93",
-      "wave": 1
-    },
-    {
-      "id": "US-357",
-      "title": "LayoutStore: add widget_config overrides and pinned_widget persistence",
-      "description": "Extend LayoutStore to persist per-session widget config overrides and track which widget is currently pinned as scope source. Add: save_widget_config(session_id, widget_id, config_map), get_widget_config(session_id, widget_id), set_pinned_widget(session_id, widget_id | nil), get_pinned_widget(session_id). Broadcasts :widget_config_updated and :pinned_widget_changed on ApmV5.PubSub topic \"dashboard:session:{session_id}\".",
-      "acceptanceCriteria": [
-        "save_widget_config/get_widget_config round-trip in ETS",
-        "set_pinned_widget broadcasts :pinned_widget_changed via PubSub",
-        "get_pinned_widget returns nil when no widget pinned",
-        "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 2,
-      "dependencies": [],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "74a80a81-95b2-422a-948a-eb3ab29a9b96",
-      "checkpointId": "CP-94",
-      "wave": 1
-    },
-    {
-      "id": "US-358",
-      "title": "WidgetConfigStore GenServer: durable in-memory widget config with ETS",
-      "description": "Create ApmV5.WidgetConfigStore GenServer backed by ETS table :widget_config_store. Stores per-session widget config overrides and pinned widget state. API: put_config(session_id, widget_id, config), get_config(session_id, widget_id), get_all_configs(session_id), set_pinned(session_id, widget_id), get_pinned(session_id), clear_session(session_id). Add to supervision tree under ApmV5.Application. Broadcasts changes via PubSub.",
-      "acceptanceCriteria": [
-        "WidgetConfigStore starts under supervision tree",
-        "put_config/get_config ETS round-trip verified",
-        "set_pinned broadcasts on \"dashboard:scope:{session_id}\" topic",
-        "clear_session removes all session keys from ETS",
+        "Edge schema includes edge_type field: hierarchy|pubsub|aggregation|data_export",
+        "push_formation_graph/2 emits edge_type on each edge",
+        "formation_graph.js renders hierarchy edges as solid black lines",
+        "formation_graph.js renders pubsub edges as dashed blue lines",
+        "formation_graph.js renders aggregation edges as dashed green lines",
+        "formation_graph.js renders data_export edges as bold orange lines",
+        "Existing formations without edge_type default to hierarchy",
         "mix compile --warnings-as-errors passes"
       ],
       "estimatedPoints": 3,
       "dependencies": [],
       "status": "done",
       "passes": true,
-      "planeIssueId": "9d1a2c5f-d157-4df9-9cfd-f48edfb3beec",
-      "checkpointId": "CP-95",
-      "wave": 1
+      "checkpointId": "CP-149",
+      "wave": 1,
+      "planeIssueId": "c10208a9-b6d3-45a2-b407-aeb77f4946f6",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex",
+        "assets/js/hooks/formation_graph.js"
+      ]
     },
     {
-      "id": "US-359",
-      "title": "DashboardScopeEngine: PubSub context pin and scope broadcast GenServer",
-      "description": "Create ApmV5.DashboardScopeEngine GenServer. Manages per-session pinned scope source. When a widget is pinned and emits a scope selection event, broadcasts scope context to \"dashboard:scope:{session_id}\" PubSub topic so all non-user-level widgets can filter their data. API: pin_scope_source(session_id, widget_id), unpin(session_id), broadcast_scope(session_id, scope_type, scope_value), get_active_scope(session_id). Scope types: :global, :project, :formation, :agent.",
+      "id": "US-425",
+      "title": "Add channel field to notification schema and API",
+      "description": "Add optional channel field to POST /api/notify for pub/sub channel routing. Store in ETS notification record. Expose in notification JSON responses.",
       "acceptanceCriteria": [
-        "DashboardScopeEngine GenServer starts under supervision tree",
-        "pin_scope_source stores pinned widget in ETS",
-        "broadcast_scope emits {:scope_changed, scope_type, scope_value} on PubSub",
-        "unpin resets to :global scope and broadcasts",
+        "POST /api/notify accepts optional channel field",
+        "channel stored in notification ETS record",
+        "channel included in notification JSON responses",
+        "Notifications panel shows channel badge when present",
         "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 3,
+      "estimatedPoints": 2,
       "dependencies": [],
       "status": "done",
       "passes": true,
-      "planeIssueId": "d1cb3e0b-02fd-44e1-95c7-4447792a9c0c",
-      "checkpointId": "CP-96",
-      "wave": 1
+      "checkpointId": "CP-150",
+      "wave": 1,
+      "planeIssueId": "121059f2-d380-4271-8ace-3eb8462af495",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/controllers/api_controller.ex",
+        "lib/apm_v5/agent_registry.ex"
+      ]
     },
     {
-      "id": "US-360",
-      "title": "DashboardLive: subscribe to DashboardScopeEngine and wire scope broadcasts",
-      "description": "Update DashboardLive to subscribe to dashboard:scope:{session_id} PubSub topic. Handle :scope_changed message by updating socket assigns: active_scope, scope_type, scope_value, pinned_widget_id. Pass scope assigns down to widget component renders. When pinned_widget changes, re-render the header scope breadcrumb. Ensure existing scope:set event handler is merged with new pin-driven scope system.",
+      "id": "US-426",
+      "title": "Add pub/sub channel edges to formation tree builder",
+      "description": "When building the formation tree, detect agents with publishes/subscribes metadata and generate pubsub-typed edges alongside hierarchy edges. Detect cross-wave exports and generate data_export edges.",
       "acceptanceCriteria": [
-        "DashboardLive subscribes to dashboard:scope:{session_id} on connect",
-        "handle_info(:scope_changed) updates active_scope, scope_type, scope_value assigns",
-        "pinned_widget_id assign reflects current DashboardScopeEngine state",
-        "Existing scope:set event still works",
+        "build_formation_tree/2 generates pubsub edges from agent publishes/subscribes metadata",
+        "Squadron lead aggregation edges rendered as aggregation type",
+        "Cross-wave exports (agent metadata exports/imports fields) rendered as data_export edges",
+        "Existing formations without pub/sub metadata unchanged",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-424"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-151",
+      "wave": 2,
+      "planeIssueId": "d04635af-67f2-4e44-afbe-5b403520d0fb",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
+    },
+    {
+      "id": "US-427",
+      "title": "DOT graph rendering endpoint and FormationLive tab",
+      "description": "Add GET /api/v2/formations/:id/dot endpoint returning Graphviz DOT source. Add a DOT/PNG tab in FormationLive that renders via server-side dot command or displays raw DOT source.",
+      "acceptanceCriteria": [
+        "GET /api/v2/formations/:id/dot returns DOT source as text/plain",
+        "DOT generation uses formation agents + edges from build_formation_tree",
+        "FormationLive has a Graph tab showing rendered PNG or raw DOT",
+        "If graphviz (dot) is installed, render to PNG inline",
+        "If graphviz not installed, show raw DOT with copy button",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-426"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-152",
+      "wave": 2,
+      "planeIssueId": "258c3100-ba36-4113-84d3-538e89e5124c",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/controllers/formation_api_controller.ex",
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
+    },
+    {
+      "id": "US-428",
+      "title": "Notification panel channel filter",
+      "description": "Add a channel filter dropdown to the notifications panel. When a channel is selected, only notifications matching that channel are shown. Include source filter for testmaxxing-pubsub grouping.",
+      "acceptanceCriteria": [
+        "Notification panel has channel filter dropdown populated from distinct channels in current notifications",
+        "Selecting a channel filters notification list in real-time",
+        "Source filter allows filtering by source field (e.g. testmaxxing-pubsub)",
+        "Clear filter resets to all notifications",
         "mix compile --warnings-as-errors passes"
       ],
       "estimatedPoints": 2,
       "dependencies": [
-        "US-359"
+        "US-425"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "c9e76028-957b-414e-b166-cd88880058af",
-      "checkpointId": "CP-97",
-      "wave": 2
+      "checkpointId": "CP-153",
+      "wave": 2,
+      "planeIssueId": "ad336a7d-967c-498e-93dc-d0acdfc9465e",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/dashboard_live.ex"
+      ]
     },
     {
-      "id": "US-361",
-      "title": "WidgetEditPanelComponent LiveComponent: inline config editor for widget properties",
-      "description": "Create ApmV5Web.Live.WidgetEditPanelComponent LiveComponent. Renders an inline slide-over panel (daisyUI drawer or absolute-positioned panel) when a widget edit button is clicked. Fields: title (text input), size (col_span select: 3/4/6/8/12), refresh_interval (number input, ms), and any config_schema fields rendered dynamically based on type (boolean=toggle, string=text, enum=select, integer=number). On save, calls phx-target to parent with widget_config_saved event. Close button dismisses. Uses phx-update=ignore on JS-managed animation wrapper.",
+      "id": "US-429",
+      "title": "Agent registration accepts publishes/subscribes/exports/imports metadata",
+      "description": "Extend POST /api/register to accept and store publishes, subscribes, exports, and imports fields in agent metadata. These drive pub/sub edge generation in the formation tree.",
       "acceptanceCriteria": [
-        "WidgetEditPanelComponent renders with all config_schema fields",
-        "Boolean fields render as daisyUI toggle",
-        "Enum fields render as select with options parsed from \"enum:opt1,opt2\" schema",
-        "On save, sends widget_config_saved to parent LiveView",
-        "phx-update=ignore on animation wrapper",
+        "POST /api/register accepts publishes (list of channel names)",
+        "POST /api/register accepts subscribes (list of channel names)",
+        "POST /api/register accepts exports (list of export keys)",
+        "POST /api/register accepts imports (list of import keys with source)",
+        "Fields stored in agent ETS record metadata",
         "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 3,
-      "dependencies": [
-        "US-356",
-        "US-358"
-      ],
+      "estimatedPoints": 2,
+      "dependencies": [],
       "status": "done",
       "passes": true,
-      "planeIssueId": "bc11986a-d69d-4747-910f-dc2570128a32",
-      "checkpointId": "CP-98",
-      "wave": 2
+      "checkpointId": "CP-154",
+      "wave": 1,
+      "planeIssueId": "6b026ce0-fad6-4cc1-a54d-008ae821799b",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5/agent_registry.ex",
+        "lib/apm_v5_web/controllers/api_controller.ex"
+      ]
     },
     {
-      "id": "US-362",
-      "title": "WidgetContainerComponent LiveComponent: wrapper with edit, pin, and title bar controls",
-      "description": "Create ApmV5Web.Live.WidgetContainerComponent LiveComponent. Wraps any widget content with: title bar (widget name + custom title if set), control bar (edit pencil button, pin pushpin button, resize handle affordance). Edit button toggles WidgetEditPanelComponent. Pin button calls scope engine to pin/unpin this widget. Visual pin indicator (badge) when pinned. Accepts slot for widget body content. Passes widget_id, config, is_pinned, is_edit_mode assigns. Uses phx-update=ignore on resizable content wrapper per existing WidgetResize hook.",
+      "id": "US-430",
+      "title": "Testmaxxing formation template in UpmStore",
+      "description": "Add a built-in testmaxxing formation template to UpmStore that pre-defines the 20-agent hierarchy, channel schema, and cross-wave exports. Used when deploying via /testmaxxing or POST /api/formations with template=testmaxxing.",
       "acceptanceCriteria": [
-        "WidgetContainerComponent renders title bar with edit and pin buttons",
-        "Edit button toggles WidgetEditPanelComponent visibility",
-        "Pin button sends widget_pin_toggle event to parent",
-        "is_pinned=true shows pin badge on title bar",
-        "phx-update=ignore on resizable wrapper",
-        "Inner slot content rendered correctly",
+        "UpmStore has testmaxxing template with 20 agents across 5 squadrons",
+        "Template includes pub/sub channel schema for all 17 channels",
+        "Template includes cross-wave exports (bravo.auth_session_cookie)",
+        "POST /api/formations with template=testmaxxing creates full formation",
         "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 3,
-      "dependencies": [
-        "US-361",
-        "US-359"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "d33a03cc-8330-4253-84e1-f25a0c2562e6",
-      "checkpointId": "CP-99",
-      "wave": 2
-    },
-    {
-      "id": "US-363",
-      "title": "DashboardGridComponent LiveComponent: drag-to-reorder widget layout",
-      "description": "Create ApmV5Web.Live.DashboardGridComponent LiveComponent. Renders widgets in a CSS Grid (12-column) layout from LayoutStore placements. Each widget cell has a drag handle (daisyUI grab cursor). On drag-end, sends layout_reorder event to DashboardLive with new placement map. Uses Sortable.js (or pure JS drag events) via a new DashboardGrid JS hook. The hook uses phx-update=ignore on the grid container. Supports both preset layouts and user-customized layouts. Layout changes are saved to LayoutStore.save_user_layout/2.",
-      "acceptanceCriteria": [
-        "DashboardGridComponent renders placements as CSS grid cells",
-        "Each widget cell has data-widget-id attribute for JS hook",
-        "phx-hook=DashboardGrid on grid container",
-        "layout_reorder event received by DashboardLive with {order: [widget_ids]}",
-        "LayoutStore.save_user_layout called on reorder",
-        "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 3,
-      "dependencies": [
-        "US-362",
-        "US-357"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "d738e653-d310-4fb0-9b9a-3ff1e8f89b2b",
-      "checkpointId": "CP-100",
-      "wave": 2
-    },
-    {
-      "id": "US-364",
-      "title": "ContextPinDrillDownComponent: scope context panel with user/project split",
-      "description": "Create ApmV5Web.Live.ContextPinDrillDownComponent LiveComponent. When a widget is pinned as scope source and a scope value is selected (e.g. project:ccem), renders a collapsible scope context panel below the pinned widget showing: project-level data in expanded section, user-level data in collapsed section (expand on click). Subscribes to dashboard:scope:{session_id} PubSub. When scope changes, updates all other widgets via scope_filter assign. Shows scope badge in header breadcrumb. User section is collapsed by default with a toggle button.",
-      "acceptanceCriteria": [
-        "ContextPinDrillDownComponent renders when scope_type == :project",
-        "Project section expanded by default, user section collapsed",
-        "Toggle button expands/collapses user section",
-        "Scope badge shown in breadcrumb area",
-        "Subscribes to dashboard:scope PubSub and updates on change",
-        "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 3,
-      "dependencies": [
-        "US-359",
-        "US-362"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "38bad1e6-d499-4c62-82ff-fed0cd8e1a60",
-      "checkpointId": "CP-101",
-      "wave": 3
-    },
-    {
-      "id": "US-365",
-      "title": "ProjectsWidget LiveComponent: projects list with pin-to-scope support",
-      "description": "Create ApmV5Web.Live.Widgets.ProjectsWidget LiveComponent. Displays active projects from ApmV5.ProjectStore as a list with project name, active session count, agent count, and status badge. Each row has a Select button \u2014 clicking broadcasts scope_selected event to DashboardScopeEngine with project scope. Widget declares pinnable: true and supported_scopes: [:project]. Subscribes to apm:config PubSub for live project updates. Register in WidgetRegistry with id: \"projects\", category: :monitoring, min_width: 3, min_height: 3.",
-      "acceptanceCriteria": [
-        "ProjectsWidget lists projects from ProjectStore",
-        "Each row shows name, session count, agent count, status badge",
-        "Select button broadcasts scope_selected with project:name scope",
-        "Widget registered in WidgetRegistry with id=\"projects\", pinnable=true",
-        "Live updates when apm:config PubSub fires",
-        "mix compile --warnings-as-errors passes"
-      ],
-      "estimatedPoints": 3,
-      "dependencies": [
-        "US-359",
-        "US-356"
-      ],
-      "status": "done",
-      "passes": true,
-      "planeIssueId": "e8e97f94-9ed5-47d3-8adb-bd2538bd07c1",
-      "checkpointId": "CP-102",
-      "wave": 3
-    },
-    {
-      "id": "US-366",
-      "title": "DashboardGrid JS hook: drag-reorder with Sortable.js integration",
-      "description": "Create assets/js/hooks/dashboard_grid.js implementing the DashboardGrid LiveView hook. On mounted, initialize Sortable.js on the grid container element (import from assets/vendor or npm). On Sortable end event, collect new order of widget_id data attributes and pushEvent(\"layout_reorder\", {order: [...]}) to LiveView. On updated, re-initialize Sortable if grid children changed. Use phx-update=ignore on the sortable container. Add DashboardGrid to app.js Hooks registry. Handle destroyed to cleanly destroy Sortable instance.",
-      "acceptanceCriteria": [
-        "dashboard_grid.js created with mounted/updated/destroyed lifecycle",
-        "Sortable.js initialized on mount",
-        "Sortable end event fires pushEvent(\"layout_reorder\", {order: [...]})",
-        "DashboardGrid exported and imported in app.js Hooks",
-        "destroyed() calls sortable.destroy() to prevent memory leaks",
-        "mix compile --warnings-as-errors passes (JS assets build)"
       ],
       "estimatedPoints": 2,
       "dependencies": [
-        "US-363"
+        "US-429"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "205569f4-60a5-4d31-895a-8900683dd770",
-      "checkpointId": "CP-103",
-      "wave": 3
+      "checkpointId": "CP-155",
+      "wave": 2,
+      "planeIssueId": "312f1886-2e15-4c90-b298-b6863af63922",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5/upm_store.ex"
+      ]
     },
     {
-      "id": "US-367",
-      "title": "DashboardLive: wire WidgetContainer, DashboardGrid, and edit/pin event handlers",
-      "description": "Update DashboardLive to render all widgets through WidgetContainerComponent and DashboardGridComponent. Handle new events: widget_edit_open (set edit_panel_widget_id), widget_config_saved (persist to WidgetConfigStore, broadcast), widget_pin_toggle (call DashboardScopeEngine), layout_reorder (call LayoutStore.save_user_layout), layout_preset_select (load preset, update assigns). Pass scope_filter from active_scope assign down to each widget that declares supported_scopes. Ensure all widget state (configs, pinned, scope) survives reconnects via assigns.",
+      "id": "US-431",
+      "title": "FormationLive legend for edge types",
+      "description": "Add a visual legend to FormationLive showing edge type meanings: hierarchy (solid), pub/sub callback (dashed blue), aggregation (dashed green), data export (bold orange).",
       "acceptanceCriteria": [
-        "DashboardLive renders widgets via WidgetContainerComponent",
-        "widget_config_saved event persists to WidgetConfigStore",
-        "widget_pin_toggle calls DashboardScopeEngine.pin_scope_source or unpin",
-        "layout_reorder saves to LayoutStore",
-        "scope_filter passed to scoped widgets",
-        "State survives LiveView reconnect",
+        "Legend component renders below or beside the D3 graph",
+        "Shows 4 edge types with matching colors and dash patterns",
+        "Legend is collapsible to save space",
         "mix compile --warnings-as-errors passes"
       ],
-      "estimatedPoints": 4,
+      "estimatedPoints": 1,
       "dependencies": [
-        "US-362",
-        "US-363",
-        "US-360",
-        "US-364"
+        "US-424"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "7433caad-065b-4ea8-b38a-0d76b7bbccae",
-      "checkpointId": "CP-104",
-      "wave": 3
+      "checkpointId": "CP-156",
+      "wave": 2,
+      "planeIssueId": "b4bd1c0a-16b0-4593-8c4d-f9e7d5d1fbb5",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
     },
     {
-      "id": "US-368",
-      "title": "API endpoints: GET /api/v2/widgets, PATCH /api/v2/widgets/:id/config, POST /api/v2/dashboard/layout",
-      "description": "Add REST API endpoints to ApmV5Web.Router and controller: GET /api/v2/widgets returns all registered widget definitions from WidgetRegistry. GET /api/v2/widgets/:id returns single widget. PATCH /api/v2/widgets/:id/config accepts {session_id, config} and calls WidgetConfigStore. GET /api/v2/dashboard/layout?session_id=X returns current layout (preset + user overrides). POST /api/v2/dashboard/layout accepts {session_id, placements} to save custom layout. POST /api/v2/dashboard/pin accepts {session_id, widget_id} to pin scope source. Update OpenAPI spec at /api/v2/openapi.json.",
+      "id": "US-432",
+      "title": "Integration tests for typed edges, channel notifications, DOT endpoint",
+      "description": "Test suite covering: typed edge rendering data, channel notification filtering, DOT generation endpoint, and testmaxxing template deployment.",
       "acceptanceCriteria": [
-        "GET /api/v2/widgets returns 13+ widget definitions as JSON array",
-        "GET /api/v2/widgets/:id returns single widget or 404",
-        "PATCH /api/v2/widgets/:id/config persists via WidgetConfigStore",
-        "GET /api/v2/dashboard/layout returns merged preset+user layout",
-        "POST /api/v2/dashboard/layout saves custom placements",
-        "POST /api/v2/dashboard/pin pins scope source",
-        "OpenAPI spec updated",
-        "mix compile --warnings-as-errors passes"
+        "Tests for push_formation_graph with typed edges",
+        "Tests for notification channel field storage and filtering",
+        "Tests for GET /api/v2/formations/:id/dot response",
+        "Tests for testmaxxing template formation creation",
+        "All tests pass: mix test --only testmaxxing"
       ],
       "estimatedPoints": 3,
       "dependencies": [
-        "US-356",
-        "US-358",
-        "US-357"
+        "US-427",
+        "US-428",
+        "US-430"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "15399640-97da-43bb-b5bd-f68d5bf9f5f5",
-      "checkpointId": "CP-105",
-      "wave": 3
+      "checkpointId": "CP-157",
+      "wave": 3,
+      "planeIssueId": "3a56c70a-d584-4a86-8614-a195b6bf96b3",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "test/apm_v5/testmaxxing_integration_test.exs"
+      ]
     },
     {
-      "id": "US-369",
-      "title": "Integration tests: widget config, context pin, layout reorder, Projects widget scope",
-      "description": "Write ExUnit integration tests covering: (1) WidgetConfigStore.put_config/get_config round-trip, (2) DashboardScopeEngine.pin_scope_source broadcasts to PubSub, (3) LayoutStore.save_user_layout persists and retrieves placements, (4) WidgetRegistry.register_widget adds plugin widget to ETS, (5) LiveView integration: mount DashboardLive, trigger widget_pin_toggle, verify scope_changed PubSub message, (6) API: GET /api/v2/widgets returns 13+ widgets including \"projects\". Target: all tests pass with mix test --only widgetization.",
+      "id": "US-433",
+      "title": "Final compile gate and LILY-554 closure",
+      "description": "Final mix compile --warnings-as-errors, manual browser verification of formation graph with typed edges, and update LILY-554 in Plane to Done.",
       "acceptanceCriteria": [
-        "WidgetConfigStore round-trip test passes",
-        "DashboardScopeEngine PubSub broadcast test passes",
-        "LayoutStore user layout test passes",
-        "WidgetRegistry plugin registration test passes",
-        "DashboardLive LiveView pin/scope integration test passes",
-        "GET /api/v2/widgets API test passes with projects widget included",
-        "mix test --only widgetization: all pass"
+        "mix compile --warnings-as-errors passes",
+        "mix test --only testmaxxing passes",
+        "Formation graph visually shows typed edges in browser",
+        "Notification channel filter works in dashboard",
+        "LILY-554 marked Done in Plane (or moved to CCEM namespace)"
       ],
-      "estimatedPoints": 4,
+      "estimatedPoints": 1,
       "dependencies": [
-        "US-367",
-        "US-368",
-        "US-365"
+        "US-432"
       ],
       "status": "done",
       "passes": true,
-      "planeIssueId": "ebc46ad9-c9ec-4e9b-b765-95202f3087e0",
-      "checkpointId": "CP-106",
-      "wave": 4
+      "checkpointId": "CP-158",
+      "wave": 3,
+      "planeIssueId": "3979b870-9ed7-42e0-8c1f-ace052c981d8",
+      "agentType": "elixir-expert",
+      "targetFiles": []
     }
   ]
 }
