@@ -1,0 +1,47 @@
+{
+  "project": "lfg",
+  "updated_at": "2026-04-19",
+  "tabs": [
+    {
+      "id": "roadmap",
+      "label": "Roadmap",
+      "type": "features",
+      "source": "features.json",
+      "color": "purple",
+      "always_show": true
+    },
+    {
+      "id": "c4-context",
+      "label": "C4 Context",
+      "type": "svg",
+      "source": "diagrams/context.svg",
+      "color": "blue",
+      "always_show": true
+    },
+    {
+      "id": "c4-containers",
+      "label": "C4 Containers",
+      "type": "svg",
+      "source": "diagrams/containers.svg",
+      "color": "blue",
+      "always_show": true
+    },
+    {
+      "id": "narrative",
+      "label": "Narrative",
+      "type": "narrative",
+      "source": "narrative-content.json",
+      "color": "emerald",
+      "always_show": true
+    },
+    {
+      "id": "formation",
+      "label": "Formation",
+      "type": "formation",
+      "source": "formation-topology.json",
+      "color": "amber",
+      "always_show": false,
+      "note": "fmt-lfg-fleet-20260419 — written by US-A-005"
+    }
+  ]
+}

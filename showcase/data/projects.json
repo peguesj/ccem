@@ -9,7 +9,7 @@
       "badge": "CCEM",
       "badge_color": "indigo",
       "status": "shipped",
-      "version": "9.1.0",
+      "version": "9.1.1",
       "data_path": "projects/ccem-apm",
       "alias": "ccem-apm",
       "sections": [

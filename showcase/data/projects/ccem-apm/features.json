@@ -222,7 +222,7 @@
     "category": "developer-tools",
     "status": "shipped",
     "version": "6.0.0",
-    "description": "56 endpoints across 21 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs. Validated by integration tests. Formation, UPM, AG-UI, skills, tasks, scanner, actions, ports all documented. Used as OpenAPI-first validation gate after APM startup."
+    "description": "103+ endpoints across 25 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs. Validated by integration tests. Formation, UPM, AG-UI, skills, tasks, scanner, actions, ports, auth, widgets, dashboard, plugins, security all documented. Used as OpenAPI-first validation gate after APM startup."
   },
   {
     "id": "US-026",
@@ -673,5 +673,32 @@
     "status": "shipped",
     "version": "9.1.0",
     "description": "41-test ExUnit suite for SecurityGuidancePlugin — contract compliance, endpoint listing, all 4 actions (hook_status, scan_history, covered_tools, pattern_summary), nav integration, dashboard widgets. Full coverage of security plugin lifecycle."
+  },
+  {
+    "id": "US-v911-001",
+    "wave": 11,
+    "title": "Hooks Max-Payload v9",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "All 9 hooks upgraded to v9 payloads: session_id, project, working_dir, git_branch identity fields. Agent identity resolution chain in agentlock hooks. Memory write detection, skill invocation tracking, pattern heartbeat every 10 tool calls. Expanded tool mapping + context enrichment in agentlock_context. Notification audit trail in agentlock_post_tool. Session end summary with tool count and cleanup. Covers CP-71 through CP-80."
+  },
+  {
+    "id": "US-v911-002",
+    "wave": 11,
+    "title": "Coalesce v9.1.1 Skill Sync",
+    "category": "platform",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "All 20+ CCEM skills coalesced to v9.1.1: core APM skills (ccem-apm, apm-api-reference, apm-auth, apm-telemetry, formation, orchestrator), dependent skills (upm, ralph, ship, coalesce, doctor, elixir-architect, conversation-mgmt, live-all, showcase, idea, dev-vs-prod), and peripheral skills (safesecret, apm-usage). Double-verify regression + frontmatter validation passed. SkillsRegistry cache refreshed with coalesce_applied event. Covers CP-81 through CP-92."
+  },
+  {
+    "id": "US-v911-003",
+    "wave": 12,
+    "title": "Dashboard Widgetization Engine",
+    "category": "ui",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "Full widget config schema (editable, pinnable, supported_scopes, default_config, display_order) in WidgetRegistry. LayoutStore + WidgetConfigStore GenServers with ETS-backed per-session config. DashboardScopeEngine for pin/unpin scope PubSub. DashboardLive scope wiring. WidgetEditPanelComponent, WidgetContainerComponent (title bar + edit/pin controls), DashboardGridComponent (CSS Grid 12-col). HTML5 drag-reorder JS hook. ContextPinDrillDownComponent + ProjectsWidget. 5 new API endpoints (GET /api/v2/widgets, PATCH config, GET/POST /api/v2/dashboard/layout, POST /api/v2/dashboard/pin). 43-test integration suite (all passing). Covers CP-93 through CP-106."
   }
 ]

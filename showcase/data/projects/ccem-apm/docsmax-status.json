@@ -1,0 +1,85 @@
+{
+  "panel": "docsmax",
+  "project": "CCEM APM",
+  "repo": "peguesj/ccem-apm",
+  "version": "9.1.1",
+  "openapi": {
+    "spec_version": "3.0.3",
+    "canonical_endpoint": "GET /api/v2/openapi.json",
+    "alias_endpoint": "GET /api/openapi.json",
+    "total_paths": 103,
+    "categories": 25,
+    "interactive_docs": "/api/docs (Scalar)",
+    "last_validated": "2026-04-19"
+  },
+  "sdk": {
+    "package": "@ccem/apm",
+    "npm_version": "3.0.0",
+    "api_coverage_percent": 84.5,
+    "endpoints_covered": 87,
+    "endpoints_total": 103
+  },
+  "skills": {
+    "total_coalesced": 20,
+    "alignment_version": "9.1.1",
+    "coalesce_status": "complete",
+    "core_skills": [
+      "ccem-apm",
+      "apm-api-reference",
+      "apm-auth",
+      "apm-telemetry",
+      "formation",
+      "orchestrator"
+    ],
+    "dependent_skills": [
+      "upm",
+      "ralph",
+      "ship",
+      "coalesce",
+      "doctor",
+      "elixir-architect",
+      "conversation-mgmt",
+      "live-all"
+    ],
+    "peripheral_skills": [
+      "showcase",
+      "idea",
+      "dev-vs-prod",
+      "safesecret",
+      "apm-usage",
+      "double-verify"
+    ],
+    "frontmatter_validated": true,
+    "cache_refreshed": true
+  },
+  "test_coverage": {
+    "widgetization_tests": 43,
+    "security_tests": 41,
+    "liveview_integration_tests": 14,
+    "agentlock_tests": 97,
+    "total_tracked": 195
+  },
+  "features_by_version": {
+    "v9.1.1": [
+      "Dashboard Widgetization Engine",
+      "Hooks Max-Payload v9",
+      "Coalesce v9.1.1 Skill Sync"
+    ],
+    "v9.1.0": [
+      "Security Native Types",
+      "SecurityGuidancePlugin"
+    ],
+    "v9.0.0": [
+      "AgentLock Notifications",
+      "Grouped Approval UX",
+      "ApprovalAuditLog"
+    ]
+  },
+  "checkpoints": {
+    "completed": "CP-56 through CP-106",
+    "total": 51,
+    "latest_wave": "Wave 4 (Widgetization Integration Tests)"
+  },
+  "last_run": "2026-04-19T00:00:00Z",
+  "_initialized": "2026-04-19T00:00:00Z"
+}

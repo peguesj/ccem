@@ -2,8 +2,59 @@
   "project": "lfg",
   "title": "LFG — Local File Guardian",
   "subtitle": "Disk management suite with self-correcting DevDrive architecture",
-  "version": "0.12.0",
-  "updated_at": "2026-04-18",
+  "version": "2.0.0",
+  "updated_at": "2026-04-19",
+  "arc": "problem-solution-traction-vision",
+  "arc_sections": [
+    {
+      "id": "problem",
+      "title": "The Problem",
+      "headline": "Macintosh HD at 84% — and growing",
+      "body": "A developer machine accumulates disk pressure from multiple directions: Xcode DerivedData ballooning with each build, iOS Simulator runtimes stacking up, npm and Python caches fragmenting across dozens of projects, and sparseimage-backed volumes consuming internal SSD space that should live on external storage. No single tool addresses all of these. Result: repeated emergency cleanups, corrupt volumes, lost hours.",
+      "stats": [
+        {"label": "Internal disk used", "value": "84%", "color": "red"},
+        {"label": "DTF recovered (Apr 11)", "value": "2.7 GB", "color": "emerald"},
+        {"label": "AppTranslocation cache", "value": "1.1 GB", "color": "amber"},
+        {"label": "Simulator runtimes freed", "value": "8.4 GB", "color": "amber"}
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "The Solution",
+      "headline": "9 specialized modules, one dispatcher",
+      "body": "LFG routes disk management to 9 purpose-built Bash modules via a central dispatcher. WTFS maps disk topology. DTF targets 6 cache categories. BTAU manages sparseimage lifecycle. DEVDRIVE orchestrates native APFS volumes with a self-correcting reconcile loop. SSD suppresses Spotlight CPU pressure. Each module is independently invokable and observable via CCEM APM telemetry.",
+      "stats": [
+        {"label": "Bash modules", "value": "9", "color": "purple"},
+        {"label": "DTF cache categories", "value": "6", "color": "purple"},
+        {"label": "APFS volumes managed", "value": "5", "color": "blue"},
+        {"label": "Lines of code", "value": "~8,000", "color": "zinc"}
+      ]
+    },
+    {
+      "id": "traction",
+      "title": "Traction",
+      "headline": "DevDrive v2 live — 10 stories shipped",
+      "body": "The DevDrive v2 native APFS architecture shipped all 10 user stories (LFG-32..LFG-41) across 5 waves. Self-correcting reconcile loop runs every 5 minutes via LaunchAgent. macFUSE 5.2 FSKit overlay proof-of-concept validated the unified /Developer namespace approach. Native Swift viewer serves the showcase at localhost:8080.",
+      "stats": [
+        {"label": "DevDrive v2 stories", "value": "10/10", "color": "emerald"},
+        {"label": "Drift categories", "value": "8", "color": "blue"},
+        {"label": "Reconcile interval", "value": "5 min", "color": "blue"},
+        {"label": "YJ_MORE available", "value": "118 GB", "color": "emerald"}
+      ]
+    },
+    {
+      "id": "vision",
+      "title": "Vision",
+      "headline": "FSKit overlay — unified /Developer namespace",
+      "body": "Fleet formation fmt-lfg-fleet-20260419 ships showcase v2 + DevDrive remediation as a 17-story, 42-point dual-squadron build. Sparseimage migration to YJ_MORE reclaims ~27GB of internal SSD. CoreSimulator/Devices moves to DDRV901. APM gains a volume health widget. Long-term: FSKit overlay eliminates symlinks entirely with a transparent /Developer namespace.",
+      "stats": [
+        {"label": "Fleet stories", "value": "17", "color": "purple"},
+        {"label": "Formation points", "value": "42", "color": "purple"},
+        {"label": "Internal space to reclaim", "value": "~27 GB", "color": "emerald"},
+        {"label": "Policy window", "value": "24h", "color": "zinc"}
+      ]
+    }
+  ],
   "waves": [
     { "num": 1, "title": "Wave 1 — Core Modules (WTFS/DTF/BTAU)", "color": "emerald" },
     { "num": 2, "title": "Wave 2 — Volume Management (DEVDRIVE/SSD/STFU)", "color": "emerald" },

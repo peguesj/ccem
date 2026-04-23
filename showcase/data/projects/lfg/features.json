@@ -482,5 +482,96 @@
       "forest"
     ],
     "description": "~/.claude/projects and ~/.claude/tasks symlinks point to native APFS volume mount points. Reconcile loop monitors ~/.claude symlinks as forest entries with auto_repair: true. mkdir -p succeeds for all project memory directories. LFG-41."
+  },
+  {
+    "id": "lfg-039",
+    "title": "Disconnect Detection",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "disconnect",
+      "offline",
+      "resilience"
+    ],
+    "description": "Detect offline external volumes, log DISCONNECTED status in devdrive_state.json, prevent reconcile actions on unavailable drives"
+  },
+  {
+    "id": "lfg-040",
+    "title": "Fallback Directories",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "fallback",
+      "symlinks",
+      "resilience"
+    ],
+    "description": "Redirect broken symlinks to ~/DevDrive/<id>-fallback/ local directories, ensuring dependent tools continue working when external volumes are disconnected"
+  },
+  {
+    "id": "lfg-041",
+    "title": "Reconnect Subcommand",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "reconnect",
+      "rsync",
+      "resilience"
+    ],
+    "description": "lfg devdrive reconnect [id|--all] — detect reconnected volumes, rsync fallback data back to volume mount points, restore original symlinks"
+  },
+  {
+    "id": "lfg-042",
+    "title": "Reconcile Loop Resilience",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "reconcile",
+      "launchagent",
+      "state-transition"
+    ],
+    "description": "60s LaunchAgent polling with state transition detection: ONLINE -> DISCONNECTED -> FALLBACK -> RECONNECTING -> ONLINE lifecycle per volume"
+  },
+  {
+    "id": "lfg-043",
+    "title": "APM Notifications",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "apm",
+      "notifications",
+      "resilience"
+    ],
+    "description": "POST to localhost:3032/api/notify on volume state changes — disconnect, fallback activation, reconnect completion, sync errors"
+  },
+  {
+    "id": "lfg-044",
+    "title": "Fleet.json v1.4",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "fleet",
+      "schema",
+      "resilience"
+    ],
+    "description": "Fleet registry v1.4 schema adding fallback_dir and reconnect_policy (auto|manual|disabled) per drive entry"
+  },
+  {
+    "id": "lfg-045",
+    "title": "Health Dashboard",
+    "wave": 12,
+    "status": "in-progress",
+    "tags": [
+      "devdrive",
+      "health",
+      "dashboard",
+      "cli"
+    ],
+    "description": "lfg devdrive health — color-coded CLI status table showing volume state (ONLINE/DISCONNECTED/FALLBACK), free space, last reconcile, fallback size per drive"
   }
 ]

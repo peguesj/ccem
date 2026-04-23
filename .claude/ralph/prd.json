@@ -8,8 +8,8 @@
     "checkpointRange": "CP-149 to CP-158",
     "builtWaves": 3,
     "verifiedAt": "2026-04-23T07:45:00Z",
-    "shippedAt": null,
-    "prUrl": null
+    "shippedAt": "2026-04-23T07:50:00Z",
+    "prUrl": "https://github.com/peguesj/ccem/pull/9"
   },
   "userStories": [
     {

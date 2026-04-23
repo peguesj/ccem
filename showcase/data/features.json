@@ -222,7 +222,7 @@
     "category": "developer-tools",
     "status": "shipped",
     "version": "6.0.0",
-    "description": "56 endpoints across 21 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs. Validated by integration tests. Formation, UPM, AG-UI, skills, tasks, scanner, actions, ports all documented. Used as OpenAPI-first validation gate after APM startup."
+    "description": "103+ endpoints across 25 categories. Canonical at GET /api/v2/openapi.json. Scalar interactive docs at /api/docs. Validated by integration tests. Formation, UPM, AG-UI, skills, tasks, scanner, actions, ports, auth, widgets, dashboard, plugins, security all documented. Used as OpenAPI-first validation gate after APM startup."
   },
   {
     "id": "US-026",
@@ -556,5 +556,32 @@
     "status": "shipped",
     "version": "9.1.0",
     "description": "v9.1.0 feature set: security_reminder_hook.py expanded with Bash command injection, WebFetch/WebSearch SSRF detection, Agent/Skill prompt injection advisory. hooks.json covers 8 native tool types. SecurityGuidancePlugin with :security plugin_scope, 4 actions (hook_status, scan_history, covered_tools, pattern_summary), and 41-test ExUnit suite. Covers CP-64 through CP-70."
+  },
+  {
+    "id": "US-v911-001",
+    "wave": 15,
+    "title": "Hooks Max-Payload v9",
+    "category": "monitoring",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "v9.1.1 hooks upgrade: all 9 hooks emit v9 payloads with session_id, project, working_dir, git_branch. Agent identity resolution chain in agentlock hooks. Memory write detection, skill invocation tracking, pattern heartbeat every 10 tool calls. Expanded tool mapping in agentlock_context. Notification audit trail in agentlock_post_tool. Session end summary with tool count and cleanup. Covers CP-71 through CP-80."
+  },
+  {
+    "id": "US-v911-002",
+    "wave": 15,
+    "title": "Coalesce v9.1.1 Skill Sync",
+    "category": "platform",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "All 20+ CCEM skills coalesced to v9.1.1: ccem-apm, apm-api-reference, apm-auth, apm-telemetry, formation, orchestrator, upm, ralph, ship, coalesce, doctor, elixir-architect, conversation-mgmt, live-all, showcase, idea, dev-vs-prod, safesecret, apm-usage. Double-verify regression + frontmatter validation. SkillsRegistry cache refreshed. Covers CP-81 through CP-92."
+  },
+  {
+    "id": "US-v911-003",
+    "wave": 16,
+    "title": "Dashboard Widgetization Engine",
+    "category": "ui",
+    "status": "shipped",
+    "version": "9.1.1",
+    "description": "Widget config schema with editable, pinnable, supported_scopes, default_config, display_order. LayoutStore and WidgetConfigStore GenServers (ETS-backed). DashboardScopeEngine for pin/unpin scope source. DashboardLive scope PubSub wiring. WidgetEditPanelComponent, WidgetContainerComponent, DashboardGridComponent LiveComponents. CSS Grid 12-col layout with HTML5 drag-reorder. ContextPinDrillDownComponent, ProjectsWidget. 5 new API endpoints. 43-test integration suite. Covers CP-93 through CP-106."
   }
 ]
