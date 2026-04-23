@@ -1,0 +1,24 @@
+%% C4 Level 1 - System Context: Lily AI Therapy Platform
+graph TB
+    therapist["<b>Therapist</b><br/>Creates profile, manages<br/>availability & specializations"]
+    client["<b>Client</b><br/>Takes quiz, finds match,<br/>books sessions"]
+
+    lily["<b>Lily AI Platform</b><br/><i>Therapy Matching & Practice Management</i><br/><br/>AI-powered therapist-client matching<br/>via quiz funnel, directory search,<br/>and demographic preference engine"]
+
+    insurance["<b>Insurance Providers</b><br/><i>External System</i><br/><br/>Panel verification,<br/>claims processing"]
+    calendar["<b>Calendar Systems</b><br/><i>External Integration</i><br/><br/>Google Calendar, Outlook<br/>availability sync"]
+    ehr["<b>EHR / Practice Tools</b><br/><i>External System</i><br/><br/>SimplePractice, TherapyNotes<br/>clinical records"]
+
+    client -->|"Takes quiz,<br/>swipes matches,<br/>books sessions"| lily
+    therapist -->|"Manages profile,<br/>sets availability,<br/>reviews analytics"| lily
+    lily -->|"Verifies panels,<br/>checks coverage"| insurance
+    lily -->|"Syncs availability,<br/>creates appointments"| calendar
+    lily -->|"Syncs client records,<br/>session notes"| ehr
+
+    classDef person fill:#08427B,stroke:#073B6F,color:#fff,stroke-width:2px
+    classDef system fill:#6366f1,stroke:#4f46e5,color:#fff,stroke-width:2px
+    classDef external fill:#64748b,stroke:#475569,color:#fff,stroke-width:2px
+
+    class therapist,client person
+    class lily system
+    class insurance,calendar,ehr external

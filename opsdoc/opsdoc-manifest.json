@@ -1,0 +1,30 @@
+{
+  "$schema": "opsdoc-manifest/1.0",
+  "metadata": {
+    "title": "CCEM APM v9.0.0 - Operational Documentation",
+    "subtitle": "Claude Code Environment Manager - Agentic Performance Monitor",
+    "organization": "pegues.io",
+    "author": "Jeremiah Pegues",
+    "role": "Principal Engineer",
+    "version": "9.0.0",
+    "classification": "INTERNAL",
+    "generatedAt": "2026-04-11T00:00:00Z",
+    "generatedBy": "OpsDOC Skill v1.0 (Claude Opus 4.6)"
+  },
+  "audience": {
+    "primary": "technical",
+    "secondary": ["operations", "architecture"],
+    "accessLevel": "restricted"
+  },
+  "domain": {
+    "name": "Engineering Operations",
+    "description": "CCEM APM is a Phoenix/Elixir real-time agentic performance monitor for Claude Code sessions."
+  },
+  "mode": "technical",
+  "theme": { "preset": "obsidian", "accent": "#f5c518" },
+  "features": {
+    "wrappedSlideshow": false,
+    "inspectorPanel": true,
+    "printStyles": true
+  }
+}

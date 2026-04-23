@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YJMosaic — macOS + iOS/iPadOS Port | Showcase</title>
+
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Mermaid.js v11 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+  <!-- Inter + Fira Code via Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    // Tailwind dark-mode config
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Fira Code', 'monospace']
+          },
+          colors: {
+            zinc: {
+              925: '#0f0f11',
+              950: '#09090b'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base resets */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #09090b; color: #f4f4f5; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+    /* Mermaid diagram container */
+    .mermaid-wrap { background: #18181b; border: 1px solid rgba(5,150,105,0.25); border-radius: 8px; padding: 16px; overflow-x: auto; }
+    .mermaid-wrap svg { max-width: 100%; height: auto; }
+
+    /* Column layout */
+    .col-left  { width: 320px; min-width: 320px; overflow-y: auto; }
+    .col-center { flex: 1; overflow-y: auto; }
+    .col-right  { width: 300px; min-width: 300px; overflow-y: auto; }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; height: 100%; }
+
+    /* Wave group expand/collapse */
+    .wave-body { overflow: hidden; transition: max-height 0.2s ease; }
+
+    /* Fade-in animation */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+    /* IDFW phase section */
+    .idfw-section { border-left: 2px solid rgba(5,150,105,0.4); padding-left: 12px; margin-bottom: 20px; }
+
+    /* Risk badge colors */
+    .risk-high    { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .risk-medium  { background: rgba(234,179,8,0.15);  border: 1px solid rgba(234,179,8,0.3);  color: #fde047; }
+    .risk-low     { background: rgba(34,197,94,0.15);  border: 1px solid rgba(34,197,94,0.3);  color: #86efac; }
+    .risk-none    { background: rgba(100,116,139,0.15); border: 1px solid rgba(100,116,139,0.3); color: #94a3b8; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 flex flex-col" style="height:100vh; overflow:hidden;">
+
+  <!-- =========================================================
+       STICKY HEADER
+  ========================================================== -->
+  <header class="sticky top-0 z-50 flex items-center gap-3 px-5 py-3 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur shrink-0">
+    <!-- Logo mark -->
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+         style="background: linear-gradient(135deg, #059669 0%, #0284c7 100%);">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
+        <rect x="7" y="1" width="5" height="5" rx="1" fill="white" opacity="0.7"/>
+        <rect x="13" y="1" width="4" height="5" rx="1" fill="white" opacity="0.5"/>
+        <rect x="1" y="7" width="5" height="5" rx="1" fill="white" opacity="0.7"/>
+        <rect x="7" y="7" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
+        <rect x="13" y="7" width="4" height="5" rx="1" fill="white" opacity="0.7"/>
+        <rect x="1" y="13" width="5" height="4" rx="1" fill="white" opacity="0.5"/>
+        <rect x="7" y="13" width="5" height="4" rx="1" fill="white" opacity="0.7"/>
+        <rect x="13" y="13" width="4" height="4" rx="1" fill="white" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <div class="flex items-baseline gap-2">
+      <h1 class="text-sm font-semibold text-zinc-100 tracking-tight">YJMosaic</h1>
+      <span class="text-xs text-zinc-500">macOS + iOS/iPadOS Port</span>
+    </div>
+
+    <!-- Badges -->
+    <div class="flex items-center gap-2 ml-1">
+      <span class="px-2 py-0.5 text-xs font-mono rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">v0.9.0</span>
+      <span class="px-2 py-0.5 text-xs font-mono rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">ralph/yjmosaic-ios</span>
+      <span class="px-2 py-0.5 text-xs rounded-full bg-blue-950 text-blue-400 border border-blue-800">Swift 6 · Metal · SwiftUI</span>
+    </div>
+
+    <!-- Tab switcher -->
+    <div class="ml-auto flex items-center gap-1 bg-zinc-900 rounded-lg p-1 border border-zinc-800">
+      <button id="tab-platform-btn"
+              onclick="switchTab('platform')"
+              class="tab-btn px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-zinc-700 text-zinc-100">
+        Platform
+      </button>
+      <button id="tab-idfw-btn"
+              onclick="switchTab('idfw')"
+              class="tab-btn px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-zinc-400 hover:text-zinc-200">
+        IDFW
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       TAB: PLATFORM
+  ========================================================== -->
+  <div id="tab-platform" class="tab-panel active flex-row gap-0 border-t border-zinc-800/50" style="height: calc(100vh - 57px);">
+
+    <!-- LEFT COLUMN: Feature Wave Cards -->
+    <aside class="col-left border-r border-zinc-800 px-4 py-4 space-y-3">
+
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Feature Waves</span>
+        <span class="ml-auto px-2 py-0.5 text-xs rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">15/15 CPs</span>
+      </div>
+
+      <!-- Wave macro groups -->
+      <div id="waves-container" class="space-y-2">
+        <!-- dynamically rendered by JS -->
+      </div>
+    </aside>
+
+    <!-- CENTER COLUMN: Architecture Diagram -->
+    <main class="col-center px-6 py-5 space-y-6">
+
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">C4 Container Architecture</span>
+          <span class="px-2 py-0.5 text-xs rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">System Context</span>
+        </div>
+        <div class="mermaid-wrap">
+          <pre class="mermaid" id="diag-c4">
+graph TD
+  subgraph User["User"]
+    U1[Photographer / Artist]
+  end
+
+  subgraph App["YJMosaic App"]
+    subgraph SwiftUI["SwiftUI Layer"]
+      V1["MosaicEditorView\nPhotoLibraryView\nGalleryView"]
+    end
+    subgraph Core["YJMosaicCore (SPM Library)"]
+      E1["MosaicBuilder (actor)\nTileScorer / MetalTileScorer"]
+      E2["TileCollectionManager (actor)\nDuplicateControlEngine"]
+      E3["MosaicExporter\nPSDExporter\nWebMosaicExporter"]
+      E4["SettingsStore (@Observable)\nMosaicPresets\nUndoStateManager"]
+    end
+    subgraph Metal["Metal Compute"]
+      M1["TileScoring Shader\n(runtime-compiled)"]
+      M2["ColorHistogram Shader\n(runtime-compiled)"]
+    end
+  end
+
+  subgraph Frameworks["Apple Frameworks"]
+    F1["ImageIO\nCGImageSource / Destination"]
+    F2["PhotoKit\nPHAsset / PHImageManager"]
+    F3["AVFoundation\nAVAssetReader"]
+    F4["Core Image\nCIFilter pipeline"]
+  end
+
+  subgraph External["External Services"]
+    X1["Google Photos\nREST API + OAuth 2.0"]
+    X2["iCloud Photos\nvia PhotoKit"]
+  end
+
+  U1 --> V1
+  V1 --> E1
+  V1 --> E4
+  E1 --> E2
+  E1 --> M1
+  E1 --> M2
+  E1 --> E3
+  E2 --> F1
+  E2 --> F2
+  E3 --> F1
+  F2 --> X2
+  F2 --> X1
+  E1 --> F4
+  E3 --> F3
+          </pre>
+        </div>
+      </div>
+
+      <!-- Build Pipeline Flow -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Build Pipeline</span>
+        </div>
+        <div class="mermaid-wrap">
+          <pre class="mermaid" id="diag-pipeline">
+graph LR
+  A["computeGrid()\nDivide source into cells\nbased on pattern + rows"] --> B
+  B["regionAverageColor()\nExtract CGColor per cell\nvia CGContext sampling"] --> C
+  C{"GPU available?"}
+  C -->|Yes| D["MetalTileScorer\nbatch color distance\nTileScoring.metal"]
+  C -->|No| E["TileScorer (CPU)\nqualityMode: Standard\nStronger / Weaker"]
+  D --> F
+  E --> F
+  F["UsageTracker.canPlace()\nFrameDistance dedup\nMAX per image/group"] --> G
+  G["forceUnusedTiles()\nReplace worst placements\n(if Use All Images enabled)"] --> H
+  H["TileSplitter.applySplits()\nAdaptive 1/2 and 1/4\nsub-tiles for detail"] --> I
+  I["MaskProcessor\nApply MaskFile boundary\nor MaskTemplateGenerator"] --> J
+  J["MosaicPlan\nReady for export"]
+          </pre>
+        </div>
+      </div>
+
+      <!-- Version timeline -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Version Timeline</span>
+        </div>
+        <div class="space-y-1.5" id="version-timeline">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT COLUMN: Resource Inspector -->
+    <aside class="col-right border-l border-zinc-800 px-4 py-4 space-y-4 overflow-y-auto">
+
+      <!-- Plane PM -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+          <span class="text-xs font-semibold text-zinc-300">Plane PM</span>
+        </div>
+        <div class="space-y-2 font-mono text-xs">
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Project</span>
+            <span class="text-zinc-300">YJMosaic (YJM)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Workspace</span>
+            <span class="text-zinc-300">lgtm</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Project ID</span>
+            <span class="text-zinc-400 truncate max-w-32" title="cfd7274f-43de-46a2-98c6-87c5cd17e550">cfd7274f…</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Items (macOS)</span>
+            <span class="text-emerald-400">YJM-1–44 Done</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Items (iOS)</span>
+            <span class="text-emerald-400">YJM-50–64 Done</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">URL</span>
+            <a href="https://plane.lgtm.build" target="_blank" class="text-blue-400 hover:text-blue-300">plane.lgtm.build</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Build Status -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs font-semibold text-zinc-300">Build Status</span>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">SPM debug build</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">passing</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Unit tests</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">passing</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">E2E import tests</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">passing</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">iOS simulator</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">passing</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-zinc-500">Swift concurrency</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">strict</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- iOS Port Stats -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">iOS Port Stats</span>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Checkpoints</span>
+            <span class="text-emerald-400 font-semibold">15 / 15</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Platforms</span>
+            <span class="text-zinc-300">iOS 17+ · iPadOS 17+</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Photo providers</span>
+            <span class="text-zinc-300">iCloud · Google</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Export formats</span>
+            <span class="text-zinc-300">HEIC · JPEG · PNG</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">iPad layout</span>
+            <span class="text-zinc-300">NavigationSplitView</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">iPhone layout</span>
+            <span class="text-zinc-300">TabView (3-tab)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-zinc-500">Thermal throttle</span>
+            <span class="text-emerald-400">ThermalManager</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stack -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">Stack</span>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">Swift 6</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">SwiftUI</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">Metal</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">ImageIO</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">Core Image</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">PhotoKit</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">AVFoundation</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">SPM</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">jxl-coder-swift</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">OSLog</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">AG-UI</span>
+        </div>
+      </div>
+
+      <!-- SPM Targets -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">SPM Targets</span>
+        <div class="space-y-2 font-mono text-xs">
+          <div class="p-2 rounded bg-zinc-800 border border-zinc-700">
+            <div class="text-emerald-400">YJMosaicCore</div>
+            <div class="text-zinc-500 mt-0.5">library · shared · arm64+x86_64</div>
+          </div>
+          <div class="p-2 rounded bg-zinc-800 border border-zinc-700">
+            <div class="text-blue-400">YJMosaic</div>
+            <div class="text-zinc-500 mt-0.5">executable · macOS 14+</div>
+          </div>
+          <div class="p-2 rounded bg-zinc-800 border border-zinc-700">
+            <div class="text-purple-400">YJMosaiciOS</div>
+            <div class="text-zinc-500 mt-0.5">executable · iOS 17+</div>
+          </div>
+          <div class="p-2 rounded bg-zinc-800 border border-zinc-700">
+            <div class="text-zinc-400">YJMosaicTests</div>
+            <div class="text-zinc-500 mt-0.5">testTarget · XCTest</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key patterns -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">Key Patterns</span>
+        <div class="space-y-1.5 text-xs text-zinc-400">
+          <div class="flex gap-2"><span class="text-emerald-500 shrink-0">›</span><span><code class="font-mono text-zinc-300">actor</code> isolation for MosaicBuilder + TileCollectionManager</span></div>
+          <div class="flex gap-2"><span class="text-emerald-500 shrink-0">›</span><span><code class="font-mono text-zinc-300">@Observable @MainActor</code> SettingsStore with @Bindable views</span></div>
+          <div class="flex gap-2"><span class="text-emerald-500 shrink-0">›</span><span>Metal shaders embedded as string constants, runtime-compiled via <code class="font-mono text-zinc-300">makeLibrary(source:)</code></span></div>
+          <div class="flex gap-2"><span class="text-emerald-500 shrink-0">›</span><span>2048px banded rendering for mosaics >10,000px dimension</span></div>
+          <div class="flex gap-2"><span class="text-emerald-500 shrink-0">›</span><span>CGContext top-left origin: <code class="font-mono text-zinc-300">translateBy + scaleBy(-1)</code></span></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- =========================================================
+       TAB: IDFW (Inception Framework)
+  ========================================================== -->
+  <div id="tab-idfw" class="tab-panel flex-row gap-0 border-t border-zinc-800/50" style="height: calc(100vh - 57px);">
+
+    <!-- LEFT COLUMN: Phase navigation -->
+    <aside class="col-left border-r border-zinc-800 px-4 py-4">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">IDEA Framework v4.0</div>
+      <nav class="space-y-1" id="idfw-nav">
+        <!-- rendered by JS -->
+      </nav>
+
+      <!-- Market sizing summary -->
+      <div class="mt-6 rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">Market Sizing</span>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-500">TAM</span>
+              <span class="text-zinc-300 font-semibold">2.5M users</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div class="h-full rounded-full bg-blue-500" style="width:100%"></div>
+            </div>
+            <div class="text-xs text-zinc-600 mt-0.5">macOS creatives + iOS photo enthusiasts</div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-500">SAM</span>
+              <span class="text-zinc-300 font-semibold">200K users</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div class="h-full rounded-full bg-emerald-500" style="width:8%"></div>
+            </div>
+            <div class="text-xs text-zinc-600 mt-0.5">Existing AndreaMosaic user base</div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-500">SOM (Y1)</span>
+              <span class="text-zinc-300 font-semibold">20K users</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div class="h-full rounded-full bg-purple-500" style="width:0.8%"></div>
+            </div>
+            <div class="text-xs text-zinc-600 mt-0.5">App Store + community launch target</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk matrix summary -->
+      <div class="mt-4 rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-2">
+        <span class="text-xs font-semibold text-zinc-300">Risk Matrix</span>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-start gap-2">
+            <span class="risk-medium px-1.5 py-0.5 rounded font-mono shrink-0">R1</span>
+            <span class="text-zinc-400">App Store photo library review — Med/Med</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="risk-low px-1.5 py-0.5 rounded font-mono shrink-0">R2</span>
+            <span class="text-zinc-400">Metal shader iOS compat — Low/High</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="risk-medium px-1.5 py-0.5 rounded font-mono shrink-0">R3</span>
+            <span class="text-zinc-400">iPad mini memory pressure — Med/Med</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="risk-low px-1.5 py-0.5 rounded font-mono shrink-0">R4</span>
+            <span class="text-zinc-400">Google Photos rate limits — Low/Low</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER COLUMN: IDFW content panels -->
+    <main class="col-center px-6 py-5 overflow-y-auto">
+      <div id="idfw-content">
+        <!-- rendered by JS -->
+      </div>
+    </main>
+
+    <!-- RIGHT COLUMN: Roadmap + Sprint -->
+    <aside class="col-right border-l border-zinc-800 px-4 py-4 space-y-4 overflow-y-auto">
+
+      <!-- Roadmap -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <span class="text-xs font-semibold text-zinc-300">Roadmap</span>
+        <div class="space-y-3">
+          <div class="border border-zinc-700 rounded p-3 bg-zinc-800/50">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="px-1.5 py-0.5 text-xs rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">v0.9.0</span>
+              <span class="text-xs text-emerald-400 font-medium">Current</span>
+            </div>
+            <div class="text-xs text-zinc-400">Inspector panel, AppLogStore, YJLog, AG-UI shell, E2E tests, OSLog</div>
+          </div>
+          <div class="border border-zinc-700 rounded p-3 bg-zinc-800/50">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="px-1.5 py-0.5 text-xs rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">v1.0.0</span>
+              <span class="text-xs text-blue-400 font-medium">Planned</span>
+            </div>
+            <div class="text-xs text-zinc-400">App Store submission, privacy policy, screenshots, age rating, localization QA</div>
+          </div>
+          <div class="border border-zinc-700 rounded p-3 bg-zinc-800/50">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="px-1.5 py-0.5 text-xs rounded bg-zinc-700 text-zinc-400 border border-zinc-600 font-mono">v1.1.0</span>
+              <span class="text-xs text-zinc-500 font-medium">Future</span>
+            </div>
+            <div class="text-xs text-zinc-400">Video mosaic output, advanced PSD export, JXL tile import, Cinescope polish</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current sprint -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs font-semibold text-zinc-300">Current Sprint</span>
+        </div>
+        <div class="text-xs text-zinc-500 mb-2">iOS v0.9.0 — Inspector + Observability</div>
+        <div class="space-y-1.5 text-xs">
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">AppLogStore ring buffer (512-entry)</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">YJLog dual-sink (OSLog + ring buffer)</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">LogConsoleView in inspector</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">AGUIDevPanel (AG-UI + shell)</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">InspectorPanelView (⌘⌥I)</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">OSLog: engine + services + views</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">E2EImportTests.swift</span></div>
+          <div class="flex gap-2"><span class="text-emerald-400">&#x2713;</span><span class="text-zinc-400">Makefile bundle/open targets</span></div>
+        </div>
+      </div>
+
+      <!-- Next sprint -->
+      <div class="rounded-lg bg-zinc-900 border border-blue-900/40 p-4 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+          <span class="text-xs font-semibold text-zinc-300">Next Sprint</span>
+        </div>
+        <div class="text-xs text-zinc-500 mb-2">v1.0.0 App Store Prep</div>
+        <div class="space-y-1.5 text-xs">
+          <div class="flex gap-2"><span class="text-blue-400">&#x25CB;</span><span class="text-zinc-400">Privacy policy hosted page</span></div>
+          <div class="flex gap-2"><span class="text-blue-400">&#x25CB;</span><span class="text-zinc-400">App Store Connect metadata (14 locales)</span></div>
+          <div class="flex gap-2"><span class="text-blue-400">&#x25CB;</span><span class="text-zinc-400">Screenshots: iPhone 6.7", iPad 13", macOS</span></div>
+          <div class="flex gap-2"><span class="text-blue-400">&#x25CB;</span><span class="text-zinc-400">TestFlight beta distribution</span></div>
+          <div class="flex gap-2"><span class="text-blue-400">&#x25CB;</span><span class="text-zinc-400">Crash-free rate baseline</span></div>
+        </div>
+      </div>
+
+      <!-- Repo info -->
+      <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4 space-y-2">
+        <span class="text-xs font-semibold text-zinc-300">Repository</span>
+        <div class="font-mono text-xs space-y-1.5">
+          <div class="flex justify-between"><span class="text-zinc-500">repo</span><span class="text-zinc-300">peguesj/andreamosaic-macnative-port</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">branch</span><span class="text-emerald-400">ralph/yjmosaic-ios</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">main</span><span class="text-zinc-400">main</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">swift-tools</span><span class="text-zinc-300">5.10</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">min macOS</span><span class="text-zinc-300">.v14 (Sonoma)</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">min iOS</span><span class="text-zinc-300">.v17</span></div>
+          <div class="flex justify-between"><span class="text-zinc-500">external dep</span><span class="text-zinc-300">jxl-coder-swift ^1.9.1</span></div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- =========================================================
+       JAVASCRIPT
+  ========================================================== -->
+  <script>
+    // -------------------------------------------------------
+    // Mermaid initialization
+    // -------------------------------------------------------
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        background: '#09090b',
+        primaryColor: '#18181b',
+        primaryBorderColor: 'rgba(5,150,105,0.4)',
+        primaryTextColor: '#f4f4f5',
+        secondaryColor: '#27272a',
+        tertiaryColor: '#18181b',
+        lineColor: '#52525b',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        fontSize: '12px',
+        edgeLabelBackground: '#18181b',
+        clusterBkg: '#18181b',
+        clusterBorder: 'rgba(5,150,105,0.25)',
+        titleColor: '#f4f4f5',
+        nodeTextColor: '#f4f4f5',
+        mainBkg: '#18181b',
+        nodeBorder: 'rgba(5,150,105,0.4)',
+        labelBackground: '#18181b',
+        labelTextColor: '#f4f4f5',
+        activationBkgColor: '#27272a',
+        activationBorderColor: 'rgba(5,150,105,0.4)',
+        actorBkg: '#18181b',
+        actorBorder: 'rgba(5,150,105,0.4)',
+        actorTextColor: '#f4f4f5',
+        actorLineColor: '#52525b',
+        signalColor: '#a1a1aa',
+        signalTextColor: '#f4f4f5',
+        loopTextColor: '#a1a1aa',
+        labelBoxBkgColor: '#18181b',
+        labelBoxBorderColor: 'rgba(5,150,105,0.3)',
+        noteBkgColor: '#27272a',
+        noteTextColor: '#d4d4d8',
+        noteBorderColor: 'rgba(5,150,105,0.25)'
+      }
+    });
+
+    // -------------------------------------------------------
+    // Wave data for Platform tab
+    // -------------------------------------------------------
+    const waves = [
+      {
+        id: 'wave1', label: 'Wave 1', title: 'Foundation (macOS)', color: 'emerald',
+        items: [
+          { name: 'Tile Collection', sub: 'TileCollectionManager actor', status: 'done' },
+          { name: 'Image I/O', sub: 'ImageIO + EXIF orientation', status: 'done' },
+          { name: 'Metal Scoring', sub: 'TileScoring + ColorHistogram shaders', status: 'done' },
+          { name: 'MosaicBuilder', sub: 'Actor + structured task groups', status: 'done' },
+          { name: 'Exporters', sub: 'JPEG / PNG / TIFF output', status: 'done' }
+        ]
+      },
+      {
+        id: 'wave2', label: 'Wave 2', title: 'Features (macOS)', color: 'emerald',
+        items: [
+          { name: 'Pattern Layouts', sub: 'Landscape, Portrait, Parquet, Mixed, Cinescope, Square', status: 'done' },
+          { name: 'MaskFile', sub: 'Grayscale PNG boundary masking', status: 'done' },
+          { name: 'Tile Splitting', sub: 'Adaptive 1/2 and 1/4 sub-tiles', status: 'done' },
+          { name: 'PSD Export', sub: 'PSB streaming for >12GB files', status: 'done' }
+        ]
+      },
+      {
+        id: 'wave3', label: 'Wave 3', title: 'Polish (macOS)', color: 'emerald',
+        items: [
+          { name: 'Presets', sub: 'MosaicPresets + SettingsStore import/export', status: 'done' },
+          { name: 'Undo System', sub: 'UndoStateManager', status: 'done' },
+          { name: 'Web Viewer', sub: 'Leaflet.js deep-zoom HTML export', status: 'done' },
+          { name: 'Localization', sub: '14 languages via xcstrings', status: 'done' },
+          { name: 'Update Checker', sub: 'URLSession version check', status: 'done' }
+        ]
+      },
+      {
+        id: 'ios1', label: 'iOS Wave 1', title: 'Foundation (iOS)', color: 'blue',
+        items: [
+          { name: 'Multi-Platform SPM', sub: 'YJMosaicCore shared library target', status: 'done' },
+          { name: 'iOS App Entry', sub: 'YJMosaiciOSApp @main + TabView/SplitView', status: 'done' },
+          { name: 'PhotoProvider Protocol', sub: 'Provider abstraction + iCloud adapter', status: 'done' }
+        ]
+      },
+      {
+        id: 'ios2', label: 'iOS Wave 2', title: 'Data (iOS)', color: 'blue',
+        items: [
+          { name: 'iCloud Photos Adapter', sub: 'PHAsset + album/faces/places scoping', status: 'done' },
+          { name: 'Google Photos Adapter', sub: 'REST API + OAuth 2.0 PKCE + Keychain', status: 'done' },
+          { name: 'Tile Import', sub: 'TileCollectionManager PHAsset bridge', status: 'done' },
+          { name: 'PHAsset Bridge', sub: 'ImageLoader iOS extension + CGImage', status: 'done' }
+        ]
+      },
+      {
+        id: 'ios3', label: 'iOS Wave 3', title: 'UI (iOS)', color: 'blue',
+        items: [
+          { name: 'Photo Library View', sub: 'Scope filtering (albums/faces/places)', status: 'done' },
+          { name: 'Mosaic Builder View', sub: 'Source image selection + config UI', status: 'done' },
+          { name: 'Mosaic Preview', sub: 'Pinch-zoom + share sheet', status: 'done' },
+          { name: 'Gallery View', sub: 'Saved mosaics grid', status: 'done' }
+        ]
+      },
+      {
+        id: 'ios4', label: 'iOS Wave 4', title: 'Quality (iOS)', color: 'purple',
+        items: [
+          { name: 'HEIC Export', sub: 'HEIC + Photos library save via PHPhotoLibrary', status: 'done' },
+          { name: 'Thermal Manager', sub: 'ThermalManager actor throttles concurrency on mobile', status: 'done' },
+          { name: 'iPad Adaptive Layout', sub: 'NavigationSplitView sidebar on .regular size class', status: 'done' },
+          { name: 'iOS Localization', sub: 'Shared + platform-specific strings', status: 'done' }
+        ]
+      },
+      {
+        id: 'ios5', label: 'iOS Wave 5', title: 'Polish (iOS)', color: 'purple',
+        items: [
+          { name: 'App Icons', sub: 'All required sizes + launch screen', status: 'done' },
+          { name: 'E2E Tests', sub: 'E2EImportTests.swift — simulator testing', status: 'done' },
+          { name: 'Inspector Panel', sub: 'AppLogStore, YJLog, LogConsoleView, AGUIDevPanel (⌘⌥I)', status: 'done' },
+          { name: 'OSLog Instrumentation', sub: 'Engine, services, views — dual-sink logging', status: 'done' }
+        ]
+      }
+    ];
+
+    const colorMap = {
+      emerald: { bg: 'bg-emerald-950', border: 'border-emerald-800', text: 'text-emerald-400', dot: 'bg-emerald-500' },
+      blue:    { bg: 'bg-blue-950',    border: 'border-blue-800',    text: 'text-blue-400',    dot: 'bg-blue-500' },
+      purple:  { bg: 'bg-purple-950',  border: 'border-purple-800',  text: 'text-purple-400',  dot: 'bg-purple-500' }
+    };
+
+    function renderWaves() {
+      const container = document.getElementById('waves-container');
+      container.innerHTML = waves.map(wave => {
+        const c = colorMap[wave.color];
+        const itemsHtml = wave.items.map(item => `
+          <div class="flex items-start gap-2 py-1.5 border-b border-zinc-800/50 last:border-0">
+            <svg class="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+            </svg>
+            <div class="min-w-0">
+              <div class="text-xs font-medium text-zinc-200">${item.name}</div>
+              <div class="text-xs text-zinc-500 truncate">${item.sub}</div>
+            </div>
+          </div>
+        `).join('');
+
+        return `
+          <div class="rounded-lg border border-zinc-800 overflow-hidden">
+            <button onclick="toggleWave('${wave.id}')"
+                    class="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-zinc-800/50 transition-colors">
+              <div class="w-2 h-2 rounded-full ${c.dot} shrink-0"></div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-semibold ${c.text}">${wave.label}</span>
+                  <span class="text-xs text-zinc-400">— ${wave.title}</span>
+                </div>
+              </div>
+              <span id="chevron-${wave.id}" class="text-zinc-500 text-xs transition-transform">&#x25BC;</span>
+            </button>
+            <div id="body-${wave.id}" class="wave-body" style="max-height: 0; overflow: hidden;">
+              <div class="px-3 py-1 bg-zinc-900/50">
+                ${itemsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Default: open wave1
+      toggleWave('wave1');
+    }
+
+    function toggleWave(id) {
+      const body = document.getElementById('body-' + id);
+      const chevron = document.getElementById('chevron-' + id);
+      if (body.style.maxHeight === '0px' || body.style.maxHeight === '') {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        body.style.maxHeight = '0px';
+        chevron.style.transform = '';
+      }
+    }
+
+    // -------------------------------------------------------
+    // Version timeline data
+    // -------------------------------------------------------
+    const versions = [
+      { v: 'v0.1.0', desc: 'Project scaffold' },
+      { v: 'v0.2.0', desc: 'TileScorer + GPU/CPU scoring + TileCollectionManager actor' },
+      { v: 'v0.3.0', desc: 'Full engine: MosaicBuilder, Metal scoring, duplicate control' },
+      { v: 'v0.4.0', desc: 'Exporters: JPEG/PNG/TIFF, web deep-zoom, PSD layered' },
+      { v: 'v0.5.0', desc: 'Advanced features: patterns, masks, splitting, video, PSD' },
+      { v: 'v0.6.0', desc: 'Engine integration + complete SwiftUI workspace (Waves 1-3)' },
+      { v: 'v0.7.0', desc: 'Full gap closure: presets, undo, deep zoom, localization, Metal histogram' },
+      { v: 'v0.7.1', desc: 'Swift doc comments, hooks, Plane PM modules/cycles/wiki' },
+      { v: 'v0.8.0', desc: 'iOS/iPadOS port: all 15 CPs — providers, views, HEIC, thermal, layout' },
+      { v: 'v0.9.0', desc: 'Inspector panel: AppLogStore, YJLog, AGUIDevPanel, OSLog, E2E tests', current: true }
+    ];
+
+    function renderTimeline() {
+      const el = document.getElementById('version-timeline');
+      el.innerHTML = versions.map((v, i) => `
+        <div class="flex items-start gap-3">
+          <div class="flex flex-col items-center">
+            <div class="w-2 h-2 rounded-full mt-1 ${v.current ? 'bg-emerald-500' : 'bg-zinc-600'}"></div>
+            ${i < versions.length - 1 ? '<div class="w-px flex-1 bg-zinc-800 mt-1" style="min-height:16px;"></div>' : ''}
+          </div>
+          <div class="pb-2 min-w-0">
+            <span class="font-mono text-xs ${v.current ? 'text-emerald-400' : 'text-zinc-400'}">${v.v}</span>
+            ${v.current ? '<span class="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">current</span>' : ''}
+            <div class="text-xs text-zinc-500 mt-0.5">${v.desc}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // -------------------------------------------------------
+    // IDFW phase data and renderer
+    // -------------------------------------------------------
+    const idfwPhases = [
+      { id: 'overview', icon: '&#x25CB;', label: 'Overview', color: 'emerald' },
+      { id: 'discover', icon: '&#x1F50D;', label: 'Discover', color: 'blue' },
+      { id: 'define',   icon: '&#x25A1;',  label: 'Define',   color: 'purple' },
+      { id: 'plan',     icon: '&#x1F4CB;', label: 'Plan',     color: 'amber' },
+      { id: 'execute',  icon: '&#x25B6;',  label: 'Execute',  color: 'rose' }
+    ];
+
+    let activePhase = 'overview';
+
+    const phaseColorMap = {
+      emerald: 'text-emerald-400 bg-emerald-950 border-emerald-800',
+      blue:    'text-blue-400 bg-blue-950 border-blue-800',
+      purple:  'text-purple-400 bg-purple-950 border-purple-800',
+      amber:   'text-amber-400 bg-amber-950 border-amber-800',
+      rose:    'text-rose-400 bg-rose-950 border-rose-800'
+    };
+
+    const idfwContent = {
+      overview: `
+        <div class="space-y-6 fade-in">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-100 mb-1">Overview</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">
+              YJMosaic is a native macOS and iOS/iPadOS photographic mosaic creator, ported from AndreaMosaic v3.55.
+              The original is a Windows/MFC application, historically run on macOS via a Wineskin/CrossOver x86 wrapper —
+              a fragile, slow, non-native experience that breaks entirely on Apple Silicon and has no iOS presence.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+              <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Problem</div>
+              <div class="text-xs text-zinc-300 leading-relaxed">No native Apple Silicon mosaic creation tool. Wineskin wrapper is fragile on macOS Sonoma, slow via x86 emulation, and impossible on iOS.</div>
+            </div>
+            <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+              <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Solution</div>
+              <div class="text-xs text-zinc-300 leading-relaxed">Ground-up Swift 6 + SwiftUI + Metal port with full feature parity, plus native PhotoKit integration and iOS/iPadOS support.</div>
+            </div>
+            <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+              <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Bundle ID</div>
+              <div class="text-xs font-mono text-emerald-400">io.pegues.agent-j.labs.yjmosaic</div>
+            </div>
+            <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+              <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Platforms</div>
+              <div class="text-xs text-zinc-300">macOS 14+ · iOS 17+ · iPadOS 17+</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Product Lifecycle</div>
+            <div class="mermaid-wrap">
+              <pre class="mermaid" id="diag-lifecycle">
+graph TD
+  A["Windows C++ App\\nAndreaMosaic v3.55\\n(MFC + GDI+ + Win32)"] -->|"Reverse engineer\\nalgorithms + UX"| B
+  B["Swift 6 Port Design\\nSPM · SwiftUI · Metal"] -->|"Wave 1-3\\nFoundation"| C
+  C["macOS Alpha\\nv0.5.x"] -->|"Wave 4-8\\nGap Closure"| D
+  D["macOS Feature-Complete\\nv0.7.x"] -->|"iOS Wave 1-5\\nPlatform Parity"| E
+  E["iOS/iPadOS Port\\nv0.8.0 — 15 CPs"] -->|"Inspector + Observability"| F
+  F["v0.9.0 Current\\nInspector · OSLog · E2E"] -->|"App Store Prep"| G
+  G["v1.0.0 GA\\nApp Store Release"] -->|"Video + Advanced Export"| H
+  H["v1.1.0 Future\\nVideo Mosaic · JXL · Cinescope"]
+              </pre>
+            </div>
+          </div>
+        </div>
+      `,
+
+      discover: `
+        <div class="space-y-6 fade-in">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-100 mb-1">Discover</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">
+              Understanding who creates photographic mosaics on Apple platforms, why they do it, and what friction they face today.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">User Segments</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
+                <div class="text-xs font-semibold text-blue-400 mb-1.5">Photographers</div>
+                <div class="text-xs text-zinc-400 mb-2">Professional and enthusiast photographers creating mosaic art pieces or commissions.</div>
+                <div class="space-y-1 text-xs text-zinc-500">
+                  <div>&#x2022; Wineskin crashes on Apple Silicon</div>
+                  <div>&#x2022; No Photos library access from Wine</div>
+                  <div>&#x2022; Export quality degraded by emulation</div>
+                </div>
+              </div>
+              <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
+                <div class="text-xs font-semibold text-purple-400 mb-1.5">Digital Artists</div>
+                <div class="text-xs text-zinc-400 mb-2">Artists compositing large mosaic images for print, events, or digital display.</div>
+                <div class="space-y-1 text-xs text-zinc-500">
+                  <div>&#x2022; Need native TIFF/PSD at >300,000px</div>
+                  <div>&#x2022; CMYK color space support required</div>
+                  <div>&#x2022; Metal GPU acceleration for batches</div>
+                </div>
+              </div>
+              <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
+                <div class="text-xs font-semibold text-amber-400 mb-1.5">Educators</div>
+                <div class="text-xs text-zinc-400 mb-2">Teachers using mosaic creation as a classroom or group activity.</div>
+                <div class="space-y-1 text-xs text-zinc-500">
+                  <div>&#x2022; Wineskin licensing unclear for school</div>
+                  <div>&#x2022; No iPad support for student use</div>
+                </div>
+              </div>
+              <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
+                <div class="text-xs font-semibold text-rose-400 mb-1.5">Event Producers</div>
+                <div class="text-xs text-zinc-400 mb-2">Creating photo mosaic installations for weddings, conferences, and corporate events.</div>
+                <div class="space-y-1 text-xs text-zinc-500">
+                  <div>&#x2022; Need iOS field capture + preview</div>
+                  <div>&#x2022; Video mosaic for digital signage</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">User Journey</div>
+            <div class="mermaid-wrap">
+              <pre class="mermaid" id="diag-journey">
+graph LR
+  A["User discovers YJMosaic\\nApp Store / photography community"] --> B
+  B["Imports tile collection\\nPhotos library or file system"] --> C
+  C["Selects source image\\nand mosaic configuration"] --> D
+  D["Engine builds mosaic plan\\nMetal GPU scoring (or CPU fallback)"] --> E
+  E["Previews result\\npinch-zoom deep-zoom viewer"] --> F
+  F{Satisfied?}
+  F -->|"Adjust settings"| C
+  F -->|"Yes"| G
+  G["Exports HEIC / JPEG / PNG / TIFF\\nor saves to Photos library"] --> H
+  H["Shares via share sheet\\nor Leaflet web viewer"]
+              </pre>
+            </div>
+          </div>
+        </div>
+      `,
+
+      define: `
+        <div class="space-y-6 fade-in">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-100 mb-1">Define</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">
+              Core value proposition, key features, success metrics, and the system architecture sequence.
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-zinc-900 border border-emerald-900/50 p-4">
+            <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Core Value Proposition</div>
+            <div class="text-sm text-emerald-300 font-medium leading-relaxed">
+              "AndreaMosaic's power, native to Apple Silicon — with seamless Photos library integration, Metal GPU acceleration, and iPad-optimized adaptive layout."
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Success Metrics</div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between rounded bg-zinc-900 border border-zinc-800 px-3 py-2.5">
+                <div>
+                  <div class="text-xs font-medium text-zinc-300">Mosaic build time</div>
+                  <div class="text-xs text-zinc-500">500-tile collection on M1</div>
+                </div>
+                <span class="font-mono text-xs text-emerald-400">&lt; 30s</span>
+              </div>
+              <div class="flex items-center justify-between rounded bg-zinc-900 border border-zinc-800 px-3 py-2.5">
+                <div>
+                  <div class="text-xs font-medium text-zinc-300">Memory ceiling (mobile)</div>
+                  <div class="text-xs text-zinc-500">Peak RSS during build on iPhone 14</div>
+                </div>
+                <span class="font-mono text-xs text-emerald-400">&lt; 300MB</span>
+              </div>
+              <div class="flex items-center justify-between rounded bg-zinc-900 border border-zinc-800 px-3 py-2.5">
+                <div>
+                  <div class="text-xs font-medium text-zinc-300">Export quality parity</div>
+                  <div class="text-xs text-zinc-500">vs. original AndreaMosaic output</div>
+                </div>
+                <span class="font-mono text-xs text-emerald-400">SSIM &ge; 0.98</span>
+              </div>
+              <div class="flex items-center justify-between rounded bg-zinc-900 border border-zinc-800 px-3 py-2.5">
+                <div>
+                  <div class="text-xs font-medium text-zinc-300">Collection scale</div>
+                  <div class="text-xs text-zinc-500">Without OOM crash</div>
+                </div>
+                <span class="font-mono text-xs text-emerald-400">up to 2M tiles</span>
+              </div>
+              <div class="flex items-center justify-between rounded bg-zinc-900 border border-zinc-800 px-3 py-2.5">
+                <div>
+                  <div class="text-xs font-medium text-zinc-300">iOS checkpoint coverage</div>
+                  <div class="text-xs text-zinc-500">CPs 01–15</div>
+                </div>
+                <span class="font-mono text-xs text-emerald-400">15 / 15</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Architecture Sequence</div>
+            <div class="mermaid-wrap">
+              <pre class="mermaid" id="diag-sequence">
+sequenceDiagram
+  actor User
+  participant SwiftUI as SwiftUI View
+  participant Builder as MosaicBuilder (actor)
+  participant Scorer as MetalTileScorer
+  participant IO as ImageIO / PHAsset
+  participant Export as MosaicExporter
+
+  User->>SwiftUI: Select source image + tile collection
+  SwiftUI->>Builder: buildPlan(sourceImage: collection:)
+  Builder->>IO: regionAverageColor() per cell
+  IO-->>Builder: [CGColor] cell averages
+  Builder->>Scorer: scoreTiles(cells: tiles:) GPU batch
+  Scorer-->>Builder: Scored placements
+  Builder->>Builder: UsageTracker.canPlace() dedup
+  Builder->>Builder: TileSplitter.applySplits()
+  Builder->>Builder: MaskProcessor.applyMask()
+  Builder-->>SwiftUI: MosaicPlan
+  SwiftUI->>Export: exportMosaic(plan: format:)
+  Export-->>User: HEIC / JPEG / PNG / TIFF / PSD
+              </pre>
+            </div>
+          </div>
+        </div>
+      `,
+
+      plan: `
+        <div class="space-y-6 fade-in">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-100 mb-1">Plan</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">
+              Roadmap through App Store GA, risk matrix, and deployment topology across Apple platforms.
+            </p>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Risk Matrix — Detail</div>
+            <div class="space-y-2">
+              <div class="rounded-lg border border-zinc-800 p-3 bg-zinc-900">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="risk-medium px-1.5 py-0.5 rounded text-xs font-mono">R1 Med/Med</span>
+                  <span class="text-xs font-medium text-zinc-300">App Store photo library review</span>
+                </div>
+                <div class="text-xs text-zinc-500">NSPhotoLibraryUsageDescription + add strings required. PHAuthorizationStatus must be fully handled. Mitigation: demo video in App Review notes.</div>
+              </div>
+              <div class="rounded-lg border border-zinc-800 p-3 bg-zinc-900">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="risk-low px-1.5 py-0.5 rounded text-xs font-mono">R2 Low/High</span>
+                  <span class="text-xs font-medium text-zinc-300">Metal shader iOS compatibility</span>
+                </div>
+                <div class="text-xs text-zinc-500">Source-string runtime compilation may have edge-case failures. Mitigation: CPU fallback (TileScorer) already implemented and tested; Metal used opportunistically.</div>
+              </div>
+              <div class="rounded-lg border border-zinc-800 p-3 bg-zinc-900">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="risk-medium px-1.5 py-0.5 rounded text-xs font-mono">R3 Med/Med</span>
+                  <span class="text-xs font-medium text-zinc-300">Memory pressure on iPad mini</span>
+                </div>
+                <div class="text-xs text-zinc-500">4GB RAM ceiling, aggressive jetsam. Mitigation: ThermalManager actor throttles concurrency; 2048px banded rendering caps mosaic memory; autoreleasepool in tile loops.</div>
+              </div>
+              <div class="rounded-lg border border-zinc-800 p-3 bg-zinc-900">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class="risk-low px-1.5 py-0.5 rounded text-xs font-mono">R4 Low/Low</span>
+                  <span class="text-xs font-medium text-zinc-300">Google Photos rate limits</span>
+                </div>
+                <div class="text-xs text-zinc-500">REST API has per-user quotas. Mitigation: exponential backoff in GooglePhotosProvider; graceful fallback to iCloud Photos or local file system.</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Deployment Topology</div>
+            <div class="mermaid-wrap">
+              <pre class="mermaid" id="diag-deploy">
+graph LR
+  AS["App Store"] -->|"Download"| iPhone["iPhone 14+\\niOS 17+"]
+  AS -->|"Download"| iPad["iPad Pro / Air / mini\\niPadOS 17+"]
+  AS -->|"Download"| Mac["macOS 14+ Sonoma\\nApple Silicon M-series"]
+
+  iPhone -->|"PHAuthorizationStatus"| PK["PhotoKit\\nPHAsset / PHImageManager"]
+  iPad   -->|"PHAuthorizationStatus"| PK
+  PK --> iCloud["iCloud Photos\\nshared albums / faces / places"]
+  PK --> GP["Google Photos\\nOAuth 2.0 REST + Keychain"]
+
+  Mac -->|"NSOpenPanel"| FS["Local File System\\nJPEG / PNG / TIFF / HEIC / JXL"]
+  Mac -->|"NSOpenPanel"| ExtDrive["External Drive\\nup to 2M tile images"]
+              </pre>
+            </div>
+          </div>
+        </div>
+      `,
+
+      execute: `
+        <div class="space-y-6 fade-in">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-100 mb-1">Execute</h2>
+            <p class="text-sm text-zinc-400 leading-relaxed">
+              Current sprint status, formation topology, and how the autonomous Claude Code fix-loop drove the iOS port.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="rounded-lg bg-zinc-900 border border-emerald-900/60 p-4">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xs font-semibold text-zinc-300">v0.9.0 — Complete</span>
+              </div>
+              <div class="space-y-1 text-xs text-zinc-400">
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> AppLogStore ring buffer</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> YJLog dual-sink logging</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> LogConsoleView</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> AGUIDevPanel (AG-UI + shell)</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> InspectorPanelView (⌘⌥I)</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> OSLog: engine + services</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> E2EImportTests.swift</div>
+                <div class="flex gap-1.5"><span class="text-emerald-400">&#x2713;</span> Makefile bundle/open</div>
+              </div>
+            </div>
+            <div class="rounded-lg bg-zinc-900 border border-blue-900/60 p-4">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span class="text-xs font-semibold text-zinc-300">v1.0.0 — Next</span>
+              </div>
+              <div class="space-y-1 text-xs text-zinc-400">
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> Privacy policy page</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> App Store Connect metadata</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> Screenshots (all device sizes)</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> Age rating + Review notes</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> TestFlight beta</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> Localization QA (14 langs)</div>
+                <div class="flex gap-1.5"><span class="text-blue-400">&#x25CB;</span> Crash-free rate &ge; 99.5%</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Formation Topology — Claude Code Fix Loop</div>
+            <div class="mermaid-wrap">
+              <pre class="mermaid" id="diag-formation">
+graph TD
+  CC["Claude Code\\nOrchestrator\\n(ralph/yjmosaic-ios branch)"] --> FA
+  CC --> FB
+  CC --> FC
+  CC --> FD
+
+  FA["SwiftUI Agent\\nView fixes\\nMainActor isolation\\nAdaptive layout"] --> BV
+  FB["Metal Agent\\nShader source strings\\nRuntime compilation\\nCPU fallback"] --> BV
+  FC["IO Agent\\nExport format parity\\nBanded rendering\\nHEIC + Photos save"] --> BV
+  FD["Test Agent\\nE2EImportTests\\nUnit coverage\\nSimulator deploy"] --> BV
+
+  BV{"Build Validator\\nswift build + swift test"}
+  BV -->|"Pass"| MR["Merge to main"]
+  BV -->|"Fail: concurrency"| FA
+  BV -->|"Fail: Metal"| FB
+  BV -->|"Fail: export"| FC
+  BV -->|"Fail: tests"| FD
+              </pre>
+            </div>
+          </div>
+
+          <div class="rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+            <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Technology Migration Summary</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-mono">
+              <div class="text-zinc-500">MFC CDialog UI</div><div class="text-zinc-300">SwiftUI Views</div>
+              <div class="text-zinc-500">GDI+ Bitmap</div><div class="text-zinc-300">CGImage / CIImage</div>
+              <div class="text-zinc-500">ConcRT + OpenMP</div><div class="text-zinc-300">TaskGroup + Metal compute</div>
+              <div class="text-zinc-500">libtiff / libpng</div><div class="text-zinc-300">ImageIO (CGImageSource)</div>
+              <div class="text-zinc-500">libexif</div><div class="text-zinc-300">CGImageSourceCopyProperties</div>
+              <div class="text-zinc-500">libcurl</div><div class="text-zinc-300">URLSession</div>
+              <div class="text-zinc-500">GNU gettext .mo</div><div class="text-zinc-300">String Catalogs (.xcstrings)</div>
+              <div class="text-zinc-500">CSimpleIni</div><div class="text-zinc-300">Codable + UserDefaults</div>
+              <div class="text-zinc-500">AVI / VFW codecs</div><div class="text-zinc-300">AVFoundation AVAssetReader</div>
+              <div class="text-zinc-500">Win32 CriticalSection</div><div class="text-zinc-300">Swift actors / os_unfair_lock</div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    function renderIDFWNav() {
+      const nav = document.getElementById('idfw-nav');
+      nav.innerHTML = idfwPhases.map(phase => {
+        const colorClasses = phaseColorMap[phase.color];
+        const isActive = phase.id === activePhase;
+        return `
+          <button onclick="switchIDFWPhase('${phase.id}')"
+                  id="idfw-nav-${phase.id}"
+                  class="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors
+                         ${isActive ? `border ${colorClasses}` : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}">
+            <span>${phase.icon}</span>
+            <span>${phase.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchIDFWPhase(id) {
+      activePhase = id;
+      renderIDFWNav();
+      const content = document.getElementById('idfw-content');
+      content.innerHTML = idfwContent[id] || '<div class="text-zinc-500 text-sm">Content not available.</div>';
+      // Re-render mermaid diagrams in this panel
+      renderMermaidInElement(content);
+    }
+
+    // -------------------------------------------------------
+    // Tab switching
+    // -------------------------------------------------------
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-zinc-700', 'text-zinc-100');
+        b.classList.add('text-zinc-400');
+      });
+      const activeBtn = document.getElementById('tab-' + tab + '-btn');
+      activeBtn.classList.add('bg-zinc-700', 'text-zinc-100');
+      activeBtn.classList.remove('text-zinc-400');
+
+      // Render mermaid diagrams if switching to IDFW
+      if (tab === 'idfw') {
+        const content = document.getElementById('idfw-content');
+        if (!content.innerHTML.trim()) {
+          switchIDFWPhase('overview');
+        }
+      }
+    }
+
+    // -------------------------------------------------------
+    // Mermaid rendering helper
+    // -------------------------------------------------------
+    let mermaidCounter = 0;
+
+    async function renderMermaidInElement(el) {
+      const preElements = el.querySelectorAll('pre.mermaid');
+      for (const pre of preElements) {
+        const id = pre.id || ('mermaid-auto-' + (++mermaidCounter));
+        const definition = pre.textContent.trim();
+        try {
+          const { svg } = await mermaid.render(id + '-svg', definition);
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = svg;
+          pre.replaceWith(wrapper);
+        } catch (err) {
+          console.warn('Mermaid render failed for', id, err);
+          pre.style.color = '#f87171';
+          pre.style.fontSize = '10px';
+        }
+      }
+    }
+
+    // -------------------------------------------------------
+    // Initialization
+    // -------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Render static content
+      renderWaves();
+      renderTimeline();
+      renderIDFWNav();
+
+      // Populate IDFW content (overview by default) — but don't render yet, tab is hidden
+      // We'll render on first switch
+
+      // Render mermaid in the Platform tab (currently visible)
+      await renderMermaidInElement(document.getElementById('tab-platform'));
+    });
+  </script>
+</body>
+</html>

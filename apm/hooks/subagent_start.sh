@@ -1,6 +1,7 @@
 #!/bin/bash
 # SubagentStart hook - fires when a subagent is spawned by this session
 # Writes a pending handoff file that the child session's SessionStart will consume.
+# Max-payload v9.0.0: includes session_id, project, working_dir, git_branch, timestamp.
 # Always exits 0 to never block Claude Code.
 
 source "$HOME/Developer/ccem/apm/hooks/hook_common.sh"
@@ -10,6 +11,8 @@ SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "unknown"' 2>/dev/null || ech
 CHILD_SESSION_ID=$(echo "$INPUT" | jq -r '.agent_id // "unknown"' 2>/dev/null || echo "unknown")
 CWD=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null || echo "")
 PROJECT_NAME=$(basename "$CWD")
+NOW_ISO=$(now_iso)
+GIT_BRANCH=$(git -C "$CWD" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
 load_state "$SESSION_ID"
 
@@ -31,14 +34,28 @@ HANDOFF
 
 PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
+  --arg session_id "$SESSION_ID" \
   --arg status "working" \
   --arg message "Spawned subagent: ${CHILD_SESSION_ID} (level ${CHILD_LEVEL})" \
   --arg formation_id "$FORMATION_ID" \
+  --arg child_session_id "$CHILD_SESSION_ID" \
+  --arg project "$PROJECT_NAME" \
+  --arg working_dir "$CWD" \
+  --arg git_branch "$GIT_BRANCH" \
+  --arg timestamp "$NOW_ISO" \
   '{
     agent_id: $agent_id,
+    session_id: $session_id,
     status: $status,
     message: $message,
-    formation_id: $formation_id
+    formation_id: $formation_id,
+    context: {
+      project: $project,
+      working_dir: $working_dir,
+      git_branch: (if $git_branch != "" then $git_branch else null end),
+      timestamp: $timestamp,
+      child_session_id: $child_session_id
+    }
   }' 2>/dev/null)
 
 curl -s -X POST "$APM_URL/api/heartbeat" \

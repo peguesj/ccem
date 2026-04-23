@@ -1,0 +1,43 @@
+{
+  "panel": "docsmax",
+  "project": "YJMosaic",
+  "repo": "peguesj/andreamosaic-macnative-port",
+  "version": "0.9.0",
+  "providers": {
+    "github": {
+      "status": "configured",
+      "repo": "peguesj/andreamosaic-macnative-port",
+      "default_branch": "main",
+      "last_sync": null,
+      "sections": 6,
+      "pending": 6
+    },
+    "plane": {
+      "status": "configured",
+      "instance": "https://plane.lgtm.build",
+      "workspace": "lgtm",
+      "project_id": "cfd7274f-43de-46a2-98c6-87c5cd17e550",
+      "last_sync": null,
+      "pending": 6,
+      "sync_wiki": true
+    },
+    "wiki": {
+      "status": "configured",
+      "provider": "plane",
+      "last_sync": null
+    },
+    "notion": {
+      "status": "unconfigured"
+    }
+  },
+  "hooks": {
+    "pre_push": "installed",
+    "post_commit": "installed",
+    "post_write": "pending-settings-update"
+  },
+  "last_run": "2026-03-30T17:25:09Z",
+  "conflicts": 0,
+  "sections_synced": 0,
+  "total_sections": 6,
+  "_initialized": "2026-03-30T17:25:09Z"
+}

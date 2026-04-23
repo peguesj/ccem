@@ -1,0 +1,28 @@
+graph TB
+    Users["👥 Users<br/>Accounts"]
+    Therapists["👨‍⚕️ Therapists<br/>Profiles"]
+    Quizzes["📝 Quiz Answers<br/>Results"]
+    Matches["💕 Therapy Matches<br/>Status"]
+    Messages["💬 Messages<br/>Conversations"]
+    Subscriptions["💳 Subscriptions<br/>Billing"]
+    
+    PG["PostgreSQL<br/>Primary Data Store"]
+    Cache["Redis<br/>Session Cache"]
+    Analytics["Analytics Engine<br/>PERMA-V Scoring"]
+    Notifications["Notification Queue<br/>(Email, SMS)"]
+    
+    Users -->|store/query| PG
+    Therapists -->|store/query| PG
+    Quizzes -->|store/query| PG
+    Matches -->|store/query| PG
+    Messages -->|store/query| PG
+    Subscriptions -->|store/query| PG
+    
+    PG -->|session| Cache
+    Quizzes -->|score| Analytics
+    Analytics -->|updated scores| PG
+    Subscriptions -->|expired| Notifications
+    Matches -->|new match| Notifications
+    
+    style PG fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
+    style Analytics fill:#F59E0B,stroke:#B45309,stroke-width:2px,color:#fff

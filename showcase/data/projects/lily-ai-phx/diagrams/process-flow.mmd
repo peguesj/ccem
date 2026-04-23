@@ -1,0 +1,16 @@
+flowchart LR
+    A["New User<br/>Signup"] -->|Verify Email| B["2FA Setup"]
+    B -->|Complete Profile| C["Preference<br/>Assessment"]
+    C -->|Take Quizzes| D["Score<br/>Calculation"]
+    D -->|PERMA-V Match| E["View Matched<br/>Therapists"]
+    E -->|Swipe/Match| F["Send Request"]
+    F -->|Therapist<br/>Accepts| G["Schedule<br/>Session"]
+    G -->|Conduct Session| H["Messaging<br/>Thread"]
+    H -->|Weekly| I["Track Progress<br/>Dashboard"]
+    I -->|Renew| J["Subscription<br/>Management"]
+    
+    style A fill:#10B981
+    style D fill:#F59E0B
+    style F fill:#8B5CF6
+    style H fill:#06B6D4
+    style J fill:#EC4899

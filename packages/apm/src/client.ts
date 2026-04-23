@@ -45,7 +45,22 @@ import type { ToolCall, ToolCallStats, ToolCallListParams } from './types/tool-c
 import type {
   GenerativeUIComponent, CreateGenerativeUIPayload, UpdateGenerativeUIPayload,
 } from './types/generative-ui.js';
-import type { Approval, ApprovalRequest } from './types/approval.js';
+import type { Approval, ApprovalRequest, ApprovalAuditEntry, ApprovalHistoryResponse } from './types/approval.js';
+import type {
+  AuthDecision, AuthSession, AuthTool, AuthSummary, AuthRedactResult,
+  AuthorizePayload, AuthExecutePayload, CreateAuthSessionPayload,
+  RegisterAuthToolPayload, MemoryAuthReadPayload, MemoryAuthWritePayload,
+  AuthContextWritePayload, AuthRedactPayload,
+} from './types/auth.js';
+import type {
+  CoalesceRunSummary, Gate, GateDecision, CoalesceStartResult,
+  StartCoalescePayload, CoalescePreviewPayload, CoalesceGateDecidePayload,
+  CreateGatePayload,
+} from './types/coalesce.js';
+import type {
+  AgentContext, AgentContextsResponse, AgentContextDetailResponse,
+  AgentContextEventsResponse,
+} from './types/agent-context.js';
 import type { ChatMessage, SendMessagePayload } from './types/chat.js';
 import type {
   A2AEnvelope, A2AStats, A2ASendPayload, A2AAckPayload,
@@ -145,6 +160,12 @@ export class APMClient {
   readonly hooks: HooksAPI;
   /** Project scanner endpoints */
   readonly scanner: ScannerAPI;
+  /** Authorization and security endpoints */
+  readonly auth: AuthAPI;
+  /** Coalesce skill sync endpoints */
+  readonly coalesce: CoalesceAPI;
+  /** Agent context endpoints */
+  readonly agentContext: AgentContextAPI;
 
   constructor(options: APMClientOptions = {}) {
     this.baseUrl = (options.baseUrl ?? 'http://localhost:3032').replace(/\/+$/, '');
@@ -182,6 +203,9 @@ export class APMClient {
     this.intake = new IntakeAPI(this);
     this.hooks = new HooksAPI(this);
     this.scanner = new ScannerAPI(this);
+    this.auth = new AuthAPI(this);
+    this.coalesce = new CoalesceAPI(this);
+    this.agentContext = new AgentContextAPI(this);
   }
 
   /** Make a GET request */
@@ -566,6 +590,31 @@ class UpmAPI {
   async status(): Promise<Record<string, unknown>> {
     return this.client.get('/api/upm/status');
   }
+
+  /** Create a blocking decision gate */
+  async createGate(payload: CreateGatePayload): Promise<GateDecision> {
+    return this.client.post('/api/v2/upm/gate', payload);
+  }
+
+  /** List all gates */
+  async listGates(): Promise<{ gates: Gate[]; pending_count: number }> {
+    return this.client.get('/api/v2/upm/gates');
+  }
+
+  /** Get a specific gate */
+  async getGate(id: string): Promise<Gate> {
+    return this.client.get(`/api/v2/upm/gate/${encodeURIComponent(id)}`);
+  }
+
+  /** Approve a gate */
+  async approveGate(id: string): Promise<Record<string, unknown>> {
+    return this.client.post(`/api/v2/upm/gate/${encodeURIComponent(id)}/approve`);
+  }
+
+  /** Reject a gate */
+  async rejectGate(id: string, reason?: string): Promise<Record<string, unknown>> {
+    return this.client.post(`/api/v2/upm/gate/${encodeURIComponent(id)}/reject`, reason ? { reason } : undefined);
+  }
 }
 
 class PortsAPI {
@@ -934,6 +983,16 @@ class ApprovalsAPI {
   async reject(id: string, reason?: string): Promise<Approval> {
     return this.client.post(`/api/v2/approvals/${encodeURIComponent(id)}/reject`, reason ? { reason } : undefined);
   }
+
+  /** Get approval audit history */
+  async history(): Promise<ApprovalHistoryResponse> {
+    return this.client.get('/api/v2/approvals/history');
+  }
+
+  /** Log an approval audit entry */
+  async logAudit(entry: ApprovalAuditEntry): Promise<ApprovalAuditEntry> {
+    return this.client.post('/api/v2/approvals/log', entry);
+  }
 }
 
 class ChatAPI {
@@ -1046,5 +1105,165 @@ class ScannerAPI {
   /** Get scanner status */
   async status(): Promise<Record<string, unknown>> {
     return this.client.get('/api/scanner/status');
+  }
+}
+
+class AuthAPI {
+  constructor(private client: APMClient) {}
+
+  /** Authorize a tool call */
+  async authorize(payload: AuthorizePayload): Promise<AuthDecision> {
+    return this.client.post('/api/v2/auth/authorize', payload);
+  }
+
+  /** Execute with a token */
+  async execute(payload: AuthExecutePayload): Promise<Record<string, unknown>> {
+    return this.client.post('/api/v2/auth/execute', payload);
+  }
+
+  /** Get authorization summary */
+  async summary(): Promise<AuthSummary> {
+    return this.client.get('/api/v2/auth/summary');
+  }
+
+  /** List auth sessions */
+  async listSessions(): Promise<{ ok: boolean; sessions: AuthSession[]; count: number }> {
+    return this.client.get('/api/v2/auth/sessions');
+  }
+
+  /** Create an auth session */
+  async createSession(payload: CreateAuthSessionPayload): Promise<{ ok: boolean; session_id: string }> {
+    return this.client.post('/api/v2/auth/sessions', payload);
+  }
+
+  /** Get a specific auth session */
+  async getSession(id: string): Promise<AuthSession> {
+    return this.client.get(`/api/v2/auth/sessions/${encodeURIComponent(id)}`);
+  }
+
+  /** Destroy an auth session */
+  async destroySession(id: string): Promise<Record<string, unknown>> {
+    return this.client.delete(`/api/v2/auth/sessions/${encodeURIComponent(id)}`);
+  }
+
+  /** Get a token */
+  async getToken(id: string): Promise<Record<string, unknown>> {
+    return this.client.get(`/api/v2/auth/tokens/${encodeURIComponent(id)}`);
+  }
+
+  /** Revoke a token */
+  async revokeToken(id: string): Promise<Record<string, unknown>> {
+    return this.client.post(`/api/v2/auth/tokens/${encodeURIComponent(id)}/revoke`);
+  }
+
+  /** List registered tools */
+  async listTools(): Promise<AuthTool[]> {
+    return this.client.get('/api/v2/auth/tools');
+  }
+
+  /** Register a tool */
+  async registerTool(payload: RegisterAuthToolPayload): Promise<AuthTool> {
+    return this.client.post('/api/v2/auth/tools', payload);
+  }
+
+  /** Get rate limits */
+  async rateLimits(): Promise<Record<string, unknown>> {
+    return this.client.get('/api/v2/auth/rate-limits');
+  }
+
+  /** Get trust context */
+  async trustContext(): Promise<Record<string, unknown>> {
+    return this.client.get('/api/v2/auth/context/trust');
+  }
+
+  /** Write auth context */
+  async writeContext(payload: AuthContextWritePayload): Promise<Record<string, unknown>> {
+    return this.client.post('/api/v2/auth/context/write', payload);
+  }
+
+  /** Authorize memory read */
+  async authorizeMemoryRead(payload: MemoryAuthReadPayload): Promise<AuthDecision> {
+    return this.client.post('/api/v2/auth/memory/authorize-read', payload);
+  }
+
+  /** Authorize memory write */
+  async authorizeMemoryWrite(payload: MemoryAuthWritePayload): Promise<AuthDecision> {
+    return this.client.post('/api/v2/auth/memory/authorize-write', payload);
+  }
+
+  /** Redact sensitive content */
+  async redact(payload: AuthRedactPayload): Promise<AuthRedactResult> {
+    return this.client.post('/api/v2/auth/redact', payload);
+  }
+
+  /** Get auth audit log */
+  async audit(): Promise<Record<string, unknown>> {
+    return this.client.get('/api/v2/auth/audit');
+  }
+}
+
+class CoalesceAPI {
+  constructor(private client: APMClient) {}
+
+  /** Start a coalesce run */
+  async start(payload: StartCoalescePayload): Promise<CoalesceStartResult> {
+    return this.client.post('/api/v2/coalesce/start', payload);
+  }
+
+  /** List coalesce runs */
+  async list(): Promise<{ runs: CoalesceRunSummary[]; total: number; pending_gates: number }> {
+    return this.client.get('/api/v2/coalesce');
+  }
+
+  /** Get a specific coalesce run */
+  async get(id: string): Promise<Record<string, unknown>> {
+    return this.client.get(`/api/v2/coalesce/${encodeURIComponent(id)}`);
+  }
+
+  /** Cancel a coalesce run */
+  async cancel(id: string): Promise<Record<string, unknown>> {
+    return this.client.delete(`/api/v2/coalesce/${encodeURIComponent(id)}`);
+  }
+
+  /** Get diff for a coalesce run */
+  async diff(id: string): Promise<Record<string, unknown>> {
+    return this.client.get(`/api/v2/coalesce/${encodeURIComponent(id)}/diff`);
+  }
+
+  /** Apply a coalesce run */
+  async apply(id: string): Promise<Record<string, unknown>> {
+    return this.client.post(`/api/v2/coalesce/${encodeURIComponent(id)}/apply`);
+  }
+
+  /** Decide on a gate within a coalesce run */
+  async gateDecide(runId: string, gateId: string, payload: CoalesceGateDecidePayload): Promise<Record<string, unknown>> {
+    return this.client.post(
+      `/api/v2/coalesce/${encodeURIComponent(runId)}/gate/${encodeURIComponent(gateId)}/decide`,
+      payload,
+    );
+  }
+
+  /** Preview a coalesce run */
+  async preview(payload: CoalescePreviewPayload): Promise<Record<string, unknown>> {
+    return this.client.post('/api/v2/coalesce/preview', payload);
+  }
+}
+
+class AgentContextAPI {
+  constructor(private client: APMClient) {}
+
+  /** List all agent contexts */
+  async list(): Promise<AgentContextsResponse> {
+    return this.client.get('/api/v2/agents/contexts');
+  }
+
+  /** Get context for a specific agent */
+  async get(agentId: string): Promise<AgentContextDetailResponse> {
+    return this.client.get(`/api/v2/agents/${encodeURIComponent(agentId)}/context`);
+  }
+
+  /** Get context events for a specific agent */
+  async events(agentId: string): Promise<AgentContextEventsResponse> {
+    return this.client.get(`/api/v2/agents/${encodeURIComponent(agentId)}/context/events`);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "CCEM Skill Interaction Graph",
   "description": "Nodes and edges representing how CCEM skills coordinate during project delivery",
   "generated_at": "2026-03-24",
@@ -93,6 +93,15 @@
       "description": "Claude Code hooks — PreToolUse/PostToolUse lifecycle integrating AgentLock auth and APM telemetry",
       "triggers": ["pre-tool-use", "post-tool-use", "session-start", "session-end"],
       "outputs": ["auth-decision", "usage-record", "context-entry", "session-summary"]
+    },
+    {
+      "id": "security",
+      "label": "Security Guidance",
+      "type": "security",
+      "color": "#ef4444",
+      "description": "SecurityGuidancePlugin — Bash injection, SSRF, prompt injection detection across 8 native tool types with :security plugin_scope",
+      "triggers": ["hook-status", "scan-history", "covered-tools", "pattern-summary"],
+      "outputs": ["block-decision", "advisory-alert", "scan-results", "pattern-report"]
     }
   ],
   "edges": [
@@ -106,7 +115,9 @@
     {"from": "ship", "to": "plane-pm", "label": "marks Done", "phase": "ship", "style": "solid"},
     {"from": "hooks", "to": "apm", "label": "auth + telemetry", "phase": "runtime", "style": "dashed"},
     {"from": "ccem", "to": "apm", "label": "lifecycle control", "phase": "runtime", "style": "solid"},
-    {"from": "showcase", "to": "apm", "label": "live data via SSE", "phase": "runtime", "style": "dashed"}
+    {"from": "showcase", "to": "apm", "label": "live data via SSE", "phase": "runtime", "style": "dashed"},
+    {"from": "hooks", "to": "security", "label": "PreToolUse scan", "phase": "runtime", "style": "solid"},
+    {"from": "security", "to": "apm", "label": "scan results + alerts", "phase": "runtime", "style": "dashed"}
   ],
   "phases": [
     {"id": "plan", "label": "Plan", "color": "#0ea5e9", "description": "PRD generation, issue creation, cycle/module setup"},
@@ -115,15 +126,15 @@
     {"id": "runtime", "label": "Runtime", "color": "#8b5cf6", "description": "Continuous — auth, telemetry, monitoring"}
   ],
   "example_trace": {
-    "invocation": "/upm plan build ship wave=all project=CCEM-v7.0.0",
-    "plane_epic": "CCEM-240 through CCEM-261 (22 issues, 5 waves)",
-    "prd_file": "prd/ccem-v7-agentlock.json",
-    "formation_id": "fmt-ccem-v7-agentlock-20260321",
-    "agents_deployed": 12,
-    "waves_completed": 5,
-    "gate_checks": ["mix compile --warnings-as-errors", "swift build -c release"],
-    "pr": "PR#9 merged 2026-03-24 (73cad7c — 17 commits, 56 files, 5900 insertions)",
-    "plane_final_state": "260/260 issues Done (100%)",
-    "duration_estimate": "~3 hours wall-clock (parallel agents)"
+    "invocation": "/upm plan build ship wave=all project=CCEM-v9.1.0",
+    "plane_epic": "CCEM-321 through CCEM-333 (13 issues, 3 waves)",
+    "prd_file": "prd/ccem-v9-agentlock-notifications.json",
+    "formation_id": "fmt-ccem-v9-agentlock-notifications-20260411",
+    "agents_deployed": 8,
+    "waves_completed": 6,
+    "gate_checks": ["mix compile --warnings-as-errors", "swift build -c release", "mix test test/apm_v5/plugins/security/"],
+    "pr": "ralph/agentlock-notifications-v860 (in progress)",
+    "plane_final_state": "All CP-56 through CP-70 complete",
+    "duration_estimate": "~2 hours wall-clock (parallel agents)"
   }
 }

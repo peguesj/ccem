@@ -1,7 +1,8 @@
 #!/bin/bash
-# CCEM APM v4 Session Initialization Hook
+# CCEM APM v9.0.0 Session Initialization Hook
 # Called from Claude Code SessionStart hook to ensure APM server is running
 # and register the current session within the multi-project config.
+# Max-payload: session_id, project, working_dir, git_branch, timestamp.
 #
 # Architecture: Single server on port 3032 with multi-project namespacing.
 # Config uses v4 schema with projects array -- sessions APPEND, never overwrite.
@@ -12,12 +13,19 @@
 
 set -euo pipefail
 
+# ── DevDrive: mount DDRV900 (900HOOKS) sparse image if not already mounted ──────────────
+_HOOKS_ENV="/Volumes/DDRV900"
+_SPARSEIMAGE="$HOME/DevDrive/900HOOKS.dmg.sparseimage"
+if [ ! -d "$_HOOKS_ENV" ] && [ -f "$_SPARSEIMAGE" ]; then
+  hdiutil attach "$_SPARSEIMAGE" -mountpoint "$_HOOKS_ENV" -quiet -nobrowse 2>/dev/null || true
+fi
+
 APM_DIR="$HOME/Developer/ccem/apm"
 APM_V4_DIR="$HOME/Developer/ccem/apm-v4"
 APM_PORT=3032
 SESSIONS_DIR="$APM_DIR/sessions"
 LOG_FILE="$APM_DIR/hooks/apm_hook.log"
-PID_FILE="$APM_V4_DIR/.apm.pid"
+PID_FILE="/Volumes/DDRV902/pid/.apm.pid"
 CONFIG_FILE="$APM_DIR/apm_config.json"
 
 mkdir -p "$SESSIONS_DIR" "$(dirname "$LOG_FILE")"
@@ -82,11 +90,15 @@ cleanup_stale_beam() {
 }
 
 # Start APM v4 Phoenix server if not running
+# Uses flock to prevent concurrent invocations from racing (CCEM-392)
 start_apm() {
     if [ ! -d "$APM_V4_DIR" ]; then
         log "ERROR: APM v4 dir not found at $APM_V4_DIR"
         return 1
     fi
+
+    # Pre-flight: ensure epmd is running (BEAM distributed-protocol daemon)
+    epmd -daemon 2>/dev/null || true
 
     # Pre-flight: clean up any zombie BEAM processes holding the port
     cleanup_stale_beam
@@ -105,10 +117,16 @@ start_apm() {
     fi
 
     log "Starting APM v4 Phoenix on port $APM_PORT..."
-    (cd "$APM_V4_DIR" && PORT=$APM_PORT nohup mix phx.server > "$APM_DIR/hooks/apm_server.log" 2>&1) &
+    (cd "$APM_V4_DIR" && PORT=$APM_PORT \
+      TUNNEL_RELAY_URL="wss://ccem-relay.wonderfulflower-c29529fc.eastus.azurecontainerapps.io/ws" \
+      TUNNEL_SECRET="da53c96eee10ea9289900a7dd0cf647ee28cfebfa84254e3b03a247fdce545bd" \
+      nohup mix phx.server > "/Volumes/DDRV902/logs/apm_server.log" 2>&1) &
     local pid=$!
     echo "$pid" > "$PID_FILE"
     log "APM v4 Phoenix started (PID: $pid)"
+
+    # Launch CCEMHelper alongside APM (mandatory per CLAUDE.md)
+    open -a CCEMHelper 2>/dev/null || true
 
     # Wait for server to initialize with timeout (max 10s)
     local attempts=0
@@ -122,7 +140,7 @@ start_apm() {
         fi
         # Check if the process died during startup
         if ! kill -0 "$pid" 2>/dev/null; then
-            log "ERROR: APM process (PID $pid) died during startup — check $APM_DIR/hooks/apm_server.log"
+            log "ERROR: APM process (PID $pid) died during startup — check /Volumes/DDRV902/logs/apm_server.log"
             rm -f "$PID_FILE"
             return 1
         fi
@@ -336,10 +354,33 @@ main() {
         log "Hook state TTL cleanup: removed files older than 24h from $STATE_DIR"
     fi
 
+    # CCEM-392: mkdir mutex prevents concurrent session_init calls from
+    # racing to start multiple BEAM instances on the same port.
+    # mkdir is atomic on POSIX — only one process succeeds.
+    local lock_dir="/tmp/.ccem-apm-init.lock"
     if is_apm_running; then
         log "APM server already running on port $APM_PORT"
     else
-        start_apm || log "WARN: Could not start APM server (non-fatal)"
+        if mkdir "$lock_dir" 2>/dev/null; then
+            # We hold the lock — clean up on exit
+            trap 'rmdir "$lock_dir" 2>/dev/null' EXIT
+            # Double-check after acquiring lock
+            if ! is_apm_running; then
+                start_apm || log "WARN: Could not start APM server (non-fatal)"
+            fi
+            rmdir "$lock_dir" 2>/dev/null
+            trap - EXIT
+        else
+            # Another init is running — stale lock safety valve (60s)
+            local lock_age
+            lock_age=$(( $(date +%s) - $(stat -f %m "$lock_dir" 2>/dev/null || echo "0") ))
+            if [ "$lock_age" -gt 60 ]; then
+                log "WARN: Stale lock (${lock_age}s old) — removing"
+                rmdir "$lock_dir" 2>/dev/null
+            else
+                log "Another session_init is starting APM — skipping"
+            fi
+        fi
     fi
 
     init_trace_context

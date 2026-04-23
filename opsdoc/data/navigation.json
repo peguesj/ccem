@@ -1,0 +1,11 @@
+{
+  "groups": [
+    { "group": "OVERVIEW", "id": "overview", "collapsed": false, "items": ["executive-summary", "system-architecture", "tech-stack"] },
+    { "group": "OPERATIONS", "id": "operations", "collapsed": false, "items": ["server-lifecycle", "ccemhelper-ops", "launchd-services", "health-monitoring"] },
+    { "group": "ARCHITECTURE", "id": "architecture", "collapsed": false, "items": ["supervision-tree", "plugin-system", "agentlock-auth", "ag-ui-protocol"] },
+    { "group": "API REFERENCE", "id": "api-reference", "collapsed": true, "items": ["api-v1-core", "api-v2-core", "api-extensions", "websocket-channels"] },
+    { "group": "RUNBOOKS", "id": "runbooks", "collapsed": false, "items": ["startup-runbook", "troubleshooting", "stall-recovery", "disk-space-management"] },
+    { "group": "SECURITY", "id": "security", "collapsed": false, "items": ["security-native-types", "approval-workflow", "policy-engine"] },
+    { "group": "DEPLOYMENT", "id": "deployment", "collapsed": true, "items": ["installation", "configuration", "upgrade-path"] }
+  ]
+}

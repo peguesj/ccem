@@ -1,0 +1,268 @@
+{
+  "project": "CCEM - Claude Code Environment Manager",
+  "branchName": "ralph/testmaxxing-formation-v2",
+  "baseBranch": "ralph/claude-mem-apm-plugin",
+  "description": "Testmaxxing Formation v2 integration: pub/sub channel visualization, cross-wave data-flow edges, DOT graph rendering, and notification channel filtering in APM dashboard.",
+  "upm": {
+    "planeProjectId": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
+    "checkpointRange": "CP-149 to CP-158",
+    "builtWaves": 3,
+    "verifiedAt": "2026-04-23T07:45:00Z",
+    "shippedAt": "2026-04-23T07:50:00Z",
+    "prUrl": "https://github.com/peguesj/ccem/pull/9"
+  },
+  "userStories": [
+    {
+      "id": "US-424",
+      "title": "Add edge_type to D3 formation graph edges",
+      "description": "Extend the formation graph edge schema to support typed edges: hierarchy (solid black), pubsub (dashed blue), aggregation (dashed green), and data_export (bold orange). The JS hook renders each type with distinct stroke/dash/color.",
+      "acceptanceCriteria": [
+        "Edge schema includes edge_type field: hierarchy|pubsub|aggregation|data_export",
+        "push_formation_graph/2 emits edge_type on each edge",
+        "formation_graph.js renders hierarchy edges as solid black lines",
+        "formation_graph.js renders pubsub edges as dashed blue lines",
+        "formation_graph.js renders aggregation edges as dashed green lines",
+        "formation_graph.js renders data_export edges as bold orange lines",
+        "Existing formations without edge_type default to hierarchy",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-149",
+      "wave": 1,
+      "planeIssueId": "c10208a9-b6d3-45a2-b407-aeb77f4946f6",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex",
+        "assets/js/hooks/formation_graph.js"
+      ]
+    },
+    {
+      "id": "US-425",
+      "title": "Add channel field to notification schema and API",
+      "description": "Add optional channel field to POST /api/notify for pub/sub channel routing. Store in ETS notification record. Expose in notification JSON responses.",
+      "acceptanceCriteria": [
+        "POST /api/notify accepts optional channel field",
+        "channel stored in notification ETS record",
+        "channel included in notification JSON responses",
+        "Notifications panel shows channel badge when present",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-150",
+      "wave": 1,
+      "planeIssueId": "121059f2-d380-4271-8ace-3eb8462af495",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/controllers/api_controller.ex",
+        "lib/apm_v5/agent_registry.ex"
+      ]
+    },
+    {
+      "id": "US-426",
+      "title": "Add pub/sub channel edges to formation tree builder",
+      "description": "When building the formation tree, detect agents with publishes/subscribes metadata and generate pubsub-typed edges alongside hierarchy edges. Detect cross-wave exports and generate data_export edges.",
+      "acceptanceCriteria": [
+        "build_formation_tree/2 generates pubsub edges from agent publishes/subscribes metadata",
+        "Squadron lead aggregation edges rendered as aggregation type",
+        "Cross-wave exports (agent metadata exports/imports fields) rendered as data_export edges",
+        "Existing formations without pub/sub metadata unchanged",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-424"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-151",
+      "wave": 2,
+      "planeIssueId": "d04635af-67f2-4e44-afbe-5b403520d0fb",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
+    },
+    {
+      "id": "US-427",
+      "title": "DOT graph rendering endpoint and FormationLive tab",
+      "description": "Add GET /api/v2/formations/:id/dot endpoint returning Graphviz DOT source. Add a DOT/PNG tab in FormationLive that renders via server-side dot command or displays raw DOT source.",
+      "acceptanceCriteria": [
+        "GET /api/v2/formations/:id/dot returns DOT source as text/plain",
+        "DOT generation uses formation agents + edges from build_formation_tree",
+        "FormationLive has a Graph tab showing rendered PNG or raw DOT",
+        "If graphviz (dot) is installed, render to PNG inline",
+        "If graphviz not installed, show raw DOT with copy button",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-426"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-152",
+      "wave": 2,
+      "planeIssueId": "258c3100-ba36-4113-84d3-538e89e5124c",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/controllers/formation_api_controller.ex",
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
+    },
+    {
+      "id": "US-428",
+      "title": "Notification panel channel filter",
+      "description": "Add a channel filter dropdown to the notifications panel. When a channel is selected, only notifications matching that channel are shown. Include source filter for testmaxxing-pubsub grouping.",
+      "acceptanceCriteria": [
+        "Notification panel has channel filter dropdown populated from distinct channels in current notifications",
+        "Selecting a channel filters notification list in real-time",
+        "Source filter allows filtering by source field (e.g. testmaxxing-pubsub)",
+        "Clear filter resets to all notifications",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-425"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-153",
+      "wave": 2,
+      "planeIssueId": "ad336a7d-967c-498e-93dc-d0acdfc9465e",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/dashboard_live.ex"
+      ]
+    },
+    {
+      "id": "US-429",
+      "title": "Agent registration accepts publishes/subscribes/exports/imports metadata",
+      "description": "Extend POST /api/register to accept and store publishes, subscribes, exports, and imports fields in agent metadata. These drive pub/sub edge generation in the formation tree.",
+      "acceptanceCriteria": [
+        "POST /api/register accepts publishes (list of channel names)",
+        "POST /api/register accepts subscribes (list of channel names)",
+        "POST /api/register accepts exports (list of export keys)",
+        "POST /api/register accepts imports (list of import keys with source)",
+        "Fields stored in agent ETS record metadata",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-154",
+      "wave": 1,
+      "planeIssueId": "6b026ce0-fad6-4cc1-a54d-008ae821799b",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5/agent_registry.ex",
+        "lib/apm_v5_web/controllers/api_controller.ex"
+      ]
+    },
+    {
+      "id": "US-430",
+      "title": "Testmaxxing formation template in UpmStore",
+      "description": "Add a built-in testmaxxing formation template to UpmStore that pre-defines the 20-agent hierarchy, channel schema, and cross-wave exports. Used when deploying via /testmaxxing or POST /api/formations with template=testmaxxing.",
+      "acceptanceCriteria": [
+        "UpmStore has testmaxxing template with 20 agents across 5 squadrons",
+        "Template includes pub/sub channel schema for all 17 channels",
+        "Template includes cross-wave exports (bravo.auth_session_cookie)",
+        "POST /api/formations with template=testmaxxing creates full formation",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-429"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-155",
+      "wave": 2,
+      "planeIssueId": "312f1886-2e15-4c90-b298-b6863af63922",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5/upm_store.ex"
+      ]
+    },
+    {
+      "id": "US-431",
+      "title": "FormationLive legend for edge types",
+      "description": "Add a visual legend to FormationLive showing edge type meanings: hierarchy (solid), pub/sub callback (dashed blue), aggregation (dashed green), data export (bold orange).",
+      "acceptanceCriteria": [
+        "Legend component renders below or beside the D3 graph",
+        "Shows 4 edge types with matching colors and dash patterns",
+        "Legend is collapsible to save space",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-424"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-156",
+      "wave": 2,
+      "planeIssueId": "b4bd1c0a-16b0-4593-8c4d-f9e7d5d1fbb5",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "lib/apm_v5_web/live/formation_live.ex"
+      ]
+    },
+    {
+      "id": "US-432",
+      "title": "Integration tests for typed edges, channel notifications, DOT endpoint",
+      "description": "Test suite covering: typed edge rendering data, channel notification filtering, DOT generation endpoint, and testmaxxing template deployment.",
+      "acceptanceCriteria": [
+        "Tests for push_formation_graph with typed edges",
+        "Tests for notification channel field storage and filtering",
+        "Tests for GET /api/v2/formations/:id/dot response",
+        "Tests for testmaxxing template formation creation",
+        "All tests pass: mix test --only testmaxxing"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-427",
+        "US-428",
+        "US-430"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-157",
+      "wave": 3,
+      "planeIssueId": "3a56c70a-d584-4a86-8614-a195b6bf96b3",
+      "agentType": "elixir-expert",
+      "targetFiles": [
+        "test/apm_v5/testmaxxing_integration_test.exs"
+      ]
+    },
+    {
+      "id": "US-433",
+      "title": "Final compile gate and LILY-554 closure",
+      "description": "Final mix compile --warnings-as-errors, manual browser verification of formation graph with typed edges, and update LILY-554 in Plane to Done.",
+      "acceptanceCriteria": [
+        "mix compile --warnings-as-errors passes",
+        "mix test --only testmaxxing passes",
+        "Formation graph visually shows typed edges in browser",
+        "Notification channel filter works in dashboard",
+        "LILY-554 marked Done in Plane (or moved to CCEM namespace)"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-432"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-158",
+      "wave": 3,
+      "planeIssueId": "3979b870-9ed7-42e0-8c1f-ace052c981d8",
+      "agentType": "elixir-expert",
+      "targetFiles": []
+    }
+  ]
+}

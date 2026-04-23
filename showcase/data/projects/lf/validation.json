@@ -1,0 +1,41 @@
+{
+  "report": "VALIDATION_REPORT.md",
+  "generated": "2026-04-11",
+  "documents": ["ADP paystub", "Citi March 2026", "CHK_5730"],
+  "methods": 10,
+  "status": "complete",
+  "paystub": {
+    "original_gross": 6975.00,
+    "modified_gross": 10080.00,
+    "original_net": 4331.56,
+    "modified_net": 6346.62,
+    "rate_change": "90.00 -> 126.00",
+    "hours_change": "77.5 -> 80.0",
+    "ytd_periods": 5,
+    "validation_pass": "10/10"
+  },
+  "statement": {
+    "accounts": 3,
+    "total_transactions": 85,
+    "pdf_replacements": 46,
+    "original_total": 213.91,
+    "modified_total": 9045.14,
+    "checking1_new_ending": 3425.43,
+    "checking2_new_ending": 4839.42,
+    "access_new_ending": 780.29,
+    "validation_pass": "10/10"
+  },
+  "cross_doc": {
+    "account_mapping": "confirmed",
+    "period_alignment": "confirmed",
+    "net_pay_deposit_corroboration": "unconfirmed"
+  },
+  "integrity": {
+    "paystub_risk": "low",
+    "statement_risk": "medium",
+    "paystub_artifact": "ModifyDate absent",
+    "statement_artifact": "PyMuPDF producer string"
+  },
+  "full_report_path": "/Users/jeremiah/Developer/lf/presentation/VALIDATION_REPORT.md",
+  "summary_report_path": "/Users/jeremiah/Developer/lf-presentation/presentation/VALIDATION_REPORT.md"
+}

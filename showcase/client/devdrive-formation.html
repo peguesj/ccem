@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEVDRIVE Protocol — Formation Approval Gate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #09090b; color: #e4e4e7; margin: 0; }
+  .mono { font-family: 'Fira Code', monospace; }
+  .glow-green { box-shadow: 0 0 8px rgba(52,211,153,0.5); }
+  .glow-amber { box-shadow: 0 0 8px rgba(251,191,36,0.5); }
+  .glow-red   { box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+  .glow-blue  { box-shadow: 0 0 8px rgba(99,102,241,0.5); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes fade-in-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .pulse { animation: pulse-dot 2s ease-in-out infinite; }
+  .fade-in { animation: fade-in-up 0.4s ease-out both; }
+  .card { background: rgba(24,24,27,0.8); border: 1px solid rgba(63,63,70,0.6); border-radius: 8px; }
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; letter-spacing:0.05em; font-family:'Fira Code',monospace; }
+  .badge-green  { background:rgba(52,211,153,0.15); color:#34d399; border:1px solid rgba(52,211,153,0.3); }
+  .badge-amber  { background:rgba(251,191,36,0.15);  color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+  .badge-blue   { background:rgba(99,102,241,0.15);  color:#818cf8; border:1px solid rgba(99,102,241,0.3); }
+  .badge-purple { background:rgba(168,85,247,0.15);  color:#c084fc; border:1px solid rgba(168,85,247,0.3); }
+  .badge-red    { background:rgba(239,68,68,0.15);   color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+  .badge-zinc   { background:rgba(63,63,70,0.4);     color:#a1a1aa; border:1px solid rgba(63,63,70,0.6); }
+  .badge-yellow { background:rgba(250,204,21,0.15);  color:#facc15; border:1px solid rgba(250,204,21,0.3); }
+  .dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .dot-green  { background:#34d399; }
+  .dot-amber  { background:#fbbf24; }
+  .dot-red    { background:#ef4444; }
+  .dot-blue   { background:#818cf8; }
+  .dot-zinc   { background:#52525b; }
+  .progress-bar { height:4px; border-radius:2px; background:rgba(63,63,70,0.5); overflow:hidden; }
+  .progress-fill { height:100%; border-radius:2px; transition: width 0.6s ease; }
+  .decision-item { border-left: 3px solid #fbbf24; background: rgba(251,191,36,0.05); }
+  .approved-item { border-left: 3px solid #34d399; background: rgba(52,211,153,0.05); }
+  .table-row:hover { background: rgba(63,63,70,0.2); }
+  .agent-node { display:flex; align-items:center; gap:6px; padding:4px 8px; border-radius:4px; font-size:10px; }
+  .tree-line { border-left: 1px solid rgba(63,63,70,0.5); margin-left:12px; padding-left:12px; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 border-b border-zinc-800/60 bg-zinc-950/90 backdrop-blur-sm">
+  <div class="flex items-center justify-between px-6 py-3">
+    <div class="flex items-center gap-3">
+      <span class="badge badge-purple">FORMATION</span>
+      <span class="text-sm font-semibold tracking-tight">DEVDRIVE Protocol — Full Formation Approval Gate</span>
+      <span class="badge badge-amber">PENDING APPROVAL</span>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-zinc-500 mono">
+      <span class="flex items-center gap-1">
+        <span class="dot dot-green pulse"></span> LFG Helper
+      </span>
+      <span class="flex items-center gap-1">
+        <span class="dot dot-green pulse"></span> inbox-watcher
+      </span>
+      <span id="clock" class="text-zinc-600"></span>
+    </div>
+  </div>
+  <!-- status bar -->
+  <div class="flex items-center gap-6 px-6 py-2 border-t border-zinc-800/40 text-xs text-zinc-500">
+    <span>22 agents planned</span>
+    <span class="text-zinc-700">|</span>
+    <span>9 worktrees</span>
+    <span class="text-zinc-700">|</span>
+    <span>3 squads</span>
+    <span class="text-zinc-700">|</span>
+    <span>staging/devdrive-protocol</span>
+    <span class="text-zinc-700">|</span>
+    <span class="text-amber-400">4 decisions pending</span>
+    <span class="ml-auto flex items-center gap-1">
+      <span class="dot dot-zinc"></span> last commit: ccbd28d
+    </span>
+  </div>
+</header>
+
+<div class="flex gap-0 h-[calc(100vh-81px)]">
+
+  <!-- LEFT COLUMN -->
+  <aside class="w-72 flex-shrink-0 overflow-y-auto border-r border-zinc-800/40 p-4 space-y-4">
+
+    <!-- DECISION GATE -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-3">Decision Gate</div>
+      <div class="space-y-2">
+
+        <div class="decision-item rounded p-2 space-y-1">
+          <div class="text-xs font-semibold text-zinc-200">1 · Daemon approach</div>
+          <div class="text-xs text-zinc-500">XPC Swift daemon vs launchd bash first?</div>
+          <div class="flex gap-1 mt-1">
+            <span class="badge badge-blue">XPC Swift (full)</span>
+            <span class="badge badge-zinc">Bash first</span>
+          </div>
+        </div>
+
+        <div class="decision-item rounded p-2 space-y-1">
+          <div class="text-xs font-semibold text-zinc-200">2 · Wave gates</div>
+          <div class="text-xs text-zinc-500">3 waves as shown, or collapse to 2?</div>
+          <div class="flex gap-1 mt-1">
+            <span class="badge badge-blue">3 waves</span>
+            <span class="badge badge-zinc">2 waves</span>
+          </div>
+        </div>
+
+        <div class="decision-item rounded p-2 space-y-1">
+          <div class="text-xs font-semibold text-zinc-200">3 · Cache target volume</div>
+          <div class="text-xs text-zinc-500">YJ_MORE confirmed as primary target?</div>
+          <div class="flex gap-1 mt-1">
+            <span class="badge badge-yellow">YJ_MORE (63 GB free)</span>
+          </div>
+        </div>
+
+        <div class="decision-item rounded p-2 space-y-1">
+          <div class="text-xs font-semibold text-zinc-200">4 · Docs location</div>
+          <div class="text-xs text-zinc-500">docs/ in this repo, or Plane wiki?</div>
+          <div class="flex gap-1 mt-1">
+            <span class="badge badge-blue">docs/ in repo</span>
+            <span class="badge badge-zinc">Plane wiki</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VOLUME LANDSCAPE -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Volume Landscape</div>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between py-1 border-b border-zinc-800/40">
+          <div>
+            <div class="text-xs font-semibold text-yellow-400 mono">YJ_MORE</div>
+            <div class="text-xs text-zinc-500">Best cache target</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-zinc-200">63 GB free</div>
+            <div class="text-xs text-zinc-600">1% used</div>
+          </div>
+        </div>
+        <div class="space-y-1.5 pt-1">
+          <div class="text-xs text-zinc-500 mb-1 mono">DDRV Container (shared pool)</div>
+          <div id="vol-ddrv900" class="flex items-center justify-between">
+            <span class="text-xs mono text-zinc-400">DDRV900</span>
+            <div class="flex items-center gap-2">
+              <div class="progress-bar w-16"><div class="progress-fill bg-red-500" style="width:54%"></div></div>
+              <span class="text-xs text-zinc-500">~1 GB</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs mono text-zinc-400">DDRV901</span>
+            <div class="flex items-center gap-2">
+              <div class="progress-bar w-16"><div class="progress-fill bg-red-500" style="width:99%"></div></div>
+              <span class="text-xs text-red-400">full</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs mono text-zinc-400">DDRV904</span>
+            <div class="flex items-center gap-2">
+              <div class="progress-bar w-16"><div class="progress-fill bg-amber-500" style="width:1%"></div></div>
+              <span class="text-xs text-zinc-500">25 GB</span>
+            </div>
+          </div>
+          <div class="text-xs text-red-400/70 mt-1">⚠ Shared APFS container ~200MB actual free</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE SERVICES -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Live Services</div>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-green pulse"></span>
+            <span class="text-xs">LFG Helper</span>
+          </div>
+          <span class="badge badge-green">running</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-green pulse"></span>
+            <span class="text-xs">io.lfg.inbox-watcher</span>
+          </div>
+          <span class="badge badge-green">running</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-zinc"></span>
+            <span class="text-xs">io.lfg.helper</span>
+          </div>
+          <span class="badge badge-green">running</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-zinc"></span>
+            <span class="text-xs">inbox pending</span>
+          </div>
+          <span class="badge badge-zinc">0 items</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-amber"></span>
+            <span class="text-xs">mds_stores CPU</span>
+          </div>
+          <span class="badge badge-amber">~108%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKTREE MAP -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">9 Worktrees</div>
+      <div class="space-y-1">
+        <div class="text-xs text-zinc-500 mb-2">Branch: staging/devdrive-protocol</div>
+        <div class="agent-node"><span class="badge badge-blue">S1</span><span class="text-xs mono text-zinc-300">feat/devdrived-core</span></div>
+        <div class="agent-node"><span class="badge badge-blue">S1</span><span class="text-xs mono text-zinc-300">feat/devdrive-router</span></div>
+        <div class="agent-node"><span class="badge badge-blue">S1</span><span class="text-xs mono text-zinc-300">feat/symlink-forest</span></div>
+        <div class="agent-node"><span class="badge badge-green">S2</span><span class="text-xs mono text-zinc-300">feat/cache-suggest</span></div>
+        <div class="agent-node"><span class="badge badge-green">S2</span><span class="text-xs mono text-zinc-300">feat/dtf-protect</span></div>
+        <div class="agent-node"><span class="badge badge-green">S2</span><span class="text-xs mono text-zinc-300">feat/post-dtf-hook</span></div>
+        <div class="agent-node"><span class="badge badge-purple">S3</span><span class="text-xs mono text-zinc-300">feat/xpc-client</span></div>
+        <div class="agent-node"><span class="badge badge-purple">S3</span><span class="text-xs mono text-zinc-300">feat/menubar-devdrive</span></div>
+        <div class="agent-node"><span class="badge badge-purple">S3</span><span class="text-xs mono text-zinc-300">feat/daemon-install</span></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CENTER COLUMN -->
+  <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+    <!-- FORMATION DIAGRAM -->
+    <div class="card p-5 fade-in">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Formation Architecture — 22 Agents</div>
+
+      <!-- Orchestrator -->
+      <div class="border border-indigo-500/30 rounded-lg p-4 bg-indigo-950/20 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-blue">ORCH</span>
+            <span class="text-sm font-semibold">/orchestrator</span>
+          </div>
+          <span class="text-xs text-zinc-500">master coordinator · gates all waves · ships</span>
+        </div>
+        <!-- Persistence Layer -->
+        <div class="border border-zinc-700/40 rounded p-3 mb-3 bg-zinc-900/40">
+          <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Persistence Layer (always-on)</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="agent-node text-xs"><span class="dot dot-green pulse"></span> /apm telemetry</span>
+            <span class="agent-node text-xs"><span class="dot dot-blue"></span> /showcase async</span>
+            <span class="agent-node text-xs"><span class="dot dot-zinc"></span> /opsdoc runbooks</span>
+            <span class="agent-node text-xs"><span class="dot dot-zinc"></span> /wiki decisions</span>
+          </div>
+        </div>
+        <!-- PM Squadron -->
+        <div class="border border-zinc-700/40 rounded p-3 bg-zinc-900/40">
+          <div class="text-xs text-zinc-500 uppercase tracking-wider mb-2">PM Squadron (always-on)</div>
+          <div class="flex gap-2">
+            <span class="agent-node text-xs"><span class="dot dot-amber"></span> /plane-pm align</span>
+            <span class="agent-node text-xs"><span class="dot dot-amber"></span> /plane-pm sync</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Squads -->
+      <div class="grid grid-cols-3 gap-3 mb-4">
+
+        <!-- Squad 1 -->
+        <div class="border border-blue-500/30 rounded-lg p-3 bg-blue-950/10">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-blue">S1</span>
+            <span class="text-xs font-semibold">Protocol Core</span>
+          </div>
+          <div class="text-xs text-zinc-500 mb-2">Lead: fix-agent</div>
+          <div class="space-y-1.5">
+            <div class="border border-blue-800/30 rounded p-2 bg-blue-950/20">
+              <div class="text-xs font-medium text-blue-300">W1 · devdrived.swift</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">XPC daemon, VolumeRegistry</div>
+            </div>
+            <div class="border border-blue-800/30 rounded p-2 bg-blue-950/20">
+              <div class="text-xs font-medium text-blue-300">W2 · devdrive-router</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">scoring + placement algo</div>
+            </div>
+            <div class="border border-blue-800/30 rounded p-2 bg-blue-950/20">
+              <div class="text-xs font-medium text-blue-300">W3 · symlink-forest</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">create / verify / repair</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Squad 2 -->
+        <div class="border border-emerald-500/30 rounded-lg p-3 bg-emerald-950/10">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-green">S2</span>
+            <span class="text-xs font-semibold">Cache Protection</span>
+          </div>
+          <div class="text-xs text-zinc-500 mb-2">Lead: fix-agent</div>
+          <div class="space-y-1.5">
+            <div class="border border-emerald-800/30 rounded p-2 bg-emerald-950/20">
+              <div class="text-xs font-medium text-emerald-300">W4 · cache-suggest</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">active-use detection</div>
+            </div>
+            <div class="border border-emerald-800/30 rounded p-2 bg-emerald-950/20">
+              <div class="text-xs font-medium text-emerald-300">W5 · dtf-protect</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">clean.sh + protected-caches</div>
+            </div>
+            <div class="border border-emerald-800/30 rounded p-2 bg-emerald-950/20">
+              <div class="text-xs font-medium text-emerald-300">W6 · post-dtf-hook</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">verify symlinks + prefetch</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Squad 3 -->
+        <div class="border border-purple-500/30 rounded-lg p-3 bg-purple-950/10">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="badge badge-purple">S3</span>
+            <span class="text-xs font-semibold">macOS Extension</span>
+          </div>
+          <div class="text-xs text-zinc-500 mb-2">Lead: fix-agent</div>
+          <div class="space-y-1.5">
+            <div class="border border-purple-800/30 rounded p-2 bg-purple-950/20">
+              <div class="text-xs font-medium text-purple-300">W7 · xpc-client</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">Swift bindings + CLI shim</div>
+            </div>
+            <div class="border border-purple-800/30 rounded p-2 bg-purple-950/20">
+              <div class="text-xs font-medium text-purple-300">W8 · menubar-devdrive</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">mount/unmount + vol bars</div>
+            </div>
+            <div class="border border-purple-800/30 rounded p-2 bg-purple-950/20">
+              <div class="text-xs font-medium text-purple-300">W9 · daemon-install</div>
+              <div class="text-xs text-zinc-600 mono mt-0.5">io.lfg.devdrived plist</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wave Gates -->
+      <div class="border border-zinc-700/40 rounded p-3 bg-zinc-900/30">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <span class="dot dot-amber"></span>
+            <span class="text-xs">Wave Gate 1: Protocol spec + daemon skeleton reviewed</span>
+          </div>
+          <span class="text-zinc-700">→</span>
+          <div class="flex items-center gap-2">
+            <span class="dot dot-amber"></span>
+            <span class="text-xs">Wave Gate 2: Cache protection end-to-end</span>
+          </div>
+          <span class="text-zinc-700">→</span>
+          <div class="flex items-center gap-2">
+            <span class="dot dot-amber"></span>
+            <span class="text-xs">Wave Gate 3: Extension + menubar wired</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quality + Ship -->
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <div class="border border-zinc-700/40 rounded p-3 bg-zinc-900/30">
+          <div class="text-xs font-semibold text-zinc-400 mb-2">Quality Squadron (post-wave)</div>
+          <div class="flex gap-2">
+            <span class="badge badge-zinc">code-reviewer</span>
+            <span class="badge badge-zinc">/simplify</span>
+          </div>
+        </div>
+        <div class="border border-zinc-700/40 rounded p-3 bg-zinc-900/30">
+          <div class="text-xs font-semibold text-zinc-400 mb-2">Ship Squadron (final)</div>
+          <div class="flex gap-2">
+            <span class="badge badge-zinc">staging → /ship wave=all</span>
+            <span class="badge badge-zinc">→ main</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROTOCOL SPEC -->
+    <div class="card p-5 fade-in">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">DEVDRIVE Protocol Spec</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <div class="text-xs text-zinc-500 mb-2">Architecture layers</div>
+          <div class="border border-zinc-700/40 rounded overflow-hidden">
+            <div class="bg-indigo-950/30 border-b border-zinc-700/40 px-3 py-2 text-xs font-mono text-indigo-300">devdrived (XPC daemon)</div>
+            <div class="px-3 py-1.5 text-xs mono text-zinc-400 border-b border-zinc-800/40">VolumeRegistry · CacheRouter · SymlinkForest</div>
+            <div class="bg-zinc-900/40 px-3 py-1.5 text-xs mono text-zinc-500">XPC NSXPCConnection  (JSON envelope v1)</div>
+            <div class="grid grid-cols-3 divide-x divide-zinc-800/40">
+              <div class="px-2 py-1.5 text-xs mono text-zinc-400 text-center">lfg devdrive</div>
+              <div class="px-2 py-1.5 text-xs mono text-zinc-400 text-center">LFG Helper</div>
+              <div class="px-2 py-1.5 text-xs mono text-zinc-400 text-center">inbox-watcher</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs text-zinc-500 mb-2">Message types (XPC wire format)</div>
+          <div class="space-y-1">
+            <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-900/40 rounded text-xs mono">
+              <span class="text-blue-300">volume.discover</span>
+              <span class="text-zinc-500">→ VolumeRegistry[]</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-900/40 rounded text-xs mono">
+              <span class="text-blue-300">cache.route</span>
+              <span class="text-zinc-500">path → best_volume</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-900/40 rounded text-xs mono">
+              <span class="text-blue-300">symlink.create</span>
+              <span class="text-zinc-500">src + dst → result</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-900/40 rounded text-xs mono">
+              <span class="text-blue-300">cache.protect</span>
+              <span class="text-zinc-500">path → protected_caches.json</span>
+            </div>
+            <div class="flex items-center justify-between px-3 py-1.5 bg-zinc-900/40 rounded text-xs mono">
+              <span class="text-blue-300">volume.rebalance</span>
+              <span class="text-zinc-500">trigger → move_ops[]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENT COUNT TABLE -->
+    <div class="card p-5 fade-in">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Agent Roster — 22 Total</div>
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="text-zinc-500 border-b border-zinc-800/40">
+            <th class="text-left py-2 font-medium">Role</th>
+            <th class="text-left py-2 font-medium">Type</th>
+            <th class="text-center py-2 font-medium">Count</th>
+            <th class="text-left py-2 font-medium">Mode</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-800/30">
+          <tr class="table-row"><td class="py-2">Orchestrator</td><td><span class="badge badge-blue">ORCH</span></td><td class="text-center">1</td><td class="text-zinc-500">always-on foreground</td></tr>
+          <tr class="table-row"><td class="py-2">Squad leads</td><td><span class="badge badge-green">LEAD</span></td><td class="text-center">3</td><td class="text-zinc-500">per-squad</td></tr>
+          <tr class="table-row"><td class="py-2">Worker agents</td><td><span class="badge badge-zinc">WORK</span></td><td class="text-center">9</td><td class="text-zinc-500">parallel per worktree</td></tr>
+          <tr class="table-row"><td class="py-2">APM</td><td><span class="badge badge-green">PERS</span></td><td class="text-center">1</td><td class="text-zinc-500">always-on background</td></tr>
+          <tr class="table-row"><td class="py-2">Showcase</td><td><span class="badge badge-green">PERS</span></td><td class="text-center">1</td><td class="text-zinc-500">always-on background</td></tr>
+          <tr class="table-row"><td class="py-2">OpsDocs + Wiki</td><td><span class="badge badge-green">PERS</span></td><td class="text-center">2</td><td class="text-zinc-500">always-on background</td></tr>
+          <tr class="table-row"><td class="py-2">plane-pm align + sync</td><td><span class="badge badge-amber">PM</span></td><td class="text-center">2</td><td class="text-zinc-500">always-on background</td></tr>
+          <tr class="table-row"><td class="py-2">Code reviewer + simplify</td><td><span class="badge badge-zinc">QA</span></td><td class="text-center">2</td><td class="text-zinc-500">post-wave gate</td></tr>
+          <tr class="table-row"><td class="py-2">Ship</td><td><span class="badge badge-zinc">SHIP</span></td><td class="text-center">1</td><td class="text-zinc-500">final</td></tr>
+          <tr class="border-t border-zinc-700/40 font-semibold"><td class="py-2 text-zinc-200">Total</td><td></td><td class="text-center text-zinc-200">22</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- RIGHT COLUMN -->
+  <aside class="w-72 flex-shrink-0 border-l border-zinc-800/40 overflow-y-auto p-4 space-y-4">
+
+    <!-- APPROVAL ACTIONS -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Approve Formation</div>
+      <div class="text-xs text-zinc-500 mb-3">Answer 4 decisions then approve to deploy all 22 agents across 9 worktrees.</div>
+      <div class="space-y-2">
+        <button onclick="window.open('about:blank')" class="w-full text-xs font-semibold py-2 px-3 rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors">
+          ✓ Approve &amp; Deploy
+        </button>
+        <button class="w-full text-xs font-semibold py-2 px-3 rounded border border-zinc-700 hover:border-zinc-500 text-zinc-400 transition-colors">
+          Request Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- LFG MODULE STATUS -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">LFG Module Status</div>
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">WTFS</span><span class="badge badge-green">wired</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">DTF</span><span class="badge badge-green">wired</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">BTAU</span><span class="badge badge-green">wired</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">DEVDRIVE</span><span class="badge badge-amber">stale view</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">STFU</span><span class="badge badge-green">wired</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">SSD</span><span class="badge badge-blue">new · live</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">inbox-watcher</span><span class="badge badge-green">running</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs mono">cache protect</span><span class="badge badge-amber">pending WT-5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASYNC WORK IN FLIGHT -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Agents In Flight</div>
+      <div class="space-y-2">
+        <div class="border border-zinc-700/40 rounded p-2">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="dot dot-blue pulse"></span>
+            <span class="text-xs font-medium">DEVDRIVE module fix</span>
+          </div>
+          <div class="text-xs text-zinc-500 mono">ad8bf322 · fix-agent</div>
+          <div class="text-xs text-zinc-600 mt-1">Fixing wrong volumes, adding cache protection UI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INBOX PROTOCOL -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Inbox Protocol</div>
+      <div class="text-xs text-zinc-500 mb-2">Other sessions drop work here:</div>
+      <div class="bg-zinc-900/60 rounded p-2 mono text-xs text-zinc-400 break-all">
+        ~/.config/lfg/inbox/pending/
+      </div>
+      <div class="mt-2 space-y-1">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">cache-relocate</span>
+          <span class="badge badge-zinc">→ YJ_MORE</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">dtf-protect</span>
+          <span class="badge badge-zinc">→ protected-caches.json</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">volume-query</span>
+          <span class="badge badge-zinc">→ responses/</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">hook-prefetch</span>
+          <span class="badge badge-zinc">→ npm + brew</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STACK -->
+    <div class="card p-3">
+      <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">Stack</div>
+      <div class="space-y-1 text-xs">
+        <div class="flex justify-between"><span class="text-zinc-500">Daemon</span><span class="mono text-zinc-300">Swift 5.9 + XPC</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">Modules</span><span class="mono text-zinc-300">Bash 3.2+</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">UI</span><span class="mono text-zinc-300">AppKit / WebKit</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">State</span><span class="mono text-zinc-300">JSON / Python3</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">LaunchAgents</span><span class="mono text-zinc-300">3 running</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">Version</span><span class="mono text-zinc-300">LFG v2.4.0</span></div>
+      </div>
+    </div>
+
+    <!-- LIVE POLL -->
+    <div class="card p-3">
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">APM</div>
+        <div id="apm-status" class="badge badge-zinc">checking...</div>
+      </div>
+      <div id="apm-detail" class="text-xs text-zinc-600">Polling localhost:3032</div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+// Clock
+function tick() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', {hour12:false});
+}
+tick(); setInterval(tick, 1000);
+
+// APM poll
+function pollAPM() {
+  fetch('http://localhost:3032/api/status', {signal: AbortSignal.timeout(3000)})
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('apm-status').className = 'badge badge-green';
+      document.getElementById('apm-status').textContent = 'online';
+      document.getElementById('apm-detail').textContent = `${d.session_count||'?'} sessions · port 3032`;
+    })
+    .catch(() => {
+      document.getElementById('apm-status').className = 'badge badge-zinc';
+      document.getElementById('apm-status').textContent = 'offline';
+      document.getElementById('apm-detail').textContent = 'APM not reachable';
+    });
+}
+pollAPM(); setInterval(pollAPM, 10000);
+</script>
+</body>
+</html>
