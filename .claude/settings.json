@@ -28,6 +28,50 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/session_init.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/apm_subagent_enrich.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/apm_session_end.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/jeremiah/Developer/ccem/.claude/hooks/apm_session_end.sh"
+          }
+        ]
+      }
     ]
   }
 }

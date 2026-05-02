@@ -1,7 +1,9 @@
 #!/bin/bash
-# PreToolUse hook — CCEM APM 7.0.0
+# PreToolUse hook — CCEM APM 9.0.0
 # Fires before each tool call. Emits detailed heartbeat with tool context,
 # UPM formation metadata, input summary, and distributed tracing spans.
+# Max-payload: includes session_id, project, tool_name, tool_use_id, timestamp,
+# working_dir, git_branch, memory write detection, skill tracking, pattern emission.
 # Always exits 0 to never block Claude Code.
 
 source "$HOME/Developer/ccem/apm/hooks/hook_common.sh"
@@ -12,6 +14,13 @@ TOOL_NAME=$(echo "$INPUT" | _jq "unknown" -r '.tool_name // "unknown"')
 TOOL_USE_ID=$(echo "$INPUT" | _jq "" -r '.tool_use_id // ""')
 CWD=$(echo "$INPUT" | _jq "" -r '.cwd // ""')
 PROJECT_NAME=$(basename "$CWD" 2>/dev/null || echo "unknown")
+NOW_ISO_EARLY=$(now_iso)
+
+# Resolve git branch (non-blocking, 200ms timeout via subshell)
+GIT_BRANCH=""
+if [ -n "$CWD" ] && [ -d "$CWD/.git" ] || git -C "$CWD" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  GIT_BRANCH=$(git -C "$CWD" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+fi
 
 # Extract tool input for contextual payload enrichment
 TOOL_INPUT=$(echo "$INPUT" | _jq "{}" '.tool_input // {}')
@@ -53,6 +62,29 @@ fi
 SKILL_NAME=""
 if [ "$TOOL_NAME" = "Skill" ]; then
   SKILL_NAME=$(echo "$TOOL_INPUT" | _jq "" -r '.skill // ""')
+fi
+
+# Max-payload: detect memory write (Write tool on ~/.claude/projects/*/memory/*.md)
+IS_MEMORY_WRITE="false"
+MEMORY_FILE_NAME=""
+if [ "$TOOL_NAME" = "Write" ] || [ "$TOOL_NAME" = "Edit" ] || [ "$TOOL_NAME" = "MultiEdit" ]; then
+  if echo "$FILE_PATH" | grep -qE '\.claude/projects/.+/memory/.+\.md$'; then
+    IS_MEMORY_WRITE="true"
+    MEMORY_FILE_NAME=$(basename "$FILE_PATH")
+  fi
+fi
+
+# Max-payload: detect Skill invocation (Bash tool running /skill-name pattern)
+IS_SKILL_INVOKE="false"
+INVOKED_SKILL=""
+if [ "$TOOL_NAME" = "Bash" ]; then
+  INVOKED_SKILL=$(echo "$BASH_CMD" | grep -oE '^/[a-zA-Z][a-zA-Z0-9_:-]+' | head -1 | sed 's|^/||' || echo "")
+  [ -n "$INVOKED_SKILL" ] && IS_SKILL_INVOKE="true"
+fi
+# Also detect explicit Skill tool
+if [ "$TOOL_NAME" = "Skill" ] && [ -n "$SKILL_NAME" ]; then
+  IS_SKILL_INVOKE="true"
+  INVOKED_SKILL="$SKILL_NAME"
 fi
 
 # Summarize input keys for general context
@@ -99,9 +131,10 @@ if [ "$HAS_JQ" = "1" ]; then
     }' > "$STATE_DIR/${SESSION_ID}_${TOOL_USE_ID}.json"
 fi
 
-# Build APM 7.0.0 heartbeat payload with full context
+# Build APM 9.0.0 heartbeat payload with max-payload context
 PAYLOAD=$(jq -n \
   --arg agent_id "session-${SESSION_ID}" \
+  --arg session_id "$SESSION_ID" \
   --arg status "working" \
   --arg message "Tool: ${TOOL_NAME} | Starting" \
   --arg formation_id "$FORMATION_ID" \
@@ -113,6 +146,7 @@ PAYLOAD=$(jq -n \
   --arg tool_use_id "$TOOL_USE_ID" \
   --arg project "$PROJECT_NAME" \
   --arg cwd "$CWD" \
+  --arg git_branch "$GIT_BRANCH" \
   --arg input_keys "$INPUT_KEYS" \
   --arg bash_cmd "$BASH_CMD" \
   --arg file_path "$FILE_PATH" \
@@ -126,8 +160,13 @@ PAYLOAD=$(jq -n \
   --arg parent_session_id "$PARENT_SESSION_ID" \
   --arg plugin_context "$PLUGIN_CONTEXT" \
   --arg plugin_name "$PLUGIN_NAME" \
+  --arg is_memory_write "$IS_MEMORY_WRITE" \
+  --arg memory_file_name "$MEMORY_FILE_NAME" \
+  --arg is_skill_invoke "$IS_SKILL_INVOKE" \
+  --arg invoked_skill "$INVOKED_SKILL" \
   '{
     agent_id: $agent_id,
+    session_id: $session_id,
     status: $status,
     message: $message,
     formation_id: $formation_id,
@@ -146,11 +185,16 @@ PAYLOAD=$(jq -n \
       subagent_type: (if $subagent_type != "" then $subagent_type else null end),
       agent_description: (if $agent_desc != "" then $agent_desc else null end),
       agent_isolation: (if $agent_isolation != "" then $agent_isolation else null end),
-      skill_name: (if $skill_name != "" then $skill_name else null end)
+      skill_name: (if $skill_name != "" then $skill_name else null end),
+      is_memory_write: ($is_memory_write == "true"),
+      memory_file: (if $memory_file_name != "" then $memory_file_name else null end),
+      is_skill_invoke: ($is_skill_invoke == "true"),
+      invoked_skill: (if $invoked_skill != "" then $invoked_skill else null end)
     },
     context: {
       project: $project,
-      cwd: $cwd,
+      working_dir: $cwd,
+      git_branch: (if $git_branch != "" then $git_branch else null end),
       formation_role: $formation_role,
       agent_level: ($agent_level | tonumber),
       parent_session_id: (if $parent_session_id != "" then $parent_session_id else null end),
@@ -170,6 +214,40 @@ if [ -n "$TOOL_NAME" ] && [ "$TOOL_NAME" != "unknown" ]; then
     -H "Content-Type: application/json" \
     -d "{\"agent_id\":\"${SESSION_ID}\",\"tool_name\":\"${TOOL_NAME}\",\"action\":\"start\",\"tool_call_id\":\"${TOOL_CALL_ID}\"}" \
     >/dev/null 2>&1 &
+fi
+
+# Max-payload: emit skill tracking if a skill was invoked (fire-and-forget)
+if [ "$IS_SKILL_INVOKE" = "true" ] && [ -n "$INVOKED_SKILL" ]; then
+  SKILL_PAYLOAD=$(jq -n \
+    --arg session_id "$SESSION_ID" \
+    --arg skill "$INVOKED_SKILL" \
+    --arg project "$PROJECT_NAME" \
+    --arg timestamp "$NOW_ISO" \
+    --arg working_dir "$CWD" \
+    --arg git_branch "$GIT_BRANCH" \
+    '{
+      session_id: $session_id,
+      skill: $skill,
+      project: $project,
+      timestamp: $timestamp,
+      args: {working_dir: $working_dir, git_branch: (if $git_branch != "" then $git_branch else null end)}
+    }' 2>/dev/null)
+  curl -s -X POST "$APM_URL/api/skills/track" \
+    -H "Content-Type: application/json" \
+    -d "$SKILL_PAYLOAD" >/dev/null 2>&1 &
+fi
+
+# Max-payload: emit memory-write notification (fire-and-forget)
+if [ "$IS_MEMORY_WRITE" = "true" ] && [ -n "$MEMORY_FILE_NAME" ]; then
+  MEM_PAYLOAD=$(jq -n \
+    --arg message "Memory write: $MEMORY_FILE_NAME" \
+    --arg title "Memory Write" \
+    --arg type "info" \
+    --arg agent_id "session-${SESSION_ID}" \
+    '{message: $message, title: $title, type: $type, agent_id: $agent_id, category: "memory"}' 2>/dev/null)
+  curl -s -X POST "$APM_URL/api/notify" \
+    -H "Content-Type: application/json" \
+    -d "$MEM_PAYLOAD" >/dev/null 2>&1 &
 fi
 
 exit 0

@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YJ64 SwiftUI Storyboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: system-ui, -apple-system, sans-serif; }
+    code, pre, .font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    body { background: #09090b; color: #f4f4f5; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+    /* Sidebar */
+    .sidebar { width: 220px; min-width: 220px; }
+
+    /* State badges */
+    .badge-amber { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-zinc  { background: rgba(113,113,122,0.15); color: #a1a1aa; border: 1px solid rgba(113,113,122,0.3); }
+    .badge-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+    .badge-teal  { background: rgba(20,184,166,0.15); color: #5eead4; border: 1px solid rgba(20,184,166,0.3); }
+    .badge-violet { background: rgba(139,92,246,0.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+
+    /* Card borders by type */
+    .card-amber  { border-left: 3px solid #f59e0b; }
+    .card-zinc   { border-left: 3px solid #52525b; }
+    .card-indigo { border-left: 3px solid #6366f1; }
+    .card-teal   { border-left: 3px solid #14b8a6; }
+
+    /* Wireframe pre blocks */
+    .wireframe {
+      background: #111113;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #a1a1aa;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .wireframe .dim  { color: #3f3f46; }
+    .wireframe .hi   { color: #e4e4e7; }
+    .wireframe .acc  { color: #a5b4fc; }
+    .wireframe .amb  { color: #fbbf24; }
+    .wireframe .teal { color: #5eead4; }
+    .wireframe .grn  { color: #86efac; }
+    .wireframe .red  { color: #fca5a5; }
+    .wireframe .sec  { color: #71717a; }
+
+    /* Annotation table */
+    .ann-table { border-collapse: collapse; width: 100%; }
+    .ann-table th { text-align: left; font-size: 10px; font-weight: 600; color: #71717a; padding: 5px 10px; border-bottom: 1px solid #27272a; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ann-table td { font-size: 11px; padding: 5px 10px; border-bottom: 1px solid #1c1c1e; color: #a1a1aa; vertical-align: top; }
+    .ann-table tr:hover td { background: rgba(39,39,42,0.4); }
+    .ann-table .api  { color: #a5b4fc; font-family: ui-monospace, monospace; font-size: 10px; }
+    .ann-table .bind { color: #5eead4; font-family: ui-monospace, monospace; font-size: 10px; }
+    .ann-table .note { color: #52525b; font-size: 10px; }
+
+    /* Condition strip */
+    .cond-strip {
+      background: #0f0f11;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-family: ui-monospace, monospace;
+      font-size: 10px;
+      color: #71717a;
+      line-height: 1.8;
+    }
+    .cond-strip .t { color: #86efac; }
+    .cond-strip .f { color: #fca5a5; }
+    .cond-strip .v { color: #c4b5fd; }
+    .cond-strip .op { color: #71717a; }
+
+    /* Flow chart */
+    .flow-node {
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-family: ui-monospace, monospace;
+      background: #18181b;
+      color: #a1a1aa;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .flow-node.start { border-color: #6366f1; background: rgba(99,102,241,0.1); color: #c7d2fe; }
+    .flow-node.decision { border-color: #f59e0b; background: rgba(245,158,11,0.08); color: #fde68a; transform: rotate(0deg); border-radius: 2px; }
+    .flow-node.leaf-amber { border-color: #f59e0b; background: rgba(245,158,11,0.12); color: #fbbf24; }
+    .flow-node.leaf-zinc  { border-color: #52525b; background: rgba(82,82,91,0.15); color: #a1a1aa; }
+    .flow-node.leaf-indigo { border-color: #6366f1; background: rgba(99,102,241,0.12); color: #a5b4fc; }
+    .flow-node.leaf-teal  { border-color: #14b8a6; background: rgba(20,184,166,0.1); color: #5eead4; }
+    .flow-arrow { color: #52525b; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .flow-label { font-size: 9px; font-family: ui-monospace, monospace; color: #52525b; margin: 0 4px; }
+
+    /* Sidebar nav */
+    .nav-item {
+      display: block;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: #71717a;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: color 0.1s, background 0.1s;
+      cursor: pointer;
+    }
+    .nav-item:hover { color: #e4e4e7; background: rgba(39,39,42,0.6); }
+    .nav-item.active { color: #a5b4fc; background: rgba(99,102,241,0.1); }
+    .nav-group-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3f3f46;
+      padding: 10px 12px 4px;
+    }
+
+    @keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .pulse { animation: pulse-badge 1.8s ease-in-out infinite; }
+
+    /* Section divider */
+    .section-divider {
+      border: none;
+      border-top: 1px solid #1c1c1e;
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 h-12 flex items-center justify-between px-4 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm flex-shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="rounded bg-violet-500/20 px-2 py-0.5 text-xs font-bold text-violet-300 ring-1 ring-violet-500/30">YJ64</span>
+      <span class="font-mono text-xs text-amber-400 ring-1 ring-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded">SwiftUI</span>
+      <span class="text-zinc-700 text-xs">·</span>
+      <span class="text-xs text-zinc-500">Storyboard</span>
+    </div>
+    <div class="absolute left-1/2 -translate-x-1/2 text-xs font-medium text-zinc-300">
+      YJ64 SwiftUI Storyboard &mdash; Conditional View State Documentation
+    </div>
+    <div class="flex items-center gap-3 text-xs text-zinc-600">
+      <span class="font-mono">Generated 2026-04-11</span>
+    </div>
+  </header>
+
+  <!-- Layout: Sidebar + Main -->
+  <div class="flex flex-1 overflow-hidden" style="height: calc(100vh - 48px);">
+
+    <!-- Sidebar -->
+    <aside class="sidebar border-r border-zinc-800 bg-zinc-950 flex flex-col overflow-y-auto flex-shrink-0 py-2">
+      <div class="nav-group-label">RomBrowserView</div>
+      <a class="nav-item" href="#state-a">
+        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5 align-middle"></span>State A &mdash; Scanning
+      </a>
+      <a class="nav-item" href="#state-b">
+        <span class="inline-block w-2 h-2 rounded-full bg-zinc-500 mr-1.5 align-middle"></span>State B &mdash; Empty / No ROMs
+      </a>
+      <a class="nav-item" href="#state-c">
+        <span class="inline-block w-2 h-2 rounded-full bg-zinc-500 mr-1.5 align-middle"></span>State C &mdash; Empty Search
+      </a>
+      <a class="nav-item" href="#state-d">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>State D &mdash; Grid Mode
+      </a>
+      <a class="nav-item" href="#state-e">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>State E &mdash; List Mode
+      </a>
+
+      <div class="nav-group-label mt-2">SettingsView</div>
+      <a class="nav-item" href="#settings-graphics">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>Graphics Tab
+      </a>
+      <a class="nav-item" href="#settings-graphics-ogl">
+        <span class="inline-block w-2 h-2 rounded-full bg-teal-500 mr-1.5 align-middle"></span>&nbsp;&nbsp;&#8627; OpenGL Warning
+      </a>
+      <a class="nav-item" href="#settings-audio">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>Audio Tab
+      </a>
+      <a class="nav-item" href="#settings-audio-mute">
+        <span class="inline-block w-2 h-2 rounded-full bg-teal-500 mr-1.5 align-middle"></span>&nbsp;&nbsp;&#8627; Muted State
+      </a>
+      <a class="nav-item" href="#settings-input">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>Input Tab
+      </a>
+      <a class="nav-item" href="#settings-paths">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5 align-middle"></span>Paths Tab
+      </a>
+      <a class="nav-item" href="#settings-paths-populated">
+        <span class="inline-block w-2 h-2 rounded-full bg-teal-500 mr-1.5 align-middle"></span>&nbsp;&nbsp;&#8627; Directories Populated
+      </a>
+
+      <div class="nav-group-label mt-2">Reference</div>
+      <a class="nav-item" href="#conditional-tree">
+        <span class="inline-block w-2 h-2 rounded-full bg-violet-500 mr-1.5 align-middle"></span>Conditional Logic Tree
+      </a>
+
+      <div class="mt-auto px-3 pb-3 pt-6">
+        <div class="text-[9px] text-zinc-700 font-mono leading-relaxed">
+          RomBrowserView<br/>
+          SettingsView<br/>
+          Source/Project64-mac/<br/>
+          yj64 &middot; develop
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto px-8 py-8 space-y-10">
+
+      <!-- Page intro -->
+      <div class="mb-2">
+        <h1 class="text-2xl font-bold text-zinc-100 tracking-tight">YJ64 SwiftUI Storyboard</h1>
+        <p class="text-sm text-zinc-500 mt-1">Conditional View State Documentation &middot; Generated 2026-04-11</p>
+        <p class="text-xs text-zinc-600 mt-1 font-mono">Source/Project64-mac/RomBrowser/RomBrowserView.swift &nbsp;&middot;&nbsp; Source/Project64-mac/Settings/SettingsView.swift</p>
+
+        <!-- Legend -->
+        <div class="flex items-center gap-3 mt-4 flex-wrap">
+          <span class="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">Legend:</span>
+          <span class="badge-amber text-[10px] font-mono px-2 py-0.5 rounded">Scanning / Loading</span>
+          <span class="badge-zinc text-[10px] font-mono px-2 py-0.5 rounded">Empty / No Data</span>
+          <span class="badge-indigo text-[10px] font-mono px-2 py-0.5 rounded">Active / Populated</span>
+          <span class="badge-teal text-[10px] font-mono px-2 py-0.5 rounded">Sub-condition</span>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: RomBrowserView ===== -->
+      <section>
+        <div class="flex items-center gap-3 mb-6">
+          <h2 class="text-lg font-bold text-zinc-200">RomBrowserView</h2>
+          <span class="badge-violet text-[10px] font-mono px-2 py-0.5 rounded">Source/Project64-mac/RomBrowser/RomBrowserView.swift</span>
+        </div>
+
+        <!-- State model summary -->
+        <div class="mb-6 bg-zinc-900/60 border border-zinc-800 rounded-lg p-4">
+          <div class="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 mb-2">State Model</div>
+          <div class="grid grid-cols-2 gap-x-8 gap-y-1">
+            <div class="cond-strip text-[10px]">
+<span class="v">@StateObject var scanner</span><span class="op">: RomScannerViewModel</span>
+<span class="v">@State var searchText</span><span class="op">: String = ""</span>
+<span class="v">@State var browserMode</span><span class="op">: BrowserMode = .grid  </span><span class="sec">// .grid | .list</span>
+<span class="op">var filteredRoms</span><span class="op">: [RomInfo] {</span>
+<span class="op">  guard !</span><span class="v">searchText</span><span class="op">.isEmpty else { return </span><span class="v">scanner.roms</span><span class="op"> }</span>
+<span class="op">  return </span><span class="v">scanner.roms</span><span class="op">.filter { $0.title.localizedCaseInsensitiveContains(</span><span class="v">searchText</span><span class="op">) }</span>
+<span class="op">}</span></div>
+            <div>
+              <table class="ann-table">
+                <thead><tr><th>Property</th><th>Type</th><th>Role</th></tr></thead>
+                <tbody>
+                  <tr><td class="api">scanner.isScanning</td><td class="bind">Bool</td><td class="note">Published from RomScannerViewModel — drives toolbar and overlay</td></tr>
+                  <tr><td class="api">scanner.roms</td><td class="bind">[RomInfo]</td><td class="note">Full unfiltered ROM list from scanner</td></tr>
+                  <tr><td class="api">filteredRoms</td><td class="bind">[RomInfo]</td><td class="note">Computed; filters scanner.roms by searchText</td></tr>
+                  <tr><td class="api">searchText</td><td class="bind">String</td><td class="note">Bound to toolbar TextField via $searchText</td></tr>
+                  <tr><td class="api">browserMode</td><td class="bind">BrowserMode</td><td class="note">Enum: .grid / .list; drives Picker and content switch</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- State A ---- -->
+        <div id="state-a" class="card-amber bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="badge-amber text-xs font-mono font-bold px-3 py-1 rounded">State A &mdash; SCANNING</span>
+            <span class="text-xs text-zinc-600">isScanning = true</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if </span><span class="v">scanner</span><span class="op">.</span><span class="t">isScanning</span><span class="op"> == true</span>   <span class="sec">// all other conditions irrelevant; scanning takes priority</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[ Grid | List ]</span><span class="dim">↙disabled</span>  <span class="amb">⟳ scanning...</span><span class="dim"> ◦ </span><span class="acc">"42 ROMs"</span><span class="dim">  [</span><span class="sec">Search...____________</span><span class="dim">]  </span><span class="sec">↺</span><span class="dim">↙disabled  │  ← ToolbarView</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │</span>
+<span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│       │  ← last-known</span>
+<span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│  │</span><span class="sec"> ▓▓▓▓▓▓▓  </span><span class="dim">│       │     grid/list</span>
+<span class="dim">│  │</span><span class="sec"> Game...  </span><span class="dim">│  │</span><span class="sec"> Game...  </span><span class="dim">│  │</span><span class="sec"> Game...  </span><span class="dim">│  │</span><span class="sec"> Game...  </span><span class="dim">│  │</span><span class="sec"> Game...  </span><span class="dim">│       │     beneath</span>
+<span class="dim">│  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │     overlay</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  ╔══════════════════════════════════════════════╗                             │</span>
+<span class="dim">│  ║</span>                                              <span class="dim">║  ← ZStack scanning overlay</span>
+<span class="dim">│  ║</span>         <span class="amb">⟳</span>  <span class="amb">Scanning ROM directory...</span>        <span class="dim">║     .ultraThinMaterial</span>
+<span class="dim">│  ║</span>    <span class="sec">ProgressView().progressViewStyle(.linear)</span>  <span class="dim">║</span>
+<span class="dim">│  ║</span>         <span class="sec">Found 42 ROMs so far</span>               <span class="dim">║</span>
+<span class="dim">│  ║</span>                                              <span class="dim">║</span>
+<span class="dim">│  ╚══════════════════════════════════════════════╝</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Picker("View", selection: $browserMode)</td><td class="bind">$browserMode</td><td class="note">.disabled(scanner.isScanning) — grayed out, non-interactive</td></tr>
+              <tr><td class="api">ProgressView()</td><td class="bind">scanner.isScanning</td><td class="note">Circular spinner style shown in toolbar while isScanning == true</td></tr>
+              <tr><td class="api">Text("\(scanner.roms.count) ROMs")</td><td class="bind">scanner.roms.count</td><td class="note">Live count badge; updates as scanner publishes new roms</td></tr>
+              <tr><td class="api">TextField("Search", text: $searchText)</td><td class="bind">$searchText</td><td class="note">Enabled during scan; filtering is live but scanning overrides content</td></tr>
+              <tr><td class="api">Button(action: reload)</td><td class="bind">scanner.isScanning</td><td class="note">.disabled(scanner.isScanning) — reload suppressed during active scan</td></tr>
+              <tr><td class="api">ZStack overlay</td><td class="bind">scanner.isScanning</td><td class="note">Scanning indicator overlaid on content area; .background(.ultraThinMaterial)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ---- State B ---- -->
+        <div id="state-b" class="card-zinc bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-zinc text-xs font-mono font-bold px-3 py-1 rounded">State B &mdash; EMPTY / NO ROMS</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if !</span><span class="f">scanner.isScanning</span>
+<span class="op">   &amp;&amp; </span><span class="t">filteredRoms.isEmpty</span>
+<span class="op">   &amp;&amp; </span><span class="t">searchText.isEmpty</span>    <span class="sec">// no search — genuinely no ROMs on disk</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[ Grid | List ]</span><span class="dim">        </span><span class="sec">—</span><span class="dim">           </span><span class="sec">"0 ROMs"</span><span class="dim">  [</span><span class="sec">Search...____________</span><span class="dim">]  </span><span class="acc">↺</span><span class="dim">           │  ← Toolbar</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">╭────────────────────────────╮</span>                           <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>                            <span class="dim">│</span>  <span class="dim">← VStack centered</span>          <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">🎮  gamecontroller</span>        <span class="dim">│</span>  <span class="dim">   Image(systemName:)</span>      <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">    (48pt, secondary)</span>     <span class="dim">│</span>  <span class="dim">   .font(.system(48))</span>      <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>                            <span class="dim">│</span>  <span class="dim">   .foregroundStyle(.sec)</span>  <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="hi">"No ROMs Found"</span>           <span class="dim">│</span>  <span class="dim">   .font(.title2)</span>          <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">"Place .z64 .n64 .v64</span>     <span class="dim">│</span>  <span class="dim">   .font(.body) .secondary</span> <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">  in ~/ROMs to begin"</span>    <span class="dim">│</span>                            <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">╰────────────────────────────╯</span>                           <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">ContentUnavailableView / VStack</td><td class="bind">filteredRoms.isEmpty</td><td class="note">Centered layout; use ContentUnavailableView on macOS 14+ or manual VStack</td></tr>
+              <tr><td class="api">Image(systemName: "gamecontroller")</td><td class="bind">—</td><td class="note">.font(.system(size: 48)) .foregroundStyle(.secondary)</td></tr>
+              <tr><td class="api">Text("No ROMs Found")</td><td class="bind">—</td><td class="note">.font(.title2) .fontWeight(.semibold)</td></tr>
+              <tr><td class="api">Text("Place .z64 .n64...")</td><td class="bind">—</td><td class="note">.font(.body) .foregroundStyle(.secondary) .multilineTextAlignment(.center)</td></tr>
+              <tr><td class="api">Text("0 ROMs")</td><td class="bind">filteredRoms.count</td><td class="note">Toolbar badge shows 0; no spinner; Reload button enabled</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ---- State C ---- -->
+        <div id="state-c" class="card-zinc bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-zinc text-xs font-mono font-bold px-3 py-1 rounded">State C &mdash; EMPTY SEARCH</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if !</span><span class="f">scanner.isScanning</span>
+<span class="op">   &amp;&amp; </span><span class="t">filteredRoms.isEmpty</span>
+<span class="op">   &amp;&amp; !</span><span class="f">searchText.isEmpty</span>   <span class="sec">// search active but no matches</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[ Grid | List ]</span><span class="dim">        </span><span class="sec">—</span><span class="dim">           </span><span class="sec">"0 ROMs"</span><span class="dim">  [</span><span class="acc">Mario 64</span><span class="dim"> ✕]  </span><span class="acc">↺</span><span class="dim">                  │  ← Toolbar</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">╭────────────────────────────────╮</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>                                <span class="dim">│</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">🔍  magnifyingglass</span>          <span class="dim">│</span>  <span class="dim">← .font(.system(48))</span>  <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">    (48pt, secondary)</span>       <span class="dim">│</span>  <span class="dim">   .secondary</span>         <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>                                <span class="dim">│</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="hi">"No Results"</span>               <span class="dim">│</span>  <span class="dim">← .font(.title2)</span>      <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">"No ROMs match</span>             <span class="dim">│</span>  <span class="dim">← interpolated string</span> <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">│</span>  <span class="sec">  'Mario 64'"</span>              <span class="dim">│</span>  <span class="dim">   searchText var</span>      <span class="dim">│</span>
+<span class="dim">│</span>                    <span class="dim">╰────────────────────────────────╯</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Image(systemName: "magnifyingglass")</td><td class="bind">—</td><td class="note">.font(.system(size: 48)) .foregroundStyle(.secondary)</td></tr>
+              <tr><td class="api">Text("No Results")</td><td class="bind">—</td><td class="note">.font(.title2) — differs from State B label for clarity</td></tr>
+              <tr><td class="api">Text("No ROMs match '\(searchText)'")</td><td class="bind">searchText</td><td class="note">Interpolated with live searchText; updates as user types</td></tr>
+              <tr><td class="api">TextField clear button (✕)</td><td class="bind">$searchText</td><td class="note">Inline clear button shown when searchText != ""; sets searchText = ""</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ---- State D ---- -->
+        <div id="state-d" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">State D &mdash; GRID MODE</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if !</span><span class="f">scanner.isScanning</span>
+<span class="op">   &amp;&amp; !</span><span class="f">filteredRoms.isEmpty</span>
+<span class="op">   &amp;&amp; </span><span class="v">browserMode</span><span class="op"> == </span><span class="t">.grid</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[▣ Grid</span> <span class="dim">| List ]</span>       <span class="sec">—</span><span class="dim">           </span><span class="grn">"512 ROMs"</span><span class="dim">  [</span><span class="sec">Search...___________</span><span class="dim">]  </span><span class="acc">↺</span><span class="dim">      │  ← Toolbar</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">← ScrollView + LazyVGrid adaptive(min:160, max:200) →</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │</span>
+<span class="dim">│  │              │  │              │  │              │  │              │     │</span>
+<span class="dim">│  │  ┌────────┐  │  │  ┌────────┐  │  │  ┌────────┐  │  │  ┌────────┐  │     │</span>
+<span class="dim">│  │  │</span><span class="sec">▒▒▒▒▒▒▒▒</span><span class="dim">│  │  │  │</span><span class="sec">▒▒▒▒▒▒▒▒</span><span class="dim">│  │  │  │</span><span class="sec">▒▒▒▒▒▒▒▒</span><span class="dim">│  │  │  │</span><span class="sec">▒▒▒▒▒▒▒▒</span><span class="dim">│  │     │  ← 120pt</span>
+<span class="dim">│  │  │</span><span class="dim">        │  │  │  │</span><span class="dim">        │  │  │  │</span><span class="dim">        │  │  │  │</span><span class="dim">        │  │     │     Rectangle()</span>
+<span class="dim">│  │  │</span><span class="dim">   </span><span class="sec">🎮</span><span class="dim">   │  │  │  │</span><span class="dim">   </span><span class="sec">🎮</span><span class="dim">   │  │  │  │</span><span class="dim">   </span><span class="sec">🎮</span><span class="dim">   │  │  │  │</span><span class="dim">   </span><span class="sec">🎮</span><span class="dim">   │  │     │     .fill(accent/15%)</span>
+<span class="dim">│  │  │</span><span class="dim"> 36pt   │  │  │  │</span><span class="dim"> 36pt   │  │  │  │</span><span class="dim"> 36pt   │  │  │  │</span><span class="dim"> 36pt   │  │     │     Image(systemName:</span>
+<span class="dim">│  │  └────────┘  │  │  └────────┘  │  │  └────────┘  │  │  └────────┘  │     │     "gamecontroller.fill")</span>
+<span class="dim">│  │  </span><span class="hi">Super Mario</span><span class="dim"> │  │  </span><span class="hi">The Legend</span><span class="dim">  │  │  </span><span class="hi">GoldenEye</span><span class="dim">   │  │  </span><span class="hi">Mario Kart</span><span class="dim">  │     │  ← .caption 2-line</span>
+<span class="dim">│  │  </span><span class="hi">64</span><span class="dim">          │  │  </span><span class="hi">of Zelda</span><span class="dim">    │  │  </span><span class="hi">007</span><span class="dim">         │  │  </span><span class="hi">64</span><span class="dim">          │     │</span>
+<span class="dim">│  │  </span><span class="sec">(U)</span><span class="dim">         │  │  </span><span class="sec">(U)</span><span class="dim">         │  │  </span><span class="sec">(E)</span><span class="dim">         │  │  </span><span class="sec">(J)</span><span class="dim">         │     │  ← .caption2 .secondary</span>
+<span class="dim">│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘     │</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │</span>
+<span class="dim">│  │</span><span class="sec"> ...          </span><span class="dim">│  │</span><span class="sec"> ...          </span><span class="dim">│  │</span><span class="sec"> ...          </span><span class="dim">│  │</span><span class="sec"> ...          </span><span class="dim">│     │  ← repeats</span>
+<span class="dim">│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘     │</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">LazyVGrid(columns: adaptive(min:160, max:200))</td><td class="bind">filteredRoms</td><td class="note">ForEach(filteredRoms) { rom in RomGridCell(rom: rom) }</td></tr>
+              <tr><td class="api">RomGridCell — Rectangle()</td><td class="bind">—</td><td class="note">.frame(height: 120) .fill(Color.accentColor.opacity(0.15)) — placeholder art</td></tr>
+              <tr><td class="api">Image(systemName: "gamecontroller.fill")</td><td class="bind">—</td><td class="note">.font(.system(size: 36)) .foregroundStyle(.secondary) overlaid on rectangle</td></tr>
+              <tr><td class="api">Text(rom.title)</td><td class="bind">rom.title: String</td><td class="note">.font(.caption) .lineLimit(2) .truncationMode(.tail)</td></tr>
+              <tr><td class="api">Text(rom.region)</td><td class="bind">rom.region: String</td><td class="note">.font(.caption2) .foregroundStyle(.secondary)</td></tr>
+              <tr><td class="api">Picker selection: $browserMode</td><td class="bind">$browserMode</td><td class="note">Selected segment shows .grid; switching triggers view rebuild</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ---- State E ---- -->
+        <div id="state-e" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">State E &mdash; LIST MODE</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if !</span><span class="f">scanner.isScanning</span>
+<span class="op">   &amp;&amp; !</span><span class="f">filteredRoms.isEmpty</span>
+<span class="op">   &amp;&amp; </span><span class="v">browserMode</span><span class="op"> == </span><span class="t">.list</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="dim">[ Grid |</span> <span class="acc">☰ List ]</span>       <span class="sec">—</span><span class="dim">           </span><span class="grn">"512 ROMs"</span><span class="dim">  [</span><span class="sec">Search...___________</span><span class="dim">]  </span><span class="acc">↺</span><span class="dim">      │</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">← SwiftUI Table →</span>                                                            <span class="dim">│</span>
+<span class="dim">│  ┌───────────────────────────────────┬──────────┬──────────────────┬────────┐</span>
+<span class="dim">│  │</span> <span class="hi">Title                             </span><span class="dim">│</span> <span class="hi">Region   </span><span class="dim">│</span> <span class="hi">CRC               </span><span class="dim">│</span> <span class="hi">Size   </span><span class="dim">│  ← TableColumn headers</span>
+<span class="dim">│  │</span><span class="sec"> (min: 200pt flexible)             </span><span class="dim">│</span><span class="sec"> (80pt)   </span><span class="dim">│</span><span class="sec"> (140pt monospaced)</span><span class="dim">│</span><span class="sec">(80pt) </span><span class="dim">│</span>
+<span class="dim">│  ├───────────────────────────────────┼──────────┼──────────────────┼────────┤</span>
+<span class="dim">│  │</span> Super Mario 64 (U) [!]            <span class="dim">│</span> USA      <span class="dim">│</span> <span class="acc">A5B4FC09</span>          <span class="dim">│</span> 64 MB  <span class="dim">│</span>
+<span class="dim">│  ├───────────────────────────────────┼──────────┼──────────────────┼────────┤</span>
+<span class="dim">│  │</span> The Legend of Zelda: OoT          <span class="dim">│</span> USA      <span class="dim">│</span> <span class="acc">EC7011B7</span>          <span class="dim">│</span> 32 MB  <span class="dim">│</span>
+<span class="dim">│  ├───────────────────────────────────┼──────────┼──────────────────┼────────┤</span>
+<span class="dim">│  │</span> GoldenEye 007                     <span class="dim">│</span> PAL      <span class="dim">│</span> <span class="acc">DFEF5E25</span>          <span class="dim">│</span> 16 MB  <span class="dim">│</span>
+<span class="dim">│  ├───────────────────────────────────┼──────────┼──────────────────┼────────┤</span>
+<span class="dim">│  │</span> Mario Kart 64                     <span class="dim">│</span> JPN      <span class="dim">│</span> <span class="acc">3E936B9C</span>          <span class="dim">│</span> 12 MB  <span class="dim">│</span>
+<span class="dim">│  ├───────────────────────────────────┼──────────┼──────────────────┼────────┤</span>
+<span class="dim">│  │</span> <span class="sec">...</span>                               <span class="dim">│</span> <span class="sec">...</span>      <span class="dim">│</span> <span class="sec">...</span>               <span class="dim">│</span> <span class="sec">...</span>    <span class="dim">│</span>
+<span class="dim">│  └───────────────────────────────────┴──────────┴──────────────────┴────────┘</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Table(filteredRoms)</td><td class="bind">filteredRoms: [RomInfo]</td><td class="note">SwiftUI Table; sortable columns; selection binding optional</td></tr>
+              <tr><td class="api">TableColumn("Title", value: \.title)</td><td class="bind">rom.title</td><td class="note">min: 200pt, flexible; truncationMode .tail on overflow</td></tr>
+              <tr><td class="api">TableColumn("Region", value: \.region)</td><td class="bind">rom.region</td><td class="note">Fixed 80pt width</td></tr>
+              <tr><td class="api">TableColumn("CRC", value: \.crc)</td><td class="bind">rom.crc: String</td><td class="note">Fixed 140pt, .font(.system(.body, design: .monospaced))</td></tr>
+              <tr><td class="api">TableColumn("Size")</td><td class="bind">rom.sizeBytes: Int</td><td class="note">Fixed 80pt; formatted as "N MB" via ByteCountFormatter</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ===== SECTION: SettingsView ===== -->
+      <section>
+        <div class="flex items-center gap-3 mb-6">
+          <h2 class="text-lg font-bold text-zinc-200">SettingsView</h2>
+          <span class="badge-violet text-[10px] font-mono px-2 py-0.5 rounded">Source/Project64-mac/Settings/SettingsView.swift</span>
+        </div>
+
+        <!-- TabView overview -->
+        <div class="mb-6 bg-zinc-900/60 border border-zinc-800 rounded-lg p-4">
+          <div class="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 mb-2">TabView Structure</div>
+          <div class="cond-strip text-[10px]">
+<span class="op">TabView {</span>
+<span class="op">  GraphicsSettingsView(model: </span><span class="v">$graphicsModel</span><span class="op">).tabItem { Label("Graphics", ...) }  </span><span class="sec">// item 0</span>
+<span class="op">  AudioSettingsView(model: </span><span class="v">$audioModel</span><span class="op">).tabItem { Label("Audio", ...) }        </span><span class="sec">// item 1</span>
+<span class="op">  InputSettingsView().tabItem { Label("Input", ...) }                            </span><span class="sec">// item 2</span>
+<span class="op">  PathsSettingsView(model: </span><span class="v">$pathsModel</span><span class="op">).tabItem { Label("Paths", ...) }        </span><span class="sec">// item 3</span>
+<span class="op">}</span></div>
+        </div>
+
+        <!-- Settings: Graphics -->
+        <div id="settings-graphics" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">Settings: Graphics Tab</span>
+            <span class="text-xs text-zinc-600">TabView item 0</span>
+          </div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span>  <span class="acc">⚙ Graphics</span> <span class="dim">│ ♫ Audio │ 🎮 Input │ 📁 Paths</span>                                    <span class="dim">│  ← TabView .tabItem</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">Form { Section("Rendering") {</span>                                                <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│    Resolution Scale                                                            │</span>
+<span class="dim">│    ┌───────────────────────────────────────────┐</span>                             <span class="dim">│</span>
+<span class="dim">│    │</span>  <span class="acc">1x Native</span>  <span class="dim">│  2x  │  4x</span>                <span class="dim">│</span>  <span class="dim">← Picker .pickerStyle(.segmented)</span>
+<span class="dim">│    └───────────────────────────────────────────┘</span>                             <span class="dim">│</span>
+<span class="dim">│</span>    <span class="sec">Binding: $model.resolutionScale  Int tags: 1 / 2 / 4</span>                       <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│    Renderer                                                                    │</span>
+<span class="dim">│    ┌───────────────────────────────────────────┐</span>                             <span class="dim">│</span>
+<span class="dim">│    │</span>  <span class="hi">Metal</span>                                 <span class="dim">▾ │</span>  <span class="dim">← Picker .pickerStyle(.menu)</span>
+<span class="dim">│    └───────────────────────────────────────────┘</span>                             <span class="dim">│</span>
+<span class="dim">│</span>    <span class="sec">Binding: $model.rendererType  YJ64RendererType  tag 0: .metal / tag 1: .openGL</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│    VSync                         <span class="acc">    ●○</span>  <span class="dim">← Toggle  Binding: $model.vsyncEnabled</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  }}</span>                                                                            <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Picker("Resolution Scale", selection: $model.resolutionScale)</td><td class="bind">$model.resolutionScale: Int</td><td class="note">.pickerStyle(.segmented); tags 1, 2, 4 map to native / 2x / 4x</td></tr>
+              <tr><td class="api">Picker("Renderer", selection: $model.rendererType)</td><td class="bind">$model.rendererType: YJ64RendererType</td><td class="note">.pickerStyle(.menu); tag 0 = .metal, tag 1 = .openGL</td></tr>
+              <tr><td class="api">Toggle("VSync", isOn: $model.vsyncEnabled)</td><td class="bind">$model.vsyncEnabled: Bool</td><td class="note">Standard macOS form toggle; persisted to UserDefaults</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Graphics — OpenGL sub-condition -->
+        <div id="settings-graphics-ogl" class="card-teal bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-4 ml-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-teal text-xs font-mono font-bold px-3 py-1 rounded">Sub-condition: rendererType == .openGL</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if </span><span class="v">model.rendererType</span><span class="op"> == </span><span class="t">.openGL</span>  <span class="sec">// show advisory note below Renderer picker</span></div>
+
+          <pre class="wireframe">
+<span class="dim">│    Renderer</span>
+<span class="dim">│    ┌───────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="hi">OpenGL</span>                                <span class="dim">▾ │</span>
+<span class="dim">│    └───────────────────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌─────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="amb">⚠</span>  <span class="amb">Metal preferred on Apple Silicon.</span>                   <span class="dim">│  ← advisory note</span>
+<span class="dim">│    │</span>     <span class="sec">OpenGL may have reduced performance.</span>                <span class="dim">│     .foregroundStyle(.orange)</span>
+<span class="dim">│    └─────────────────────────────────────────────────────────┘</span>                   <span class="dim">.font(.callout)</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">if model.rendererType == .openGL { advisory }</td><td class="bind">model.rendererType</td><td class="note">HStack with Image(systemName: "exclamationmark.triangle") + Text; .foregroundStyle(.orange)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Audio -->
+        <div id="settings-audio" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">Settings: Audio Tab</span>
+            <span class="text-xs text-zinc-600">TabView item 1 — muteEnabled = false</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">// Primary state: muteEnabled == </span><span class="f">false</span>  <span class="sec">→ all controls enabled</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span>  <span class="dim">⚙ Graphics │</span> <span class="acc">♫ Audio</span> <span class="dim">│ 🎮 Input │ 📁 Paths</span>                                    <span class="dim">│</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">Form { Section("Playback") {</span>                                                  <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│    Volume</span>
+<span class="dim">│    ┌──────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="hi">Volume</span>  <span class="dim">│───────────────</span><span class="acc">●</span><span class="dim">──────────│  </span><span class="hi">72%</span>        <span class="dim">│</span>  <span class="dim">← Slider(0...100, step:1)</span>
+<span class="dim">│    │</span>          <span class="dim">│  0──────────────────────100│</span>            <span class="dim">│</span>  <span class="dim">   Text("\(volume)%").monospacedDigit()</span>
+<span class="dim">│    └──────────────────────────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│    Mute                          <span class="acc">    ○●</span>  <span class="dim">← Toggle  Binding: $model.muteEnabled</span>
+<span class="dim">│</span>
+<span class="dim">│    Audio Latency                  <span class="sec">Auto</span>   <span class="dim">← HStack + Spacer + Text("Auto")</span>
+<span class="dim">│</span>
+<span class="dim">│  }}</span>                                                                            <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Slider(value: $model.volume, in: 0...100, step: 1)</td><td class="bind">$model.volume: Double</td><td class="note">Within HStack with "Volume" label and Text("\(Int(model.volume))%").monospacedDigit()</td></tr>
+              <tr><td class="api">Toggle("Mute", isOn: $model.muteEnabled)</td><td class="bind">$model.muteEnabled: Bool</td><td class="note">When true, transitions to muted sub-state</td></tr>
+              <tr><td class="api">HStack { Text("Audio Latency") + Spacer + Text("Auto") }</td><td class="bind">—</td><td class="note">Static display; "Auto" secondary color; will be hidden when muted</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Audio — Muted -->
+        <div id="settings-audio-mute" class="card-teal bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-4 ml-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-teal text-xs font-mono font-bold px-3 py-1 rounded">Sub-condition A: muteEnabled = true</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">if </span><span class="v">model.muteEnabled</span><span class="op"> == </span><span class="t">true</span>
+<span class="op">  → Slider </span><span class="f">.opacity(0.4)</span><span class="op">  Latency row </span><span class="f">.hidden()</span></div>
+
+          <pre class="wireframe">
+<span class="dim">│    Volume</span>
+<span class="dim">│    ┌──────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="sec">Volume  │───────────────●──────────│  72%</span>        <span class="dim">│</span>  <span class="dim">← .opacity(0.4) — grayed</span>
+<span class="dim">│    └──────────────────────────────────────────────────┘</span>  <span class="dim">   .disabled(true)</span>
+<span class="dim">│</span>
+<span class="dim">│    Mute                          <span class="acc">    ●○</span>  <span class="sec">(muted: on)</span>
+<span class="dim">│</span>
+<span class="dim">│</span>    <span class="dim">[Audio Latency row hidden via if !model.muteEnabled { ... }]</span>
+<span class="dim">│</span>    <span class="sec">— row omitted from view tree —</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Slider(...).opacity(model.muteEnabled ? 0.4 : 1.0)</td><td class="bind">model.muteEnabled</td><td class="note">Also .disabled(model.muteEnabled) to prevent interaction</td></tr>
+              <tr><td class="api">if !model.muteEnabled { latencyRow }</td><td class="bind">model.muteEnabled</td><td class="note">Latency row removed from view hierarchy, not just hidden</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Input -->
+        <div id="settings-input" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">Settings: Input Tab</span>
+            <span class="text-xs text-zinc-600">TabView item 2</span>
+          </div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span>  <span class="dim">⚙ Graphics │ ♫ Audio │</span> <span class="acc">🎮 Input</span> <span class="dim">│ 📁 Paths</span>                                    <span class="dim">│</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">Form { Section("Controller Mapping") {</span>                                        <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="sec">A / B / Z / Start / D-Pad / C-Buttons / L / R</span>                    <span class="dim">│</span>  <span class="dim">← .footnote .secondary</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="sec">Controller mapping is read from the active input plugin.</span>         <span class="dim">│</span>  <span class="dim">← .caption .secondary</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│    Analog Deadzone</span>
+<span class="dim">│    ┌──────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="hi">Analog Deadzone</span>  <span class="dim">│──────</span><span class="acc">●</span><span class="dim">──────────│  </span><span class="hi">15%</span>         <span class="dim">│</span>  <span class="dim">← Slider(0...1, step:0.01)</span>
+<span class="dim">│    └──────────────────────────────────────────────────┘</span>                    <span class="dim">   Text formatted as Int(val*100)%</span>
+<span class="dim">│</span>
+<span class="dim">│  }}</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">Text("A / B / Z / Start...")</td><td class="bind">—</td><td class="note">.font(.footnote) .foregroundStyle(.secondary) — informational only</td></tr>
+              <tr><td class="api">Text("Controller mapping is read from...")</td><td class="bind">—</td><td class="note">.font(.caption) .foregroundStyle(.secondary)</td></tr>
+              <tr><td class="api">Slider(value: $model.analogDeadzone, in: 0...1, step: 0.01)</td><td class="bind">$model.analogDeadzone: Double</td><td class="note">HStack: label + Slider + Text("\(Int(model.analogDeadzone*100))%").monospacedDigit()</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Paths -->
+        <div id="settings-paths" class="card-indigo bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-indigo text-xs font-mono font-bold px-3 py-1 rounded">Settings: Paths Tab</span>
+            <span class="text-xs text-zinc-600">TabView item 3 — Sub-state A (romDirectories.isEmpty) + Sub-state X (saveStateDirectory = "")</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">// Sub-state A: </span><span class="v">model.romDirectories</span><span class="op">.</span><span class="t">isEmpty</span><span class="op"> == true  </span><span class="sec">→ empty list, Remove All disabled</span>
+<span class="op">// Sub-state X: </span><span class="v">model.saveStateDirectory</span><span class="op"> == </span><span class="f">""</span><span class="op">           </span><span class="sec">→ placeholder text shown</span></div>
+
+          <pre class="wireframe">
+<span class="dim">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span>  <span class="dim">⚙ Graphics │ ♫ Audio │ 🎮 Input │</span> <span class="acc">📁 Paths</span>                                    <span class="dim">│</span>
+<span class="dim">├──────────────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  <span class="dim">Form {</span>                                                                        <span class="dim">│</span>
+<span class="dim">│</span>                                                                                <span class="dim">│</span>
+<span class="dim">│  Section("ROM Directories") {</span>                                                  <span class="dim">│</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="sec">[ List — empty, no rows ]</span>                                       <span class="dim">│</span>  <span class="dim">← Sub-state A</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌───────────────────────────────────┬───────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="acc">+ Add...</span>                          <span class="dim">│</span>  <span class="sec">Remove All</span><span class="dim">↙disabled            │  ← HStack buttons</span>
+<span class="dim">│    └───────────────────────────────────┴───────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│  }</span>
+<span class="dim">│</span>
+<span class="dim">│  Section("Save States") {</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="sec">No directory selected</span>                                           <span class="dim">│</span>  <span class="dim">← Sub-state X: placeholder</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>    <span class="dim">.foregroundStyle(.tertiary)</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌─────────────────┐</span>
+<span class="dim">│    │</span>  <span class="acc">Choose...</span>      <span class="dim">│</span>  <span class="dim">← always enabled</span>
+<span class="dim">│    └─────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│  }}</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────────────┘</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">List(model.romDirectories)</td><td class="bind">model.romDirectories: [URL]</td><td class="note">Sub-state A: empty list shows no rows</td></tr>
+              <tr><td class="api">Button("Remove All")</td><td class="bind">model.romDirectories.isEmpty</td><td class="note">.disabled(model.romDirectories.isEmpty) in Sub-state A</td></tr>
+              <tr><td class="api">Text(placeholder)</td><td class="bind">model.saveStateDirectory: String</td><td class="note">Sub-state X: Text("No directory selected").foregroundStyle(.tertiary) when == ""</td></tr>
+              <tr><td class="api">Button("Choose...")</td><td class="bind">—</td><td class="note">Always enabled; triggers NSOpenPanel for directory selection</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settings: Paths — Populated -->
+        <div id="settings-paths-populated" class="card-teal bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4 mt-4 ml-6">
+          <div class="flex items-center gap-3">
+            <span class="badge-teal text-xs font-mono font-bold px-3 py-1 rounded">Sub-state B + Y: Directories Populated</span>
+          </div>
+
+          <div class="cond-strip">
+<span class="op">// Sub-state B: !</span><span class="t">model.romDirectories.isEmpty</span>    <span class="sec">→ list rows visible, Remove All enabled, swipe-delete active</span>
+<span class="op">// Sub-state Y: </span><span class="v">model.saveStateDirectory</span><span class="op"> != </span><span class="f">""</span>   <span class="sec">→ actual path shown, truncated .middle</span></div>
+
+          <pre class="wireframe">
+<span class="dim">│  Section("ROM Directories") {</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="hi">/Users/jeremiah/ROMs</span>                          <span class="dim">← swipe to delete  │</span>
+<span class="dim">│    ├────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│    │</span>  <span class="hi">/Volumes/GameDrive/.../N64</span>                    <span class="dim">← .middle truncation │</span>
+<span class="dim">│    ├────────────────────────────────────────────────────────────────────┤</span>
+<span class="dim">│    │</span>  <span class="hi">/Users/shared/...</span><span class="sec">emulator/rom</span><span class="hi">...</span><span class="sec">ollection</span>    <span class="dim">← truncated         │  ← .truncationMode(.middle)</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>       <span class="dim">.onDelete swipe gesture</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌───────────────────────────────────┬───────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="acc">+ Add...</span>                          <span class="dim">│</span>  <span class="acc">Remove All</span><span class="dim">↙enabled            │</span>
+<span class="dim">│    └───────────────────────────────────┴───────────────────────────────┘</span>
+<span class="dim">│</span>
+<span class="dim">│  Section("Save States") {</span>
+<span class="dim">│</span>
+<span class="dim">│    ┌────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│    │</span>  <span class="hi">/Users/jeremiah/...states/n64</span>                                   <span class="dim">│</span>  <span class="dim">← Sub-state Y: actual path</span>
+<span class="dim">│    └────────────────────────────────────────────────────────────────────┘</span>    <span class="dim">.truncationMode(.middle)</span></pre>
+
+          <table class="ann-table">
+            <thead><tr><th>SwiftUI API</th><th>Binding / State</th><th>Behavior Note</th></tr></thead>
+            <tbody>
+              <tr><td class="api">ForEach(model.romDirectories, id: \.self)</td><td class="bind">model.romDirectories: [URL]</td><td class="note">.onDelete { model.romDirectories.remove(atOffsets: $0) }</td></tr>
+              <tr><td class="api">Text(url.path).truncationMode(.middle)</td><td class="bind">url: URL</td><td class="note">.lineLimit(1) .truncationMode(.middle) — shows root and tail</td></tr>
+              <tr><td class="api">Button("Remove All")</td><td class="bind">model.romDirectories.isEmpty</td><td class="note">.disabled(model.romDirectories.isEmpty) — enabled in Sub-state B</td></tr>
+              <tr><td class="api">Text(model.saveStateDirectory).truncationMode(.middle)</td><td class="bind">model.saveStateDirectory: String</td><td class="note">Sub-state Y: actual path; .lineLimit(1) .truncationMode(.middle)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ===== SECTION: Conditional Logic Tree ===== -->
+      <section id="conditional-tree">
+        <div class="flex items-center gap-3 mb-6">
+          <h2 class="text-lg font-bold text-zinc-200">Conditional Logic Tree</h2>
+          <span class="badge-violet text-[10px] font-mono px-2 py-0.5 rounded">Full if/switch decision graph</span>
+        </div>
+
+        <!-- RomBrowserView Tree -->
+        <div class="mb-8">
+          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-4">RomBrowserView — Decision Tree</div>
+
+          <!-- Tree rendered in ASCII/CSS -->
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-lg p-6 overflow-x-auto">
+            <div class="flex flex-col items-start gap-0" style="min-width: 760px;">
+
+              <!-- Root -->
+              <div class="flex flex-col items-center w-full">
+                <div class="flow-node start px-4 py-2">body: RomBrowserView</div>
+                <div class="flow-arrow py-1">↓</div>
+              </div>
+
+              <!-- Level 1 decision: isScanning -->
+              <div class="flex flex-col items-center w-full">
+                <div class="flow-node decision px-4 py-2">scanner.isScanning?</div>
+                <div class="flex w-full justify-center gap-16 mt-1">
+                  <!-- True branch -->
+                  <div class="flex flex-col items-center">
+                    <div class="flex items-center gap-1">
+                      <div class="flow-arrow">↙</div>
+                      <span class="flow-label" style="color:#86efac">true</span>
+                    </div>
+                    <div class="flow-node leaf-amber px-3 py-1.5 mt-1">
+                      State A<br/><span style="font-size:9px;color:#78716c">SCANNING</span>
+                    </div>
+                  </div>
+                  <!-- False branch -->
+                  <div class="flex flex-col items-center">
+                    <div class="flex items-center gap-1">
+                      <span class="flow-label" style="color:#fca5a5">false</span>
+                      <div class="flow-arrow">↘</div>
+                    </div>
+                    <div class="flow-node decision px-4 py-2 mt-1">filteredRoms.isEmpty?</div>
+                    <div class="flex gap-10 mt-1">
+                      <!-- isEmpty true -->
+                      <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-1">
+                          <div class="flow-arrow">↙</div>
+                          <span class="flow-label" style="color:#86efac">true</span>
+                        </div>
+                        <div class="flow-node decision px-3 py-1.5 mt-1">searchText.isEmpty?</div>
+                        <div class="flex gap-6 mt-1">
+                          <div class="flex flex-col items-center">
+                            <div class="flex items-center gap-1">
+                              <div class="flow-arrow">↙</div>
+                              <span class="flow-label" style="color:#86efac">true</span>
+                            </div>
+                            <div class="flow-node leaf-zinc px-3 py-1.5 mt-1">
+                              State B<br/><span style="font-size:9px;color:#78716c">EMPTY</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center">
+                            <div class="flex items-center gap-1">
+                              <span class="flow-label" style="color:#fca5a5">false</span>
+                              <div class="flow-arrow">↘</div>
+                            </div>
+                            <div class="flow-node leaf-zinc px-3 py-1.5 mt-1">
+                              State C<br/><span style="font-size:9px;color:#78716c">NO RESULTS</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- isEmpty false -->
+                      <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-1">
+                          <span class="flow-label" style="color:#fca5a5">false</span>
+                          <div class="flow-arrow">↘</div>
+                        </div>
+                        <div class="flow-node decision px-3 py-1.5 mt-1">browserMode?</div>
+                        <div class="flex gap-6 mt-1">
+                          <div class="flex flex-col items-center">
+                            <div class="flex items-center gap-1">
+                              <div class="flow-arrow">↙</div>
+                              <span class="flow-label" style="color:#a5b4fc">.grid</span>
+                            </div>
+                            <div class="flow-node leaf-indigo px-3 py-1.5 mt-1">
+                              State D<br/><span style="font-size:9px;color:#78716c">GRID</span>
+                            </div>
+                          </div>
+                          <div class="flex flex-col items-center">
+                            <div class="flex items-center gap-1">
+                              <span class="flow-label" style="color:#a5b4fc">.list</span>
+                              <div class="flow-arrow">↘</div>
+                            </div>
+                            <div class="flow-node leaf-indigo px-3 py-1.5 mt-1">
+                              State E<br/><span style="font-size:9px;color:#78716c">LIST</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- SettingsView Tree -->
+        <div class="mb-8">
+          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-4">SettingsView — Decision Tree</div>
+
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-lg p-6 overflow-x-auto">
+            <div style="min-width: 820px;">
+
+              <!-- TabView root -->
+              <div class="flex flex-col items-center mb-4">
+                <div class="flow-node start px-4 py-2">SettingsView { TabView }</div>
+                <div class="flow-arrow py-1">↓</div>
+                <div class="flow-node decision px-4 py-2">selectedTab</div>
+              </div>
+
+              <!-- Tab branches -->
+              <div class="flex gap-6 justify-center flex-wrap">
+
+                <!-- Graphics -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <div class="flow-arrow">↓</div>
+                    <span class="flow-label" style="color:#a5b4fc">0: graphics</span>
+                  </div>
+                  <div class="flow-node leaf-indigo px-3 py-1.5">GraphicsForm</div>
+                  <div class="flow-arrow">↓</div>
+                  <div class="flow-node decision px-3 py-1.5">rendererType?</div>
+                  <div class="flex gap-3 mt-1">
+                    <div class="flex flex-col items-center">
+                      <span class="flow-label" style="color:#a5b4fc">.metal</span>
+                      <div class="flow-node leaf-indigo px-2 py-1 mt-1" style="font-size:10px">no advisory</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <span class="flow-label" style="color:#fbbf24">.openGL</span>
+                      <div class="flow-node leaf-teal px-2 py-1 mt-1" style="font-size:10px">⚠ advisory</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Audio -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <div class="flow-arrow">↓</div>
+                    <span class="flow-label" style="color:#a5b4fc">1: audio</span>
+                  </div>
+                  <div class="flow-node leaf-indigo px-3 py-1.5">AudioForm</div>
+                  <div class="flow-arrow">↓</div>
+                  <div class="flow-node decision px-3 py-1.5">muteEnabled?</div>
+                  <div class="flex gap-3 mt-1">
+                    <div class="flex flex-col items-center">
+                      <span class="flow-label" style="color:#fca5a5">false</span>
+                      <div class="flow-node leaf-indigo px-2 py-1 mt-1" style="font-size:10px">full controls</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <span class="flow-label" style="color:#fbbf24">true</span>
+                      <div class="flow-node leaf-teal px-2 py-1 mt-1" style="font-size:10px">slider dim,<br/>latency hidden</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Input -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <div class="flow-arrow">↓</div>
+                    <span class="flow-label" style="color:#a5b4fc">2: input</span>
+                  </div>
+                  <div class="flow-node leaf-indigo px-3 py-1.5">InputForm</div>
+                  <div class="flow-arrow">↓</div>
+                  <div class="flow-node leaf-zinc px-3 py-1.5" style="font-size:10px">static layout<br/>no branches</div>
+                </div>
+
+                <!-- Paths -->
+                <div class="flex flex-col items-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <div class="flow-arrow">↓</div>
+                    <span class="flow-label" style="color:#a5b4fc">3: paths</span>
+                  </div>
+                  <div class="flow-node leaf-indigo px-3 py-1.5">PathsForm</div>
+                  <div class="flow-arrow">↓</div>
+                  <!-- Two parallel decisions -->
+                  <div class="flex gap-3">
+                    <div class="flex flex-col items-center">
+                      <div class="flow-node decision px-2 py-1" style="font-size:10px">romDirs<br/>isEmpty?</div>
+                      <div class="flex gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                          <span class="flow-label" style="color:#86efac">true</span>
+                          <div class="flow-node leaf-zinc px-2 py-1 mt-1" style="font-size:10px">Sub-A<br/>empty list</div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                          <span class="flow-label" style="color:#fca5a5">false</span>
+                          <div class="flow-node leaf-teal px-2 py-1 mt-1" style="font-size:10px">Sub-B<br/>populated</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <div class="flow-node decision px-2 py-1" style="font-size:10px">saveState<br/>Dir == ""?</div>
+                      <div class="flex gap-2 mt-1">
+                        <div class="flex flex-col items-center">
+                          <span class="flow-label" style="color:#86efac">true</span>
+                          <div class="flow-node leaf-zinc px-2 py-1 mt-1" style="font-size:10px">Sub-X<br/>placeholder</div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                          <span class="flow-label" style="color:#fca5a5">false</span>
+                          <div class="flow-node leaf-teal px-2 py-1 mt-1" style="font-size:10px">Sub-Y<br/>path shown</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full SwiftUI pseudo-code summary -->
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5">
+          <div class="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 mb-3">RomBrowserView — Annotated SwiftUI Pseudo-code</div>
+          <pre class="wireframe" style="background:transparent; border:none; padding:0;">
+<span class="acc">var</span> <span class="hi">body</span><span class="sec">: some View {</span>
+  VStack(spacing: 0) {
+    <span class="sec">// ── Toolbar ──────────────────────────────────────────────────────</span>
+    HStack {
+      Picker(<span class="grn">"View"</span>, selection: <span class="teal">$browserMode</span>) { ... }
+        .<span class="acc">disabled</span>(<span class="teal">scanner.isScanning</span>)           <span class="sec">// State A: picker locked</span>
+
+      <span class="acc">if</span> <span class="teal">scanner.isScanning</span> {                   <span class="sec">// State A branch</span>
+        ProgressView()
+      }
+
+      Text(<span class="grn">"\(filteredRoms.count) ROMs"</span>)
+
+      TextField(<span class="grn">"Search"</span>, text: <span class="teal">$searchText</span>)
+
+      Button(<span class="grn">"Reload"</span>, action: reload)
+        .<span class="acc">disabled</span>(<span class="teal">scanner.isScanning</span>)
+    }
+
+    <span class="sec">// ── Content Area ─────────────────────────────────────────────────</span>
+    ZStack {
+      <span class="sec">// Layer 1: last-known content (always rendered)</span>
+      <span class="acc">if</span> !<span class="teal">scanner.isScanning</span> && <span class="teal">filteredRoms.isEmpty</span> && <span class="teal">searchText.isEmpty</span> {
+        EmptyRomsView()                              <span class="sec">// State B</span>
+      } <span class="acc">else if</span> !<span class="teal">scanner.isScanning</span> && <span class="teal">filteredRoms.isEmpty</span> {
+        EmptySearchView(query: <span class="teal">searchText</span>)          <span class="sec">// State C</span>
+      } <span class="acc">else if</span> <span class="teal">browserMode</span> == .<span class="hi">grid</span> {
+        RomGridView(roms: <span class="teal">filteredRoms</span>)             <span class="sec">// State D</span>
+      } <span class="acc">else</span> {
+        RomListView(roms: <span class="teal">filteredRoms</span>)             <span class="sec">// State E</span>
+      }
+
+      <span class="sec">// Layer 2: scanning overlay on top</span>
+      <span class="acc">if</span> <span class="teal">scanner.isScanning</span> {
+        ScanningOverlayView()                        <span class="sec">// State A overlay</span>
+          .background(.ultraThinMaterial)
+      }
+    }
+  }
+}
+
+<span class="acc">var</span> <span class="hi">body</span><span class="sec">: some View {  // SettingsView</span>
+  TabView {
+    GraphicsSettingsView(model: <span class="teal">$graphicsModel</span>)   <span class="sec">// tab 0</span>
+      <span class="sec">// inner: if model.rendererType == .openGL { advisory }</span>
+
+    AudioSettingsView(model: <span class="teal">$audioModel</span>)        <span class="sec">// tab 1</span>
+      <span class="sec">// inner: Slider.opacity(muteEnabled ? 0.4 : 1.0)</span>
+      <span class="sec">//        if !muteEnabled { latencyRow }</span>
+
+    InputSettingsView()                           <span class="sec">// tab 2 — static</span>
+
+    PathsSettingsView(model: <span class="teal">$pathsModel</span>)        <span class="sec">// tab 3</span>
+      <span class="sec">// inner ROM dirs: if romDirectories.isEmpty { emptyList } else { list }</span>
+      <span class="sec">// inner save state: if saveStateDirectory.isEmpty { placeholder } else { path }</span>
+  }
+}</pre>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <div class="py-8 border-t border-zinc-800 mt-8">
+        <div class="flex items-center justify-between text-[10px] font-mono text-zinc-700">
+          <span>YJ64 SwiftUI Storyboard &middot; Source/Project64-mac/</span>
+          <span>Generated 2026-04-11 &middot; develop branch</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Smooth scroll for sidebar nav
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Highlight active nav item on scroll
+    const sections = document.querySelectorAll('[id]');
+    const navItems = document.querySelectorAll('.nav-item');
+    const main = document.querySelector('main');
+
+    main.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 80) current = section.id;
+      });
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + current) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

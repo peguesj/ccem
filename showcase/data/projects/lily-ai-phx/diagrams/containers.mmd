@@ -1,0 +1,46 @@
+graph TB
+    subgraph Client["Client Tier"]
+        Web["Web Browser<br/>(React + Vite)"]
+        Mobile["Mobile<br/>(PWA)"]
+    end
+    
+    subgraph API["API Gateway"]
+        Router["Phoenix Router<br/>(HTTP)"]
+    end
+    
+    subgraph App["Application Tier"]
+        LV["LiveView Handlers<br/>(Real-time)"]
+        Ctx["Context Layer<br/>(Business Logic)"]
+        Auth["Auth Module<br/>(2FA, RBAC)"]
+    end
+    
+    subgraph Data["Data Layer"]
+        Repo["Ecto Repo<br/>(ORM)"]
+        PG["PostgreSQL<br/>(Analytics)"]
+        Cache["Redis<br/>(Sessions)"]
+    end
+    
+    subgraph External["External Services"]
+        SB["Supabase<br/>(Auth)"]
+        Stripe["Stripe<br/>(Billing)"]
+        Email["SendGrid<br/>(Email)"]
+        Claude["Claude API<br/>(AI)"]
+    end
+    
+    Web -->|HTTPS| Router
+    Mobile -->|HTTPS| Router
+    Router -->|Routes| LV
+    LV -->|Logic| Ctx
+    Ctx -->|Auth Check| Auth
+    Ctx -->|Query| Repo
+    Repo -->|SQL| PG
+    Repo -->|Session| Cache
+    
+    Auth -->|Verify| SB
+    Ctx -->|Charge| Stripe
+    Ctx -->|Send| Email
+    Ctx -->|Coach| Claude
+    
+    style App fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
+    style Data fill:#06B6D4,stroke:#0E7490,stroke-width:2px,color:#fff
+    style Client fill:#10B981,stroke:#065F46,stroke-width:2px,color:#fff

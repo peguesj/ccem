@@ -438,6 +438,216 @@
           </div>
         </div>
       </section>
+
+      <!-- ── Doc-Sink Pull-Tab Container ────────────────────────── -->
+      <section id="doc-sink">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-[9px] font-bold uppercase tracking-widest text-gray-600">Documentation</span>
+          <div class="flex-1 h-px bg-[#1e2940]"></div>
+        </div>
+
+        <!-- Tab strip -->
+        <div class="flex items-center gap-1 mb-0 border border-[#1e2940] rounded-t-xl bg-[#0c1120] px-2 pt-2">
+          <button onclick="showDocTab('opsdoc')" id="doctab-opsdoc"
+            class="doc-tab-btn px-3 py-1.5 text-[10px] font-semibold rounded-t border-b-2 border-indigo-500 text-indigo-300 bg-[#030712]">
+            OpsDoc
+          </button>
+          <button onclick="showDocTab('wiki')" id="doctab-wiki"
+            class="doc-tab-btn px-3 py-1.5 text-[10px] font-semibold rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors">
+            Wiki
+          </button>
+          <button onclick="showDocTab('notion')" id="doctab-notion"
+            class="doc-tab-btn px-3 py-1.5 text-[10px] font-semibold rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors">
+            Notion
+          </button>
+          <button onclick="showDocTab('plane-pm')" id="doctab-plane-pm"
+            class="doc-tab-btn px-3 py-1.5 text-[10px] font-semibold rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors">
+            Plane-PM
+          </button>
+          <button onclick="showDocTab('github')" id="doctab-github"
+            class="doc-tab-btn px-3 py-1.5 text-[10px] font-semibold rounded-t border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition-colors">
+            GitHub
+          </button>
+        </div>
+
+        <!-- Tab panels -->
+        <div class="rounded-b-xl border border-t-0 border-[#1e2940] bg-[#0c1120]">
+
+          <!-- OpsDoc Panel -->
+          <div id="docpanel-opsdoc" class="doc-panel p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">Production Runbooks</span>
+              <a href="http://localhost:4000/docs" target="_blank" class="text-[9px] text-indigo-400 hover:text-indigo-300">Open app docs ↗</a>
+            </div>
+            <div class="grid grid-cols-1 gap-2" id="opsdoc-list">
+              <a href="#" class="flex items-start gap-2.5 p-2.5 rounded-lg border border-[#1e2940] hover:border-indigo-700/50 hover:bg-indigo-950/20 transition-all group cursor-default">
+                <div class="w-6 h-6 rounded bg-amber-900/40 border border-amber-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="text-amber-400 text-[10px]">⚙</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-white group-hover:text-indigo-200 transition-colors">Deployment Runbook</div>
+                  <div class="text-[9px] text-gray-500 mt-0.5">Elixir/Phoenix · Docker · systemd · rollback · env vars</div>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-amber-900/30 text-amber-400 border border-amber-800/30">OPS-05</span>
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-[#1e2940] text-gray-500">deployment-runbook.md</span>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="flex items-start gap-2.5 p-2.5 rounded-lg border border-[#1e2940] hover:border-indigo-700/50 hover:bg-indigo-950/20 transition-all group cursor-default">
+                <div class="w-6 h-6 rounded bg-blue-900/40 border border-blue-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="text-blue-400 text-[10px]">⇅</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-white group-hover:text-indigo-200 transition-colors">Import Pipeline Runbook</div>
+                  <div class="text-[9px] text-gray-500 mt-0.5">SpotDL · Oban workers · Spotify auth · recovery</div>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-blue-900/30 text-blue-400 border border-blue-800/30">OPS-01</span>
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-[#1e2940] text-gray-500">import-pipeline-runbook.md</span>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="flex items-start gap-2.5 p-2.5 rounded-lg border border-[#1e2940] hover:border-indigo-700/50 hover:bg-indigo-950/20 transition-all group cursor-default">
+                <div class="w-6 h-6 rounded bg-emerald-900/40 border border-emerald-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="text-emerald-400 text-[10px]">♪</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-white group-hover:text-indigo-200 transition-colors">Stem Separation Runbook</div>
+                  <div class="text-[9px] text-gray-500 mt-0.5">Demucs · lalal.ai · GPU OOM · model selection</div>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-emerald-900/30 text-emerald-400 border border-emerald-800/30">OPS-02</span>
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-[#1e2940] text-gray-500">stem-separation-runbook.md</span>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="flex items-start gap-2.5 p-2.5 rounded-lg border border-[#1e2940] hover:border-indigo-700/50 hover:bg-indigo-950/20 transition-all group cursor-default">
+                <div class="w-6 h-6 rounded bg-purple-900/40 border border-purple-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="text-purple-400 text-[10px]">♫</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-white group-hover:text-indigo-200 transition-colors">MIDI Device Runbook</div>
+                  <div class="text-[9px] text-gray-500 mt-0.5">DeviceManager · Midiex NIF · ioreg · hot-plug</div>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-purple-900/30 text-purple-400 border border-purple-800/30">OPS-03</span>
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-[#1e2940] text-gray-500">midi-device-runbook.md</span>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="flex items-start gap-2.5 p-2.5 rounded-lg border border-[#1e2940] hover:border-indigo-700/50 hover:bg-indigo-950/20 transition-all group cursor-default">
+                <div class="w-6 h-6 rounded bg-cyan-900/40 border border-cyan-700/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <span class="text-cyan-400 text-[10px]">◫</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-white group-hover:text-indigo-200 transition-colors">DAW Project Runbook</div>
+                  <div class="text-[9px] text-gray-500 mt-0.5">DawContext · TrackClassifier · Oban daw_classify queue</div>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-cyan-900/30 text-cyan-400 border border-cyan-800/30">OPS-04</span>
+                    <span class="px-1 py-0.5 text-[8px] rounded bg-[#1e2940] text-gray-500">daw-project-runbook.md</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Wiki Panel -->
+          <div id="docpanel-wiki" class="doc-panel p-4 hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">Plane Wiki</span>
+              <a href="https://plane.lgtm.build" target="_blank" class="text-[9px] text-indigo-400 hover:text-indigo-300">Open Plane ↗</a>
+            </div>
+            <div id="wiki-tree" class="space-y-1.5">
+              <div class="text-[10px] text-gray-500 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+                Loading wiki pages from Plane…
+              </div>
+            </div>
+          </div>
+
+          <!-- Notion Panel -->
+          <div id="docpanel-notion" class="doc-panel p-4 hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">Notion</span>
+            </div>
+            <div id="notion-content">
+              <div class="rounded-lg border border-amber-800/30 bg-amber-950/20 p-3 text-[10px] text-amber-300">
+                <div class="font-semibold mb-1">NOTION_TOKEN not configured</div>
+                <div class="text-amber-400/70">Set <code class="font-mono">NOTION_TOKEN</code> environment variable and restart the APM server to enable Notion sync.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plane-PM Panel -->
+          <div id="docpanel-plane-pm" class="doc-panel p-4 hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">Plane PM</span>
+              <a href="https://plane.lgtm.build" target="_blank" class="text-[9px] text-indigo-400 hover:text-indigo-300">Open board ↗</a>
+            </div>
+            <div id="plane-pm-tree" class="space-y-2">
+              <div class="rounded-lg border border-[#1e2940] bg-[#030712] p-2.5">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  <span class="text-[10px] font-semibold text-white">SFA v4.7.0 UAT + Docs</span>
+                  <span class="ml-auto text-[8px] font-mono text-gray-600">SFA-262..SFA-291</span>
+                </div>
+                <div class="pl-3 space-y-1" id="plane-issues-list">
+                  <div class="text-[9px] text-gray-500 flex items-center gap-1.5">
+                    <div class="w-1 h-1 rounded-full bg-amber-500 animate-pulse"></div>
+                    Fetching issues…
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GitHub Panel -->
+          <div id="docpanel-github" class="doc-panel p-4 hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">GitHub</span>
+              <a href="https://github.com/peguesj/sound-forge-alchemy" target="_blank" class="text-[9px] text-indigo-400 hover:text-indigo-300">Open repo ↗</a>
+            </div>
+            <div class="space-y-2">
+              <div class="rounded-lg border border-[#1e2940] bg-[#030712] p-2.5 hover:border-indigo-700/40 transition-colors cursor-pointer"
+                onclick="window.open('https://github.com/peguesj/sound-forge-alchemy/blob/main/README.md','_blank')">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-[11px]">📄</span>
+                  <span class="text-[10px] font-semibold text-white">README.md</span>
+                  <span class="ml-auto text-[8px] text-gray-600">main</span>
+                </div>
+                <div class="text-[9px] text-gray-500 mt-1">Project overview, setup, stack, feature map</div>
+              </div>
+              <div class="rounded-lg border border-[#1e2940] bg-[#030712] p-2.5 hover:border-indigo-700/40 transition-colors cursor-pointer"
+                onclick="window.open('https://github.com/peguesj/sound-forge-alchemy/blob/main/CHANGELOG.md','_blank')">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-[11px]">📋</span>
+                  <span class="text-[10px] font-semibold text-white">CHANGELOG.md</span>
+                  <span class="ml-auto text-[8px] text-gray-600">main</span>
+                </div>
+                <div class="text-[9px] text-gray-500 mt-1">All versions from v1.0.0 through v4.7.0-dev</div>
+              </div>
+              <div class="rounded-lg border border-[#1e2940] bg-[#030712] p-2.5 hover:border-indigo-700/40 transition-colors cursor-pointer"
+                onclick="window.open('https://github.com/peguesj/sound-forge-alchemy/tree/main/docs','_blank')">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-[11px]">📁</span>
+                  <span class="text-[10px] font-semibold text-white">docs/</span>
+                  <span class="ml-auto text-[8px] text-gray-600">guides</span>
+                </div>
+                <div class="text-[9px] text-gray-500 mt-1">Runbooks, deployment guides, architecture notes</div>
+              </div>
+              <div class="rounded-lg border border-[#1e2940] bg-[#030712] p-2.5 hover:border-indigo-700/40 transition-colors cursor-pointer"
+                onclick="window.open('https://github.com/peguesj/sound-forge-alchemy/blob/main/CLAUDE.md','_blank')">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-[11px]">🤖</span>
+                  <span class="text-[10px] font-semibold text-white">CLAUDE.md</span>
+                  <span class="ml-auto text-[8px] text-gray-600">main</span>
+                </div>
+                <div class="text-[9px] text-gray-500 mt-1">Agent instructions, stack context, PM skills</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end tab panels -->
+      </section>
+      <!-- ── /Doc-Sink Pull-Tab Container ────────────────────────── -->
+
     </div>
   </main>
 
@@ -897,6 +1107,100 @@
   }
 
   init();
+
+  // ── Doc-Sink Tab System ─────────────────────────────────────────
+  const DOC_TABS = ['opsdoc', 'wiki', 'notion', 'plane-pm', 'github'];
+
+  function showDocTab(tabId) {
+    DOC_TABS.forEach(id => {
+      const panel = document.getElementById('docpanel-' + id);
+      const btn   = document.getElementById('doctab-' + id);
+      if (!panel || !btn) return;
+      const active = id === tabId;
+      panel.classList.toggle('hidden', !active);
+      if (active) {
+        btn.classList.remove('text-gray-500', 'border-transparent');
+        btn.classList.add('text-indigo-300', 'border-indigo-500', 'bg-[#030712]');
+      } else {
+        btn.classList.remove('text-indigo-300', 'border-indigo-500', 'bg-[#030712]');
+        btn.classList.add('text-gray-500', 'border-transparent');
+      }
+    });
+
+    // Lazy-load dynamic content on first open
+    if (tabId === 'wiki') loadWikiTree();
+    if (tabId === 'plane-pm') loadPlaneIssues();
+    if (tabId === 'notion') checkNotionToken();
+  }
+
+  async function loadWikiTree() {
+    const el = document.getElementById('wiki-tree');
+    if (!el || el.dataset.loaded) return;
+    el.dataset.loaded = '1';
+    try {
+      const r = await fetch('http://localhost:3032/api/wiki/pages?project=sfa', { signal: AbortSignal.timeout(4000) });
+      const pages = await r.json();
+      if (!Array.isArray(pages) || pages.length === 0) throw new Error('empty');
+      el.innerHTML = pages.map(p => `
+        <div class="flex items-center gap-2 py-1 px-2 rounded hover:bg-[#1e2940]/50 cursor-pointer text-[10px]"
+          onclick="window.open('${p.url || '#'}','_blank')">
+          <span class="text-gray-600">📄</span>
+          <span class="text-gray-300">${p.title || p.name || 'Untitled'}</span>
+          <span class="ml-auto text-[8px] text-gray-600 font-mono">${p.updated_at ? p.updated_at.slice(0,10) : ''}</span>
+        </div>`).join('');
+    } catch {
+      el.innerHTML = `
+        <div class="text-[9px] text-gray-500">
+          Wiki pages load when the Plane API is reachable.<br>
+          <a href="https://plane.lgtm.build" target="_blank" class="text-indigo-400 hover:text-indigo-300">Open Plane ↗</a> to view pages directly.
+        </div>`;
+    }
+  }
+
+  async function loadPlaneIssues() {
+    const el = document.getElementById('plane-issues-list');
+    if (!el || el.dataset.loaded) return;
+    el.dataset.loaded = '1';
+    try {
+      const r = await fetch('http://localhost:3032/api/plane/issues?project=sfa&limit=30', { signal: AbortSignal.timeout(4000) });
+      const issues = await r.json();
+      if (!Array.isArray(issues) || issues.length === 0) throw new Error('empty');
+      const stateColors = { Done: '#10b981', 'In Progress': '#3b82f6', Backlog: '#6b7280' };
+      el.innerHTML = issues.map(i => {
+        const color = stateColors[i.state] || '#6b7280';
+        return `<div class="flex items-center gap-1.5 py-0.5 text-[9px]">
+          <div class="w-1 h-1 rounded-full shrink-0" style="background:${color}"></div>
+          <span class="font-mono text-gray-600">${i.sequence_id || ''}</span>
+          <span class="text-gray-400 truncate">${i.name || i.title || ''}</span>
+          <span class="ml-auto shrink-0 font-mono text-[8px]" style="color:${color}">${i.state || ''}</span>
+        </div>`;
+      }).join('');
+    } catch {
+      el.innerHTML = `<div class="text-[9px] text-gray-500">
+        Issues load when Plane API is reachable.<br>
+        <a href="https://plane.lgtm.build" target="_blank" class="text-indigo-400 hover:text-indigo-300">Open board ↗</a>
+      </div>`;
+    }
+  }
+
+  async function checkNotionToken() {
+    const el = document.getElementById('notion-content');
+    if (!el || el.dataset.loaded) return;
+    el.dataset.loaded = '1';
+    try {
+      const r = await fetch('http://localhost:3032/api/notion/status', { signal: AbortSignal.timeout(3000) });
+      const data = await r.json();
+      if (data.configured) {
+        el.innerHTML = `<div class="text-[10px] text-emerald-400 flex items-center gap-2">
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+          Notion connected — <a href="${data.page_url || '#'}" target="_blank" class="text-indigo-400 hover:text-indigo-300 ml-1">Open workspace ↗</a>
+        </div>`;
+      }
+    } catch { /* keep not-configured state */ }
+  }
+
+  // Initialize first tab active
+  showDocTab('opsdoc');
 </script>
 </body>
 </html>

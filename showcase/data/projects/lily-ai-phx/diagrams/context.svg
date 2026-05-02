@@ -1,0 +1,173 @@
+<svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" style="width:100%" role="img" aria-label="C4 Context Diagram - Lily Mental Health Platform">
+  <defs>
+    <marker id="ctx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#71717a"/>
+    </marker>
+    <marker id="ctx-arrow-dash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#52525b"/>
+    </marker>
+    <filter id="ctx-shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background subtle grid -->
+  <rect width="800" height="520" fill="transparent"/>
+
+  <!-- ===== ACTORS (Top Row) ===== -->
+  <!-- Dashed grouping box -->
+  <rect x="145" y="12" width="510" height="72" rx="6" fill="none" stroke="#3f3f46" stroke-dasharray="4" opacity="0.5"/>
+  <text x="155" y="26" fill="#71717a" font-size="9" font-family="system-ui">Actors</text>
+
+  <!-- User -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="160" y="32" width="130" height="44" rx="8" fill="#0c2d3e" stroke="#06b6d4" stroke-width="1.5"/>
+    <circle cx="183" cy="48" r="7" fill="none" stroke="#06b6d4" stroke-width="1"/>
+    <line x1="183" y1="55" x2="183" y2="64" stroke="#06b6d4" stroke-width="1"/>
+    <line x1="176" y1="58" x2="190" y2="58" stroke="#06b6d4" stroke-width="1"/>
+    <text x="198" y="51" fill="#06b6d4" font-size="11" font-family="system-ui" font-weight="600">User</text>
+    <text x="198" y="63" fill="#52525b" font-size="8" font-family="system-ui">(Patient)</text>
+  </g>
+
+  <!-- Therapist -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="335" y="32" width="130" height="44" rx="8" fill="#1e1533" stroke="#a855f7" stroke-width="1.5"/>
+    <circle cx="358" cy="48" r="7" fill="none" stroke="#a855f7" stroke-width="1"/>
+    <line x1="358" y1="55" x2="358" y2="64" stroke="#a855f7" stroke-width="1"/>
+    <line x1="351" y1="58" x2="365" y2="58" stroke="#a855f7" stroke-width="1"/>
+    <text x="373" y="51" fill="#a855f7" font-size="11" font-family="system-ui" font-weight="600">Therapist</text>
+    <text x="373" y="63" fill="#52525b" font-size="8" font-family="system-ui">(Licensed Pro)</text>
+  </g>
+
+  <!-- Admin -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="510" y="32" width="130" height="44" rx="8" fill="#2d1229" stroke="#ec4899" stroke-width="1.5"/>
+    <circle cx="533" cy="48" r="7" fill="none" stroke="#ec4899" stroke-width="1"/>
+    <line x1="533" y1="55" x2="533" y2="64" stroke="#ec4899" stroke-width="1"/>
+    <line x1="526" y1="58" x2="540" y2="58" stroke="#ec4899" stroke-width="1"/>
+    <text x="548" y="51" fill="#ec4899" font-size="11" font-family="system-ui" font-weight="600">Admin</text>
+    <text x="548" y="63" fill="#52525b" font-size="8" font-family="system-ui">(Operations)</text>
+  </g>
+
+  <!-- ===== ARROWS: Actors -> Platform ===== -->
+  <!-- User -> Platform -->
+  <line x1="225" y1="76" x2="328" y2="188" stroke="#71717a" stroke-width="1" marker-end="url(#ctx-arrow)"/>
+  <text x="245" y="135" fill="#52525b" font-size="7" font-family="ui-monospace, monospace" transform="rotate(27, 245, 135)">Quizzes, Matching</text>
+
+  <!-- Therapist -> Platform -->
+  <line x1="400" y1="76" x2="400" y2="188" stroke="#71717a" stroke-width="1" marker-end="url(#ctx-arrow)"/>
+  <text x="406" y="140" fill="#52525b" font-size="7" font-family="ui-monospace, monospace">Profile, Schedule</text>
+
+  <!-- Admin -> Platform -->
+  <line x1="575" y1="76" x2="472" y2="188" stroke="#71717a" stroke-width="1" marker-end="url(#ctx-arrow)"/>
+  <text x="510" y="135" fill="#52525b" font-size="7" font-family="ui-monospace, monospace" transform="rotate(-27, 510, 135)">CMS, Analytics</text>
+
+  <!-- ===== PLATFORM (Center) ===== -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="240" y="190" width="320" height="100" rx="8" fill="#1a1740" stroke="#6366f1" stroke-width="2.5"/>
+    <text x="400" y="225" text-anchor="middle" fill="#e4e4e7" font-size="16" font-family="system-ui" font-weight="700">Lily Platform</text>
+    <text x="400" y="245" text-anchor="middle" fill="#a5b4fc" font-size="10" font-family="system-ui">Mental Health SaaS</text>
+    <text x="400" y="262" text-anchor="middle" fill="#52525b" font-size="8" font-family="ui-monospace, monospace">Phoenix 1.8 | LiveView | Elixir 1.19</text>
+    <text x="400" y="276" text-anchor="middle" fill="#52525b" font-size="8" font-family="ui-monospace, monospace">30 LiveViews | 19 Contexts | 51 Schemas</text>
+  </g>
+
+  <!-- ===== ARROWS: Platform -> Services ===== -->
+  <!-- To Supabase -->
+  <line x1="290" y1="290" x2="108" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="175" y="335" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace" transform="rotate(22, 175, 335)">Auth</text>
+
+  <!-- To Stripe -->
+  <line x1="340" y1="290" x2="248" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="278" y="335" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Billing</text>
+
+  <!-- To PayPal -->
+  <line x1="380" y1="290" x2="388" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="388" y="340" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Orders</text>
+
+  <!-- To SendGrid -->
+  <line x1="420" y1="290" x2="528" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="470" y="335" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Email</text>
+
+  <!-- To Claude AI -->
+  <line x1="480" y1="290" x2="618" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="555" y="335" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Coach AI</text>
+
+  <!-- To Azure -->
+  <line x1="520" y1="290" x2="718" y2="370" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+  <text x="630" y="335" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Hosting</text>
+
+  <!-- ===== EXTERNAL SERVICES (Bottom Row) ===== -->
+  <!-- Dashed grouping box -->
+  <rect x="35" y="358" width="730" height="72" rx="6" fill="none" stroke="#3f3f46" stroke-dasharray="4" opacity="0.5"/>
+  <text x="45" y="372" fill="#71717a" font-size="9" font-family="system-ui">External Services</text>
+
+  <!-- Supabase -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="50" y="380" width="110" height="40" rx="8" fill="#052e16" stroke="#10b981" stroke-width="1.5"/>
+    <text x="105" y="398" text-anchor="middle" fill="#10b981" font-size="10" font-family="system-ui" font-weight="600">Supabase</text>
+    <text x="105" y="411" text-anchor="middle" fill="#065f46" font-size="8" font-family="system-ui">Auth + DB</text>
+  </g>
+
+  <!-- Stripe -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="180" y="380" width="110" height="40" rx="8" fill="#0c1e3e" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="235" y="398" text-anchor="middle" fill="#3b82f6" font-size="10" font-family="system-ui" font-weight="600">Stripe</text>
+    <text x="235" y="411" text-anchor="middle" fill="#1e3a5f" font-size="8" font-family="system-ui">Subscriptions</text>
+  </g>
+
+  <!-- PayPal -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="310" y="380" width="110" height="40" rx="8" fill="#0c1e3e" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="365" y="398" text-anchor="middle" fill="#3b82f6" font-size="10" font-family="system-ui" font-weight="600">PayPal</text>
+    <text x="365" y="411" text-anchor="middle" fill="#1e3a5f" font-size="8" font-family="system-ui">Orders API v2</text>
+  </g>
+
+  <!-- SendGrid -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="440" y="380" width="110" height="40" rx="8" fill="#2d1f06" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="495" y="398" text-anchor="middle" fill="#f59e0b" font-size="10" font-family="system-ui" font-weight="600">SendGrid</text>
+    <text x="495" y="411" text-anchor="middle" fill="#78350f" font-size="8" font-family="system-ui">2FA + Alerts</text>
+  </g>
+
+  <!-- Claude AI -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="570" y="380" width="110" height="40" rx="8" fill="#1e1533" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="625" y="398" text-anchor="middle" fill="#8b5cf6" font-size="10" font-family="system-ui" font-weight="600">Claude AI</text>
+    <text x="625" y="411" text-anchor="middle" fill="#4c1d95" font-size="8" font-family="system-ui">Wellness Coach</text>
+  </g>
+
+  <!-- Azure -->
+  <g filter="url(#ctx-shadow)">
+    <rect x="700" y="380" width="110" height="40" rx="8" fill="#0c2d3e" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="755" y="398" text-anchor="middle" fill="#06b6d4" font-size="10" font-family="system-ui" font-weight="600">Azure</text>
+    <text x="755" y="411" text-anchor="middle" fill="#164e63" font-size="8" font-family="system-ui">Container Apps</text>
+  </g>
+
+  <!-- ===== LEGEND ===== -->
+  <g transform="translate(180, 460)">
+    <rect x="0" y="0" width="440" height="32" rx="6" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Actor -->
+    <rect x="16" y="9" width="10" height="10" rx="2" fill="#06b6d4" opacity="0.3" stroke="#06b6d4" stroke-width="0.5"/>
+    <text x="32" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Actor</text>
+
+    <!-- Platform -->
+    <rect x="82" y="9" width="10" height="10" rx="2" fill="#6366f1" opacity="0.3" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="98" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Platform</text>
+
+    <!-- External -->
+    <rect x="170" y="9" width="10" height="10" rx="2" fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="0.5"/>
+    <text x="186" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">External Service</text>
+
+    <!-- Solid arrow -->
+    <line x1="290" y1="14" x2="310" y2="14" stroke="#71717a" stroke-width="1" marker-end="url(#ctx-arrow)"/>
+    <text x="316" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Uses</text>
+
+    <!-- Dashed arrow -->
+    <line x1="352" y1="14" x2="372" y2="14" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ctx-arrow-dash)"/>
+    <text x="378" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Integrates</text>
+  </g>
+
+  <!-- Title watermark -->
+  <text x="400" y="510" text-anchor="middle" fill="#27272a" font-size="8" font-family="system-ui">Lily Platform -- C4 System Context</text>
+</svg>
