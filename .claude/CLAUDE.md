@@ -389,11 +389,11 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - After Wave 3: `mix compile --warnings-as-errors` required
 
 ### Wave 4: Observe Secondary + TDD (5 stories, depends on Wave 3)
-- [ ] **CP-179**: Observe: Formations LiveView (tree + matrix + list + dot layout modes) (US-454)
-- [ ] **CP-180**: Observe: Timeline LiveView (swim-lane, 15m→24h window) (US-455)
-- [ ] **CP-181**: Observe: Conversations LiveView (live transcript, CoWork split) (US-456)
-- [ ] **CP-182**: Observe: Tool Calls + A2A + Architecture LiveViews (US-457)
-- [ ] **CP-183**: Observe Wave 3 TDD suite (Dashboard, Fleet, Session Detail, Auth v9) (US-458)
+- [x] **CP-179**: Observe: Formations LiveView (tree + matrix + list + dot layout modes) (US-454)
+- [x] **CP-180**: Observe: Timeline LiveView (swim-lane, 15m→24h window) (US-455)
+- [x] **CP-181**: Observe: Conversations LiveView (live transcript, CoWork split) (US-456)
+- [x] **CP-182**: Observe: Tool Calls + A2A + Architecture LiveViews (US-457)
+- [x] **CP-183**: Observe Wave 3 TDD suite (Dashboard, Fleet, Session Detail, Auth v9) (US-458)
 - After Wave 4: `mix compile --warnings-as-errors` required AND `mix test --only observe_wave3` ✓
 
 ### Wave 5: Measure Section (3 stories, parallel with Wave 6, depends on Wave 2)

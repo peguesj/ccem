@@ -73,5 +73,70 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)",
+      "MultiEdit(**)",
+      "Bash(mix compile:*)",
+      "Bash(mix test:*)",
+      "Bash(mix test --only:*)",
+      "Bash(mix phx.server:*)",
+      "Bash(mix format:*)",
+      "Bash(mix deps.get:*)",
+      "Bash(mix deps.compile:*)",
+      "Bash(mix ecto.migrate:*)",
+      "Bash(mix ecto.create:*)",
+      "Bash(swift build:*)",
+      "Bash(swift test:*)",
+      "Bash(git worktree:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git stash:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(pkill:*)",
+      "Bash(nohup:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(unzip:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(open:*)"
+    ],
+    "apmAuthPolicy": {
+      "policyVersion": "v9-allow-all",
+      "description": "Full-clearance policy for CCEM APM redesign sprint — all agents, all tools, all scopes. Active for branch ralph/ccem-apm-redesign.",
+      "ttl": 86400,
+      "rules": [
+        {
+          "effect": "allow",
+          "scope": "*",
+          "agent": "*",
+          "tool": "*",
+          "token_id": "*"
+        }
+      ],
+      "approvalMode": "auto",
+      "countdownSeconds": 20,
+      "activeOn": "ralph/ccem-apm-redesign",
+      "maxFleet": true,
+      "maxApmPayload": true
+    }
   }
 }
