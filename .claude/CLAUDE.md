@@ -403,9 +403,9 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - After Wave 5: `mix compile --warnings-as-errors` required
 
 ### Wave 6: Intelligence Section (3 stories, parallel with Wave 5, depends on Wave 2)
-- [ ] **CP-187**: Intelligence: Skills + Skill Drift LiveViews (US-462)
-- [ ] **CP-188**: Intelligence: Library + Memory LiveViews (US-463)
-- [ ] **CP-189**: Intelligence: Orchestration + Intake + Alignment LiveViews (US-464)
+- [x] **CP-187**: Intelligence: Skills + Skill Drift LiveViews (US-462)
+- [x] **CP-188**: Intelligence: Library + Memory LiveViews (US-463)
+- [x] **CP-189**: Intelligence: Orchestration + Intake + Alignment LiveViews (US-464)
 - After Wave 6: `mix compile --warnings-as-errors` required
 
 ### Wave 7: Govern Remaining + TDD (2 stories, depends on Wave 3)
