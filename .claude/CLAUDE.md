@@ -397,9 +397,9 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - After Wave 4: `mix compile --warnings-as-errors` required AND `mix test --only observe_wave3` ✓
 
 ### Wave 5: Measure Section (3 stories, parallel with Wave 6, depends on Wave 2)
-- [ ] **CP-184**: Measure: Analytics + Usage + Health LiveViews (US-459)
-- [ ] **CP-185**: Measure: Ports + Tasks + Actions + Scanner LiveViews (US-460)
-- [ ] **CP-186**: Measure: UAT + DRTW LiveViews (US-461)
+- [x] **CP-184**: Measure: Analytics + Usage + Health LiveViews (US-459)
+- [x] **CP-185**: Measure: Ports + Tasks + Actions + Scanner LiveViews (US-460)
+- [x] **CP-186**: Measure: UAT + DRTW LiveViews (US-461)
 - After Wave 5: `mix compile --warnings-as-errors` required
 
 ### Wave 6: Intelligence Section (3 stories, parallel with Wave 5, depends on Wave 2)
