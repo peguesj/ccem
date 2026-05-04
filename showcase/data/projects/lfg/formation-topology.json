@@ -1,0 +1,114 @@
+{
+  "formation_id": "fmt-lfg-fleet-20260419",
+  "name": "LFG Fleet — Showcase v2 + DevDrive Remediation",
+  "created_at": "2026-04-19",
+  "total_stories": 17,
+  "total_points": 42,
+  "root": {
+    "id": "orchestrator",
+    "name": "Orchestrator",
+    "role": "orchestrator",
+    "status": "active",
+    "children": [
+      {
+        "id": "alpha",
+        "name": "Squadron Alpha",
+        "role": "squadron_lead",
+        "branch": "lfg/showcase-v2",
+        "wave_count": 3,
+        "story_count": 7,
+        "points": 17,
+        "color": "#7e22ce",
+        "status": "in_progress",
+        "children": [
+          {
+            "id": "alpha-w1",
+            "name": "Wave A1",
+            "role": "swarm_agent",
+            "status": "complete",
+            "children": [
+              {"id": "us-a-001", "name": "US-A-001", "role": "cluster_agent", "title": "Feature cards — 38 features", "points": 2, "status": "complete", "plane_id": "LFG-42"},
+              {"id": "us-a-002", "name": "US-A-002", "role": "cluster_agent", "title": "C4 architecture SVGs", "points": 3, "status": "complete", "plane_id": "LFG-43"}
+            ]
+          },
+          {
+            "id": "alpha-w2",
+            "name": "Wave A2",
+            "role": "swarm_agent",
+            "status": "in_progress",
+            "children": [
+              {"id": "us-a-003", "name": "US-A-003", "role": "cluster_agent", "title": "APM payload builder", "points": 2, "status": "complete", "plane_id": "LFG-44"},
+              {"id": "us-a-004", "name": "US-A-004", "role": "cluster_agent", "title": "Self-contained HTML v2", "points": 3, "status": "complete", "plane_id": "LFG-45"},
+              {"id": "us-a-005", "name": "US-A-005", "role": "cluster_agent", "title": "Formation topology view", "points": 3, "status": "in_progress", "plane_id": "LFG-46"}
+            ]
+          },
+          {
+            "id": "alpha-w3",
+            "name": "Wave A3",
+            "role": "swarm_agent",
+            "status": "pending",
+            "children": [
+              {"id": "us-a-006", "name": "US-A-006", "role": "cluster_agent", "title": "DocsmMax references.json", "points": 2, "status": "pending", "plane_id": "LFG-47"},
+              {"id": "us-a-007", "name": "US-A-007", "role": "cluster_agent", "title": "E2E verification", "points": 2, "status": "pending", "plane_id": "LFG-48"}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bravo",
+        "name": "Squadron Bravo",
+        "role": "squadron_lead",
+        "branch": "lfg/devdrive-remediation",
+        "wave_count": 4,
+        "story_count": 10,
+        "points": 25,
+        "color": "#b45309",
+        "status": "in_progress",
+        "children": [
+          {
+            "id": "bravo-w1",
+            "name": "Wave B1",
+            "role": "swarm_agent",
+            "status": "complete",
+            "children": [
+              {"id": "us-b-001", "name": "US-B-001", "role": "cluster_agent", "title": "CLAUDE.md creation", "points": 1, "status": "complete", "plane_id": "LFG-49"},
+              {"id": "us-b-002", "name": "US-B-002", "role": "cluster_agent", "title": "Fleet audit report", "points": 2, "status": "complete", "plane_id": "LFG-50"},
+              {"id": "us-b-003", "name": "US-B-003", "role": "cluster_agent", "title": "state.json stale ref fix", "points": 2, "status": "complete", "plane_id": "LFG-51"}
+            ]
+          },
+          {
+            "id": "bravo-w2",
+            "name": "Wave B2",
+            "role": "swarm_agent",
+            "status": "pending",
+            "children": [
+              {"id": "us-b-004", "name": "US-B-004", "role": "cluster_agent", "title": "901DEVLIB → YJ_MORE (11GB)", "points": 5, "status": "pending", "plane_id": "LFG-52"},
+              {"id": "us-b-005", "name": "US-B-005", "role": "cluster_agent", "title": "904MEMVT fsck recovery", "points": 3, "status": "pending", "plane_id": "LFG-53"}
+            ]
+          },
+          {
+            "id": "bravo-w3",
+            "name": "Wave B3",
+            "role": "swarm_agent",
+            "status": "pending",
+            "children": [
+              {"id": "us-b-006", "name": "US-B-006", "role": "cluster_agent", "title": "CoreSimulator → DDRV901", "points": 3, "status": "pending", "plane_id": "LFG-54"},
+              {"id": "us-b-007", "name": "US-B-007", "role": "cluster_agent", "title": "Reconcile forest population", "points": 2, "status": "pending", "plane_id": "LFG-55"},
+              {"id": "us-b-008", "name": "US-B-008", "role": "cluster_agent", "title": "fleet.json v1.3", "points": 2, "status": "pending", "plane_id": "LFG-56"}
+            ]
+          },
+          {
+            "id": "bravo-w4",
+            "name": "Wave B4",
+            "role": "swarm_agent",
+            "status": "pending",
+            "children": [
+              {"id": "us-b-009", "name": "US-B-009", "role": "cluster_agent", "title": "Ship devdrive-v2-native PR", "points": 2, "status": "pending", "plane_id": "LFG-57"},
+              {"id": "us-b-010", "name": "US-B-010", "role": "cluster_agent", "title": "Rotate prd.json", "points": 1, "status": "pending", "plane_id": "LFG-58"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

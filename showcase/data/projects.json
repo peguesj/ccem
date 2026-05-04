@@ -1,52 +1,141 @@
 {
-    "version": "1.1.0",
-    "default_project": "ccem",
-    "projects": [
-        {
-            "id": "ccem",
-            "name": "CCEM",
-            "tagline": "Claude Code Environment Manager — APM, Skills, Agents",
-            "badge": "CCEM",
-            "badge_color": "indigo",
-            "status": "shipped",
-            "version": "8.1.0",
-            "data_path": "projects/ccem-apm",
-            "alias": "ccem-apm",
-            "sections": ["CCEM", "APM", "Both", "Last Version"]
-        },
-        {
-            "id": "sfa",
-            "name": "Sound Forge Alchemy",
-            "tagline": "Phoenix LiveView audio production platform",
-            "badge": "SFA",
-            "badge_color": "emerald",
-            "status": "shipped",
-            "data_path": "projects/sfa"
-        },
-        {
-            "id": "yjmosaic",
-            "name": "YJMosaic",
-            "tagline": "Native macOS photographic mosaic engine",
-            "badge": "YJMOS",
-            "badge_color": "violet",
-            "status": "scaffolded",
-            "data_path": "projects/yjmosaic",
-            "canonical_url": "http://localhost:3032/showcase/yjmosaic"
-        },
-        {
-            "id": "vantage-portal",
-            "name": "Vantage Portal",
-            "tagline": "Complete MSSP Platform — RMM, SOC, Billing, Compliance, Integrations",
-            "badge": "VP",
-            "badge_color": "blue",
-            "status": "active",
-            "data_path": "projects/vantage-portal",
-            "version": "0.5.0-sprint5",
-            "sprints_complete": 5,
-            "active_sprint": "Sprint 6 — TBD",
-            "uat_tests": 123,
-            "portal_sections_live": 8,
-            "sections": ["Foundation", "Core", "Security", "Platform", "Intelligence"]
-        }
-    ]
+  "version": "1.1.0",
+  "default_project": "ccem",
+  "projects": [
+    {
+      "id": "ccem",
+      "name": "CCEM",
+      "tagline": "Claude Code Environment Manager \u2014 APM, Skills, Agents",
+      "badge": "CCEM",
+      "badge_color": "indigo",
+      "status": "shipped",
+      "version": "9.1.1",
+      "data_path": "projects/ccem-apm",
+      "alias": "ccem-apm",
+      "sections": [
+        "CCEM",
+        "APM",
+        "Both",
+        "Last Version"
+      ]
+    },
+    {
+      "id": "sfa",
+      "name": "Sound Forge Alchemy",
+      "tagline": "Phoenix LiveView audio production platform",
+      "badge": "SFA",
+      "badge_color": "emerald",
+      "status": "shipped",
+      "data_path": "projects/sfa"
+    },
+    {
+      "id": "yjmosaic",
+      "name": "YJMosaic",
+      "tagline": "Native macOS photographic mosaic engine",
+      "badge": "YJMOS",
+      "badge_color": "violet",
+      "status": "scaffolded",
+      "data_path": "projects/yjmosaic",
+      "canonical_url": "http://localhost:3032/showcase/yjmosaic"
+    },
+    {
+      "id": "vantage-portal",
+      "name": "Vantage Portal",
+      "tagline": "Complete MSSP Platform \u2014 RMM, SOC, Billing, Compliance, Integrations",
+      "badge": "VP",
+      "badge_color": "blue",
+      "status": "active",
+      "data_path": "projects/vantage-portal",
+      "version": "0.5.0-sprint5",
+      "sprints_complete": 5,
+      "active_sprint": "Sprint 6 \u2014 TBD",
+      "uat_tests": 123,
+      "portal_sections_live": 8,
+      "sections": [
+        "Foundation",
+        "Core",
+        "Security",
+        "Platform",
+        "Intelligence"
+      ]
+    },
+    {
+      "id": "viki",
+      "name": "VIKI",
+      "tagline": "Vectorized Intelligence & Knowledge Infrastructure \u2014 AI conversation memory at scale",
+      "badge": "VIKI",
+      "badge_color": "cyan",
+      "status": "active",
+      "version": "1.0.0-backfill",
+      "data_path": "projects/viki",
+      "formation_id": "fmt-20260329-viki-backfill-001",
+      "db_records": 331051,
+      "sessions": 1191,
+      "claudemem_observations": 5487,
+      "backfill_waves": 3,
+      "backfill_agents": 14,
+      "backfill_squadrons": 4,
+      "sections": [
+        "Interface",
+        "Speech",
+        "Auth",
+        "VikiAgent",
+        "Backfill"
+      ]
+    },
+    {
+      "id": "lfg",
+      "name": "LFG",
+      "tagline": "Local File Guardian \u2014 native macOS disk management with SwiftUI + XPC privileged helper",
+      "badge": "LFG",
+      "badge_color": "purple",
+      "status": "active",
+      "version": "2.5.0-beta",
+      "data_path": "projects/lfg",
+      "formation_id": "lfg-v25-native-port",
+      "formation_url": "devdrive-formation.html",
+      "modules": 6,
+      "agents": 7,
+      "native_targets": 3,
+      "swift_services": 5,
+      "installer": "LFG-2.4.0-installer.pkg",
+      "sections": [
+        "Foundation",
+        "Core",
+        "Integration",
+        "Quality",
+        "Release",
+        "Native Port"
+      ]
+    },
+    {
+      "id": "lily-ai-phx",
+      "name": "Lily AI Phoenix",
+      "tagline": "Mental health platform connecting users with therapists \u2014 LiveView + Supabase",
+      "badge": "LILY",
+      "badge_color": "emerald",
+      "status": "shipped",
+      "version": "1.15.1",
+      "data_path": "projects/lily-ai-phx",
+      "release_date": "2026-03-30",
+      "github": "https://github.com/peguesj/lily-ai-phx",
+      "deployment": "https://lily-ai-app.yellowocean-031a09f8.eastus2.azurecontainerapps.io"
+    },
+    {
+      "id": "peppy",
+      "name": "Peppy\u2122",
+      "tagline": "DTC Telehealth + Peptide Compounding Platform",
+      "badge": "PEPPY",
+      "badge_color": "emerald",
+      "status": "alpha",
+      "version": "0.1.0",
+      "data_path": "projects/peppy",
+      "deployment": "https://peppy.greenflower-4eae5465.eastus2.azurecontainerapps.io",
+      "sections": [
+        "Foundation",
+        "Core",
+        "Platform"
+      ]
+    }
+  ]
 }

@@ -147,6 +147,8 @@ function setScopeFilter(scope) {
 
 function applyScopeFilter(features) {
   if (scopeFilter === 'all') return features;
+  // Scope filters only apply to CCEM project — other projects show all features
+  if (PROJECT !== 'ccem' && PROJECT !== 'ccem-apm') return features;
   // Determine last version from VERSION_META keys
   const versions = Object.keys(VERSION_META).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
   const lastVer = versions[versions.length - 1];
@@ -588,8 +590,42 @@ function renderFeatureCards() {
       html += `<div class="space-y-2">${waveAccordionHtml(waveFilter, filtered)}</div>`;
     }
   } else {
-    // All waves — group by version with visual separators
+    // All waves — group by version (CCEM) or by wave (external projects)
     html += '<div class="space-y-5">';
+
+    // For non-CCEM projects: group by wave directly (no VERSION_ORDER dependency)
+    const isExternalProject = PROJECT !== 'ccem' && PROJECT !== 'ccem-apm';
+    if (isExternalProject) {
+      waves.forEach(w => {
+        const wFeatures = filtered.filter(f => f.wave === w);
+        if (wFeatures.length === 0) return;
+        const c = WAVE_COLORS[w] || WAVE_COLORS[1];
+        const doneCt = wFeatures.filter(f => f.liveStatus === 'done').length;
+        const allDone = doneCt === wFeatures.length;
+        const pct = Math.round((doneCt / wFeatures.length) * 100);
+        const wLabel = WAVE_LABELS[w] || `Wave ${w}`;
+
+        html += `
+          <div>
+            <div class="flex items-center gap-2.5 mb-2.5 pb-2 border-b ${c.border}">
+              <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded ring-1 ${c.pill}">W${w}</span>
+              <span class="text-[12px] font-semibold ${c.text}">${wLabel}</span>
+              <div class="flex-1 mx-2 h-1 rounded-full bg-zinc-800 overflow-hidden">
+                <div class="h-full rounded-full ${c.bar} transition-all duration-500" style="width:${pct}%"></div>
+              </div>
+              <span class="text-[9px] font-mono text-zinc-600">${doneCt}/${wFeatures.length}</span>
+              ${allDone ? `<span class="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ring-1 ${c.pill}">SHIPPED</span>` : ''}
+            </div>
+        `;
+        if (viewMode === 'card') {
+          html += `<div class="space-y-2.5">${wFeatures.map(cardHtml).join('')}</div>`;
+        } else {
+          html += `<div class="space-y-2">${waveAccordionHtml(w, wFeatures)}</div>`;
+        }
+        html += '</div>';
+      });
+    } else {
+    // CCEM projects: group by version
     VERSION_ORDER.forEach(ver => {
       const verFeatures = filtered.filter(f => f.version === ver);
       if (verFeatures.length === 0) return;
@@ -626,6 +662,7 @@ function renderFeatureCards() {
 
       html += '</div>'; // end version group
     });
+    } // end CCEM else
     html += '</div>';
   }
 
@@ -635,6 +672,101 @@ function renderFeatureCards() {
 function setViewMode(mode) { viewMode = mode; renderFeatureCards(); }
 function setWaveFilter(wave) { waveFilter = waveFilter === wave ? null : wave; renderFeatureCards(); }
 function setProgressFilter(filter) { progressFilter = filter; renderFeatureCards(); }
+
+// ─── DocsMax Reference Tabs ───────────────────────────────────────────────────
+let activeRefTab = 'roadmap';
+
+function switchRefTab(tab) {
+  activeRefTab = tab;
+  document.querySelectorAll('.ref-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.ref-tab').forEach(t => {
+    t.classList.remove('bg-zinc-700', 'text-zinc-200', 'ring-1', 'ring-zinc-600');
+    t.classList.add('text-zinc-500');
+  });
+  const panel = document.getElementById(`ref-panel-${tab}`);
+  if (panel) panel.classList.remove('hidden');
+  const btn = document.querySelector(`.ref-tab[data-tab="${tab}"]`);
+  if (btn) {
+    btn.classList.add('bg-zinc-700', 'text-zinc-200', 'ring-1', 'ring-zinc-600');
+    btn.classList.remove('text-zinc-500');
+  }
+  // Lazy-load content
+  if (tab === 'research') loadResearchContent();
+  if (tab === 'opsdoc') loadOpsdocContent();
+  if (tab === 'diagrams') loadDiagramsContent();
+}
+
+async function loadResearchContent() {
+  const body = document.getElementById('research-body');
+  if (body.dataset.loaded) return;
+  try {
+    const res = await fetch(`../data/projects/${PROJECT}/market-research.json`);
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    body.innerHTML = `
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div class="rounded-md bg-emerald-500/10 border border-emerald-500/20 p-2 text-center">
+          <div class="text-lg font-bold text-emerald-400">${data.dataset?.total_posts || 0}</div>
+          <div class="text-[8px] text-zinc-500 uppercase">Posts</div>
+        </div>
+        <div class="rounded-md bg-blue-500/10 border border-blue-500/20 p-2 text-center">
+          <div class="text-lg font-bold text-blue-400">${data.dataset?.unique_authors || 0}</div>
+          <div class="text-[8px] text-zinc-500 uppercase">Authors</div>
+        </div>
+        <div class="rounded-md bg-purple-500/10 border border-purple-500/20 p-2 text-center">
+          <div class="text-lg font-bold text-purple-400">${data.dataset?.groups || 0}</div>
+          <div class="text-[8px] text-zinc-500 uppercase">Groups</div>
+        </div>
+      </div>
+      <div class="text-[9px] font-bold text-zinc-300 mb-1">Top Themes</div>
+      ${Object.entries(data.themes || {}).slice(0, 6).map(([k, v]) =>
+        `<div class="flex justify-between"><span class="text-zinc-400">${k.replace(/_/g, ' ')}</span><span class="font-mono text-emerald-400">${v.pct}%</span></div>`
+      ).join('')}
+      <div class="text-[9px] font-bold text-zinc-300 mt-3 mb-1">Feature Signals → Lily</div>
+      ${Object.entries(data.feature_signals || {}).slice(0, 5).map(([k, v]) =>
+        `<div class="flex justify-between gap-2"><span class="text-zinc-400 truncate">${k.replace(/_/g, ' ')}</span><span class="text-[8px] px-1 py-0.5 rounded ${v.status === 'built' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${v.status.toUpperCase()}</span></div>`
+      ).join('')}
+      <div class="mt-3 text-[9px] text-zinc-600 italic">${data.key_insight || ''}</div>
+    `;
+    body.dataset.loaded = '1';
+  } catch (e) {
+    body.innerHTML = '<span class="text-zinc-600">No market research data available</span>';
+  }
+}
+
+async function loadOpsdocContent() {
+  const body = document.getElementById('opsdoc-body');
+  if (body.dataset.loaded) return;
+  body.innerHTML = `
+    <div class="space-y-2">
+      <div class="text-[9px] font-bold text-zinc-300">Strategy Waves (9 complete)</div>
+      <div class="space-y-1">
+        ${['Foundation', 'Discovery', 'Positioning', 'Strategy', 'Economics', 'Planning', 'Execution', 'Validation', 'Market Research'].map((w, i) =>
+          `<div class="flex items-center gap-2"><span class="text-emerald-400 text-[9px]">●</span><span class="text-zinc-400 text-[10px]">W${i+1}: ${w}</span><span class="text-[8px] px-1 rounded bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">DONE</span></div>`
+        ).join('')}
+      </div>
+      <div class="mt-2 text-[9px] text-zinc-600">Source: strategy_data.ex | Notion bidirectional sync enabled</div>
+    </div>
+  `;
+  body.dataset.loaded = '1';
+}
+
+async function loadDiagramsContent() {
+  const body = document.getElementById('diagrams-body');
+  if (body.dataset.loaded) return;
+  body.innerHTML = `
+    <div class="space-y-2">
+      ${['C4 Context', 'C4 Container', 'Process Flow', 'Data Flow', 'User Journey', 'Deployment', 'Formation Topology'].map(d =>
+        `<div class="flex items-center gap-2 p-1.5 rounded bg-zinc-800/40 border border-zinc-700/40 hover:border-cyan-500/30 cursor-pointer transition">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-500"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <span class="text-zinc-300 text-[10px]">${d}</span>
+          <span class="ml-auto text-[8px] text-zinc-600">.mmd</span>
+        </div>`
+      ).join('')}
+    </div>
+  `;
+  body.dataset.loaded = '1';
+}
 
 // ─── Architecture SVG ───────────────────────────────────────────────────────────
 

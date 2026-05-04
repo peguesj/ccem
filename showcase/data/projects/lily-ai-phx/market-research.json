@@ -1,0 +1,76 @@
+{
+  "source": "fb-research-batch-17groups-2026-03-30T03-31-58.jsonl",
+  "collected": "2026-03-28",
+  "analyzed": "2026-03-30",
+  "dataset": {
+    "total_posts": 5869,
+    "unique_authors": 2153,
+    "groups": 17,
+    "avg_post_length_chars": 275
+  },
+  "groups": [
+    {"name": "Black Therapists ROCK", "posts": 651},
+    {"name": "Therapists supporting therapists!", "posts": 619},
+    {"name": "Clinicians of Color in Private Practice", "posts": 605},
+    {"name": "Pennsylvania Therapist in Private Practice", "posts": 500},
+    {"name": "Black Male Therapists", "posts": 500},
+    {"name": "Lehigh Valley Clinicians", "posts": 500},
+    {"name": "Private Practice Support for MH and Holistic Healers", "posts": 500},
+    {"name": "Simple Profit for Mental Health Clinicians", "posts": 429},
+    {"name": "King's Corner (@blackmenheal)", "posts": 426},
+    {"name": "Therapist Freedom Incubator", "posts": 325},
+    {"name": "Mental Health Clinicians Support Group", "posts": 246},
+    {"name": "Support Group for MH Professionals", "posts": 230},
+    {"name": "Milts Talk Mental Health", "posts": 161},
+    {"name": "New Therapists in Private Practice", "posts": 115},
+    {"name": "3 Perspectives In Crisis", "posts": 47},
+    {"name": "Calm on purpose travel group for therapist", "posts": 8},
+    {"name": "Healthcare Practice Excellence", "posts": 8}
+  ],
+  "themes": {
+    "referral_request": {"count": 853, "pct": 14.5},
+    "specialization": {"count": 707, "pct": 12.0},
+    "insurance": {"count": 678, "pct": 11.6},
+    "telehealth": {"count": 520, "pct": 8.9},
+    "hiring": {"count": 417, "pct": 7.1},
+    "private_practice": {"count": 328, "pct": 5.6},
+    "supervision": {"count": 175, "pct": 3.0},
+    "billing": {"count": 138, "pct": 2.4},
+    "burnout": {"count": 122, "pct": 2.1},
+    "ehr_tech": {"count": 76, "pct": 1.3},
+    "crisis": {"count": 40, "pct": 0.7},
+    "directory": {"count": 38, "pct": 0.6}
+  },
+  "pain_points": {
+    "pricing_transparency": 239,
+    "cant_find_specialist": 183,
+    "cultural_competency": 13,
+    "insurance_frustration": 12,
+    "waitlist_full": 10,
+    "credential_matching": 10,
+    "rural_access": 9,
+    "tech_pain": 3
+  },
+  "feature_signals": {
+    "availability_check": {"count": 411, "lily_feature": "Directory + Schedule Tab", "status": "built"},
+    "demographic_match": {"count": 386, "lily_feature": "Therapy Connect Swipe", "status": "built"},
+    "peer_review": {"count": 142, "lily_feature": "Verified Badges + Ratings", "status": "built"},
+    "location_based": {"count": 61, "lily_feature": "Directory Search + Geo", "status": "built"},
+    "specialty_match": {"count": 60, "lily_feature": "Quiz > Match Funnel", "status": "built"},
+    "insurance_filter": {"count": 45, "lily_feature": "Directory Insurance Filter", "status": "planned"},
+    "better_search": {"count": 42, "lily_feature": "Search Autocomplete", "status": "built"},
+    "telehealth_filter": {"count": 20, "lily_feature": "Virtual/In-Person Toggle", "status": "planned"}
+  },
+  "market_segments": {
+    "therapist_networking": 126,
+    "therapist_business": 117,
+    "self_care": 114,
+    "therapist_seeking_referral": 107,
+    "therapist_hiring": 105
+  },
+  "geography": {
+    "PA": 318, "CA": 96, "NY": 76, "FL": 88, "NJ": 47, "TX": 43
+  },
+  "key_insight": "Therapists use Facebook groups as a manual matching engine - posting multi-dimensional referral requests (specialty + insurance + demographics + modality + geography) that get buried in feeds. Lily's Quiz > Match funnel automates exactly this workflow. 853 referral request posts (14.5%) represent the core use case Lily replaces.",
+  "product_market_fit": "6 of 8 top implicit feature requests already built in Lily. 75% feature coverage before formal launch."
+}

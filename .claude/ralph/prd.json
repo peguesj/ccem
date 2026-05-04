@@ -1,0 +1,831 @@
+{
+  "project": "CCEM APM",
+  "branchName": "ralph/ccem-apm-redesign",
+  "baseBranch": "ralph/testmaxxing-formation-v2",
+  "description": "CCEM APM full redesign \u2014 Claude Design handoff implementation: design system (tokens + 20 components), 42 wireframe pages across 7 sections. Phoenix LiveView / Elixir / ETS / PubSub / D3.js.",
+  "inputType": "design_handoff",
+  "handoffSource": "CCEM APM (1).zip",
+  "handoffVersion": "CCEM-APM-Design-v1.0",
+  "upm": {
+    "planeProjectId": "a20e1d2e-3139-406e-ae03-dc6d1d8cb995",
+    "checkpointRange": "CP-159 to CP-198",
+    "builtWaves": 4,
+    "totalWaves": 9,
+    "verifiedAt": null,
+    "shippedAt": null,
+    "prUrl": null,
+    "upmSessionId": "upm-ccem-apm-redesign-20260504",
+    "formationId": "fmt-20260504-ccem-redesign"
+  },
+  "userStories": [
+    {
+      "id": "US-434",
+      "wave": 1,
+      "title": "DS: tokens.css \u2192 Phoenix CSS layer + Geist fonts",
+      "description": "Import ccem_tokens.css into app.css as a @layer base block. Add Geist + Geist Mono via Google Fonts link in root layout. Verify all --ccem-* custom properties resolve in browser dev tools.",
+      "acceptanceCriteria": [
+        "@import ./ccem_tokens.css present in app.css inside @layer base",
+        "Geist/Geist Mono loaded in root_layout.html.heex",
+        "mix compile --warnings-as-errors passes",
+        "Browser renders oklch() colors correctly (no fallback grey)"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-159",
+      "planeIssueId": "88678360-bcc2-4b5a-893a-9f561ad9cfe8"
+    },
+    {
+      "id": "US-435",
+      "wave": 1,
+      "title": "DS: Button LiveComponent (5 variants \u00d7 4 sizes)",
+      "description": "Implement ApmV5.Components.Button as a Phoenix.Component function component. Variants: primary (lime), secondary, ghost, outline, destructive. Sizes: xs/sm/md/lg. Keyboard focus ring with --ccem-iris.",
+      "acceptanceCriteria": [
+        "All 5 variants render in Showcase",
+        "All 4 sizes apply correct padding/height tokens",
+        "Focus ring uses --ccem-iris",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-160",
+      "planeIssueId": "61b513f5-e917-4d62-ad7a-7aaa3c64b529"
+    },
+    {
+      "id": "US-436",
+      "wave": 1,
+      "title": "DS: Badge + Dot primitives (7 tones, presence animation)",
+      "description": "Implement ApmV5.Components.Badge and ApmV5.Components.Dot. Badge: 7 tones (neutral/accent/ok/warn/err/info/iris), pill and square variants, optional animated presence dot.",
+      "acceptanceCriteria": [
+        "All 7 tones render correctly using token colors",
+        "Animated dot uses ccem-pulse CSS class",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-161",
+      "planeIssueId": "eaa5defa-1698-42de-94da-4cf408bc6865"
+    },
+    {
+      "id": "US-437",
+      "wave": 1,
+      "title": "DS: Input + Kbd chip primitives",
+      "description": "Implement ApmV5.Components.Input (text/number/search, optional icon slot, \u2318K affordance) and ApmV5.Components.Kbd (keyboard shortcut chip using --ccem-font-mono).",
+      "acceptanceCriteria": [
+        "Input renders icon + suffix slots",
+        "Input search variant shows \u2318K badge",
+        "Kbd renders with tabular mono font",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-162",
+      "planeIssueId": "777dbd6f-cac1-4299-8326-fe826b98ab1d"
+    },
+    {
+      "id": "US-438",
+      "wave": 1,
+      "title": "DS: Card + Stat tile + Table primitives",
+      "description": "Implement ApmV5.Components.Card (1px ccem-line border, ccem-bg-1 fill, no drop shadow), ApmV5.Components.Stat (label/value/delta with sparkline slot), and ApmV5.Components.Table (dense 36px rows, monospaced numerics, keyboard j/k nav).",
+      "acceptanceCriteria": [
+        "Card renders without drop shadow",
+        "Stat tile shows delta with correct semantic tone",
+        "Table rows keyboard navigable with j/k",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-163",
+      "planeIssueId": "8ce23f54-8b07-433c-86b8-618c94ff4f82"
+    },
+    {
+      "id": "US-439",
+      "wave": 1,
+      "title": "DS: Segmented control + Toggle primitives",
+      "description": "Implement ApmV5.Components.Segmented (option group, keyboard arrow nav) and ApmV5.Components.Toggle (boolean switch, lime when on). Both emit phx-change events.",
+      "acceptanceCriteria": [
+        "Segmented emits phx-change on selection",
+        "Toggle emits phx-change on flip",
+        "Keyboard accessible",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 1,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-164",
+      "planeIssueId": "e12b50f9-e54f-4b84-8286-5ff9fb479bbe"
+    },
+    {
+      "id": "US-440",
+      "wave": 1,
+      "title": "DS: Scaffolding \u2014 Sidebar nav (10 groups, collapsible)",
+      "description": "Implement the shared left sidebar LiveComponent: 10 intent groups, collapsible sections, active highlight via active_nav assign, keyboard accessibility.",
+      "acceptanceCriteria": [
+        "All 10 nav groups render with correct icons",
+        "Collapsed state persists in session",
+        "Active item highlighted with ccem-iris",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-435",
+        "US-436"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-165",
+      "planeIssueId": "726453a2-3010-46ee-9c3a-a8e6b2f1ac82"
+    },
+    {
+      "id": "US-441",
+      "wave": 1,
+      "title": "DS: Scaffolding \u2014 Top bar (project switcher, \u2318K trigger, presence)",
+      "description": "Implement the shared top bar LiveComponent: CCEM logo, project switcher dropdown (DashboardScopeEngine via PubSub), \u2318K trigger button, presence stack, account menu.",
+      "acceptanceCriteria": [
+        "Project switcher updates scope via PubSub",
+        "\u2318K button opens CommandBar",
+        "Presence stack shows live session count",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-435",
+        "US-436"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-166",
+      "planeIssueId": "0ff3209e-143b-4b7c-a50f-e5f03f12863e"
+    },
+    {
+      "id": "US-442",
+      "wave": 2,
+      "title": "DS AI: Sparkline + Bars (live 60-point window, animated trailing dot)",
+      "description": "Implement ApmV5.Components.AI.Sparkline as a Phoenix Hook-driven SVG component. 60-point sliding window, animated trailing dot when live: true. ApmV5.Components.AI.Bars: micro bar chart for token distribution.",
+      "acceptanceCriteria": [
+        "Sparkline animates new data points via phx-hook",
+        "Live trailing dot pulses at 1.5s",
+        "Bars proportionally sized",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-167",
+      "planeIssueId": "a2c6148f-b1bd-48c7-8991-5728254c93af"
+    },
+    {
+      "id": "US-443",
+      "wave": 2,
+      "title": "DS AI: StreamingText + Skeleton shimmer",
+      "description": "Implement ApmV5.Components.AI.StreamingText: token-by-token append via PubSub, blinking caret while streaming, caret removed on DONE event. ApmV5.Components.AI.Skeleton: shimmer loading placeholder.",
+      "acceptanceCriteria": [
+        "StreamingText receives tokens via :ai_stream PubSub topic",
+        "Caret animates correctly",
+        "Caret removed on stream_done event",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-168",
+      "planeIssueId": "19807dec-03b6-494b-abcb-8b2baa363392"
+    },
+    {
+      "id": "US-444",
+      "wave": 2,
+      "title": "DS AI: Waveform + Gauge LiveComponents",
+      "description": "Implement ApmV5.Components.AI.Waveform: 14-bar processing indicator (tone: accent|iris), animated when live. ApmV5.Components.AI.Gauge: radial 0\u2013100% SVG gauge with needle and AccentGlow ring.",
+      "acceptanceCriteria": [
+        "Waveform bars animate with staggered delays",
+        "Gauge needle rotates to correct angle",
+        "Gauge uses --ccem-shadow-glow on active state",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-169",
+      "planeIssueId": "4d7b87f1-a47d-43c2-82ef-0a1b61bd90b2"
+    },
+    {
+      "id": "US-445",
+      "wave": 2,
+      "title": "DS AI: AgentCard LiveComponent (identicon, sparkline, skill badges)",
+      "description": "Implement ApmV5.Components.AI.AgentCard: generative identicon avatar (hashed from agent_id), live sparkline of recent activity, status badge, skill badge list, model label. Subscribes to per-agent PubSub.",
+      "acceptanceCriteria": [
+        "Identicon generated deterministically from agent_id",
+        "Sparkline updates on PubSub heartbeat",
+        "Status badge reflects live agent status",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-436",
+        "US-442"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-170",
+      "planeIssueId": "3298bfb3-029e-4468-bd64-ce8468ac2c31"
+    },
+    {
+      "id": "US-446",
+      "wave": 2,
+      "title": "DS AI: CommandBar \u2318K (global, focus trap, groups, AI streaming)",
+      "description": "Implement ApmV5.Components.AI.CommandBar as a LiveComponent with JS hook. Global \u2318K, focus trap, three groups (Jump/Act/Ask), arrow key navigation, Esc to dismiss, AI Suggestions streams via StreamingText.",
+      "acceptanceCriteria": [
+        "\u2318K opens from any page",
+        "Focus trapped inside modal",
+        "Arrow keys navigate groups",
+        "AI Suggestions streams via PubSub",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-443",
+        "US-441"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-171",
+      "planeIssueId": "e702bd8e-53f7-4681-9604-a7fe2a9269ba"
+    },
+    {
+      "id": "US-447",
+      "wave": 2,
+      "title": "DS AI: GraphNode + Edge (D3.js, animated live edges, PubSub 3s TTL)",
+      "description": "Implement ApmV5.Components.AI.GraphNode and Edge for D3.js dependency visualization. Edge animation when PubSub event observed within last 3s. Nodes: type-colored by formation role, status glow.",
+      "acceptanceCriteria": [
+        "Edges animate when data flowing (PubSub 3s TTL)",
+        "Node colors match formation role",
+        "D3.js force layout stable after 300ms settle",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-434"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-172",
+      "planeIssueId": "a6f195bc-b414-4390-8aa6-baca51a40293"
+    },
+    {
+      "id": "US-448",
+      "wave": 2,
+      "title": "DS AI: Presence stack + Right inspector panel scaffolding",
+      "description": "Implement ApmV5.Components.AI.Presence: avatar cluster with live dot pulse (2s), count overflow badge. Implement shared right inspector LiveComponent: contextual slot (selection/copilot/filters), collapsible.",
+      "acceptanceCriteria": [
+        "Presence dot pulses every 2s while session alive",
+        "Count overflow shows +N badge",
+        "Right inspector slot switches context on selection",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-435",
+        "US-436"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-173",
+      "planeIssueId": "0c0e68f0-2b0b-4e16-93d1-db40da7b1371"
+    },
+    {
+      "id": "US-449",
+      "wave": 2,
+      "title": "DS: Motion constants, scanline, page layout shell + DS TDD suite",
+      "description": "Add all CSS keyframe animations to app.css. Implement shared page layout shell (sidebar + topbar + content + inspector). Write ExUnit tests for all DS primitives (render smoke tests, assign validation).",
+      "acceptanceCriteria": [
+        "All CSS keyframe animations defined in app.css",
+        "Layout shell renders all 3 zones",
+        "ExUnit suite: 40+ tests for DS components",
+        "mix test --only design_system passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-440",
+        "US-441",
+        "US-448"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-174",
+      "planeIssueId": "c1513283-9100-400d-9de5-aad5a492ec1d"
+    },
+    {
+      "id": "US-450",
+      "wave": 3,
+      "title": "Observe: Dashboard LiveView (6-up metrics, formation graph, fleet table, AI anomaly rail)",
+      "description": "Implement DashboardLive redesign: 6-up metric strip with live Sparklines, center D3.js formation dependency graph with scanline, fleet table rows as AgentCards, right AI Anomaly Insights panel with StreamingText.",
+      "acceptanceCriteria": [
+        "6 stat tiles render with live sparklines",
+        "Formation graph animates live edges",
+        "Fleet table rows keyboard navigable",
+        "AI Anomaly panel streams insights text",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 5,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-175",
+      "planeIssueId": "38a89984-c410-40f9-9726-8897e8af5104"
+    },
+    {
+      "id": "US-451",
+      "wave": 3,
+      "title": "Observe: Fleet LiveView (agent grid/list, AgentCard components, filter rail)",
+      "description": "Implement FleetLive redesign: agent grid (AgentCard components, 4-up), list view toggle, filter rail (status/model/project/role), search input with \u2318K affordance.",
+      "acceptanceCriteria": [
+        "Grid/list view toggle works",
+        "Filters update agent list reactively via PubSub",
+        "AgentCard shows live sparkline",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-176",
+      "planeIssueId": "651e85a7-8c89-4144-87d6-3702bf098c7d"
+    },
+    {
+      "id": "US-452",
+      "wave": 3,
+      "title": "Observe: Session Detail LiveView (JSONL viewer, tool call trace, token breakdown)",
+      "description": "Implement SessionDetailLive redesign: JSONL event stream viewer with StreamingText, tool call trace timeline, token breakdown Stat tiles, per-turn latency bars.",
+      "acceptanceCriteria": [
+        "JSONL events render in order",
+        "Tool call trace shows call/result pairs",
+        "Token breakdown updates on new event",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-177",
+      "planeIssueId": "1b80785b-195b-4b5e-9feb-22004bbd38ba"
+    },
+    {
+      "id": "US-453",
+      "wave": 3,
+      "title": "Govern: Authorization v9 LiveView (20s TTL countdown, policy rules, scope test panel)",
+      "description": "Implement AuthorizationLive redesign: pending banner with 20s countdown (monospaced, lime), depleting progress bar, Approve/Deny actions, policy rules table (effect/scope/agent/tool/token_id), scope test dry-run panel.",
+      "acceptanceCriteria": [
+        "Countdown depletes in real-time via PubSub",
+        "Auto-deny on TTL expiry",
+        "Policy rules table CRUD works",
+        "Scope test panel returns allow/deny for test input",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-178",
+      "planeIssueId": "24bf6f44-4f62-4163-a21f-3f4b02177c8c"
+    },
+    {
+      "id": "US-454",
+      "wave": 4,
+      "title": "Observe: Formations LiveView (tree + matrix + list + dot layout modes)",
+      "description": "Implement FormationLive redesign: 4 layout mode tabs, scope selector, D3.js tree with animated pub/sub edges, agent status pills, formation metadata panel.",
+      "acceptanceCriteria": [
+        "4 layout modes switch without page reload",
+        "D3.js tree renders formation hierarchy",
+        "Pub/sub edges animate when data flowing",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-450"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-179",
+      "planeIssueId": "f7973aa6-e9fc-48e5-ae18-9cb363942c3f"
+    },
+    {
+      "id": "US-455",
+      "wave": 4,
+      "title": "Observe: Timeline LiveView (swim-lane, 15m\u219224h window, D3.js time axis)",
+      "description": "Implement TimelineLive redesign: horizontal swim-lane per agent, time window selector (15m/1h/4h/24h), tool call markers, session bands, D3.js time axis.",
+      "acceptanceCriteria": [
+        "Swim lanes render one per active agent",
+        "Time window selector updates range via PubSub",
+        "Tool call markers clickable to Session Detail",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-450"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-180",
+      "planeIssueId": "7745368e-2bd8-44e2-b721-cd79274a5f99"
+    },
+    {
+      "id": "US-456",
+      "wave": 4,
+      "title": "Observe: Conversations LiveView (live transcript, CoWork split)",
+      "description": "Implement ConversationLive redesign: live transcript with StreamingText for active turns, CoWork split-panel for parallel conversation comparison, turn navigation.",
+      "acceptanceCriteria": [
+        "Active turns stream tokens via PubSub",
+        "CoWork split renders two conversations side by side",
+        "Navigation arrows move between turns",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-450"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-181",
+      "planeIssueId": "56a2d8c8-4c91-42ef-8770-4d7d23dfd461"
+    },
+    {
+      "id": "US-457",
+      "wave": 4,
+      "title": "Observe: Tool Calls + A2A + Architecture LiveViews",
+      "description": "Implement ToolCallsLive (stream view, per-agent stats), A2ALive (router table, broadcast log, fan-out graph with D3.js), ArchitectureLive (supervision tree, GenServer list).",
+      "acceptanceCriteria": [
+        "Tool call stream updates live",
+        "A2A fan-out graph renders with D3.js",
+        "Architecture supervision tree shows all GenServers",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-450"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-182",
+      "planeIssueId": "4098c402-80f3-4bfb-a362-23f9d017baf9"
+    },
+    {
+      "id": "US-458",
+      "wave": 4,
+      "title": "Observe Wave 3 TDD suite (Dashboard, Fleet, Session Detail, Authorization v9)",
+      "description": "Write ExUnit + LiveView test suite for Wave 3 views: DashboardLive (PubSub assigns, metric strip), FleetLive (filter events), SessionDetailLive (JSONL parsing), AuthorizationLive (countdown timer, approve/deny events).",
+      "acceptanceCriteria": [
+        "ExUnit suite: 35+ tests",
+        "PubSub integration tests with mock broadcasts",
+        "mix test --only observe_wave3 passes",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-453"
+      ],
+      "status": "done",
+      "passes": true,
+      "checkpointId": "CP-183",
+      "planeIssueId": "2954819d-10e3-48e8-ba5d-e045f7f83b24"
+    },
+    {
+      "id": "US-459",
+      "wave": 5,
+      "title": "Measure: Analytics + Usage + Health LiveViews",
+      "description": "Implement AnalyticsLive (tokens/models/tools charts with D3.js, 7d/30d windows), UsageLive (Claude cost, LVM limits, per-project utilization table), HealthLive (BootReporter telemetry, system vitals Gauge components).",
+      "acceptanceCriteria": [
+        "Analytics charts render with real token data",
+        "Usage shows correct LVM utilization %",
+        "Health Gauges animate on live data",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-184",
+      "planeIssueId": "ab28819f-fde0-4576-b932-6948ba07ebdf"
+    },
+    {
+      "id": "US-460",
+      "wave": 5,
+      "title": "Measure: Ports + Tasks + Actions + Scanner LiveViews",
+      "description": "Implement PortsLive (lsof scan results, conflict detection), TasksLive (long-running jobs, progress bars), ActionsLive (ActionEngine catalog, last-run stats), ScannerLive (project discovery, file tree).",
+      "acceptanceCriteria": [
+        "Ports scan shows real lsof data",
+        "Tasks show progress bars updating via PubSub",
+        "Actions catalog renders with status badges",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-185",
+      "planeIssueId": "735a1b0c-9bc5-4334-b52e-f20cf2695f3d"
+    },
+    {
+      "id": "US-461",
+      "wave": 5,
+      "title": "Measure: UAT + DRTW LiveViews",
+      "description": "Implement UATLive (acceptance test runs, pass/fail grid) and DRTWLive (reuse registry, semantic match %, duplicate candidates panel, register form, reuse score).",
+      "acceptanceCriteria": [
+        "UAT pass/fail grid renders correctly",
+        "DRTW registry searchable with filter tabs",
+        "Duplicate candidates show semantic match %",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-186",
+      "planeIssueId": "69d22289-bee3-4c74-8e01-6852a8c7e11f"
+    },
+    {
+      "id": "US-462",
+      "wave": 6,
+      "title": "Intelligence: Skills + Skill Drift LiveViews",
+      "description": "Implement SkillsLive (registry table, 3-tier health grid: system/user/project) and SkillDriftLive (drift detector results, before/after diff panel, fix wizard with suggested actions).",
+      "acceptanceCriteria": [
+        "3-tier health grid renders all skill scopes",
+        "Drift detector shows changed skills since last check",
+        "Fix wizard suggests specific corrective actions",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-187",
+      "planeIssueId": "727ab70e-9212-4b1c-b561-4a28d0a69bc0"
+    },
+    {
+      "id": "US-463",
+      "wave": 6,
+      "title": "Intelligence: Library + Memory LiveViews",
+      "description": "Implement LibraryLive (agents/skills/MCP servers/hooks catalog with search) and MemoryLive redesign (observation list, timeline tab, correlation graph, detail panel) using DS components.",
+      "acceptanceCriteria": [
+        "Library search filters all 4 categories",
+        "Memory timeline shows observation history",
+        "Correlation graph links observations to sessions",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-188",
+      "planeIssueId": "689d278b-ff45-4166-867f-cc51ebdca204"
+    },
+    {
+      "id": "US-464",
+      "wave": 6,
+      "title": "Intelligence: Orchestration + Intake + Alignment LiveViews",
+      "description": "Implement OrchestrationLive redesign (DAG with new GraphNode/Edge), IntakeLive (request queue, watchers, intake form), AlignmentLive (Plane-PM sync agent status, drift summary).",
+      "acceptanceCriteria": [
+        "Orchestration DAG uses new GraphNode/Edge components",
+        "Intake queue shows pending requests",
+        "Alignment drift summary compares CLAUDE.md vs Plane",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-189",
+      "planeIssueId": "06d88794-2a9e-4a6c-bb2c-799c763ae16c"
+    },
+    {
+      "id": "US-465",
+      "wave": 7,
+      "title": "Govern: Approvals + Routing + Coalesce + UPM LiveViews",
+      "description": "Implement ApprovalsLive redesign (AgentLock history, audit log timeline), RoutingLive (model + tool routing rules, latency matrix), CoalesceLive (merge runs, gate decisions), UpmLive redesign (projects, work items, drift indicators).",
+      "acceptanceCriteria": [
+        "Approvals timeline renders all AgentLock events",
+        "Routing rules table CRUD works",
+        "Coalesce shows gate pass/fail history",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-453"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-190",
+      "planeIssueId": "ee52797f-a9c9-4062-9f8f-c18a86d4c038"
+    },
+    {
+      "id": "US-466",
+      "wave": 7,
+      "title": "Govern + Intelligence TDD suite",
+      "description": "Write ExUnit test suite for Wave 5+6+7 views: SkillsLive (health grid events), MemoryLive (observation PubSub), DRTWLive (registry search), ApprovalsLive (audit log mount), RoutingLive (rule CRUD events).",
+      "acceptanceCriteria": [
+        "ExUnit suite: 40+ tests",
+        "mix test --only govern_intelligence passes",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-465"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-191",
+      "planeIssueId": "4bbed7ea-7daa-4821-9f63-97309d544034"
+    },
+    {
+      "id": "US-467",
+      "wave": 8,
+      "title": "Extend: Plugins + Integrations + AG-UI + Notifications LiveViews",
+      "description": "Implement PluginsLive redesign (10 bundled plugins, health status), IntegrationsLive (IntegrationBehaviour catalog), AgUiLive (SSE stream viewer, event types, KPIs), NotificationsLive redesign (2K buffer, channel filter, group-by).",
+      "acceptanceCriteria": [
+        "Plugins list shows all 10 bundled plugins with health",
+        "AG-UI SSE stream viewer shows live events",
+        "Notifications grouped by channel/level",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 4,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-192",
+      "planeIssueId": "630866a2-a53b-47b7-8823-cf83117ecd3a"
+    },
+    {
+      "id": "US-468",
+      "wave": 8,
+      "title": "Extend: Showcase + Docs LiveViews",
+      "description": "Implement ShowcaseLive redesign (CCEM environments, live preview panel) and DocsLive redesign (API reference viewer, OpenAPI spec browser, guides nav).",
+      "acceptanceCriteria": [
+        "Showcase renders environment cards with live status",
+        "Docs renders OpenAPI paths from /api/v2/openapi.json",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 2,
+      "dependencies": [
+        "US-449"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-193",
+      "planeIssueId": "22533808-9df3-4719-8fec-1156b7b98533"
+    },
+    {
+      "id": "US-469",
+      "wave": 9,
+      "title": "Platform: Architecture + DRTW + UAT LiveViews (Platform section)",
+      "description": "Implement Platform-section ArchitectureLive full redesign (supervision tree with all GenServer nodes, ETS/PubSub/LiveView KPI strip) and Platform UAT (test matrix view).",
+      "acceptanceCriteria": [
+        "Supervision tree shows all registered GenServers",
+        "Platform UAT matrix shows latest test run results",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-464"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-194",
+      "planeIssueId": "691b1913-59c0-4bef-b14c-45ec23fb9d9a"
+    },
+    {
+      "id": "US-470",
+      "wave": 9,
+      "title": "AI Platform: LVM Integration LiveView (Claude model cards, utilization)",
+      "description": "Implement LVMLive: 4 Claude model cards (opus-4-7/sonnet-4-6/sonnet-dated/haiku-4-5) each showing tokens/hr Sparkline, cache hit rate Gauge, utilization bar. Per-project utilization table with % of dynamic cap.",
+      "acceptanceCriteria": [
+        "4 model cards render with live sparklines",
+        "Cache hit rate gauges animate",
+        "Per-project table shows utilization %",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-459"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-195",
+      "planeIssueId": "577a58de-6505-4ea2-805c-d31954d3008a"
+    },
+    {
+      "id": "US-471",
+      "wave": 9,
+      "title": "AI Platform: Claude Code Discovery + Ralph Plugin LiveViews",
+      "description": "Implement ClaudeCodeDiscoveryLive (MCP servers, hooks, skills registry viewer) and RalphPluginLive (methodology view, loop status, backpressure graph, current formation progress).",
+      "acceptanceCriteria": [
+        "Claude Code Discovery shows all registered MCPs and hooks",
+        "Ralph Plugin shows live loop status",
+        "Backpressure graph updates via PubSub",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-462"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-196",
+      "planeIssueId": "b1662e29-f5cf-489d-abf8-dce4c92740d1"
+    },
+    {
+      "id": "US-472",
+      "wave": 9,
+      "title": "AI Platform: AG-UI Plugin + Authorization v9 deep page",
+      "description": "Implement AgUiPluginLive (event types, SSE stream at :3032/api/v2/ag-ui/events, KPIs) and AuthorizationV9Live deep page (detailed policy editor, token_id filter, rule builder).",
+      "acceptanceCriteria": [
+        "AG-UI Plugin SSE stream shows live events",
+        "Auth v9 policy editor saves rules to backend",
+        "Token_id filter scopes approvals correctly",
+        "mix compile --warnings-as-errors passes"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-453"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-197",
+      "planeIssueId": "d4c6ace9-fe0f-4299-b46d-3317da5dae7d"
+    },
+    {
+      "id": "US-473",
+      "wave": 9,
+      "title": "Final: Extend + Platform + AI Platform TDD suite + v9.2.0 compile gate",
+      "description": "Write ExUnit tests for Wave 8+9 views. Run full mix compile --warnings-as-errors. Run all mix test --only tags. Update CLAUDE.md version to v9.2.0.",
+      "acceptanceCriteria": [
+        "ExUnit suite: 30+ tests for Wave 8+9",
+        "mix test --only platform passes",
+        "mix compile --warnings-as-errors passes",
+        "CLAUDE.md version updated to v9.2.0"
+      ],
+      "estimatedPoints": 3,
+      "dependencies": [
+        "US-472"
+      ],
+      "status": "pending",
+      "passes": false,
+      "checkpointId": "CP-198",
+      "planeIssueId": "0d44c9a9-5824-4e61-a133-d937fa1acce4"
+    }
+  ],
+  "builtWaves": 3
+} 3
+} 3
+} 3
+} 3
+}

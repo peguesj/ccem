@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title id="page-title">Project Showcase</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { primaryColor: '#4F46E5', primaryTextColor: '#e4e4e7', primaryBorderColor: '#6366f1', lineColor: '#71717a', secondaryColor: '#18181b', tertiaryColor: '#27272a' }});
+    window.__mermaid = mermaid;
+  </script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -228,10 +233,56 @@
         <div id="active-wave-content"></div>
       </div>
 
-      <!-- Narratives / waves summary -->
-      <div id="narratives-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Feature Waves</div>
-        <div id="narratives-content" class="space-y-3 text-xs"></div>
+      <!-- DocsMax Reference Tabs -->
+      <div id="docsmax-tabs" class="mb-4">
+        <div class="flex items-center gap-1 p-1 rounded-lg bg-zinc-900/60 border border-zinc-800/60">
+          <button onclick="switchRefTab('roadmap')" class="ref-tab active text-[10px] font-semibold px-3 py-1.5 rounded-md transition-all bg-zinc-700 text-zinc-200 ring-1 ring-zinc-600" data-tab="roadmap">Roadmap</button>
+          <button onclick="switchRefTab('research')" class="ref-tab text-[10px] font-medium px-3 py-1.5 rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40" data-tab="research">Market Research</button>
+          <button onclick="switchRefTab('opsdoc')" class="ref-tab text-[10px] font-medium px-3 py-1.5 rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40" data-tab="opsdoc">OpsDOC</button>
+          <button onclick="switchRefTab('notion')" class="ref-tab text-[10px] font-medium px-3 py-1.5 rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40" data-tab="notion">Notion</button>
+          <button onclick="switchRefTab('diagrams')" class="ref-tab text-[10px] font-medium px-3 py-1.5 rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40" data-tab="diagrams">Diagrams</button>
+          <button onclick="switchRefTab('idea')" class="ref-tab text-[10px] font-medium px-3 py-1.5 rounded-md transition-all text-zinc-500 hover:text-zinc-400 hover:bg-zinc-800/40" data-tab="idea">IDEA</button>
+        </div>
+      </div>
+
+      <!-- Reference Content Panels -->
+      <div id="ref-panel-roadmap" class="ref-panel">
+        <!-- Narratives / waves summary -->
+        <div id="narratives-section" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-3">Feature Waves</div>
+          <div id="narratives-content" class="space-y-3 text-xs"></div>
+        </div>
+      </div>
+      <div id="ref-panel-research" class="ref-panel hidden">
+        <div id="research-content" class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[11px] font-bold text-emerald-400 mb-2">FB Group Market Research</div>
+          <div id="research-body" class="text-[10px] text-zinc-400 space-y-2">Loading...</div>
+        </div>
+      </div>
+      <div id="ref-panel-opsdoc" class="ref-panel hidden">
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[11px] font-bold text-blue-400 mb-2">OpsDOC Strategy Report</div>
+          <div id="opsdoc-body" class="text-[10px] text-zinc-400 space-y-2">Loading...</div>
+        </div>
+      </div>
+      <div id="ref-panel-notion" class="ref-panel hidden">
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[11px] font-bold text-purple-400 mb-2">Notion Strategy Suite</div>
+          <a href="https://www.notion.so/Lily-AI-Product-Strategy-Suite-318e700ddfac8110a4e0d5c61ce89243" target="_blank" class="text-[10px] text-purple-400 hover:text-purple-300 underline">Open in Notion</a>
+          <div class="mt-2 text-[10px] text-zinc-500">Bidirectional sync enabled. Changes here reflect in Notion and vice versa.</div>
+        </div>
+      </div>
+      <div id="ref-panel-diagrams" class="ref-panel hidden">
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[11px] font-bold text-cyan-400 mb-2">Architecture Diagrams</div>
+          <div id="diagrams-body" class="text-[10px] text-zinc-400 space-y-2">Loading...</div>
+        </div>
+      </div>
+      <div id="ref-panel-idea" class="ref-panel hidden">
+        <div class="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+          <div class="text-[11px] font-bold text-rose-400 mb-2">IDEA Framework</div>
+          <div id="idea-body" class="text-[10px] text-zinc-400 space-y-2">Loading...</div>
+        </div>
       </div>
 
     </main>
@@ -1082,6 +1133,274 @@
       document.getElementById('sal-message').textContent = notif.message || '';
       document.getElementById('sal-findings').innerHTML = rows || '<div class="text-xs text-zinc-600">No findings</div>';
       modal.classList.remove('hidden');
+    }
+
+    // ── DocsMax Reference Tabs ──────────────────────────────────────────────────
+    let activeRefTab = 'roadmap';
+
+    function switchRefTab(tab) {
+      activeRefTab = tab;
+      document.querySelectorAll('.ref-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.ref-tab').forEach(t => {
+        t.classList.remove('bg-zinc-700', 'text-zinc-200', 'ring-1', 'ring-zinc-600');
+        t.classList.add('text-zinc-500');
+      });
+      const panel = document.getElementById(`ref-panel-${tab}`);
+      if (panel) panel.classList.remove('hidden');
+      const btn = document.querySelector(`.ref-tab[data-tab="${tab}"]`);
+      if (btn) {
+        btn.classList.add('bg-zinc-700', 'text-zinc-200', 'ring-1', 'ring-zinc-600');
+        btn.classList.remove('text-zinc-500');
+      }
+      if (tab === 'research') loadResearchContent();
+      if (tab === 'opsdoc') loadOpsdocContent();
+      if (tab === 'diagrams') loadDiagramsContent();
+      if (tab === 'idea') loadIdeaContent();
+    }
+
+    async function loadResearchContent() {
+      const body = document.getElementById('research-body');
+      if (!body || body.dataset.loaded) return;
+      try {
+        const dataPath = projectParam ? `../data/projects/${projectParam}` : '../data';
+        const res = await fetch(`${dataPath}/market-research.json`, { signal: AbortSignal.timeout(3000) });
+        if (!res.ok) throw new Error('not found');
+        const data = await res.json();
+        body.innerHTML = `
+          <div class="grid grid-cols-3 gap-2 mb-3">
+            <div class="rounded-md bg-emerald-500/10 border border-emerald-500/20 p-2 text-center">
+              <div class="text-lg font-bold text-emerald-400">${data.dataset?.total_posts || 0}</div>
+              <div class="text-[8px] text-zinc-500 uppercase">Posts</div>
+            </div>
+            <div class="rounded-md bg-blue-500/10 border border-blue-500/20 p-2 text-center">
+              <div class="text-lg font-bold text-blue-400">${data.dataset?.unique_authors || 0}</div>
+              <div class="text-[8px] text-zinc-500 uppercase">Authors</div>
+            </div>
+            <div class="rounded-md bg-purple-500/10 border border-purple-500/20 p-2 text-center">
+              <div class="text-lg font-bold text-purple-400">${data.dataset?.groups || 0}</div>
+              <div class="text-[8px] text-zinc-500 uppercase">Groups</div>
+            </div>
+          </div>
+          <div class="text-[9px] font-bold text-zinc-300 mb-1">Top Themes</div>
+          ${Object.entries(data.themes || {}).slice(0, 6).map(([k, v]) =>
+            '<div class="flex justify-between"><span class="text-zinc-400">' + k.replace(/_/g, ' ') + '</span><span class="font-mono text-emerald-400">' + v.pct + '%</span></div>'
+          ).join('')}
+          <div class="text-[9px] font-bold text-zinc-300 mt-3 mb-1">Feature Signals</div>
+          ${Object.entries(data.feature_signals || {}).slice(0, 5).map(([k, v]) =>
+            '<div class="flex justify-between gap-2"><span class="text-zinc-400 truncate">' + k.replace(/_/g, ' ') + '</span><span class="text-[8px] px-1 py-0.5 rounded ' + (v.status === 'built' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400') + '">' + v.status.toUpperCase() + '</span></div>'
+          ).join('')}
+          <div class="mt-3 text-[9px] text-zinc-600 italic">${data.key_insight || ''}</div>
+        `;
+        body.dataset.loaded = '1';
+      } catch (e) {
+        body.innerHTML = '<span class="text-zinc-600">No market research data available</span>';
+      }
+    }
+
+    function loadOpsdocContent() {
+      const body = document.getElementById('opsdoc-body');
+      if (!body || body.dataset.loaded) return;
+      body.innerHTML = '<div class="space-y-2">' +
+        '<div class="text-[9px] font-bold text-zinc-300">Strategy Waves (9 complete)</div>' +
+        '<div class="space-y-1">' +
+        ['Foundation', 'Discovery', 'Positioning', 'Strategy', 'Economics', 'Planning', 'Execution', 'Validation', 'Market Research'].map((w, i) =>
+          '<div class="flex items-center gap-2"><span class="text-emerald-400 text-[9px]">\u25CF</span><span class="text-zinc-400 text-[10px]">W' + (i+1) + ': ' + w + '</span><span class="text-[8px] px-1 rounded bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">DONE</span></div>'
+        ).join('') +
+        '</div>' +
+        '<div class="mt-2 text-[9px] text-zinc-600">Source: strategy_data.ex | Notion bidirectional sync</div>' +
+        '</div>';
+      body.dataset.loaded = '1';
+    }
+
+    const DIAGRAM_FILES = [
+      { id: 'context', label: 'C4 Context', file: 'context.mmd' },
+      { id: 'containers', label: 'C4 Container', file: 'containers.mmd' },
+      { id: 'process-flow', label: 'Process Flow', file: 'process-flow.mmd' },
+      { id: 'data-flow', label: 'Data Flow', file: 'data-flow.mmd' },
+      { id: 'user-journey', label: 'User Journey', file: 'user-journey.mmd' },
+      { id: 'deployment', label: 'Deployment', file: 'deployment.mmd' },
+      { id: 'formation-topology', label: 'Formation Topology', file: 'formation-topology.mmd' }
+    ];
+    let activeDiagram = null;
+
+    async function loadDiagramsContent() {
+      const body = document.getElementById('diagrams-body');
+      if (!body) return;
+      if (!body.dataset.loaded) {
+        body.innerHTML = '<div class="space-y-1.5" id="diagram-list">' +
+          DIAGRAM_FILES.map(d =>
+            '<button onclick="renderDiagram(\'' + d.id + '\')" class="diagram-btn flex items-center gap-2 w-full p-2 rounded bg-zinc-800/40 border border-zinc-700/40 hover:border-cyan-500/30 cursor-pointer transition text-left" data-diagram="' + d.id + '">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-500 flex-shrink-0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>' +
+            '<span class="text-zinc-300 text-[10px]">' + d.label + '</span>' +
+            '<span class="ml-auto text-[8px] text-zinc-600">.mmd</span></button>'
+          ).join('') +
+          '</div>' +
+          '<div id="diagram-render" class="mt-3 hidden">' +
+            '<div class="flex items-center justify-between mb-2">' +
+              '<span id="diagram-title" class="text-[10px] font-bold text-cyan-400"></span>' +
+              '<button onclick="closeDiagram()" class="text-[9px] text-zinc-500 hover:text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 hover:border-zinc-500 transition">Close</button>' +
+            '</div>' +
+            '<div id="diagram-svg" class="rounded-lg border border-zinc-700/40 bg-zinc-950/60 p-4 overflow-x-auto"></div>' +
+          '</div>';
+        body.dataset.loaded = '1';
+      }
+    }
+
+    async function renderDiagram(id) {
+      const d = DIAGRAM_FILES.find(x => x.id === id);
+      if (!d) return;
+      const renderDiv = document.getElementById('diagram-render');
+      const svgDiv = document.getElementById('diagram-svg');
+      const titleEl = document.getElementById('diagram-title');
+      if (!renderDiv || !svgDiv) return;
+
+      // Highlight active button
+      document.querySelectorAll('.diagram-btn').forEach(b => {
+        b.classList.remove('border-cyan-500/50', 'bg-cyan-500/5');
+        b.classList.add('border-zinc-700/40');
+      });
+      const activeBtn = document.querySelector('.diagram-btn[data-diagram="' + id + '"]');
+      if (activeBtn) {
+        activeBtn.classList.add('border-cyan-500/50', 'bg-cyan-500/5');
+        activeBtn.classList.remove('border-zinc-700/40');
+      }
+
+      titleEl.textContent = d.label;
+      svgDiv.innerHTML = '<span class="text-[10px] text-zinc-500">Rendering...</span>';
+      renderDiv.classList.remove('hidden');
+
+      const dataPath = projectParam ? '../data/projects/' + projectParam : '../data';
+
+      // Prefer hand-crafted SVG over Mermaid render when available
+      try {
+        const svgFile = d.file.replace('.mmd', '.svg');
+        const svgRes = await fetch(dataPath + '/diagrams/' + svgFile, { signal: AbortSignal.timeout(3000) });
+        if (svgRes.ok) {
+          const svgText = await svgRes.text();
+          if (svgText.trim().startsWith('<svg')) {
+            svgDiv.innerHTML = svgText;
+            activeDiagram = id;
+            // Update badge to show SVG source
+            const badge = activeBtn && activeBtn.querySelector('.ml-auto');
+            if (badge) { badge.textContent = '.svg'; badge.classList.remove('text-zinc-600'); badge.classList.add('text-emerald-600'); }
+            return;
+          }
+        }
+      } catch (_) { /* SVG not available, fall through to Mermaid */ }
+
+      // Fall back to Mermaid render
+      try {
+        const res = await fetch(dataPath + '/diagrams/' + d.file, { signal: AbortSignal.timeout(3000) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const mmdText = await res.text();
+
+        if (window.__mermaid) {
+          const { svg } = await window.__mermaid.render('mmd-' + id + '-' + Date.now(), mmdText);
+          svgDiv.innerHTML = svg;
+        } else {
+          // Fallback: show raw mermaid source
+          svgDiv.innerHTML = '<pre class="text-[9px] text-zinc-400 font-mono whitespace-pre-wrap">' + mmdText.replace(/</g, '&lt;') + '</pre>';
+        }
+        activeDiagram = id;
+      } catch (e) {
+        svgDiv.innerHTML = '<span class="text-[10px] text-red-400">Failed to load diagram: ' + e.message + '</span>';
+      }
+    }
+
+    function closeDiagram() {
+      const renderDiv = document.getElementById('diagram-render');
+      if (renderDiv) renderDiv.classList.add('hidden');
+      document.querySelectorAll('.diagram-btn').forEach(b => {
+        b.classList.remove('border-cyan-500/50', 'bg-cyan-500/5');
+        b.classList.add('border-zinc-700/40');
+      });
+      activeDiagram = null;
+    }
+
+    const IDEA_PHASES = ['discover', 'define', 'plan', 'execute'];
+    const IDEA_ICONS = { discover: '\uD83D\uDD0D', define: '\uD83C\uDFAF', plan: '\uD83D\uDCCB', execute: '\uD83D\uDE80' };
+    const IDEA_COLORS = { discover: 'emerald', define: 'blue', plan: 'purple', execute: 'amber' };
+
+    async function loadIdeaContent() {
+      const ideaBody = document.getElementById('idea-body');
+      if (!ideaBody || ideaBody.dataset.loaded) return;
+
+      const dataPath = projectParam ? '../data/projects/' + projectParam : '../data';
+      const results = {};
+
+      for (const phase of IDEA_PHASES) {
+        try {
+          const res = await fetch(dataPath + '/idea-' + phase + '.json', { signal: AbortSignal.timeout(3000) });
+          if (res.ok) results[phase] = await res.json();
+        } catch (e) { /* skip missing phases */ }
+      }
+
+      const phases = Object.keys(results);
+      if (phases.length === 0) {
+        ideaBody.innerHTML = '<span class="text-zinc-600">No IDEA artifacts found for this project.</span>';
+        ideaBody.dataset.loaded = '1';
+        return;
+      }
+
+      ideaBody.innerHTML = '<div class="space-y-3">' +
+        '<div class="grid grid-cols-4 gap-2 mb-3">' +
+        IDEA_PHASES.map(function(p) {
+          var found = !!results[p];
+          var c = IDEA_COLORS[p];
+          return '<div class="rounded-md p-2 text-center border ' +
+            (found ? 'bg-' + c + '-500/10 border-' + c + '-500/20' : 'bg-zinc-800/40 border-zinc-700/40') + '">' +
+            '<div class="text-lg">' + IDEA_ICONS[p] + '</div>' +
+            '<div class="text-[9px] font-bold ' + (found ? 'text-' + c + '-400' : 'text-zinc-600') + '">' + p.charAt(0).toUpperCase() + p.slice(1) + '</div>' +
+            '<div class="text-[8px] ' + (found ? 'text-' + c + '-400/60' : 'text-zinc-700') + '">' + (found ? 'COMPLETE' : 'PENDING') + '</div>' +
+            '</div>';
+        }).join('') +
+        '</div>' +
+
+        // Discover summary
+        (results.discover ? (function(d) {
+          var a = d.architecture || {};
+          return '<div class="p-2 rounded bg-zinc-800/40 border border-zinc-700/40">' +
+            '<div class="text-[9px] font-bold text-emerald-400 mb-1">Discover</div>' +
+            '<div class="grid grid-cols-4 gap-1 text-center">' +
+            ['LiveViews:' + (a.live_views || '?'), 'Schemas:' + (a.schemas || '?'), 'Routes:' + (typeof a.routes === 'object' ? (a.routes.total || '?') : (a.routes || '?')), 'Files:' + (a.source_files || a.lines_of_code || '?')].map(function(s) {
+              return '<div class="text-[9px] text-zinc-400">' + s + '</div>';
+            }).join('') +
+            '</div></div>';
+        })(results.discover) : '') +
+
+        // Define summary
+        (results.define ? (function(d) {
+          var m = d.market_size || {};
+          return '<div class="p-2 rounded bg-zinc-800/40 border border-zinc-700/40">' +
+            '<div class="text-[9px] font-bold text-blue-400 mb-1">Define</div>' +
+            '<div class="text-[9px] text-zinc-400">TAM: ' + (typeof m.tam === 'object' ? m.tam.value : (m.tam || '?')) + ' | SAM: ' + (typeof m.sam === 'object' ? m.sam.value : (m.sam || '?')) + ' | SOM Y3: ' + (typeof m.som_y3 === 'object' ? m.som_y3.value : (m.som_y3 || '?')) + '</div>' +
+            '<div class="text-[9px] text-zinc-500 mt-1">' + ((d.personas || []).length) + ' personas | ' + ((d.validated_hypotheses || []).length) + ' hypotheses</div>' +
+            '</div>';
+        })(results.define) : '') +
+
+        // Plan summary
+        (results.plan ? (function(d) {
+          return '<div class="p-2 rounded bg-zinc-800/40 border border-zinc-700/40">' +
+            '<div class="text-[9px] font-bold text-purple-400 mb-1">Plan</div>' +
+            '<div class="text-[9px] text-zinc-400">' + (d.total_stories_shipped || '?') + ' stories | ' + (d.total_plane_issues || '?') + ' Plane issues | ' + (d.prd_count || '?') + ' PRDs</div>' +
+            '<div class="text-[9px] text-zinc-500 mt-1">' + ((d.phases_completed || []).length) + ' phases completed</div>' +
+            '</div>';
+        })(results.plan) : '') +
+
+        // Execute summary
+        (results.execute ? (function(d) {
+          var dep = d.deployment || {};
+          var git = d.git_stats || {};
+          return '<div class="p-2 rounded bg-zinc-800/40 border border-zinc-700/40">' +
+            '<div class="text-[9px] font-bold text-amber-400 mb-1">Execute</div>' +
+            '<div class="text-[9px] text-zinc-400">' + (dep.platform || '?') + ' | ' + (dep.ci_cd || '?') + ' | v' + (d.current_version || '?') + '</div>' +
+            '<div class="text-[9px] text-zinc-500 mt-1">' + (git.total_commits || '?') + ' commits | ' + ((git.contributors || []).length) + ' contributors</div>' +
+            '</div>';
+        })(results.execute) : '') +
+
+        '</div>';
+
+      ideaBody.dataset.loaded = '1';
     }
 
     // Start

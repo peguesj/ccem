@@ -1,0 +1,294 @@
+{
+  "phase": "define",
+  "generated": "2026-03-30",
+  "source": "lib/lily_ai/ops/strategy_data.ex (v1.13.0) + market-research.json",
+  "formation_id": "fmt-20260330-idea-reveng",
+
+  "problem_statement": {
+    "framework": "I am / Trying to / But / Because / Feels",
+    "i_am": "an adult seeking mental health support",
+    "trying_to": "find a therapist who truly understands my needs and with whom I'll build a lasting therapeutic relationship",
+    "but": "the current system offers either overwhelming directories with no matching intelligence or subscription services that randomly assign therapists",
+    "because": "there is no data-driven way to assess therapeutic compatibility before committing time, money, and emotional energy",
+    "feels": "anxious about making the wrong choice, frustrated by the trial-and-error process, and increasingly likely to abandon therapy altogether",
+    "impact": "50% of therapy clients quit after just 3 sessions due to poor therapeutic fit. This represents a $38.7B annual waste in the US mental health system.",
+    "root_cause": "The mental health marketplace lacks a compatibility signal -- there is no 'Zestimate for therapy' that helps clients and therapists evaluate fit before the first session."
+  },
+
+  "personas": [
+    {
+      "name": "Sarah",
+      "archetype": "The Client",
+      "demographics": "32, marketing manager, urban, $75K income",
+      "goal": "Find a therapist for anxiety who 'gets' her",
+      "pain": "Tried 3 therapists, none were good fits, $1,200 wasted",
+      "tech": "Daily smartphone user, comfortable with apps",
+      "willingness_to_pay": "$19-29/mo for premium matching",
+      "jtbd": {
+        "primary_job": "Help me find a therapist I'll actually connect with",
+        "functional": ["Search by specialty", "Compare therapists", "Assess compatibility", "Book sessions"],
+        "social": "Show I'm taking meaningful action on my mental health",
+        "emotional": "Feel confident I'm making the right choice, reduce anxiety about starting therapy"
+      },
+      "journey": {
+        "awareness": "Realizes therapy need, searches 'find therapist near me', overwhelmed by options",
+        "research": "Compares directories, reads profiles, can't assess compatibility, frustration peaks",
+        "selection": "Picks based on photo/bio, hopes for the best, high anxiety about fit",
+        "engagement": "Attends sessions, evaluates fit, 50% chance of mismatch, considers switching",
+        "advocacy": "If matched well, long-term relationship, refers friends, NPS 60+"
+      }
+    },
+    {
+      "name": "Dr. Marcus",
+      "archetype": "The Therapist",
+      "demographics": "45, licensed clinical psychologist, private practice",
+      "goal": "Fill practice with well-matched clients to reduce burnout",
+      "pain": "40% of new clients drop after intake, wasting session slots",
+      "tech": "Uses EHR, open to new platforms that don't add admin burden",
+      "willingness_to_pay": "$49-99/mo for qualified client referrals",
+      "jtbd": {
+        "primary_job": "Help me fill my practice with well-matched clients",
+        "functional": ["Receive qualified referrals", "Reduce intake no-shows", "Manage practice visibility"],
+        "social": "Build professional reputation, demonstrate outcomes",
+        "emotional": "Reduce burnout from mismatched clients, feel professional fulfillment"
+      }
+    },
+    {
+      "name": "Jennifer",
+      "archetype": "The Org Admin",
+      "demographics": "50, HR Director at 500-person company",
+      "goal": "Provide employees with quality mental health benefits, track ROI",
+      "pain": "Current EAP has 3% utilization, can't prove wellness investment value",
+      "willingness_to_pay": "$15-25 PEPM for measurable outcomes",
+      "jtbd": {
+        "primary_job": "Help me prove our mental health investment works",
+        "functional": ["Track utilization", "Measure outcomes", "Manage employee access", "Report ROI"],
+        "social": "Demonstrate leadership commitment to employee wellness",
+        "emotional": "Confidence that benefits budget is well-spent"
+      }
+    },
+    {
+      "name": "Alex",
+      "archetype": "The Platform Admin",
+      "demographics": "38, technical operations lead",
+      "goal": "Maintain platform health, manage compliance, scale infrastructure",
+      "pain": "Manual therapist verification, no automated quality monitoring"
+    }
+  ],
+
+  "positioning": {
+    "template": "Geoffrey Moore",
+    "for": "adults navigating mental health care",
+    "who": "struggle to find the right therapist",
+    "product": "Lily AI",
+    "category": "therapeutic compatibility platform",
+    "that": "uses assessment-driven matching to connect clients with their ideal therapist",
+    "unlike": "BetterHelp and Psychology Today which offer either random assignment or overwhelming directories",
+    "differentiator": "Lily AI provides a Therapeutic Zestimate -- a data-driven compatibility score that predicts therapeutic fit before the first session",
+    "core_identity": "The Zillow of Therapy -- bringing data transparency to the mental health marketplace",
+    "positioning_axis": "Matching Intelligence (low to high) vs. User Agency (low to high) -- Lily AI occupies the high-high quadrant",
+    "full_statement": "For adults navigating mental health care who struggle to find the right therapist, Lily AI is the therapeutic compatibility platform that uses assessment-driven matching to connect clients with their ideal therapist. Unlike BetterHelp and Psychology Today which offer either random assignment or overwhelming directories, Lily AI provides a Therapeutic Zestimate -- a data-driven compatibility score that predicts therapeutic fit before the first session."
+  },
+
+  "jtbd": [
+    {
+      "persona": "Client (Sarah)",
+      "primary_job": "Help me find a therapist I'll actually connect with",
+      "functional": ["Search by specialty", "Compare therapists", "Assess compatibility", "Book sessions"],
+      "social": "Show I'm taking meaningful action on my mental health",
+      "emotional": "Feel confident I'm making the right choice, reduce anxiety about starting therapy"
+    },
+    {
+      "persona": "Therapist (Dr. Marcus)",
+      "primary_job": "Help me fill my practice with well-matched clients",
+      "functional": ["Receive qualified referrals", "Reduce intake no-shows", "Manage practice visibility"],
+      "social": "Build professional reputation, demonstrate outcomes",
+      "emotional": "Reduce burnout from mismatched clients, feel professional fulfillment"
+    },
+    {
+      "persona": "Org Admin (Jennifer)",
+      "primary_job": "Help me prove our mental health investment works",
+      "functional": ["Track utilization", "Measure outcomes", "Manage employee access", "Report ROI"],
+      "social": "Demonstrate leadership commitment to employee wellness",
+      "emotional": "Confidence that benefits budget is well-spent"
+    },
+    {
+      "top_opportunity": {
+        "odi_score": 14.2,
+        "description": "Minimize the time and emotional cost of finding the right therapist",
+        "current_state": "Over-served by directories, under-served by matching intelligence"
+      }
+    }
+  ],
+
+  "market_size": {
+    "tam": {
+      "value": "$77.4B",
+      "basis": "US adults with mental health conditions (57.8M) x average annual therapy spend ($1,340)",
+      "sources": ["NIMH 2024", "SAMHSA National Survey", "APA Fee Survey"]
+    },
+    "sam": {
+      "value": "$8.9B",
+      "basis": "Adults who would use a digital matching platform (18.2M) x blended platform ARPU ($490/yr)",
+      "filters": ["Tech-comfortable (85%)", "Willing to try new platforms (47%)", "Insured or self-pay (73%)"]
+    },
+    "som_y3": {
+      "value": "$89M",
+      "basis": "181K active users across segments",
+      "segments": {
+        "consumer": "150K users, 30K Pro subscribers ($228/yr)",
+        "therapist": "2,800 subscribers ($588/yr avg)",
+        "organization": "120 accounts ($7,200/yr avg PEPM)"
+      },
+      "assumptions": "Top-10 metro launch, 0.82% SAM capture"
+    },
+    "growth_trajectory": "SOM expands to $340M by Year 5 with geographic expansion and insurance integration",
+    "pestel": {
+      "political": "Mental Health Parity Act enforcement expanding; state telehealth licensing reciprocity improving (PSYPACT covers 40+ states); HIPAA enforcement increasing",
+      "economic": "$280B global mental health market growing 15% CAGR; employer mental health spending up 38% since 2020; therapy session costs rising 5-7% annually",
+      "social": "Post-COVID therapy normalization (destigmatization); Gen Z/Millennial preference for digital-first healthcare; growing demand for culturally competent therapists",
+      "technological": "AI matching algorithms maturing; telehealth infrastructure commoditized; assessment psychometrics validated for digital delivery",
+      "environmental": "Remote work enabling location-independent therapy access; climate anxiety emerging as therapy driver",
+      "legal": "AI in healthcare regulation emerging (EU AI Act, state-level); data privacy requirements increasing (CCPA, state health data laws); professional licensing portability improving"
+    }
+  },
+
+  "competitive_landscape": {
+    "problem_hypothesis": "Therapist-client matching is broken because there is no compatibility signal in the mental health marketplace.",
+    "validation_evidence": [
+      "50% therapy dropout rate in first 3 sessions (APA research)",
+      "BetterHelp NPS: 32 (poor matching satisfaction)",
+      "Psychology Today: 0 matching intelligence (directory only)",
+      "No competitor offers assessment-driven compatibility scoring"
+    ],
+    "competitors": [
+      {
+        "name": "BetterHelp/Talkspace",
+        "model": "Subscription model, random/minimal matching",
+        "weakness": "Random assignment, no compatibility signal"
+      },
+      {
+        "name": "Psychology Today",
+        "model": "Directory only, self-serve search",
+        "weakness": "Zero matching intelligence"
+      },
+      {
+        "name": "Alma/Headway",
+        "model": "Insurance navigation, not matching",
+        "weakness": "Solves billing, not fit"
+      },
+      {
+        "name": "Zocdoc",
+        "model": "Appointment booking, no therapeutic compatibility",
+        "weakness": "Generic booking, no therapy-specific matching"
+      }
+    ],
+    "go_no_go": "GO -- validated unmet need with no direct competitor addressing compatibility matching. The 'Therapeutic Zestimate' concept has no equivalent in market.",
+    "lily_positioning_quadrant": "High Matching Intelligence + High User Agency (unique position)"
+  },
+
+  "key_insights": [
+    "Therapists use Facebook groups as a manual matching engine -- posting multi-dimensional referral requests (specialty + insurance + demographics + modality + geography) that get buried in feeds. Lily's Quiz > Match funnel automates exactly this workflow.",
+    "853 referral request posts (14.5% of 5,869) from 17 FB groups represent the core use case Lily replaces.",
+    "6 of 8 top implicit feature requests from FB groups are ALREADY BUILT in Lily (75% pre-launch feature coverage).",
+    "Top pain point: 239 posts about pricing transparency; 183 posts about inability to find specialists.",
+    "50% of therapy clients quit after 3 sessions due to poor therapeutic fit -- $38.7B annual waste.",
+    "No competitor offers assessment-driven compatibility scoring -- the 'Therapeutic Zestimate' has no market equivalent.",
+    "Top opportunity (ODI Score 14.2): Minimize the time and emotional cost of finding the right therapist.",
+    "FB group geographic concentration in PA (318), CA (96), FL (88), NY (76) suggests strong East Coast launch opportunity.",
+    "411 posts (7%) signal demand for availability checking; 386 posts (6.6%) signal demand for demographic matching -- both already built.",
+    "Therapist-to-client referral is the highest-scoring acquisition channel (9.0/10) with $0 CAC and $568 LTV."
+  ],
+
+  "validated_hypotheses": [
+    {
+      "id": "H1",
+      "name": "Therapeutic Zestimate",
+      "hypothesis": "IF we implement compatibility scoring using assessment data, THEN match satisfaction increases 40%+ (vs 25% with basic matching).",
+      "experiment": "6-week A/B test, n=200 per group.",
+      "kill_criteria": "< 30% improvement -> pivot to simpler matching."
+    },
+    {
+      "id": "H2",
+      "name": "Progressive Assessment Funnel",
+      "hypothesis": "IF we convert quiz library into progressive onboarding, THEN completion rate reaches 60%+ and profiles are rich enough for matching.",
+      "experiment": "4-week funnel test with 5 existing quizzes.",
+      "kill_criteria": "< 40% completion -> simplify to 3-question minimum."
+    },
+    {
+      "id": "H3",
+      "name": "Supply-First Metro Launch",
+      "hypothesis": "IF we achieve 50+ verified therapists per top-10 metro, THEN we can support consumer acquisition without empty-shelf UX.",
+      "experiment": "8-week outbound campaign in 2 test metros.",
+      "kill_criteria": "CAC per therapist > $100 or sign-up rate < 5%."
+    },
+    {
+      "id": "H4",
+      "name": "Org ROI Dashboard",
+      "hypothesis": "IF we show measurable therapy utilization and wellness outcomes, THEN org contract renewal rate exceeds 85%.",
+      "experiment": "3 pilot organizations, 12-week measurement."
+    },
+    {
+      "id": "H5",
+      "name": "Coach AI Enhancement",
+      "hypothesis": "IF we add session memory and personalized coaching protocols, THEN between-session engagement increases 3x and therapy outcomes improve 15%.",
+      "experiment": "Coach AI v2 beta with 100 active users."
+    }
+  ],
+
+  "fb_research_summary": {
+    "dataset": {
+      "total_posts": 5869,
+      "unique_authors": 2153,
+      "groups": 17,
+      "collected": "2026-03-28"
+    },
+    "top_themes": {
+      "referral_request": {"count": 853, "pct": 14.5},
+      "specialization": {"count": 707, "pct": 12.0},
+      "insurance": {"count": 678, "pct": 11.6},
+      "telehealth": {"count": 520, "pct": 8.9},
+      "hiring": {"count": 417, "pct": 7.1}
+    },
+    "pain_points": {
+      "pricing_transparency": 239,
+      "cant_find_specialist": 183,
+      "cultural_competency": 13,
+      "insurance_frustration": 12,
+      "waitlist_full": 10
+    },
+    "feature_coverage": "75% -- 6 of 8 top implicit feature requests already built",
+    "product_market_fit_signal": "853 referral request posts validate the core use case Lily replaces"
+  },
+
+  "problem_framing_canvas": {
+    "framework": "MITRE Problem Framing Canvas",
+    "look_inward": [
+      "72+ validated assessments that generate rich user profiles",
+      "Therapist profile data including modalities, specialties, approaches",
+      "Ability to compute compatibility scores from existing quiz data"
+    ],
+    "look_outward": [
+      "Clients need a trust signal before committing to a therapist",
+      "Therapists need pre-qualified referrals to reduce intake churn",
+      "Organizations need measurable outcomes to justify mental health spend"
+    ],
+    "look_around": [
+      "Zillow's Zestimate transformed real estate by providing a trust signal",
+      "Dating apps proved swipe-based matching works for human connection",
+      "No one has applied either pattern to therapeutic matching"
+    ]
+  },
+
+  "opportunity_solution_tree": {
+    "target_outcome": "Increase therapy retention from 50% to 75% at 3 months",
+    "opportunities": [
+      {"name": "Reduce compatibility uncertainty", "odi": 14.2, "solutions": ["Therapeutic Zestimate scoring algorithm", "Progressive assessment funnel"], "experiments": 8},
+      {"name": "Accelerate therapist discovery", "odi": 12.8, "solutions": ["Therapy Connect swipe matching", "Smart directory filters"], "experiments": 6},
+      {"name": "Demonstrate value early", "odi": 11.5, "solutions": ["Quiz-driven onboarding with immediate insights", "Coach AI for between-session support"], "experiments": 6},
+      {"name": "Enable organizational buying", "odi": 10.3, "solutions": ["Org ROI dashboard", "PEPM billing with usage analytics"], "experiments": 4},
+      {"name": "Build supply-side liquidity", "odi": 9.7, "solutions": ["Supply-first metro launch strategy", "Therapist referral program"], "experiments": 4}
+    ],
+    "sprint_focus": "Opportunities 1-2 with Gate A validation at Week 12"
+  }
+}

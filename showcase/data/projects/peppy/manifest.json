@@ -1,0 +1,30 @@
+{
+  "project": "peppy",
+  "name": "Peppy\u2122",
+  "tagline": "DTC Telehealth + Peptide Compounding Platform",
+  "status": "Alpha \u2014 Private Beta",
+  "version": "0.1.0",
+  "release_date": "2026-03-30",
+  "repository": {"branch": "main"},
+  "deployment": {
+    "production_url": "https://peppy.greenflower-4eae5465.eastus2.azurecontainerapps.io",
+    "dev_port": 4001
+  },
+  "stack": {
+    "backend": "Phoenix 1.8.3 / Elixir 1.18.3",
+    "database": "PostgreSQL 18",
+    "frontend": "Phoenix LiveView 1.1.0",
+    "deployment": "Azure Container Apps",
+    "auth": "Phoenix Session Auth (bcrypt + DB tokens)"
+  },
+  "theme": {
+    "bg": "#060d0a",
+    "surface": "#0c1a12",
+    "accent": "#059669",
+    "text": "#e2f0eb",
+    "muted": "#7aad93",
+    "border": "rgba(5,150,105,0.18)"
+  },
+  "waves": 3,
+  "features_total": 12
+}

@@ -1,0 +1,577 @@
+[
+  {
+    "id": "lfg-001",
+    "title": "WTFS Disk Usage Scanner",
+    "wave": 1,
+    "status": "shipped",
+    "tags": [
+      "scan",
+      "disk",
+      "html-viewer"
+    ],
+    "description": "Where's The Free Space \u2014 directory-level disk usage analysis with segmented bar charts (deps/cache/source) and WebKit HTML viewer"
+  },
+  {
+    "id": "lfg-002",
+    "title": "DTF Cache Cleaner",
+    "wave": 1,
+    "status": "shipped",
+    "tags": [
+      "clean",
+      "cache",
+      "dry-run"
+    ],
+    "description": "Delete Temp Files \u2014 multi-target cache discovery with dry-run/force modes, progressive cleanup levels, Docker/sudo support"
+  },
+  {
+    "id": "lfg-003",
+    "title": "BTAU Backup Manager",
+    "wave": 1,
+    "status": "shipped",
+    "tags": [
+      "backup",
+      "sparse-image",
+      "mount"
+    ],
+    "description": "Back That App Up \u2014 sparse disk image discovery, mount/unmount, backup scheduling with progress tracking"
+  },
+  {
+    "id": "lfg-004",
+    "title": "DEVDRIVE Volume Manager",
+    "wave": 2,
+    "status": "shipped",
+    "tags": [
+      "devdrive",
+      "apfs",
+      "volumes",
+      "finder"
+    ],
+    "description": "Developer drive management with multi-volume APFS support, cache protection, inbox protocol, and Finder integration"
+  },
+  {
+    "id": "lfg-005",
+    "title": "SSD Spotlight Manager",
+    "wave": 2,
+    "status": "shipped",
+    "tags": [
+      "spotlight",
+      "mds",
+      "cpu",
+      "indexing"
+    ],
+    "description": "Slows Sh*t Down \u2014 mds CPU monitoring, volume index status, scan/exclude commands with WebKit HTML dashboard"
+  },
+  {
+    "id": "lfg-006",
+    "title": "STFU Source Tree Forensics",
+    "wave": 2,
+    "status": "shipped",
+    "tags": [
+      "forensics",
+      "deps",
+      "duplicates",
+      "archive"
+    ],
+    "description": "Source Tree Forensics Utility \u2014 dependency analysis, fingerprinting, duplicate detection, project archival"
+  },
+  {
+    "id": "lfg-007",
+    "title": "macOS Finder Integration",
+    "wave": 3,
+    "status": "shipped",
+    "tags": [
+      "finder",
+      "icons",
+      "sidebar",
+      "quick-actions"
+    ],
+    "description": "CloudMounter-level native integration: custom .VolumeIcon.icns, Finder sidebar entries, 5 Automator Quick Actions, automount LaunchAgent"
+  },
+  {
+    "id": "lfg-008",
+    "title": "Menubar Helper Daemon",
+    "wave": 3,
+    "status": "shipped",
+    "tags": [
+      "menubar",
+      "swift",
+      "daemon",
+      "monitoring"
+    ],
+    "description": "Swift AppKit menubar app with multi-domain health monitoring, volume status (df -k for APFS accuracy), WebKit viewer IPC"
+  },
+  {
+    "id": "lfg-009",
+    "title": "Inbox Work Queue",
+    "wave": 3,
+    "status": "shipped",
+    "tags": [
+      "inbox",
+      "json",
+      "cross-project",
+      "watcher"
+    ],
+    "description": "Cross-project work queue with JSON protocol for cache relocation, DTF protection, volume queries, and prefetch hooks"
+  },
+  {
+    "id": "lfg-010",
+    "title": ".pkg Installer Package",
+    "wave": 4,
+    "status": "shipped",
+    "tags": [
+      "installer",
+      "pkg",
+      "distribution",
+      "launchagent"
+    ],
+    "description": "macOS .pkg installer with preinstall/postinstall, launchctl bootstrap, real user detection, portable path patching across 38 payload files"
+  },
+  {
+    "id": "lfg-011",
+    "title": "Code Review Fixes",
+    "wave": 4,
+    "status": "shipped",
+    "tags": [
+      "security",
+      "bash-compat",
+      "python-injection"
+    ],
+    "description": "3 CRITICAL + 1 HIGH fixes: state.sh readonly ordering, scan.sh div-by-zero, Python triple-quote injection via env vars, state_done logging"
+  },
+  {
+    "id": "lfg-012",
+    "title": "Integration Test Suite",
+    "wave": 4,
+    "status": "shipped",
+    "tags": [
+      "testing",
+      "headless",
+      "state-validation"
+    ],
+    "description": "12/12 headless module tests: all modules exit 0, state.json valid, HTML generation verified in viewer mode"
+  },
+  {
+    "id": "lfg-013",
+    "title": "INSTALL.md Documentation",
+    "wave": 4,
+    "status": "shipped",
+    "tags": [
+      "docs",
+      "install",
+      "troubleshooting"
+    ],
+    "description": "8-section installation guide covering .pkg install, manual install, post-install verification, LaunchAgent management, uninstall, troubleshooting"
+  },
+  {
+    "id": "lfg-014",
+    "title": "SwiftUI Native Port Wave 2",
+    "wave": 5,
+    "status": "shipped",
+    "tags": [
+      "swiftui",
+      "native",
+      "macos",
+      "views"
+    ],
+    "description": "5 module views (WTFS/DTF/BTAU/DevDrive/SSD), DashboardView with 5-card grid, NavigationSplitView routing, VolumeWatcher live data \u2014 914 insertions, 9/9 tests pass"
+  },
+  {
+    "id": "lfg-015",
+    "title": "DEVDRIVE Formation Showcase",
+    "wave": 5,
+    "status": "shipped",
+    "tags": [
+      "showcase",
+      "apm",
+      "formation",
+      "interactive"
+    ],
+    "description": "Interactive formation tree at localhost:3001 with live APM polling, agent inspector, volume monitoring, AgentLock integration, wave gate progress"
+  },
+  {
+    "id": "lfg-016",
+    "title": "Native Service Layer",
+    "wave": 6,
+    "status": "shipped",
+    "tags": [
+      "swift",
+      "services",
+      "async",
+      "spm"
+    ],
+    "description": "Pure-Swift async service layer replacing shell-out scripts: DiskMonitorService (du/df), CacheDiscovery (target enumeration), VolumeWatcherService (DiskArbitration callbacks), SpotlightService (mdutil wrapper), InboxService (JSON work queue), ProcessRunner (async shell bridge)"
+  },
+  {
+    "id": "lfg-017",
+    "title": "LFGKit Shared Framework",
+    "wave": 6,
+    "status": "shipped",
+    "tags": [
+      "spm",
+      "framework",
+      "shared",
+      "cli"
+    ],
+    "description": "Swift Package Manager multi-target layout: LFGKit shared library (Constants, SizeFormatter, ProcessRunner), LFGApp GUI target, lfg-cli command-line target, SizeFormatterTests with full coverage"
+  },
+  {
+    "id": "lfg-018",
+    "title": "Data Models & AppState",
+    "wave": 6,
+    "status": "shipped",
+    "tags": [
+      "models",
+      "observable",
+      "state"
+    ],
+    "description": "Observable AppState with @Published properties: DiskSnapshot, VolumeProfile, InboxItem, LFGModule, ModuleStatus \u2014 replaces state.json file polling with in-memory reactive state"
+  },
+  {
+    "id": "lfg-019",
+    "title": "Permissions & Entitlements",
+    "wave": 7,
+    "status": "shipped",
+    "tags": [
+      "sandbox",
+      "entitlements",
+      "hardened-runtime"
+    ],
+    "description": "App Sandbox entitlements for disk read/write, network client, user-selected file access; hardened runtime with com.apple.security exceptions for shell subprocess execution"
+  },
+  {
+    "id": "lfg-020",
+    "title": "Login Item & SMAppService",
+    "wave": 7,
+    "status": "shipped",
+    "tags": [
+      "login-item",
+      "smappservice",
+      "launchagent"
+    ],
+    "description": "SMAppService-based login item registration replacing LaunchAgent plist \u2014 launch at login toggle in Settings, ServiceManagement framework integration"
+  },
+  {
+    "id": "lfg-021",
+    "title": "Settings UI & MenuBarExtra",
+    "wave": 7,
+    "status": "shipped",
+    "tags": [
+      "settings",
+      "menubarextra",
+      "preferences"
+    ],
+    "description": "SwiftUI Settings scene with scan interval, cleanup thresholds, volume watch list; MenuBarExtra with systemImage, live disk gauge, quick-action menu for mount/unmount/scan"
+  },
+  {
+    "id": "lfg-022",
+    "title": "Full Native SwiftUI UI",
+    "wave": 8,
+    "status": "planned",
+    "tags": [
+      "swiftui",
+      "charts",
+      "gauges",
+      "tables"
+    ],
+    "description": "Replace WebKit HTML viewer with native SwiftUI: Swift Charts for disk usage bar/pie charts, Gauge views for volume health, Table for file listings, searchable/sortable NavigationSplitView with sidebar badges"
+  },
+  {
+    "id": "lfg-023",
+    "title": "Native STFU Forensics View",
+    "wave": 8,
+    "status": "planned",
+    "tags": [
+      "swiftui",
+      "stfu",
+      "forensics",
+      "treemap"
+    ],
+    "description": "SwiftUI STFU module: dependency treemap visualization, duplicate fingerprint table with diff viewer, project archive manager with drag-and-drop, Spotlight metadata inspector"
+  },
+  {
+    "id": "lfg-024",
+    "title": "XPC Privileged Helper",
+    "wave": 9,
+    "status": "planned",
+    "tags": [
+      "xpc",
+      "privileged-helper",
+      "sudo",
+      "root"
+    ],
+    "description": "XPC privileged helper daemon (LFGPrivilegedProtocol) for operations requiring root: mdutil -i off/on for Spotlight exclusion, cache cleanup in /Library and /System paths, APFS volume creation/deletion"
+  },
+  {
+    "id": "lfg-025",
+    "title": "Authorization Plugin & Escalation",
+    "wave": 9,
+    "status": "planned",
+    "tags": [
+      "authorization",
+      "security",
+      "escalation"
+    ],
+    "description": "SMJobBless-based privileged helper installation with authorization rights, launchd plist embedding, code-signing requirement for XPC connection validation"
+  },
+  {
+    "id": "lfg-026",
+    "title": "Notarization & DMG Packaging",
+    "wave": 10,
+    "status": "planned",
+    "tags": [
+      "notarize",
+      "dmg",
+      "codesign",
+      "distribution"
+    ],
+    "description": "Apple notarization workflow: codesign with Developer ID, notarytool submit/staple, DMG disk image with background art and /Applications symlink, replacing .pkg installer for App Store-independent distribution"
+  },
+  {
+    "id": "lfg-027",
+    "title": "Sparkle Auto-Update",
+    "wave": 10,
+    "status": "planned",
+    "tags": [
+      "sparkle",
+      "auto-update",
+      "appcast"
+    ],
+    "description": "Sparkle 2.x framework integration: EdDSA-signed appcast feed, background update checks, delta updates, user-facing update UI with release notes, Homebrew cask formula as alternative channel"
+  },
+  {
+    "id": "lfg-028",
+    "title": "DevDrive v2 Self-Correcting Architecture",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "apfs-native",
+      "self-healing",
+      "reconcile-loop",
+      "architecture"
+    ],
+    "description": "Replaces crude hdiutil sparseimage model with native APFS volumes in root container (diskutil apfs addVolume -quota). Self-correcting reconcile loop classifies drift into 8 categories (MISSING_LINK, STALE_TARGET, REAL_DIR_DRIFT, UNMOUNTED_VOL, OVERSIZED, BAND_BLOAT, SNAPSHOT_LOCKED, SWAP_PRESSURE) with idempotent fix actions. State in ~/.config/lfg/devdrive_state.json with root_free_gb_history ring buffer to distinguish APFS sawtooth from real leaks. 6-wave build plan complete."
+  },
+  {
+    "id": "lfg-029",
+    "title": "US-001: Pressure Observers — Read-Only Disk State Watchers",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "observers",
+      "ring-buffer",
+      "python"
+    ],
+    "description": "4 read-only observers (PurgeableWatch, ClangCacheWatch, BandBloatWatch, DockerWatch) sampling disk state every 60s into 288-sample ring buffer in devdrive_state.json. CLI: lfg devdrive pressure / history. All tests pass. LFG-32."
+  },
+  {
+    "id": "lfg-030",
+    "title": "US-002: Reconcile Loop — Dry-Run Drift Classifier",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "reconcile",
+      "drift",
+      "launchagent"
+    ],
+    "description": "ReconcileLoop with classify_drift() covering 8 drift categories. CLI: lfg devdrive reconcile / doctor. io.lfg.devdrive-reconcile.plist LaunchAgent template. Results logged to reconcile_log.jsonl. LFG-33."
+  },
+  {
+    "id": "lfg-031",
+    "title": "US-008: State File v2 and devdrive_state.json Schema",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "state",
+      "schema",
+      "migration"
+    ],
+    "description": "v2 state schema with volumes array, forest topology, metrics ring buffer. Migration from devdrive_forest.json. All modules read/write through state module API. LFG-34."
+  },
+  {
+    "id": "lfg-032",
+    "title": "US-003: Reconcile Actions — Idempotent Repair with Confirmation",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "repair",
+      "idempotent",
+      "rsync"
+    ],
+    "description": "Repair actions for each drift category: fix_missing_link, fix_stale_target, fix_real_dir_drift, fix_unmounted_vol, fix_band_bloat, fix_snapshot_locked. Default dry-run, --apply flag required. lsof check prevents relocation of dirs with open handles. LFG-35."
+  },
+  {
+    "id": "lfg-033",
+    "title": "US-004: Native APFS Volume Backend — Create, Delete, Quota, Snapshot",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "apfs",
+      "diskutil",
+      "snapshots"
+    ],
+    "description": "apfs_volume.py wrapping diskutil apfs: create_volume (with -quota -role U), delete_volume, rename_volume, set_quota, list_snapshots, take_snapshot. CLI: lfg devdrive adopt <path>. LFG-36."
+  },
+  {
+    "id": "lfg-034",
+    "title": "US-007: FSKit Overlay Exploration — macFUSE 5.2 Proof of Concept",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "fskit",
+      "macfuse",
+      "overlay",
+      "poc"
+    ],
+    "description": "Python FUSE PoC: mount at /tmp/devdrive-overlay routing reads/writes to /Volumes/DDRV<N> by path rules. Performance measurement vs direct volume access for 1000 file ops. Go/no-go decision documented. LFG-38."
+  },
+  {
+    "id": "lfg-035",
+    "title": "US-005: v1-to-v2 Migration — Sparseimage to APFS Volume",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "migration",
+      "sparseimage",
+      "rollback"
+    ],
+    "description": "migrate_v1.py: preflight checks, rsync -aHAX, shasum sample verify, mount-point preservation, 24h rollback window. CLI: lfg devdrive migrate v1-to-v2 / rollback <vol>. APM notifications per step. LFG-37."
+  },
+  {
+    "id": "lfg-036",
+    "title": "US-006: LaunchAgent Install and Reboot Verification",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "launchagent",
+      "boot",
+      "automount"
+    ],
+    "description": "io.lfg.devdrive-reconcile.plist installed to ~/Library/LaunchAgents/. Reconcile loop runs every 5 minutes. Legacy automount plist preserved until reconcile runs successfully post-reboot. CLI: lfg devdrive setup --reconcile. LFG-39."
+  },
+  {
+    "id": "lfg-037",
+    "title": "US-009: Menubar Pressure Indicator and History Graph",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "menubar",
+      "d3",
+      "pressure"
+    ],
+    "description": "Menubar color-coded disk free: green (>10GB), yellow (5-10GB), red (<5GB). Click opens WebKit viewer with D3.js 24h time-series chart. Annotated pressure events as vertical markers. 60s refresh from devdrive_state.json. LFG-40."
+  },
+  {
+    "id": "lfg-038",
+    "title": "US-010: Claude Code Integration — Eliminate Symlink Dependency",
+    "wave": 11,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "claude-code",
+      "symlinks",
+      "forest"
+    ],
+    "description": "~/.claude/projects and ~/.claude/tasks symlinks point to native APFS volume mount points. Reconcile loop monitors ~/.claude symlinks as forest entries with auto_repair: true. mkdir -p succeeds for all project memory directories. LFG-41."
+  },
+  {
+    "id": "lfg-039",
+    "title": "Disconnect Detection",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "disconnect",
+      "offline",
+      "resilience"
+    ],
+    "description": "Detect offline external volumes, log DISCONNECTED status in devdrive_state.json, prevent reconcile actions on unavailable drives"
+  },
+  {
+    "id": "lfg-040",
+    "title": "Fallback Directories",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "fallback",
+      "symlinks",
+      "resilience"
+    ],
+    "description": "Redirect broken symlinks to ~/DevDrive/<id>-fallback/ local directories, ensuring dependent tools continue working when external volumes are disconnected"
+  },
+  {
+    "id": "lfg-041",
+    "title": "Reconnect Subcommand",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "reconnect",
+      "rsync",
+      "resilience"
+    ],
+    "description": "lfg devdrive reconnect [id|--all] — detect reconnected volumes, rsync fallback data back to volume mount points, restore original symlinks"
+  },
+  {
+    "id": "lfg-042",
+    "title": "Reconcile Loop Resilience",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "reconcile",
+      "launchagent",
+      "state-transition"
+    ],
+    "description": "60s LaunchAgent polling with state transition detection: ONLINE -> DISCONNECTED -> FALLBACK -> RECONNECTING -> ONLINE lifecycle per volume"
+  },
+  {
+    "id": "lfg-043",
+    "title": "APM Notifications",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "apm",
+      "notifications",
+      "resilience"
+    ],
+    "description": "POST to localhost:3032/api/notify on volume state changes — disconnect, fallback activation, reconnect completion, sync errors"
+  },
+  {
+    "id": "lfg-044",
+    "title": "Fleet.json v1.4",
+    "wave": 12,
+    "status": "done",
+    "tags": [
+      "devdrive",
+      "fleet",
+      "schema",
+      "resilience"
+    ],
+    "description": "Fleet registry v1.4 schema adding fallback_dir and reconnect_policy (auto|manual|disabled) per drive entry"
+  },
+  {
+    "id": "lfg-045",
+    "title": "Health Dashboard",
+    "wave": 12,
+    "status": "in-progress",
+    "tags": [
+      "devdrive",
+      "health",
+      "dashboard",
+      "cli"
+    ],
+    "description": "lfg devdrive health — color-coded CLI status table showing volume state (ONLINE/DISCONNECTED/FALLBACK), free space, last reconcile, fallback size per drive"
+  }
+]

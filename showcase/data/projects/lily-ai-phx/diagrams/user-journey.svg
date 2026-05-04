@@ -1,0 +1,186 @@
+<svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" style="width:100%" role="img" aria-label="User Journey - Quiz to Match Funnel">
+  <defs>
+    <marker id="uj-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#71717a"/>
+    </marker>
+    <marker id="uj-arrow-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#8b5cf6" opacity="0.6"/>
+    </marker>
+    <filter id="uj-shadow" x="-6%" y="-6%" width="112%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="uj-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="420" fill="transparent"/>
+
+  <!-- Title -->
+  <text x="400" y="28" text-anchor="middle" fill="#e4e4e7" font-size="13" font-family="system-ui" font-weight="700">User Journey: Discovery to Booking</text>
+  <text x="400" y="42" text-anchor="middle" fill="#52525b" font-size="9" font-family="ui-monospace, monospace">Quiz-gated matching funnel with AI bypass path</text>
+
+  <!-- ===== MAIN FLOW LINE (background path) ===== -->
+  <path d="M 100 170 C 160 170, 180 170, 220 170 C 260 170, 340 170, 380 170 C 420 170, 460 170, 500 170 C 540 170, 580 170, 620 170 C 660 170, 680 170, 720 170" fill="none" stroke="#27272a" stroke-width="2" opacity="0.6"/>
+
+  <!-- ===== STAGE 1: LANDING ===== -->
+  <g filter="url(#uj-shadow)">
+    <rect x="32" y="100" width="136" height="140" rx="8" fill="#18181b" stroke="#06b6d4" stroke-width="1.5"/>
+    <!-- Stage dot -->
+    <circle cx="100" cy="82" r="8" fill="#06b6d4" opacity="0.15" filter="url(#uj-glow)"/>
+    <circle cx="100" cy="82" r="5" fill="#06b6d4"/>
+    <text x="100" y="86" text-anchor="middle" fill="#18181b" font-size="6" font-family="system-ui" font-weight="700">1</text>
+    <!-- Content -->
+    <text x="100" y="124" text-anchor="middle" fill="#06b6d4" font-size="12" font-family="system-ui" font-weight="700">Landing</text>
+    <text x="100" y="140" text-anchor="middle" fill="#52525b" font-size="8" font-family="system-ui">Browse + Search</text>
+    <line x1="52" y1="152" x2="148" y2="152" stroke="#27272a" stroke-width="0.5"/>
+    <text x="100" y="168" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Public pages</text>
+    <text x="100" y="182" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Autocomplete</text>
+    <text x="100" y="196" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Feature cards</text>
+    <text x="100" y="210" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Sign up / Login</text>
+    <text x="100" y="228" text-anchor="middle" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">No auth required</text>
+  </g>
+
+  <!-- Arrow 1->2 -->
+  <path d="M 168 170 C 185 170, 195 170, 212 170" fill="none" stroke="#71717a" stroke-width="1.5" marker-end="url(#uj-arrow)"/>
+
+  <!-- ===== STAGE 2: QUIZ ===== -->
+  <g filter="url(#uj-shadow)">
+    <rect x="212" y="100" width="136" height="140" rx="8" fill="#18181b" stroke="#10b981" stroke-width="1.5"/>
+    <circle cx="280" cy="82" r="8" fill="#10b981" opacity="0.15" filter="url(#uj-glow)"/>
+    <circle cx="280" cy="82" r="5" fill="#10b981"/>
+    <text x="280" y="86" text-anchor="middle" fill="#18181b" font-size="6" font-family="system-ui" font-weight="700">2</text>
+    <text x="280" y="124" text-anchor="middle" fill="#10b981" font-size="12" font-family="system-ui" font-weight="700">Quiz</text>
+    <text x="280" y="140" text-anchor="middle" fill="#52525b" font-size="8" font-family="system-ui">Take Assessment</text>
+    <line x1="232" y1="152" x2="328" y2="152" stroke="#27272a" stroke-width="0.5"/>
+    <text x="280" y="168" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">72+ quizzes</text>
+    <text x="280" y="182" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">PERMA-V score</text>
+    <text x="280" y="196" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Auto-save draft</text>
+    <text x="280" y="210" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Type filters</text>
+    <text x="280" y="228" text-anchor="middle" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Auth required</text>
+  </g>
+
+  <!-- ===== GATE: Lock between Quiz and Match ===== -->
+  <!-- Gate icon -->
+  <g transform="translate(369, 148)">
+    <rect x="-16" y="-8" width="32" height="44" rx="4" fill="#18181b" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <!-- Lock body -->
+    <rect x="-8" y="8" width="16" height="14" rx="2" fill="#f59e0b" opacity="0.25" stroke="#f59e0b" stroke-width="1"/>
+    <!-- Lock shackle -->
+    <path d="M -4 8 L -4 2 C -4 -3 4 -3 4 2 L 4 8" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+    <!-- Keyhole -->
+    <circle cx="0" cy="16" r="2" fill="#f59e0b"/>
+    <text x="0" y="30" text-anchor="middle" fill="#f59e0b" font-size="6" font-family="ui-monospace, monospace" font-weight="600">GATE</text>
+  </g>
+
+  <!-- Arrow 2->Gate -->
+  <path d="M 348 170 C 352 170, 352 170, 353 170" fill="none" stroke="#71717a" stroke-width="1.5"/>
+  <!-- Arrow Gate->3 -->
+  <path d="M 385 170 C 390 170, 392 170, 396 170" fill="none" stroke="#71717a" stroke-width="1.5" marker-end="url(#uj-arrow)"/>
+  <text x="369" y="205" text-anchor="middle" fill="#78350f" font-size="6" font-family="ui-monospace, monospace">Quiz completion</text>
+  <text x="369" y="214" text-anchor="middle" fill="#78350f" font-size="6" font-family="ui-monospace, monospace">required</text>
+
+  <!-- ===== STAGE 3: MATCH ===== -->
+  <g filter="url(#uj-shadow)">
+    <rect x="392" y="100" width="136" height="140" rx="8" fill="#18181b" stroke="#a855f7" stroke-width="1.5"/>
+    <circle cx="460" cy="82" r="8" fill="#a855f7" opacity="0.15" filter="url(#uj-glow)"/>
+    <circle cx="460" cy="82" r="5" fill="#a855f7"/>
+    <text x="460" y="86" text-anchor="middle" fill="#18181b" font-size="6" font-family="system-ui" font-weight="700">3</text>
+    <text x="460" y="124" text-anchor="middle" fill="#a855f7" font-size="12" font-family="system-ui" font-weight="700">Match</text>
+    <text x="460" y="140" text-anchor="middle" fill="#52525b" font-size="8" font-family="system-ui">Therapy Connect</text>
+    <line x1="412" y1="152" x2="508" y2="152" stroke="#27272a" stroke-width="0.5"/>
+    <text x="460" y="168" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Swipe matching</text>
+    <text x="460" y="182" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Filter by specialty</text>
+    <text x="460" y="196" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Profile cards</text>
+    <text x="460" y="210" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Match requests</text>
+    <text x="460" y="228" text-anchor="middle" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Quiz-gated</text>
+  </g>
+
+  <!-- Arrow 3->4 -->
+  <path d="M 528 170 C 545 170, 555 170, 572 170" fill="none" stroke="#71717a" stroke-width="1.5" marker-end="url(#uj-arrow)"/>
+
+  <!-- ===== STAGE 4: DIRECTORY ===== -->
+  <g filter="url(#uj-shadow)">
+    <rect x="572" y="100" width="110" height="140" rx="8" fill="#18181b" stroke="#3b82f6" stroke-width="1.5"/>
+    <circle cx="627" cy="82" r="8" fill="#3b82f6" opacity="0.15" filter="url(#uj-glow)"/>
+    <circle cx="627" cy="82" r="5" fill="#3b82f6"/>
+    <text x="627" y="86" text-anchor="middle" fill="#18181b" font-size="6" font-family="system-ui" font-weight="700">4</text>
+    <text x="627" y="124" text-anchor="middle" fill="#3b82f6" font-size="12" font-family="system-ui" font-weight="700">Directory</text>
+    <text x="627" y="140" text-anchor="middle" fill="#52525b" font-size="8" font-family="system-ui">Browse Profiles</text>
+    <line x1="592" y1="152" x2="662" y2="152" stroke="#27272a" stroke-width="0.5"/>
+    <text x="627" y="168" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Search + filter</text>
+    <text x="627" y="182" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Verified badges</text>
+    <text x="627" y="196" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Full profiles</text>
+    <text x="627" y="210" text-anchor="middle" fill="#71717a" font-size="8" font-family="ui-monospace, monospace">Reviews</text>
+    <text x="627" y="228" text-anchor="middle" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Quiz-gated</text>
+  </g>
+
+  <!-- Arrow 4->5 -->
+  <path d="M 682 170 C 695 170, 702 170, 712 170" fill="none" stroke="#71717a" stroke-width="1.5" marker-end="url(#uj-arrow)"/>
+
+  <!-- ===== STAGE 5: BOOKING ===== -->
+  <g filter="url(#uj-shadow)">
+    <rect x="712" y="100" width="76" height="140" rx="8" fill="#18181b" stroke="#f59e0b" stroke-width="1.5"/>
+    <circle cx="750" cy="82" r="8" fill="#f59e0b" opacity="0.15" filter="url(#uj-glow)"/>
+    <circle cx="750" cy="82" r="5" fill="#f59e0b"/>
+    <text x="750" y="86" text-anchor="middle" fill="#18181b" font-size="6" font-family="system-ui" font-weight="700">5</text>
+    <text x="750" y="124" text-anchor="middle" fill="#f59e0b" font-size="12" font-family="system-ui" font-weight="700">Book</text>
+    <text x="750" y="140" text-anchor="middle" fill="#52525b" font-size="8" font-family="system-ui">Schedule + Pay</text>
+    <line x1="724" y1="152" x2="776" y2="152" stroke="#27272a" stroke-width="0.5"/>
+    <text x="750" y="168" text-anchor="middle" fill="#71717a" font-size="7" font-family="ui-monospace, monospace">Calendar</text>
+    <text x="750" y="182" text-anchor="middle" fill="#71717a" font-size="7" font-family="ui-monospace, monospace">Stripe</text>
+    <text x="750" y="196" text-anchor="middle" fill="#71717a" font-size="7" font-family="ui-monospace, monospace">PayPal</text>
+    <text x="750" y="210" text-anchor="middle" fill="#71717a" font-size="7" font-family="ui-monospace, monospace">Confirm</text>
+    <text x="750" y="228" text-anchor="middle" fill="#3f3f46" font-size="7" font-family="ui-monospace, monospace">Paywall</text>
+  </g>
+
+  <!-- ===== BYPASS PATH: Coach AI ===== -->
+  <!-- Curved path from Landing down and arcing under to Directory -->
+  <path d="M 100 240 C 100 310, 100 330, 160 340 C 250 355, 480 355, 560 340 C 610 330, 627 310, 627 240" fill="none" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="6 3" opacity="0.5" marker-end="url(#uj-arrow-bypass)"/>
+
+  <!-- Coach AI bubble on bypass path -->
+  <g transform="translate(360, 330)">
+    <rect x="-50" y="-14" width="100" height="28" rx="14" fill="#1e1533" stroke="#8b5cf6" stroke-width="1" opacity="0.8"/>
+    <!-- AI sparkle icon -->
+    <text x="-32" y="4" fill="#c084fc" font-size="10" font-family="system-ui">*</text>
+    <text x="-18" y="4" fill="#c084fc" font-size="9" font-family="system-ui" font-weight="600">Coach AI</text>
+    <text x="360" y="370" text-anchor="middle" fill="#4c1d95" font-size="7" font-family="ui-monospace, monospace" transform="translate(-360,-370)"/>
+  </g>
+  <text x="360" y="368" text-anchor="middle" fill="#4c1d95" font-size="7" font-family="ui-monospace, monospace">Bypass: AI coaching without matching</text>
+
+  <!-- ===== LEGEND ===== -->
+  <g transform="translate(100, 390)">
+    <rect x="0" y="0" width="600" height="28" rx="6" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+
+    <!-- User Flow -->
+    <line x1="16" y1="14" x2="36" y2="14" stroke="#71717a" stroke-width="1.5" marker-end="url(#uj-arrow)"/>
+    <text x="42" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">User Flow</text>
+
+    <!-- Gate -->
+    <rect x="112" y="7" width="12" height="12" rx="2" fill="#f59e0b" opacity="0.25" stroke="#f59e0b" stroke-width="0.8"/>
+    <text x="130" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Gate</text>
+
+    <!-- Bypass -->
+    <line x1="176" y1="14" x2="196" y2="14" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+    <text x="202" y="18" fill="#a1a1aa" font-size="9" font-family="system-ui">Bypass</text>
+
+    <!-- Stage colors -->
+    <circle cx="268" cy="14" r="4" fill="#06b6d4"/>
+    <text x="278" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">Landing</text>
+
+    <circle cx="330" cy="14" r="4" fill="#10b981"/>
+    <text x="340" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">Quiz</text>
+
+    <circle cx="378" cy="14" r="4" fill="#a855f7"/>
+    <text x="388" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">Match</text>
+
+    <circle cx="434" cy="14" r="4" fill="#3b82f6"/>
+    <text x="444" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">Directory</text>
+
+    <circle cx="506" cy="14" r="4" fill="#f59e0b"/>
+    <text x="516" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">Booking</text>
+
+    <circle cx="572" cy="14" r="4" fill="#8b5cf6"/>
+    <text x="582" y="18" fill="#a1a1aa" font-size="8" font-family="system-ui">AI</text>
+  </g>
+</svg>

@@ -107,3 +107,6 @@ CCEMAgent/ccem-agent-watchdog.sh
 backup-*.tar.gz
 backup-*.tar.gz.meta
 .env.npm
+
+# Playwright MCP artifacts
+.playwright-mcp/

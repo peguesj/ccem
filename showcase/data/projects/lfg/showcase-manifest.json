@@ -1,0 +1,28 @@
+{
+  "project": "lfg",
+  "name": "LFG — Local File Guardian",
+  "version": "2.0.0",
+  "template": "engine",
+  "audience": "internal",
+  "redaction": "none",
+  "accent_color": "#7e22ce",
+  "tagline": "macOS disk pressure under control",
+  "description": "9-module Bash/Swift/Python3 suite for disk usage analysis, cache cleanup, sparseimage backups, native APFS DevDrive volumes, and Spotlight management. Includes self-correcting reconcile loop and native SwiftUI viewer.",
+  "wave_count": 11,
+  "feature_count": 38,
+  "story_points_total": 42,
+  "formation_id": "fmt-lfg-fleet-20260419",
+  "apm_endpoint": "http://localhost:3032",
+  "showcase_url": "http://localhost:8080/lfg.html",
+  "diagrams": {
+    "c4_context": "diagrams/context.svg",
+    "c4_containers": "diagrams/containers.svg"
+  },
+  "narrative_file": "narrative-content.json",
+  "features_file": "features.json",
+  "references_file": "references.json",
+  "plane_project_id": "6bc05edb-a2b4-44c1-9cfc-2c938edb38a3",
+  "plane_prefix": "LFG",
+  "created_at": "2026-04-19",
+  "updated_at": "2026-04-19"
+}

@@ -1,0 +1,729 @@
+{
+  "sections": [
+    {
+      "id": "executive-summary",
+      "title": "Executive Summary",
+      "category": "OVERVIEW",
+      "order": 1,
+      "content": {
+        "kpis": [
+          { "value": "v9.0.0", "label": "Current Version", "tooltip": "CCEM APM production release" },
+          { "value": "180+", "label": "Elixir Modules", "tooltip": "GenServers, LiveViews, Controllers, Channels" },
+          { "value": "56+", "label": "API Endpoints", "tooltip": "OpenAPI 3.0.3 spec at /api/v2/openapi.json" },
+          { "value": "30+", "label": "LiveView Pages", "tooltip": "Real-time dashboard views" },
+          { "value": ":3032", "label": "Default Port", "tooltip": "http://localhost:3032" },
+          { "value": "41", "label": "Security Tests", "tooltip": "v9.1.0 SecurityGuidancePlugin test suite" }
+        ],
+        "overview": {
+          "title": "CCEM APM - Agentic Performance Monitor",
+          "description": "CCEM APM is a Phoenix/Elixir application that provides real-time monitoring, authorization, and orchestration for Claude Code agent sessions. It serves as the central nervous system for all agentic operations, tracking agent lifecycle events, tool calls, approvals, formations, and providing a comprehensive web dashboard at http://localhost:3032.",
+          "methodology": "OTP supervision tree architecture with ETS-backed caching, Phoenix PubSub for real-time broadcasts, and WebSocket channels for live dashboard updates.",
+          "scope": "Covers the APM server (Phoenix/Elixir), CCEMHelper (Swift macOS menu bar app), shell hooks, launchd services, and the complete API surface."
+        }
+      }
+    },
+    {
+      "id": "system-architecture",
+      "title": "System Architecture",
+      "category": "OVERVIEW",
+      "order": 2,
+      "content": {
+        "text": {
+          "title": "Architecture Overview",
+          "paragraphs": [
+            "CCEM APM follows a microkernel + extensions architecture. The core provides fundamental monitoring primitives (agent lifecycle, sessions, notifications, health, telemetry), while extensions add domain-specific capabilities (AgentLock authorization, UPM project management, AG-UI protocol, Coalesce, Formations, etc.).",
+            "The OTP application starts under a one_for_one supervisor (ApmV5.Supervisor) with 50+ child processes organized into sub-supervisors: CoreSupervisor (config, dashboard, audit), AuthSupervisor (AgentLock), and AgUiSupervisorGroup (AG-UI protocol layer).",
+            "Data flows through ETS tables for high-performance reads, with Phoenix PubSub broadcasting state changes to connected LiveView clients. The Plugin system (PluginBehaviour) and Integration system (IntegrationBehaviour) provide standardized extension points.",
+            "CCEMHelper is a native Swift macOS menu bar application that connects to APM via HTTP polling and WebSocket, providing system-level notifications, approval UI, and quick actions without requiring a browser."
+          ]
+        }
+      }
+    },
+    {
+      "id": "tech-stack",
+      "title": "Technology Stack",
+      "category": "OVERVIEW",
+      "order": 3,
+      "content": {
+        "table": {
+          "columns": [
+            { "key": "layer", "label": "Layer" },
+            { "key": "technology", "label": "Technology" },
+            { "key": "version", "label": "Version" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "layer": "Runtime", "technology": "Elixir / OTP", "version": "~> 1.15 / 26+", "purpose": "Application runtime, supervision trees, concurrency" },
+            { "layer": "Web Framework", "technology": "Phoenix", "version": "~> 1.8.3", "purpose": "HTTP server, routing, channels" },
+            { "layer": "Live UI", "technology": "Phoenix LiveView", "version": "~> 1.1.0", "purpose": "Real-time server-rendered dashboard" },
+            { "layer": "Web Server", "technology": "Bandit", "version": "~> 1.5", "purpose": "HTTP/2 web server (replaces Cowboy)" },
+            { "layer": "JSON", "technology": "Jason", "version": "~> 1.2", "purpose": "JSON encoding/decoding" },
+            { "layer": "CSS", "technology": "Tailwind + daisyUI", "version": "~> 0.3", "purpose": "Utility-first CSS with component library" },
+            { "layer": "Charts", "technology": "D3.js", "version": "v7", "purpose": "Dependency graphs, visualizations" },
+            { "layer": "Protocol", "technology": "AG-UI (ag_ui_ex)", "version": "~> 0.1.0", "purpose": "Agent-to-UI event protocol" },
+            { "layer": "HTTP Client", "technology": "gun", "version": "~> 2.2", "purpose": "HTTP/2 client for external API calls" },
+            { "layer": "Markdown", "technology": "Earmark", "version": "~> 1.4", "purpose": "Markdown rendering for docs" },
+            { "layer": "Telemetry", "technology": "telemetry_metrics + telemetry_poller", "version": "~> 1.0", "purpose": "Metrics collection and reporting" },
+            { "layer": "Native App", "technology": "Swift / AppKit / WebKit", "version": "macOS 14+", "purpose": "CCEMHelper menu bar companion" },
+            { "layer": "Analysis", "technology": "Dialyxir + Credo + Sobelow", "version": "dev/test", "purpose": "Static analysis, linting, security" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "server-lifecycle",
+      "title": "APM Server Lifecycle",
+      "category": "OPERATIONS",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Server Startup & Shutdown",
+          "paragraphs": [
+            "The APM server runs as 'mix phx.server' from ~/Developer/ccem/apm-v4/. It binds to port 3032 and serves both the web dashboard (browser) and REST API (agents/hooks). The PID is stored at ~/Developer/ccem/apm-v4/.apm.pid.",
+            "On startup, the Application module initializes :inets and :ssl, attaches telemetry handlers, creates LifecycleMapper ETS tables, then starts the supervision tree with 50+ children in dependency order.",
+            "CRITICAL: CCEMHelper MUST be launched alongside the APM server. After starting mix phx.server, always run 'open -a CCEMHelper'."
+          ]
+        },
+        "callout": {
+          "variant": "critical",
+          "priority": "P0 MANDATORY",
+          "title": "Always Start CCEMHelper with APM",
+          "text": "When running mix phx.server, ALWAYS also launch CCEMHelper immediately after. The companion app provides native notifications and approval UI that agents depend on."
+        },
+        "timeline": [
+          { "title": "Start APM Server", "duration": "Step 1", "priority": "high", "description": "cd ~/Developer/ccem/apm-v4 && nohup mix phx.server > /Volumes/DDRV902/logs/apm_server.log 2>&1 & echo $! > .apm.pid" },
+          { "title": "Start CCEMHelper", "duration": "Step 2", "priority": "high", "description": "open -a CCEMHelper" },
+          { "title": "Verify Health", "duration": "Step 3", "priority": "medium", "description": "curl -s http://localhost:3032/api/status | python3 -m json.tool" },
+          { "title": "Open Dashboard", "duration": "Step 4", "priority": "low", "description": "open http://localhost:3032" }
+        ]
+      }
+    },
+    {
+      "id": "ccemhelper-ops",
+      "title": "CCEMHelper Operations",
+      "category": "OPERATIONS",
+      "order": 2,
+      "content": {
+        "text": {
+          "title": "CCEMHelper - Native macOS Companion",
+          "paragraphs": [
+            "CCEMHelper is a Swift/AppKit macOS menu bar application at ~/Developer/ccem/CCEMHelper/. It monitors APM server health, displays agent notifications, handles approval requests, and provides quick actions.",
+            "Key services: APMClient (HTTP polling), APMEventStream (SSE), APMNotificationReceiver (push notifications), APMServerManager (lifecycle), UnixSocketTransport (native IPC), FormationMonitor, DriftDetector, UPMMonitor.",
+            "Views: MenuBarView (primary UI), ApprovalListView (AgentLock approvals), SettingsView, NotificationPermissionView, APMWebView (embedded dashboard)."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "file", "label": "Source File" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "file": "CCEMHelperApp.swift", "purpose": "App entry point, menu bar setup" },
+            { "file": "Services/APMClient.swift", "purpose": "HTTP client for APM REST API" },
+            { "file": "Services/APMEventStream.swift", "purpose": "Server-Sent Events consumer" },
+            { "file": "Services/APMServerManager.swift", "purpose": "Server lifecycle management (start/stop/restart)" },
+            { "file": "Services/APMNotificationReceiver.swift", "purpose": "Push notification handling" },
+            { "file": "Services/UnixSocketTransport.swift", "purpose": "Native IPC via Unix domain socket" },
+            { "file": "Services/FormationMonitor.swift", "purpose": "Formation deployment tracking" },
+            { "file": "Services/DriftDetector.swift", "purpose": "Configuration drift detection" },
+            { "file": "Services/AgentActionsManager.swift", "purpose": "Agent control actions (approve/reject/pause)" },
+            { "file": "Views/MenuBarView.swift", "purpose": "Primary menu bar interface" },
+            { "file": "Views/ApprovalListView.swift", "purpose": "AgentLock approval queue UI" }
+          ]
+        },
+        "callout": {
+          "variant": "info",
+          "priority": "BUILD",
+          "title": "Rebuilding CCEMHelper",
+          "text": "cd ~/Developer/ccem/CCEMHelper && swift build -c release && open -a CCEMHelper"
+        }
+      }
+    },
+    {
+      "id": "launchd-services",
+      "title": "launchd Service Configuration",
+      "category": "OPERATIONS",
+      "order": 3,
+      "content": {
+        "text": {
+          "title": "launchd Service Labels",
+          "paragraphs": [
+            "Both APM and CCEMHelper are managed via launchd with reverse-DNS labels under the io.pegues.agent-j.labs prefix.",
+            "APM Server label: io.pegues.agent-j.labs.ccem.apm-server",
+            "CCEMHelper label: io.pegues.agent-j.labs.ccem.helper"
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "service", "label": "Service" },
+            { "key": "label", "label": "launchd Label" },
+            { "key": "path", "label": "Key Path" }
+          ],
+          "rows": [
+            { "service": "APM Server", "label": "io.pegues.agent-j.labs.ccem.apm-server", "path": "~/Developer/ccem/apm-v4/" },
+            { "service": "CCEMHelper", "label": "io.pegues.agent-j.labs.ccem.helper", "path": "~/Developer/ccem/CCEMHelper/" },
+            { "service": "APM PID", "label": "-", "path": "~/Developer/ccem/apm-v4/.apm.pid" },
+            { "service": "APM Log", "label": "-", "path": "/Volumes/DDRV902/logs/apm_server.log" },
+            { "service": "APM Config", "label": "-", "path": "~/Developer/ccem/apm/apm_config.json" },
+            { "service": "Session Data", "label": "-", "path": "~/Developer/ccem/apm/sessions/*.json" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "health-monitoring",
+      "title": "Health Monitoring",
+      "category": "OPERATIONS",
+      "order": 4,
+      "content": {
+        "text": {
+          "title": "Health Check Endpoints",
+          "paragraphs": [
+            "APM provides multiple health check endpoints with cached responses (1-2s TTL via StatusCache and DashboardData ETS tables).",
+            "GET /api/status -- Full system status including uptime, agent count, active sessions, and version.",
+            "GET /api/telemetry -- Telemetry metrics including memory usage, process count, and throughput.",
+            "The HealthCheckRunner GenServer performs periodic internal health checks on all critical subsystems."
+          ]
+        },
+        "kpis": [
+          { "value": "1s", "label": "StatusCache TTL", "tooltip": "ETS-backed cache for /api/status and /api/health hot paths" },
+          { "value": "2s", "label": "DashboardData TTL", "tooltip": "Preloaded mount data for LiveView dashboard" },
+          { "value": "5min", "label": "Plane Sync Interval", "tooltip": "PlanePmAlign polls Plane every 5 minutes" },
+          { "value": "30s", "label": "Session Poll Interval", "tooltip": "SessionManager polls session JSON files" }
+        ]
+      }
+    },
+    {
+      "id": "supervision-tree",
+      "title": "OTP Supervision Tree",
+      "category": "ARCHITECTURE",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Supervision Hierarchy",
+          "paragraphs": [
+            "ApmV5.Supervisor (one_for_one) is the top-level supervisor with 50+ direct and indirect children. Sub-supervisors group related processes:",
+            "CoreSupervisor: ConfigLoader, DashboardStore, AuditLog, DocsStore, ChatStore, ProjectStore, WorkflowRegistry, PlaneClient, AgentRegistry, AgentActivityLog, AgentIdentity, ConnectionTracker, EventStream, AlertRulesEngine, ExportManager, CommandRunner, BackfillRunner, UpmStore, UpmPersistentRule, PrdScanner, ApiKeyStore, PortManager, NotificationActionSchema, GraphBuilder.",
+            "AuthSupervisor: AuthorizationGate, PolicyEngine, SessionStore, TokenStore, ContextTracker, MemoryGate, RateLimiter, RedactionEngine, PendingDecisions, ApprovalQueue, ApprovalAuditLog, PolicyRulesStore, AutoApprovalStore, CommandContextExtractor.",
+            "AgUiSupervisorGroup: EventBus, EventBusHealth, EventRouter, StateManager, ToolCallTracker, SubscriptionStore, DashboardStateSync, HookBridge, MetricsBridge, AuditBridge, ActivityTracker, ApprovalGate, A2A Router/Addressing/Patterns."
+          ]
+        }
+      }
+    },
+    {
+      "id": "plugin-system",
+      "title": "Plugin & Integration System",
+      "category": "ARCHITECTURE",
+      "order": 2,
+      "content": {
+        "text": {
+          "title": "Plugin Architecture (v8.0.0+)",
+          "paragraphs": [
+            "Plugins implement PluginBehaviour with callbacks for: name, description, version, actions, nav_items, board, issues, and init. Each plugin is a GenServer managed by PluginSupervisor and discovered by PluginRegistry.",
+            "Integrations implement IntegrationBehaviour with callbacks for: name, description, actions, status, and init. They are managed by IntegrationSupervisor and discovered by IntegrationRegistry."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "name", "label": "Plugin Name" },
+            { "key": "scope", "label": "Scope" },
+            { "key": "description", "label": "Description" }
+          ],
+          "rows": [
+            { "name": "SecurityGuidancePlugin", "scope": ":security", "description": "v9.1.0 -- Bash injection, SSRF, prompt injection advisory detection (4 actions, dashboard widget)" },
+            { "name": "RalphPlugin", "scope": ":methodology", "description": "Ralph autonomous fix loop tracking, flowchart visualization" },
+            { "name": "PlanePlugin", "scope": ":pm", "description": "Plane PM integration, issue sync, board view" },
+            { "name": "ClaudeCodePlugin", "scope": ":platform", "description": "Claude Code platform bridge, plugin discovery" },
+            { "name": "FormationsPlugin", "scope": ":orchestration", "description": "Formation deployment tracking, agent hierarchy" },
+            { "name": "UpmPlugin", "scope": ":pm", "description": "Unified Project Management module" },
+            { "name": "SkillsPlugin", "scope": ":platform", "description": "Skill registry, health scoring, dependency analysis" },
+            { "name": "UsagePlugin", "scope": ":analytics", "description": "Claude model usage tracking per project" },
+            { "name": "DevOpsPlugin", "scope": ":devops", "description": "Build/deploy/CI pipeline integration" },
+            { "name": "CoalescePlugin", "scope": ":automation", "description": "Skill/config consolidation engine" },
+            { "name": "AlertingPlugin", "scope": ":monitoring", "description": "Alert rules engine with threshold-based triggers" },
+            { "name": "MirofishPlugin", "scope": ":integration", "description": "Miro board integration for visual planning" },
+            { "name": "PortsPlugin", "scope": ":infrastructure", "description": "Port management, conflict detection, namespace allocation" },
+            { "name": "SimpleAgentsPlugin", "scope": ":agents", "description": "Lightweight agent management" },
+            { "name": "UATPlugin", "scope": ":testing", "description": "User Acceptance Testing tracking" },
+            { "name": "RefactorMaxPlugin", "scope": ":methodology", "description": "Refactoring methodology integration" },
+            { "name": "LVMPlugin", "scope": ":platform", "description": "Claude platform LVM status monitoring" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "agentlock-auth",
+      "title": "AgentLock Authorization",
+      "category": "ARCHITECTURE",
+      "order": 3,
+      "content": {
+        "text": {
+          "title": "AgentLock Authorization System",
+          "paragraphs": [
+            "AgentLock is the human-in-the-loop authorization gate for Claude Code tool calls. When an agent requests to execute a sensitive operation (Write, Bash, Edit, etc.), the request is intercepted by the pre_tool_use hook, sent to APM for authorization, and held until a human approves or rejects it.",
+            "The authorization flow: Agent hook -> POST /api/v2/auth/authorize -> PolicyEngine evaluates rules -> If auto-approve policy matches, grant immediately -> Otherwise queue in ApprovalQueue -> Notify via CCEMHelper native notification -> Human decides via ApprovalListView or dashboard -> Response sent back to hook.",
+            "Auto-approval policies support hierarchical scope matching with glob patterns, session-scoped or global lifetime, and can be created via the API or dashboard.",
+            "The ApprovalAuditLog maintains a complete history of all authorization decisions for compliance and debugging."
+          ]
+        },
+        "callout": {
+          "variant": "warning",
+          "priority": "SECURITY",
+          "title": "AgentLock Auth Levels",
+          "text": "Auth levels: individual (single agent), squadron (formation group), global (all agents). Scope: read (view), write (modify), execute (run). Higher auth levels require explicit human approval."
+        }
+      }
+    },
+    {
+      "id": "ag-ui-protocol",
+      "title": "AG-UI Protocol Layer",
+      "category": "ARCHITECTURE",
+      "order": 4,
+      "content": {
+        "text": {
+          "title": "AG-UI: Agent-to-UI Protocol",
+          "paragraphs": [
+            "The AG-UI layer (based on ag_ui_ex ~> 0.1.0) provides a standardized protocol for agent-to-dashboard communication. Key components:",
+            "EventBus: Central pub/sub for AG-UI events (agent lifecycle, tool calls, state changes). EventBusHealth monitors throughput and latency.",
+            "EventRouter: Routes events to appropriate subscribers based on topic patterns. Topics module defines the topic hierarchy.",
+            "StateManager: Per-agent state storage with get/set/patch operations. Supports optimistic locking.",
+            "ToolCallTracker: Tracks tool call lifecycle (pending -> executing -> completed/failed). Provides real-time streaming via SSE.",
+            "DashboardStateSync: Synchronizes dashboard state across connected LiveView clients.",
+            "ApprovalGate: AG-UI companion that bridges AgentLock approvals into the event stream.",
+            "A2A (Agent-to-Agent): Messaging subsystem with addressing, envelope format, router, and fan-out/broadcast patterns."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "component", "label": "Component" },
+            { "key": "module", "label": "Module" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "component": "EventBus", "module": "ApmV5.AgUi.EventBus", "purpose": "Central event pub/sub" },
+            { "component": "EventRouter", "module": "ApmV5.AgUi.EventRouter", "purpose": "Topic-based event routing" },
+            { "component": "StateManager", "module": "ApmV5.AgUi.StateManager", "purpose": "Per-agent state storage" },
+            { "component": "ToolCallTracker", "module": "ApmV5.AgUi.ToolCallTracker", "purpose": "Tool call lifecycle tracking" },
+            { "component": "ApprovalGate", "module": "ApmV5.AgUi.ApprovalGate", "purpose": "AgentLock-AG-UI bridge" },
+            { "component": "A2A Router", "module": "ApmV5.AgUi.A2A.Router", "purpose": "Agent-to-agent message routing" },
+            { "component": "Generative UI", "module": "ApmV5.AgUi.GenerativeUI.Registry", "purpose": "Dynamic UI component registry" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "api-v1-core",
+      "title": "API v1 - Core Endpoints",
+      "category": "API REFERENCE",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Core REST API (v1)",
+          "paragraphs": [
+            "Base path: /api. All endpoints accept/return JSON. CORS enabled. API auth via ApiAuth plug.",
+            "Full OpenAPI spec available at GET /api/v2/openapi.json (canonical) or GET /api/openapi.json (alias)."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "method", "label": "Method" },
+            { "key": "path", "label": "Path" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "method": "GET", "path": "/api/status", "purpose": "System status (uptime, agents, version)" },
+            { "method": "GET", "path": "/api/agents", "purpose": "List all registered agents" },
+            { "method": "POST", "path": "/api/register", "purpose": "Register a new agent" },
+            { "method": "POST", "path": "/api/heartbeat", "purpose": "Agent heartbeat" },
+            { "method": "POST", "path": "/api/notify", "purpose": "Send notification" },
+            { "method": "GET", "path": "/api/notifications", "purpose": "List notifications" },
+            { "method": "GET", "path": "/api/data", "purpose": "Session data" },
+            { "method": "GET", "path": "/api/ralph", "purpose": "Ralph loop status" },
+            { "method": "POST", "path": "/api/tasks/sync", "purpose": "Sync background tasks" },
+            { "method": "GET", "path": "/api/projects", "purpose": "List projects" },
+            { "method": "GET", "path": "/api/ports", "purpose": "List port assignments" },
+            { "method": "GET", "path": "/api/telemetry", "purpose": "Telemetry metrics" },
+            { "method": "POST", "path": "/api/intake", "purpose": "Submit intake event" },
+            { "method": "GET", "path": "/api/bg-tasks", "purpose": "List background tasks" },
+            { "method": "POST", "path": "/api/scanner/scan", "purpose": "Trigger project scan" },
+            { "method": "GET", "path": "/api/actions", "purpose": "List available actions" },
+            { "method": "POST", "path": "/api/actions/run", "purpose": "Execute an action" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "api-v2-core",
+      "title": "API v2 - Extended Endpoints",
+      "category": "API REFERENCE",
+      "order": 2,
+      "content": {
+        "text": {
+          "title": "Extended REST API (v2)",
+          "paragraphs": [
+            "Base path: /api/v2. Provides enhanced agent management, SLOs, alerts, workflows, formations, chat, A2A messaging, and approvals."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "method", "label": "Method" },
+            { "key": "path", "label": "Path" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "method": "GET", "path": "/api/v2/agents", "purpose": "List agents with extended metadata" },
+            { "method": "GET", "path": "/api/v2/sessions", "purpose": "List sessions" },
+            { "method": "GET", "path": "/api/v2/metrics", "purpose": "Fleet metrics" },
+            { "method": "GET", "path": "/api/v2/slos", "purpose": "SLO definitions" },
+            { "method": "GET", "path": "/api/v2/alerts", "purpose": "Active alerts" },
+            { "method": "GET", "path": "/api/v2/audit", "purpose": "Audit log" },
+            { "method": "GET", "path": "/api/v2/manifest", "purpose": "API architecture manifest" },
+            { "method": "GET", "path": "/api/v2/openapi.json", "purpose": "OpenAPI 3.0.3 spec" },
+            { "method": "POST", "path": "/api/v2/a2a/send", "purpose": "Send A2A message" },
+            { "method": "POST", "path": "/api/v2/a2a/broadcast", "purpose": "Broadcast to agents" },
+            { "method": "POST", "path": "/api/v2/approvals/request", "purpose": "Request approval" },
+            { "method": "POST", "path": "/api/v2/approvals/:id/approve", "purpose": "Approve request" },
+            { "method": "POST", "path": "/api/v2/verify/double", "purpose": "Double-verify action" },
+            { "method": "POST", "path": "/api/v2/agents/:id/control", "purpose": "Control agent" },
+            { "method": "GET", "path": "/api/v2/tool-calls", "purpose": "List tool calls" },
+            { "method": "GET", "path": "/api/v2/tool-calls/stream", "purpose": "SSE tool call stream" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "api-extensions",
+      "title": "API Extensions",
+      "category": "API REFERENCE",
+      "order": 3,
+      "content": {
+        "table": {
+          "columns": [
+            { "key": "extension", "label": "Extension" },
+            { "key": "prefix", "label": "Path Prefix" },
+            { "key": "endpoints", "label": "Key Endpoints" }
+          ],
+          "rows": [
+            { "extension": "AgentLock", "prefix": "/api/v2/auth/*", "endpoints": "authorize, execute, summary, tools, sessions, tokens, policy/rules, auto-approval-policies, pending, decide, api-keys" },
+            { "extension": "UPM", "prefix": "/api/upm/*", "endpoints": "projects CRUD, pm_integrations, vcs_integrations, work_items, sync, drift report" },
+            { "extension": "AG-UI", "prefix": "/api/v2/ag-ui/*", "endpoints": "emit, tool, events SSE, state get/set/patch, router/stats, diagnostics" },
+            { "extension": "Plugins", "prefix": "/api/v2/plugins/*", "endpoints": "index, reload, show, action, board, issues, repositories CRUD, cc bridge" },
+            { "extension": "Integrations", "prefix": "/api/v2/integrations/*", "endpoints": "index, reload, show, action, status" },
+            { "extension": "Coalesce", "prefix": "/api/v2/coalesce/*", "endpoints": "start, preview, show, diff, gate/decide, apply, cancel" },
+            { "extension": "Usage", "prefix": "/api/usage/*", "endpoints": "index, summary, project, record, limits, reset" },
+            { "extension": "Formations", "prefix": "/api/formations/*", "endpoints": "list, create, show, update, agents" },
+            { "extension": "Showcase", "prefix": "/api/showcase/*", "endpoints": "index, show, reload" },
+            { "extension": "Skills", "prefix": "/api/skills/*", "endpoints": "registry, audit, health, show, track" },
+            { "extension": "Library", "prefix": "/api/v2/library/*", "endpoints": "agents, skills, commands, mcp, tools, hooks, patterns, learnings, graph" },
+            { "extension": "Worktrees", "prefix": "/api/worktrees/*", "endpoints": "index, register, show, update, delete" },
+            { "extension": "Plane", "prefix": "/api/v2/plane/*", "endpoints": "sync-status, sync" },
+            { "extension": "Generative UI", "prefix": "/api/v2/generative-ui/*", "endpoints": "components CRUD" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "websocket-channels",
+      "title": "WebSocket Channels",
+      "category": "API REFERENCE",
+      "order": 4,
+      "content": {
+        "text": {
+          "title": "Phoenix Channels",
+          "paragraphs": [
+            "WebSocket endpoint: UserSocket. Channels provide real-time bidirectional communication for dashboard features."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "channel", "label": "Channel" },
+            { "key": "topic", "label": "Topic Pattern" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "channel": "AgentChannel", "topic": "agents:*", "purpose": "Agent lifecycle events, heartbeats" },
+            { "channel": "MetricsChannel", "topic": "metrics:*", "purpose": "Real-time metrics streaming" },
+            { "channel": "AlertsChannel", "topic": "alerts:*", "purpose": "Alert notifications" },
+            { "channel": "AgUiChannel", "topic": "ag_ui:*", "purpose": "AG-UI protocol events" },
+            { "channel": "ShowcaseChannel", "topic": "showcase:*", "purpose": "Showcase data updates" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "startup-runbook",
+      "title": "Startup Runbook",
+      "category": "RUNBOOKS",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Standard Startup Procedure",
+          "paragraphs": [
+            "Follow this exact sequence to start the CCEM APM system."
+          ]
+        },
+        "list": {
+          "type": "ordered",
+          "items": [
+            "Check for existing APM processes: lsof -ti:3032",
+            "Kill stale processes if found: lsof -ti:3032 | xargs kill -9 2>/dev/null",
+            "Start APM server: cd ~/Developer/ccem/apm-v4 && nohup mix phx.server > /Volumes/DDRV902/logs/apm_server.log 2>&1 & echo $! > .apm.pid",
+            "Start CCEMHelper: open -a CCEMHelper",
+            "Wait 3-5 seconds for server boot",
+            "Verify: curl -s http://localhost:3032/api/status",
+            "Open dashboard: open http://localhost:3032"
+          ]
+        },
+        "callout": {
+          "variant": "critical",
+          "priority": "RULE",
+          "title": "Formation Agent Registration",
+          "text": "Every formation agent MUST register with APM on spawn using fire-and-forget curl to /api/register with full upm_context metadata. No exceptions."
+        }
+      }
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting Guide",
+      "category": "RUNBOOKS",
+      "order": 2,
+      "content": {
+        "accordion": [
+          { "title": "APM server won't start / port 3032 in use", "content": "Run: lsof -ti:3032 | xargs kill -9 2>/dev/null && pkill -9 -f 'mix phx.server'. Then restart normally." },
+          { "title": "CCEMHelper not showing notifications", "content": "1. Check notification permissions in System Preferences > Notifications. 2. Verify APM is running: curl -s http://localhost:3032/api/status. 3. Rebuild: cd ~/Developer/ccem/CCEMHelper && swift build -c release && open -a CCEMHelper." },
+          { "title": "Dashboard shows stale data", "content": "StatusCache and DashboardData have 1-2s TTL. If data is truly stale: POST /api/config/reload to force refresh. Check PubSub subscriptions in browser console." },
+          { "title": "Agent registration fails", "content": "Verify APM is running and accepting requests. Check the agent_id format (must be string). Ensure Content-Type: application/json header is set. Review /Volumes/DDRV902/logs/apm_server.log for errors." },
+          { "title": "mix compile fails with warnings-as-errors", "content": "Run mix compile without the flag first to see all warnings. Common issues: unused variables (prefix with _), missing @spec annotations, deprecated function calls." },
+          { "title": "Lottie animation stall", "content": "This was a known issue fixed in a recent patch. If animations stall in the dashboard, hard-refresh the page (Cmd+Shift+R). If persistent, check the JS console for errors in the Lottie player." },
+          { "title": "Dep graph race condition", "content": "The D3.js dependency graph had a race condition with data loading. Fixed by deferring graph render until data load completes. If graph is blank, wait 2 seconds then click Refresh in the graph toolbar." }
+        ]
+      }
+    },
+    {
+      "id": "stall-recovery",
+      "title": "Stall Recovery",
+      "category": "RUNBOOKS",
+      "order": 3,
+      "content": {
+        "text": {
+          "title": "CCEMHelper Stall Permanent Fix",
+          "paragraphs": [
+            "A permanent fix for CCEMHelper stalls was recently applied. The root cause was the event stream SSE connection holding the main thread when the APM server became unresponsive.",
+            "The fix moves all network operations to background actors and implements a watchdog timer that detects stalls and automatically reconnects."
+          ]
+        },
+        "callout": {
+          "variant": "critical",
+          "priority": "EMERGENCY",
+          "title": "Force Kill When Stalled",
+          "text": "If the APM server is completely unresponsive: lsof -ti:3032 | xargs kill -9 2>/dev/null && pkill -9 -f 'mix phx.server'. Then restart from the startup runbook."
+        },
+        "list": {
+          "type": "ordered",
+          "items": [
+            "Detect stall: curl -s --max-time 5 http://localhost:3032/api/status || echo 'STALLED'",
+            "Force kill: lsof -ti:3032 | xargs kill -9 2>/dev/null",
+            "Kill Elixir: pkill -9 -f 'mix phx.server'",
+            "Clear PID: rm -f ~/Developer/ccem/apm-v4/.apm.pid",
+            "Restart: cd ~/Developer/ccem/apm-v4 && nohup mix phx.server > /Volumes/DDRV902/logs/apm_server.log 2>&1 & echo $! > .apm.pid",
+            "Restart helper: open -a CCEMHelper",
+            "Verify: curl -s http://localhost:3032/api/status"
+          ]
+        }
+      }
+    },
+    {
+      "id": "disk-space-management",
+      "title": "Disk Space Management",
+      "category": "RUNBOOKS",
+      "order": 4,
+      "content": {
+        "text": {
+          "title": "Disk Space Awareness",
+          "paragraphs": [
+            "The system disk frequently approaches capacity. Log files in /private/tmp/ and /Volumes/DDRV902/logs/ can grow large. ETS tables are in-memory but Erlang crash dumps (erl_crash.dump) can be significant.",
+            "Regular cleanup targets: /private/tmp/*.log, ~/Developer/ccem/apm-v4/erl_crash.dump, Xcode DerivedData, Docker images."
+          ]
+        },
+        "callout": {
+          "variant": "warning",
+          "priority": "MAINTENANCE",
+          "title": "Disk Space Monitoring",
+          "text": "Run 'df -h /' regularly. When available space drops below 500MB, Claude Code Bash commands will fail with ENOSPC. Truncate log files and clear caches immediately."
+        },
+        "list": {
+          "type": "unordered",
+          "items": [
+            "Truncate tmp logs: find /private/tmp -name '*.log' -exec truncate -s 0 {} +",
+            "Clear Xcode caches: rm -rf ~/Library/Developer/Xcode/DerivedData",
+            "Remove crash dumps: rm -f ~/Developer/ccem/apm-v4/erl_crash.dump",
+            "Clean Docker: docker system prune -af",
+            "Clear APM build: cd ~/Developer/ccem/apm-v4 && mix clean",
+            "Check large files: du -sh /private/tmp/* | sort -rh | head -20"
+          ]
+        }
+      }
+    },
+    {
+      "id": "security-native-types",
+      "title": "Security Native Types (v9.1.0)",
+      "category": "SECURITY",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Security Native Types Feature",
+          "paragraphs": [
+            "v9.1.0 introduced security as a first-class plugin_scope atom. The SecurityGuidancePlugin (ApmV5.Plugins.Security.SecurityGuidancePlugin) provides 4 security-aware actions with a dashboard widget.",
+            "Wave 1 (Python hooks): Expanded security_reminder_hook.py with Bash command injection detection, WebFetch/WebSearch SSRF detection (IMDS/schemes blocking, advisory on private ranges), and Agent/Skill prompt injection advisory detection. hooks.json matcher updated to cover Edit|Write|MultiEdit|Bash|WebFetch|WebSearch|Agent|Skill.",
+            "Wave 2 (Elixir backend): Added :security as first-class plugin_scope to PluginBehaviour. Created SecurityGuidancePlugin with 4 actions and a dashboard widget.",
+            "Wave 3 (Tests): 41-test suite covering contract compliance, all 4 actions, endpoints, navigation items, and widget rendering."
+          ]
+        },
+        "compliance": [
+          { "label": "Bash Injection Detection", "score": 100 },
+          { "label": "SSRF Detection (IMDS/Schemes)", "score": 100 },
+          { "label": "Prompt Injection Advisory", "score": 100 },
+          { "label": "Test Coverage (41/41)", "score": 100 }
+        ]
+      }
+    },
+    {
+      "id": "approval-workflow",
+      "title": "Approval Workflow",
+      "category": "SECURITY",
+      "order": 2,
+      "content": {
+        "text": {
+          "title": "Human-in-the-Loop Approval Flow",
+          "paragraphs": [
+            "The approval workflow ensures sensitive operations require human authorization before execution."
+          ]
+        },
+        "timeline": [
+          { "title": "Hook Intercept", "duration": "Step 1", "priority": "high", "description": "pre_tool_use hook intercepts tool call and sends to APM" },
+          { "title": "Policy Evaluation", "duration": "Step 2", "priority": "high", "description": "PolicyEngine checks auto-approval policies and rules" },
+          { "title": "Queue / Auto-Approve", "duration": "Step 3", "priority": "medium", "description": "If no auto-approve match, request queued in ApprovalQueue with debouncing" },
+          { "title": "Notification", "duration": "Step 4", "priority": "medium", "description": "CCEMHelper receives notification via APMNotificationReceiver, shows native alert" },
+          { "title": "Human Decision", "duration": "Step 5", "priority": "high", "description": "User approves/rejects via ApprovalListView, dashboard, or API" },
+          { "title": "Audit Log", "duration": "Step 6", "priority": "low", "description": "Decision recorded in ApprovalAuditLog for compliance" },
+          { "title": "Response", "duration": "Step 7", "priority": "high", "description": "Authorization result returned to waiting hook" }
+        ]
+      }
+    },
+    {
+      "id": "policy-engine",
+      "title": "Policy Engine",
+      "category": "SECURITY",
+      "order": 3,
+      "content": {
+        "text": {
+          "title": "PolicyEngine & Auto-Approval",
+          "paragraphs": [
+            "The PolicyEngine (ApmV5.Auth.PolicyEngine) evaluates authorization requests against configured rules. PolicyRulesStore maintains tool-level rules. AutoApprovalStore manages hierarchical auto-approval policies.",
+            "Auto-approval policies support: glob pattern matching on tool names and parameters, session-scoped or global lifetime, priority ordering, and test-match endpoint for validation.",
+            "Rate limiting (ApmV5.Auth.RateLimiter) prevents abuse. Redaction (ApmV5.Auth.RedactionEngine) sanitizes sensitive data in audit logs."
+          ]
+        },
+        "table": {
+          "columns": [
+            { "key": "endpoint", "label": "Endpoint" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "endpoint": "GET /api/v2/auth/policy/rules", "purpose": "List all policy rules" },
+            { "endpoint": "POST /api/v2/auth/policy/rules", "purpose": "Add a policy rule" },
+            { "endpoint": "DELETE /api/v2/auth/policy/rules/:tool_name", "purpose": "Remove a policy rule" },
+            { "endpoint": "GET /api/v2/auth/auto-approval-policies", "purpose": "List auto-approval policies" },
+            { "endpoint": "POST /api/v2/auth/auto-approval-policies", "purpose": "Create auto-approval policy" },
+            { "endpoint": "POST /api/v2/auth/auto-approval-policies/test-match", "purpose": "Test if a request matches any policy" },
+            { "endpoint": "GET /api/v2/auth/rate-limits", "purpose": "Current rate limit status" },
+            { "endpoint": "POST /api/v2/auth/redact", "purpose": "Redact sensitive content" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "installation",
+      "title": "Installation Guide",
+      "category": "DEPLOYMENT",
+      "order": 1,
+      "content": {
+        "text": {
+          "title": "Installation",
+          "paragraphs": [
+            "CCEM APM requires Elixir 1.15+/OTP 26+ and macOS 14+ for CCEMHelper."
+          ]
+        },
+        "list": {
+          "type": "ordered",
+          "items": [
+            "Clone: git clone https://github.com/peguesj/ccem.git && cd ccem/apm-v4",
+            "Run installer: ./install.sh",
+            "Or manual: mix deps.get && mix setup",
+            "Build CCEMHelper: cd ~/Developer/ccem/CCEMHelper && swift build -c release",
+            "Start: mix phx.server && open -a CCEMHelper",
+            "Verify: open http://localhost:3032"
+          ]
+        },
+        "callout": {
+          "variant": "info",
+          "priority": "INSTALLER FLAGS",
+          "title": "install.sh Options",
+          "text": "--prefix <path> (custom dir), --skip-service (no launchd), --skip-hooks (no settings.json patch), --skip-agent (no CCEMHelper build), --dry-run, --yes (non-interactive)"
+        }
+      }
+    },
+    {
+      "id": "configuration",
+      "title": "Configuration Reference",
+      "category": "DEPLOYMENT",
+      "order": 2,
+      "content": {
+        "table": {
+          "columns": [
+            { "key": "file", "label": "Config File" },
+            { "key": "path", "label": "Path" },
+            { "key": "purpose", "label": "Purpose" }
+          ],
+          "rows": [
+            { "file": "apm_config.json", "path": "~/Developer/ccem/apm/apm_config.json", "purpose": "Active project config (project_name, project_root, session_id)" },
+            { "file": "config/config.exs", "path": "apm-v4/config/config.exs", "purpose": "Base Phoenix configuration" },
+            { "file": "config/dev.exs", "path": "apm-v4/config/dev.exs", "purpose": "Development overrides (port 3032)" },
+            { "file": "config/runtime.exs", "path": "apm-v4/config/runtime.exs", "purpose": "Runtime configuration" },
+            { "file": "settings.json", "path": "Project .claude/settings.json", "purpose": "Claude Code hook configuration (pre/post tool use)" },
+            { "file": ".apm.pid", "path": "apm-v4/.apm.pid", "purpose": "Running server PID" },
+            { "file": "session files", "path": "~/Developer/ccem/apm/sessions/*.json", "purpose": "Per-session agent data (polled by SessionManager)" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "upgrade-path",
+      "title": "Upgrade Path",
+      "category": "DEPLOYMENT",
+      "order": 3,
+      "content": {
+        "text": {
+          "title": "Version History & Upgrade Notes",
+          "paragraphs": [
+            "The APM follows semantic versioning. Major features by version:"
+          ]
+        },
+        "timeline": [
+          { "title": "v9.1.0 - Security Native Types", "duration": "Current", "priority": "high", "description": "SecurityGuidancePlugin with :security scope, Bash injection/SSRF/prompt injection detection, 41-test suite" },
+          { "title": "v9.0.0 - Architecture Store", "duration": "Production", "priority": "high", "description": "Diligent fleet hierarchy, Proxy layer (Cache + RateLimiter), HookRegistry, Widget system" },
+          { "title": "v8.12.0 - Concurrency Layer", "duration": "Stable", "priority": "medium", "description": "ConcurrencyLayer, JobQueue, BootReporter, WorktreeStore, JSON formatter" },
+          { "title": "v8.0.0 - Plugin Engine", "duration": "Foundation", "priority": "medium", "description": "PluginBehaviour, IntegrationBehaviour, PluginSupervisor/Registry" },
+          { "title": "v7.0.0 - AgentLock", "duration": "Foundation", "priority": "high", "description": "AuthSupervisor, PolicyEngine, ApprovalQueue, auto-approval policies" },
+          { "title": "v6.4.0 - Skills UX", "duration": "Legacy", "priority": "low", "description": "Skills dashboard overhaul, Claude Usage Tracking, Port Management" }
+        ],
+        "callout": {
+          "variant": "info",
+          "priority": "UPGRADE",
+          "title": "Upgrade Procedure",
+          "text": "1. Stop APM (kill port 3032). 2. git pull. 3. mix deps.get && mix compile --warnings-as-errors. 4. Rebuild CCEMHelper if Swift changes. 5. Restart both services."
+        }
+      }
+    }
+  ]
+}

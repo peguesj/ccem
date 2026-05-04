@@ -1,0 +1,98 @@
+{
+  "problem": {
+    "title": "THE PROBLEM",
+    "body": "AI conversations are ephemeral. Power users lose context, insights, and continuity across sessions. Multi-agent workflows lack a shared memory layer for AI-native workflows."
+  },
+  "solution": {
+    "title": "THE SOLUTION",
+    "body": "VIKI captures, compresses, and semantically indexes every AI interaction — enabling permanent context, searchable history, and multi-modal capture over time. Self-hosted, multi-modal, enterprise-grade."
+  },
+  "scale": {
+    "title": "SCALE",
+    "chunks": "331,051",
+    "chunks_label": "total records indexed",
+    "conversations": "1,191",
+    "conversations_label": "unique sessions",
+    "messages": "5,487",
+    "messages_label": "claude-mem observations"
+  },
+  "performance": {
+    "title": "BACKFILL FORMATION",
+    "clips": "14",
+    "clips_label": "formation agents",
+    "compression": "3",
+    "compression_label": "waves completed",
+    "agents": "4",
+    "agents_label": "squadrons deployed",
+    "history": "170d",
+    "history_label": "history indexed"
+  },
+  "formation": {
+    "id": "fmt-20260329-viki-backfill-001",
+    "waves": 3,
+    "squadrons": 4,
+    "agents": 14,
+    "records_ingested": {
+      "hook_files": 12050,
+      "session_reports": 12630,
+      "fb_research": 929,
+      "apm_ccem": 527,
+      "sqlite_phases_2_4": 10602,
+      "cc_transcripts_partial": 29800,
+      "total_approx": 66538
+    },
+    "db_state": {
+      "total_rows": 331051,
+      "unique_sessions": 1191,
+      "platforms": ["claude_code", "ccem_apm", "memory"],
+      "date_range": "2025-10-08 to 2026-03-30"
+    }
+  },
+  "cost": {
+    "storage": "Azure ADLS Gen2, 1TB ZRS",
+    "search": "Cognitive Search S1, 3 replicas",
+    "monthly": "$1,250/mo with reservations"
+  },
+  "moat": {
+    "title": "COMPETITIVE MOAT",
+    "items": [
+      {
+        "name": "Self-Hosting Privacy",
+        "description": "Data never leaves your infrastructure. WebAuthn passkey auth. GDPR/SOC 2 ready."
+      },
+      {
+        "name": "Multi-Modal Capture",
+        "description": "Video, audio, text simultaneously. Rewind MemoryVault integration. AVIF thumbnails + GIF previews."
+      },
+      {
+        "name": "Medallion Architecture",
+        "description": "Bronze/Silver/Gold ADLS Gen2 layers. Parquet + Zstd. 90-day retention Bronze, analytics-ready Gold."
+      },
+      {
+        "name": "HNSW Vector Search",
+        "description": "Semantic retrieval via Azure Cognitive Search with text-embedding-3-large. Hybrid search: vector + text."
+      },
+      {
+        "name": "Formation Backfill",
+        "description": "14-agent, 4-squadron, 3-wave formation. 66,538+ records ingested in single run. CCEM APM telemetry."
+      },
+      {
+        "name": "Native Apps",
+        "description": "VikiAgent (Swift/AppKit). Phoenix LiveView dashboards. Resource throttle + formation monitor."
+      },
+      {
+        "name": "AG-UI Protocol",
+        "description": "Real-time agent telemetry via AG-UI SSE. Formation progress, wave tracking, CCEM APM integration."
+      },
+      {
+        "name": "claude-mem Integration",
+        "description": "claude-mem v10.4.3: 5,487 observations, 47 sessions, 45 summaries. Semantic search via FTS5 + Chroma."
+      }
+    ]
+  },
+  "wave_1": "Foundation: VIKI Interface WebGL cube, MediaTextureManager, Azure Speech integration, landscape tile layout, video loop textures, and tile cache endpoint. Three.js + Phoenix LiveView.",
+  "wave_2": "Speech & Avatar: I,Robot shader compositing, Phoenix TTS controller (Azure Neural), WebAudio face-glow speech playback, Neural Avatar synthesis pipeline, holographic overlay panel.",
+  "wave_3": "Auth & Settings: WebAuthn passkey registration + authentication (wax_ library), settings LiveView with DB persistence, OSYJ unlimited events, VikiAgent OTP bridge + token redeem.",
+  "wave_4": "VikiAgent Native: Deep-link vikiagent:// URL scheme, passkey authenticate flow, ResourceMode CPU/RAM throttle, Formation Status Poller, rich ASCII formation menu.",
+  "wave_5": "Backfill Formation: fmt-20260329-viki-backfill-001 — 14 agents, 4 squadrons, 3 waves. 66,538+ records ingested. 331,051 total rows in viki_conversations.db. 170-day temporal coverage (2025-10-08 to 2026-03-30)."
+}

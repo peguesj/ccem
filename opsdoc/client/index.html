@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCEM APM v9.0.0 - Operational Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #1a1a25;
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666;
+  --accent-primary: #f5c518;
+  --accent-secondary: #b8860b;
+  --accent-green: #4ade80;
+  --accent-red: #ef4444;
+  --accent-yellow: #fbbf24;
+  --accent-blue: #3b82f6;
+  --border-color: #2a2a3a;
+  --glass-bg: rgba(31, 41, 55, 0.6);
+  --glass-bg-heavy: rgba(31, 41, 55, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.15);
+  --glass-inset: rgba(255, 255, 255, 0.05);
+  --sidebar-width: 280px;
+  --inspector-width: 260px;
+  --header-height: 50px;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-normal: 300ms;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.header {
+  height: var(--header-height);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+}
+.header-title { font-size: 14px; font-weight: 700; color: var(--accent-primary); letter-spacing: 0.5px; }
+.header-subtitle { font-size: 11px; color: var(--text-secondary); margin-left: 12px; }
+.header-badge {
+  margin-left: auto; font-size: 10px; font-weight: 600; padding: 3px 10px;
+  border-radius: 4px; background: rgba(245, 197, 24, 0.15); color: var(--accent-primary);
+  border: 1px solid rgba(245, 197, 24, 0.3); letter-spacing: 1px;
+}
+.header-version { margin-left: 12px; font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+.layout {
+  display: grid; grid-template-columns: var(--sidebar-width) 1fr var(--inspector-width);
+  height: calc(100vh - var(--header-height)); margin-top: var(--header-height);
+}
+
+.sidebar {
+  background: var(--bg-secondary); border-right: 1px solid var(--border-color);
+  overflow-y: auto; padding: 16px 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+.nav-group { margin-bottom: 8px; }
+.nav-group-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px;
+  padding: 8px 20px 4px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 6px;
+}
+.nav-group-label::before {
+  content: ''; display: inline-block; width: 0; height: 0;
+  border-left: 4px solid var(--text-muted); border-top: 3px solid transparent; border-bottom: 3px solid transparent;
+  transition: transform var(--duration-normal) var(--ease-standard);
+}
+.nav-group.expanded .nav-group-label::before { transform: rotate(90deg); }
+.nav-group-items { display: none; }
+.nav-group.expanded .nav-group-items { display: block; }
+
+.nav-item {
+  display: block; font-size: 13px; color: var(--text-secondary); padding: 6px 20px 6px 32px;
+  cursor: pointer; transition: all var(--duration-normal) var(--ease-standard);
+  border-left: 2px solid transparent; text-decoration: none;
+}
+.nav-item:hover { color: var(--text-primary); background: var(--glass-inset); }
+.nav-item.active { color: var(--accent-primary); border-left-color: var(--accent-primary); background: rgba(245, 197, 24, 0.05); }
+
+.main-content { overflow-y: auto; padding: 32px 40px; scroll-behavior: smooth; }
+.main-content::-webkit-scrollbar { width: 6px; }
+.main-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+.section { margin-bottom: 48px; animation: fadeIn 0.4s var(--ease-standard); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.section-category { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--accent-primary); margin-bottom: 20px; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+.kpi-card {
+  background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+  border-radius: 10px; padding: 16px; text-align: center; transition: all var(--duration-normal) var(--ease-standard);
+}
+.kpi-card:hover { border-color: var(--glass-border-hover); transform: translateY(-2px); }
+.kpi-value { font-size: 28px; font-weight: 800; color: var(--accent-primary); font-family: 'JetBrains Mono', monospace; }
+.kpi-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+.overview-block {
+  background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+  border-radius: 10px; padding: 24px; margin: 20px 0;
+}
+.overview-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.overview-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
+.overview-meta { font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+.text-block { margin: 20px 0; }
+.text-block h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.text-block p { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7; }
+
+.data-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.data-table th {
+  background: var(--bg-tertiary); color: var(--accent-primary); font-weight: 600; font-size: 10px;
+  letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+.data-table td { padding: 10px 14px; border-bottom: 1px solid var(--glass-border); color: var(--text-secondary); }
+.data-table tr:hover td { background: var(--glass-inset); color: var(--text-primary); }
+.data-table code {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-primary);
+  background: rgba(245, 197, 24, 0.08); padding: 2px 6px; border-radius: 3px;
+}
+
+.callout { border-radius: 10px; padding: 16px 20px; margin: 20px 0; border-left: 4px solid; background: var(--glass-bg); }
+.callout.critical { border-left-color: var(--accent-red); }
+.callout.warning { border-left-color: var(--accent-yellow); }
+.callout.info { border-left-color: var(--accent-blue); }
+.callout-priority { font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.callout.critical .callout-priority { color: var(--accent-red); }
+.callout.warning .callout-priority { color: var(--accent-yellow); }
+.callout.info .callout-priority { color: var(--accent-blue); }
+.callout-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.callout-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+.timeline { margin: 20px 0; }
+.timeline-item { display: flex; gap: 16px; margin-bottom: 16px; }
+.timeline-marker { width: 32px; min-width: 32px; display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-primary); }
+.timeline-item[data-priority="high"] .timeline-dot { background: var(--accent-red); }
+.timeline-item[data-priority="medium"] .timeline-dot { background: var(--accent-yellow); }
+.timeline-item[data-priority="low"] .timeline-dot { background: var(--accent-green); }
+.timeline-line { flex: 1; width: 2px; background: var(--border-color); margin-top: 4px; }
+.timeline-content { flex: 1; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px 16px; }
+.timeline-title { font-size: 13px; font-weight: 600; }
+.timeline-duration { font-size: 11px; color: var(--accent-primary); font-family: 'JetBrains Mono', monospace; }
+.timeline-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+
+.styled-list { margin: 20px 0; padding-left: 20px; }
+.styled-list li { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.6; }
+
+.compliance-set { margin: 20px 0; }
+.compliance-bar { margin-bottom: 12px; }
+.compliance-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.compliance-track { height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; }
+.compliance-fill { height: 100%; border-radius: 4px; transition: width 1s var(--ease-standard); }
+.compliance-fill.high { background: var(--accent-green); }
+
+.accordion { margin: 20px 0; }
+.accordion-item { border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+.accordion-trigger {
+  width: 100%; background: var(--glass-bg); border: none; color: var(--text-primary);
+  font-size: 13px; font-weight: 500; padding: 12px 16px; text-align: left; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif;
+}
+.accordion-trigger::after { content: '+'; font-size: 16px; color: var(--accent-primary); }
+.accordion-item.open .accordion-trigger::after { content: '-'; }
+.accordion-content { display: none; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; background: var(--bg-secondary); }
+.accordion-item.open .accordion-content { display: block; }
+
+.inspector {
+  background: var(--bg-secondary); border-left: 1px solid var(--border-color);
+  overflow-y: auto; padding: 16px; font-size: 12px;
+}
+.inspector::-webkit-scrollbar { width: 4px; }
+.inspector::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+.inspector-section { margin-bottom: 20px; }
+.inspector-section-title {
+  font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px;
+  margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--glass-border);
+}
+.inspector-term { margin-bottom: 8px; }
+.inspector-term-label { font-size: 11px; font-weight: 600; color: var(--accent-primary); }
+.inspector-term-def { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+.inspector-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.inspector-meta span { color: var(--text-secondary); }
+
+@media print {
+  .sidebar, .inspector, .header { display: none; }
+  .layout { grid-template-columns: 1fr; }
+  .main-content { padding: 20px; overflow: visible; }
+  body { background: white; color: #1a1a1a; overflow: visible; height: auto; }
+  .kpi-card { background: #f5f5f5; border: 1px solid #ddd; }
+  .kpi-value { color: #1a1a1a; }
+}
+@media (max-width: 1200px) { .layout { grid-template-columns: var(--sidebar-width) 1fr; } .inspector { display: none; } }
+@media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main-content { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-title">CCEM APM</div>
+  <div class="header-subtitle">Operational Documentation</div>
+  <div class="header-version">v9.0.0</div>
+  <div class="header-badge">INTERNAL</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main-content" id="main-content"></main>
+  <aside class="inspector" id="inspector"></aside>
+</div>
+
+<script>
+/* OpsDOC Rendering Engine - Content-agnostic, schema-driven */
+/* Note: All data is trusted (locally generated from manifest). No external/user input is rendered. */
+
+async function loadJSON(path) { return (await fetch(path)).json(); }
+
+const H = {
+  kpis: d => d && d.length ? '<div class="kpi-grid">' + d.map(k =>
+    '<div class="kpi-card" title="' + (k.tooltip||'') + '"><div class="kpi-value">' + k.value + '</div><div class="kpi-label">' + k.label + '</div></div>'
+  ).join('') + '</div>' : '',
+
+  overview: d => d ? '<div class="overview-block"><div class="overview-title">' + (d.title||'') + '</div><div class="overview-desc">' + (d.description||'') + '</div>' +
+    (d.methodology ? '<div class="overview-meta">Methodology: ' + d.methodology + '</div>' : '') +
+    (d.scope ? '<div class="overview-meta">Scope: ' + d.scope + '</div>' : '') + '</div>' : '',
+
+  text: d => d ? '<div class="text-block">' + (d.title ? '<h3>' + d.title + '</h3>' : '') +
+    (d.paragraphs||[]).map(p => '<p>' + p + '</p>').join('') + '</div>' : '',
+
+  table: d => d && d.columns ? '<table class="data-table"><thead><tr>' +
+    d.columns.map(c => '<th>' + c.label + '</th>').join('') + '</tr></thead><tbody>' +
+    (d.rows||[]).map(r => '<tr>' + d.columns.map(c => '<td>' + (r[c.key]||'') + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table>' : '',
+
+  callout: d => d ? '<div class="callout ' + (d.variant||'info') + '"><div class="callout-priority">' +
+    (d.priority||'') + '</div><div class="callout-title">' + (d.title||'') + '</div><div class="callout-text">' + (d.text||'') + '</div></div>' : '',
+
+  timeline: d => d && d.length ? '<div class="timeline">' + d.map(t =>
+    '<div class="timeline-item" data-priority="' + (t.priority||'medium') + '"><div class="timeline-marker"><div class="timeline-dot"></div><div class="timeline-line"></div></div>' +
+    '<div class="timeline-content"><div style="display:flex;justify-content:space-between"><div class="timeline-title">' + t.title + '</div><div class="timeline-duration">' + (t.duration||'') +
+    '</div></div><div class="timeline-desc">' + (t.description||'') + '</div></div></div>'
+  ).join('') + '</div>' : '',
+
+  list: d => d && d.items ? '<' + (d.type==='ordered'?'ol':'ul') + ' class="styled-list">' +
+    d.items.map(i => '<li>' + i + '</li>').join('') + '</' + (d.type==='ordered'?'ol':'ul') + '>' : '',
+
+  compliance: d => d && d.length ? '<div class="compliance-set">' + d.map(c =>
+    '<div class="compliance-bar"><div class="compliance-label"><span>' + c.label + '</span><span>' + c.score + '%</span></div>' +
+    '<div class="compliance-track"><div class="compliance-fill high" style="width:' + c.score + '%"></div></div></div>'
+  ).join('') + '</div>' : '',
+
+  accordion: d => d && d.length ? '<div class="accordion">' + d.map((a,i) =>
+    '<div class="accordion-item" id="acc-' + i + '"><button class="accordion-trigger" onclick="document.getElementById(\'acc-' + i + '\').classList.toggle(\'open\')">' +
+    a.title + '</button><div class="accordion-content">' + a.content + '</div></div>'
+  ).join('') + '</div>' : ''
+};
+
+function renderSection(s) {
+  let out = '<div class="section" id="section-' + s.id + '"><div class="section-category">' + s.category + '</div><div class="section-title">' + s.title + '</div>';
+  if (s.content) { for (const [k, d] of Object.entries(s.content)) { if (H[k]) out += H[k](d); } }
+  return out + '</div>';
+}
+
+function renderNav(nav, sections) {
+  const m = {}; sections.forEach(s => m[s.id] = s);
+  return nav.map(g => '<div class="nav-group ' + (!g.collapsed ? 'expanded' : '') + '"><div class="nav-group-label" onclick="this.parentElement.classList.toggle(\'expanded\')">' +
+    g.group + '</div><div class="nav-group-items">' + g.items.map(id => m[id] ?
+    '<a class="nav-item" data-section="' + id + '" onclick="scrollTo(\'' + id + '\')">' + m[id].title + '</a>' : ''
+  ).join('') + '</div></div>').join('');
+}
+
+function renderInspector(t) {
+  let o = '<div class="inspector-section"><div class="inspector-section-title">METADATA</div>' +
+    '<div class="inspector-meta">Author: <span>Jeremiah Pegues</span></div>' +
+    '<div class="inspector-meta">Version: <span>v9.0.0</span></div>' +
+    '<div class="inspector-meta">Generated: <span>2026-04-11</span></div>' +
+    '<div class="inspector-meta">Classification: <span>INTERNAL</span></div>' +
+    '<div class="inspector-meta">Mode: <span>Technical</span></div></div>';
+
+  if (t) {
+    const cats = {};
+    for (const [k, v] of Object.entries(t)) { const c = v.category||'General'; if (!cats[c]) cats[c]=[]; cats[c].push(v); }
+    for (const [c, terms] of Object.entries(cats)) {
+      o += '<div class="inspector-section"><div class="inspector-section-title">' + c.toUpperCase() + '</div>' +
+        terms.map(v => '<div class="inspector-term"><div class="inspector-term-label">' + v.label + '</div><div class="inspector-term-def">' + v.definition + '</div></div>').join('') + '</div>';
+    }
+  }
+
+  o += '<div class="inspector-section"><div class="inspector-section-title">KEY PATHS</div>' +
+    '<div class="inspector-meta">APM Server: <span>~/Developer/ccem/apm-v4/</span></div>' +
+    '<div class="inspector-meta">CCEMHelper: <span>~/Developer/ccem/CCEMHelper/</span></div>' +
+    '<div class="inspector-meta">APM Config: <span>~/Developer/ccem/apm/apm_config.json</span></div>' +
+    '<div class="inspector-meta">APM Log: <span>/Volumes/DDRV902/logs/apm_server.log</span></div></div>';
+
+  o += '<div class="inspector-section"><div class="inspector-section-title">QUICK COMMANDS</div>' +
+    '<div class="inspector-meta" style="font-family:JetBrains Mono,monospace;font-size:10px;margin-bottom:8px"><span style="color:var(--accent-green)">Status:</span> curl localhost:3032/api/status</div>' +
+    '<div class="inspector-meta" style="font-family:JetBrains Mono,monospace;font-size:10px;margin-bottom:8px"><span style="color:var(--accent-red)">Kill:</span> lsof -ti:3032 | xargs kill -9</div>' +
+    '<div class="inspector-meta" style="font-family:JetBrains Mono,monospace;font-size:10px;margin-bottom:8px"><span style="color:var(--accent-blue)">Dashboard:</span> open localhost:3032</div>' +
+    '<div class="inspector-meta" style="font-family:JetBrains Mono,monospace;font-size:10px;margin-bottom:8px"><span style="color:var(--accent-yellow)">OpenAPI:</span> /api/v2/openapi.json</div></div>';
+  return o;
+}
+
+/* Note: scrollTo shadows window.scrollTo intentionally for nav clicks */
+function scrollTo(id) {
+  const el = document.getElementById('section-' + id);
+  if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const active = document.querySelector('.nav-item[data-section="' + id + '"]');
+  if (active) active.classList.add('active');
+}
+
+async function init() {
+  try {
+    const [sd, nd, md] = await Promise.all([loadJSON('../data/sections.json'), loadJSON('../data/navigation.json'), loadJSON('../opsdoc-manifest.json')]);
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main-content');
+    const insp = document.getElementById('inspector');
+
+    /* Trusted data rendered via DOM property assignment */
+    sidebar.innerHTML = renderNav(nd.groups, sd.sections);
+    main.innerHTML = sd.sections.map(s => renderSection(s)).join('');
+    insp.innerHTML = renderInspector(md.domain && md.domain.terminology);
+
+    const firstNav = document.querySelector('.nav-item');
+    if (firstNav) firstNav.classList.add('active');
+
+    /* Scroll spy */
+    const mc = document.getElementById('main-content');
+    mc.addEventListener('scroll', function() {
+      let cur = '';
+      mc.querySelectorAll('.section').forEach(function(s) { if (s.getBoundingClientRect().top <= 150) cur = s.id.replace('section-',''); });
+      if (cur) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const a = document.querySelector('.nav-item[data-section="' + cur + '"]');
+        if (a) a.classList.add('active');
+      }
+    });
+  } catch (err) {
+    document.getElementById('main-content').textContent = 'Error: ' + err.message + '. Serve this directory with: python3 -m http.server 3080';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

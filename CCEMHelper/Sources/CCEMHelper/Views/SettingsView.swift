@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     // Notification toggles — keys must match EnvironmentMonitor guard checks
@@ -10,8 +11,18 @@ struct SettingsView: View {
     @AppStorage("io.pegues.ccem.apmPort")  private var apmPort = "3032"
     @AppStorage("io.pegues.ccem.apmHost")  private var apmHost = "localhost"
 
+    // Usage display preferences (CCEM-321)
+    @AppStorage("io.pegues.ccem.usageDefaultTab")     private var usageDefaultTab = "Summary"
+    @AppStorage("io.pegues.ccem.usageRefreshInterval") private var usageRefreshInterval = 30
+    @AppStorage("io.pegues.ccem.usageTokenFormat")     private var usageTokenFormat = "abbreviated"
+
     @State private var connectionStatus: String = ""
     @State private var isTesting = false
+    @State private var isTestingNotif = false
+    @State private var notifTestStatus: String = ""
+    @State private var showPermissionAlert = false
+    @State private var notifAuthStatus: UNAuthorizationStatus = .notDetermined
+    @State private var showNotifSetupSheet = false
 
     var body: some View {
         Form {
@@ -39,16 +50,103 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Usage Display") {
+                Picker("Default Tab", selection: $usageDefaultTab) {
+                    Text("Summary").tag("Summary")
+                    Text("By Model").tag("By Model")
+                    Text("Sessions").tag("Sessions")
+                }
+                .pickerStyle(.segmented)
+
+                Picker("Refresh Interval", selection: $usageRefreshInterval) {
+                    Text("10s").tag(10)
+                    Text("30s").tag(30)
+                    Text("60s").tag(60)
+                }
+                .pickerStyle(.segmented)
+
+                Picker("Token Format", selection: $usageTokenFormat) {
+                    Text("Raw (1234567)").tag("raw")
+                    Text("Abbreviated (1.2M)").tag("abbreviated")
+                }
+            }
+
             Section("Notifications") {
                 Toggle("Agent lifecycle events", isOn: $notifyAgentLifecycle)
                 Toggle("AgentLock authorization events", isOn: $notifyAgentLock)
                 Toggle("Formation state changes", isOn: $notifyFormation)
                 Toggle("System events (connect/disconnect)", isOn: $notifySystem)
+
+                HStack {
+                    // US-002: Direct local test notification — bypasses APM round-trip.
+                    // Proves the permission/delegate chain works end-to-end.
+                    Button(isTestingNotif ? "Sending…" : "Test Notification") {
+                        Task { await sendTestNotification() }
+                    }
+                    .disabled(isTestingNotif)
+                    if !notifTestStatus.isEmpty {
+                        Text(notifTestStatus)
+                            .foregroundStyle(notifTestStatus.hasPrefix("✓") ? .green : .red)
+                            .font(.caption)
+                    }
+                }
+            }
+
+            Section("Notification Permission") {
+                HStack(spacing: 8) {
+                    Image(systemName: notifPermissionIcon)
+                        .foregroundStyle(notifPermissionColor)
+                    Text(notifPermissionLabel)
+                        .font(.callout)
+                    Spacer()
+                }
+
+                if notifAuthStatus == .notDetermined {
+                    Button("Request Permission") {
+                        Task { await requestNotifPermission() }
+                    }
+                }
+
+                if notifAuthStatus == .denied {
+                    Text("Permission was denied. Open System Settings > Notifications > CCEMHelper to enable.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Button("Open Notification Settings") {
+                    if let url = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+
+                Button("Notification Setup Guide...") {
+                    showNotifSetupSheet = true
+                }
+
+                Text("If CCEMHelper doesn't appear in Notifications, try: 1) Click 'Request Permission' 2) If still missing, open Notification Settings and look for CCEMHelper 3) Enable Banners and Notification Center")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
         }
         .formStyle(.grouped)
         .frame(width: 400)
         .padding()
+        .task {
+            await refreshNotifStatus()
+        }
+        .sheet(isPresented: $showNotifSetupSheet) {
+            NotificationPermissionView()
+        }
+        .alert("Notifications Disabled", isPresented: $showPermissionAlert) {
+            Button("Open System Settings") {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("CCEMHelper notifications are disabled. Enable them in System Settings > Notifications > CCEMHelper.")
+        }
     }
 
     private func testConnection() async {
@@ -66,6 +164,92 @@ struct SettingsView: View {
             connectionStatus = code == 200 ? "✓ Connected" : "✗ HTTP \(code)"
         } catch {
             connectionStatus = "✗ Unreachable"
+        }
+    }
+
+    // MARK: - Notification Permission Helpers
+
+    private var notifPermissionIcon: String {
+        switch notifAuthStatus {
+        case .authorized: return "checkmark.circle.fill"
+        case .denied: return "xmark.circle.fill"
+        case .provisional: return "questionmark.circle.fill"
+        case .notDetermined: return "circle.dashed"
+        case .ephemeral: return "clock.circle"
+        @unknown default: return "questionmark.circle"
+        }
+    }
+
+    private var notifPermissionColor: Color {
+        switch notifAuthStatus {
+        case .authorized: return .green
+        case .denied: return .red
+        case .provisional: return .orange
+        case .notDetermined: return .secondary
+        case .ephemeral: return .yellow
+        @unknown default: return .secondary
+        }
+    }
+
+    private var notifPermissionLabel: String {
+        switch notifAuthStatus {
+        case .authorized: return "Authorized"
+        case .denied: return "Denied"
+        case .provisional: return "Provisional"
+        case .notDetermined: return "Not yet requested"
+        case .ephemeral: return "Ephemeral"
+        @unknown default: return "Unknown"
+        }
+    }
+
+    private func refreshNotifStatus() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        notifAuthStatus = settings.authorizationStatus
+    }
+
+    private func requestNotifPermission() async {
+        let center = UNUserNotificationCenter.current()
+        do {
+            _ = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+        } catch {
+            print("[SettingsView] Notification auth error: \(error.localizedDescription)")
+        }
+        await refreshNotifStatus()
+    }
+
+    /// US-002: Fires a direct macOS notification without going through APM.
+    /// This validates the UNUserNotificationCenter permission + delegate chain.
+    private func sendTestNotification() async {
+        isTestingNotif = true
+        notifTestStatus = ""
+        defer { isTestingNotif = false }
+
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        guard settings.authorizationStatus == .authorized else {
+            showPermissionAlert = true
+            notifTestStatus = "✗ Permission denied"
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = "CCEMHelper Test"
+        content.body = "Notifications are working"
+        content.sound = .default
+        content.categoryIdentifier = EnvironmentMonitor.agentLifecycleCategory
+
+        let request = UNNotificationRequest(
+            identifier: "ccem-test-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await center.add(request)
+            notifTestStatus = "✓ Sent"
+        } catch {
+            notifTestStatus = "✗ \(error.localizedDescription)"
         }
     }
 }

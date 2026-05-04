@@ -128,6 +128,14 @@ final class APMServerManager {
         isRunning = false
     }
 
+    // MARK: - Restart
+
+    func restartAPM() async {
+        await stopAPM()
+        try? await Task.sleep(for: .seconds(2))
+        await startAPM()
+    }
+
     // MARK: - launchctl helpers
 
     private func launchctlServiceLoaded() -> Bool {

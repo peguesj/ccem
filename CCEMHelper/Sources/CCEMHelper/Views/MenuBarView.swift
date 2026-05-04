@@ -13,6 +13,7 @@ struct MenuBarView: View {
     @State private var agentActions = AgentActionsManager()
     @State private var multiServer = MultiServerManager()
     @State private var showServerSettings = false
+    @State private var showNotificationSetup = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -959,6 +960,19 @@ struct MenuBarView: View {
             .padding(.vertical, 6)
 
             Button {
+                showNotificationSetup = true
+            } label: {
+                Label("Notification Setup Guide…", systemImage: "bell.and.waves.left.and.right")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .popover(isPresented: $showNotificationSetup) {
+                NotificationPermissionView()
+            }
+
+            Button {
                 Task { await monitor.refresh() }
             } label: {
                 Label("Refresh", systemImage: "arrow.clockwise")
@@ -1053,7 +1067,7 @@ struct MenuBarView: View {
                     isRepairingDocker = true
                     Task {
                         let success = await DockerSocketRepair.repair()
-                        dockerStatus = success ? .ok : DockerSocketRepair.status()
+                        dockerStatus = success ? .ok : await DockerSocketRepair.asyncStatus()
                         isRepairingDocker = false
                     }
                 } label: {
@@ -1072,7 +1086,15 @@ struct MenuBarView: View {
                 .padding(.vertical, 6)
             }
         }
-        .onAppear { dockerStatus = DockerSocketRepair.status() }
+        // PERMANENT FIX: must use .task (async) not .onAppear (sync).
+        // `.onAppear` ran `status()` which shelled out to `docker info` and called
+        // `waitUntilExit()` synchronously on the main thread. When the Docker daemon
+        // was wedged, this blocked the main actor forever, starving all 4
+        // EnvironmentMonitor poll tasks and causing CCEMHelper to appear "stalled"
+        // even though the process was alive. `.task` runs on the concurrency system
+        // and `asyncStatus()` kills `docker info` after 2s, so the main actor is
+        // never blocked regardless of Docker daemon health.
+        .task { dockerStatus = await DockerSocketRepair.asyncStatus() }
     }
 
     // MARK: - Background Tasks Section
@@ -1125,7 +1147,15 @@ struct MenuBarView: View {
         .padding(.bottom, 4)
     }
 
-    // MARK: - Claude Usage Section
+    // MARK: - Claude Usage Section (CCEM-320: tabbed view)
+
+    @State private var usageTab: UsageTab = .summary
+
+    enum UsageTab: String, CaseIterable {
+        case summary = "Summary"
+        case models = "By Model"
+        case sessions = "Sessions"
+    }
 
     private func usageSection(_ usage: UsageSummary) -> some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -1148,50 +1178,140 @@ struct MenuBarView: View {
             .padding(.horizontal, 12)
             .padding(.top, 6)
 
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Tokens")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                    Text(usage.totalTokensFormatted)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                }
-
-                if let model = usage.topModel, !model.isEmpty {
-                    Divider()
-                        .frame(height: 24)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Model")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                        Text(model)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
+            // Tab selector
+            HStack(spacing: 2) {
+                ForEach(UsageTab.allCases, id: \.self) { tab in
+                    Button(action: { usageTab = tab }) {
+                        Text(tab.rawValue)
+                            .font(.system(size: 9, weight: usageTab == tab ? .semibold : .regular))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(usageTab == tab ? Color.accentColor.opacity(0.15) : Color.clear)
+                            .foregroundStyle(usageTab == tab ? Color.accentColor : .secondary)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
+                    .buttonStyle(.plain)
                 }
-
-                Divider()
-                    .frame(height: 24)
-
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Tool Calls")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                    Text("\(usage.totalToolCalls)")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                }
-
                 Spacer()
             }
             .padding(.horizontal, 12)
-            .padding(.bottom, 6)
+
+            // Tab content
+            switch usageTab {
+            case .summary:
+                usageSummaryContent(usage)
+            case .models:
+                usageModelContent(usage)
+            case .sessions:
+                usageSessionContent(usage)
+            }
         }
+    }
+
+    private func usageSummaryContent(_ usage: UsageSummary) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Tokens")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                Text(usage.totalTokensFormatted)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+            }
+
+            if let model = usage.topModel, !model.isEmpty {
+                Divider()
+                    .frame(height: 24)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Model")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text(model)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                }
+            }
+
+            Divider()
+                .frame(height: 24)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Tool Calls")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                Text("\(usage.totalToolCalls)")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 6)
+    }
+
+    private func usageModelContent(_ usage: UsageSummary) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            if let model = usage.topModel, !model.isEmpty {
+                HStack {
+                    Text(model)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                    Spacer()
+                    Text("Primary")
+                        .font(.system(size: 8))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(Color.green.opacity(0.15))
+                        .clipShape(Capsule())
+                }
+            }
+            HStack {
+                Text("In: \(formatTokens(usage.totalInputTokens))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text("Out: \(formatTokens(usage.totalOutputTokens))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text("Cache: \(formatTokens(usage.totalCacheTokens))")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 6)
+    }
+
+    private func usageSessionContent(_ usage: UsageSummary) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack {
+                Text("Sessions: \(usage.totalSessions)")
+                    .font(.caption2)
+                Spacer()
+                Text("Calls/Session: \(usage.totalSessions > 0 ? usage.totalToolCalls / max(usage.totalSessions, 1) : 0)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if usage.totalSessions > 0 {
+                let avgTokens = (usage.totalInputTokens + usage.totalOutputTokens) / max(usage.totalSessions, 1)
+                Text("Avg tokens/session: \(formatTokens(avgTokens))")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 6)
+    }
+
+    private func formatTokens(_ n: Int) -> String {
+        if n >= 1_000_000 { return String(format: "%.1fM", Double(n) / 1_000_000) }
+        if n >= 1_000 { return String(format: "%.1fK", Double(n) / 1_000) }
+        return "\(n)"
     }
 
     private func effortLevelColor(_ level: String) -> Color {

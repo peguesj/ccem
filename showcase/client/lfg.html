@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LFG — Local File Guardian Showcase</title>
+  <style>
+    * { font-family: system-ui, -apple-system, sans-serif; }
+    code, pre, .font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    body { background: #09090b; color: #f4f4f5; overflow: hidden; margin: 0; height: 100vh; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #18181b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    .col-scroll { overflow-y: auto; overflow-x: hidden; }
+    @keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .pulse { animation: pulse-badge 1.8s ease-in-out infinite; }
+    @keyframes progress-shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes apm-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .apm-dot-online { background: #10b981; animation: apm-blink 3s ease-in-out infinite; border-radius: 50%; }
+    .apm-dot-offline { background: #ef4444; border-radius: 50%; }
+    .apm-dot-checking { background: #f59e0b; animation: apm-blink 1s ease-in-out infinite; border-radius: 50%; }
+    .story-card { border-left: 2px solid #3f3f46; transition: border-color 0.15s; padding: 2px 4px; border-radius: 0 4px 4px 0; }
+    .story-card.done { border-color: #10b981; }
+    .story-card.active { border-color: #f59e0b; }
+    #loading-overlay { position: fixed; inset: 0; background: #09090b; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: ui-monospace, monospace; color: #52525b; z-index: 9999; }
+    .notif-card { border-left: 2px solid #a855f7; padding: 4px 8px; margin-bottom: 4px; background: rgba(168,85,247,0.05); border-radius: 0 4px 4px 0; }
+    /* Layout */
+    .app { display: flex; flex-direction: column; height: 100vh; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 48px; border-bottom: 1px solid #27272a; background: rgba(24,24,27,0.95); flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
+    .body-grid { display: grid; grid-template-columns: 260px 1fr 280px; flex: 1; min-height: 0; border-top: 1px solid #18181b; }
+    .body-grid > * { border-right: 1px solid #27272a; }
+    .body-grid > *:last-child { border-right: none; }
+    aside, main { height: calc(100vh - 48px); overflow-y: auto; padding: 12px; }
+    main { padding: 16px; }
+    /* Cards */
+    .card { border: 1px solid #27272a; background: rgba(24,24,27,0.6); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .card-purple { border-color: rgba(168,85,247,0.3); background: rgba(88,28,135,0.1); }
+    .card-emerald { border-color: rgba(16,185,129,0.3); background: rgba(5,46,22,0.1); }
+    /* Typography helpers */
+    .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #52525b; margin-bottom: 8px; display: block; }
+    .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #d8b4fe; box-shadow: 0 0 0 1px rgba(168,85,247,0.3); }
+    .badge-emerald { background: rgba(16,185,129,0.15); color: #6ee7b7; box-shadow: 0 0 0 1px rgba(16,185,129,0.25); }
+    .badge-amber { background: rgba(245,158,11,0.1); color: #fcd34d; box-shadow: 0 0 0 1px rgba(245,158,11,0.3); }
+    /* Wave tree */
+    .wave-item { margin-top: 6px; font-family: ui-monospace, monospace; font-size: 11px; }
+    .wave-hdr { display: flex; align-items: center; gap: 6px; }
+    .wave-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .wave-features { margin-left: 20px; margin-top: 2px; }
+    /* Stat row */
+    .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+    .stat-row .lbl { color: #71717a; }
+    /* Progress bar */
+    .prog-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .prog-track { flex: 1; background: #27272a; border-radius: 9999px; height: 6px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 9999px; }
+    /* Arch grid */
+    .arch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .arch-col { border: 1px solid rgba(63,63,70,0.4); background: rgba(24,24,27,0.6); border-radius: 6px; padding: 8px; }
+    .arch-col .title { font-size: 10px; font-weight: 600; margin-bottom: 4px; }
+    .arch-col .item { font-size: 10px; color: #52525b; display: block; margin-bottom: 2px; font-family: ui-monospace, monospace; }
+    /* Link list */
+    .link-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #71717a; text-decoration: none; margin-bottom: 6px; transition: color 0.12s; }
+    .link-item:hover { color: #e4e4e7; }
+    .link-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    /* Devdrive highlight grid */
+    .ddrv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .ddrv-col { background: rgba(24,24,27,0.6); border: 1px solid #27272a; border-radius: 6px; padding: 8px; }
+    .ddrv-col .title { font-size: 10px; font-weight: 600; color: #a1a1aa; margin-bottom: 4px; }
+    .ddrv-col .body { font-size: 10px; color: #52525b; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <div id="loading-overlay">loading LFG showcase data...</div>
+
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge badge-purple">LFG</span>
+        <span id="hdr-version" class="badge badge-amber" style="font-family:ui-monospace,monospace;font-size:11px;"></span>
+        <span style="color:#3f3f46;font-size:12px;">.</span>
+        <span style="font-size:12px;color:#52525b;">fleet-20260419</span>
+      </div>
+      <div style="position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:500;color:#d4d4d8;">
+        LFG — Local File Guardian <span id="hdr-feature-count" style="color:#52525b;"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:12px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;display:inline-block;" class="apm-dot-checking" id="apm-status-dot"></span>
+          <span style="color:#71717a;" id="apm-status-label">APM</span>
+        </div>
+        <span id="hdr-wave-status" style="color:#a855f7;font-weight:500;" class="pulse"></span>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="body-grid">
+
+      <!-- Left: Feature Tree -->
+      <aside>
+        <span class="label">LFG Feature Waves</span>
+        <div style="font-family:ui-monospace,monospace;font-size:11px;color:#a1a1aa;">
+          <div style="color:#d4d4d8;font-weight:500;margin-bottom:4px;">LFG — Local File Guardian</div>
+          <div id="feature-tree"></div>
+        </div>
+
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #27272a;">
+          <span class="label">Legend</span>
+          <div style="font-size:10px;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;"></span><span style="color:#71717a;">COMPLETE — shipped</span></div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;" class="pulse"></span><span style="color:#71717a;">IN_PROGRESS — active</span></div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#3f3f46;display:inline-block;"></span><span style="color:#71717a;">PENDING — queued</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #27272a;">
+          <span class="label">Stack</span>
+          <div style="font-size:10px;font-family:ui-monospace,monospace;display:flex;flex-direction:column;gap:3px;">
+            <span style="color:#a855f7;">Bash · Python3 · Swift</span>
+            <span style="color:#71717a;">AppKit · SwiftUI · SPM</span>
+            <span style="color:#71717a;">APFS · diskutil · DiskArb</span>
+            <span style="color:#71717a;">macFUSE 5.2 / FSKit</span>
+            <span style="color:#52525b;margin-top:4px;">LFGKit shared framework</span>
+            <span style="color:#52525b;">XPC privileged helper (W9)</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #27272a;">
+          <span class="label">Quick Links</span>
+          <a href="http://localhost:3032/showcase?project=lfg" target="_blank" class="link-item">
+            <span class="link-dot" style="background:#a855f7;"></span>APM Showcase (LFG)
+          </a>
+          <a href="devdrive-formation.html" target="_blank" class="link-item">
+            <span class="link-dot" style="background:#3b82f6;"></span>DevDrive Formation
+          </a>
+          <a href="http://localhost:3032" target="_blank" class="link-item">
+            <span class="link-dot" style="background:#3b82f6;"></span>APM Dashboard
+          </a>
+        </div>
+      </aside>
+
+      <!-- Center -->
+      <main>
+
+        <!-- Header card -->
+        <div class="card card-purple" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+              <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#a855f7;margin-bottom:4px;">LOCAL FILE GUARDIAN</div>
+              <h1 style="font-size:15px;font-weight:700;color:#f4f4f5;margin-bottom:4px;">macOS Disk Management Suite with Self-Correcting DevDrive</h1>
+              <p style="font-size:12px;color:#71717a;line-height:1.6;max-width:520px;">Native macOS tool suite: WTFS disk scanner, DTF cache cleaner, BTAU backup manager, DEVDRIVE APFS volume management, SSD Spotlight control, STFU source forensics — unified under SwiftUI native port with self-correcting DevDrive v2 reconcile loop.</p>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:10px;font-family:ui-monospace,monospace;padding:2px 6px;border-radius:4px;background:rgba(168,85,247,0.1);color:#d8b4fe;box-shadow:0 0 0 1px rgba(168,85,247,0.2);">Bash+Python3+Swift</span>
+                <span style="font-size:10px;font-family:ui-monospace,monospace;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,0.1);color:#93c5fd;box-shadow:0 0 0 1px rgba(59,130,246,0.2);">macOS 14+ Sonoma</span>
+                <span style="font-size:10px;font-family:ui-monospace,monospace;padding:2px 6px;border-radius:4px;background:rgba(63,63,70,0.4);color:#a1a1aa;box-shadow:0 0 0 1px rgba(63,63,70,0.4);">LFGKit SPM</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:16px;">
+              <div id="ctr-version" style="font-size:28px;font-weight:700;color:#f4f4f5;">--</div>
+              <div style="font-size:10px;color:#52525b;margin-top:4px;">fmt-lfg-fleet-20260419</div>
+              <div id="ctr-feature-count" style="font-size:10px;color:#52525b;margin-top:2px;"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-family:ui-monospace;background:rgba(5,46,22,0.3);color:rgba(110,231,183,0.7);padding:2px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(6,78,59,0.3);">v0.1</span>
+            <span style="color:#3f3f46;font-size:10px;"> -&gt; </span>
+            <span style="font-size:10px;font-family:ui-monospace;background:rgba(5,46,22,0.3);color:rgba(110,231,183,0.7);padding:2px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(6,78,59,0.3);">v0.5</span>
+            <span style="color:#3f3f46;font-size:10px;"> -&gt; </span>
+            <span style="font-size:10px;font-family:ui-monospace;background:rgba(5,46,22,0.3);color:rgba(110,231,183,0.7);padding:2px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(6,78,59,0.3);">v0.9</span>
+            <span style="color:#3f3f46;font-size:10px;"> -&gt; </span>
+            <span id="hdr-latest-version" style="font-size:10px;font-family:ui-monospace;background:rgba(69,26,3,0.3);color:#fcd34d;padding:2px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(120,53,15,0.4);" class="pulse">v2.0.0</span>
+          </div>
+        </div>
+
+        <!-- DevDrive v2 highlight -->
+        <div class="card card-emerald" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+            <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#fcd34d;">Wave 12 Active — DevDrive Resilience</span>
+            <span class="badge badge-amber" style="margin-left:auto;">6/7 DONE</span>
+          </div>
+          <div class="ddrv-grid">
+            <div class="ddrv-col">
+              <div class="title">Architecture</div>
+              <div class="body">Native APFS volumes (diskutil apfs addVolume -quota). Replaces hdiutil sparseimage. Shared free-space pool, native CoW/TRIM, no mount/attach dance.</div>
+            </div>
+            <div class="ddrv-col">
+              <div class="title">Reconcile Loop</div>
+              <div class="body">8 drift categories, idempotent repair. Observe -&gt; Classify -&gt; Act -&gt; Record. LaunchAgent every 5 min. dF/dt ring buffer (288 samples / 24h).</div>
+            </div>
+            <div class="ddrv-col">
+              <div class="title">All 10 Stories Done</div>
+              <div class="body">Observers, classifier, repair actions, APFS backend, v1-&gt;v2 migration, FSKit PoC, LaunchAgent install, menubar pressure indicator, Claude Code symlink integration.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="card" style="margin-bottom:16px;">
+          <span class="label">Architecture</span>
+          <div class="arch-grid">
+            <div class="arch-col">
+              <div class="title" style="color:#a855f7;">CLI Layer</div>
+              <span class="item">lfg wtfs</span>
+              <span class="item">lfg dtf</span>
+              <span class="item">lfg btau</span>
+              <span class="item">lfg devdrive</span>
+              <span class="item">lfg ssd</span>
+              <span class="item">lfg stfu</span>
+            </div>
+            <div class="arch-col">
+              <div class="title" style="color:#3b82f6;">Swift / GUI</div>
+              <span class="item">LFGKit (SPM)</span>
+              <span class="item">LFGApp (SwiftUI)</span>
+              <span class="item">lfg-cli target</span>
+              <span class="item">MenuBarExtra</span>
+              <span class="item">Settings scene</span>
+              <span class="item">SMAppService</span>
+            </div>
+            <div class="arch-col">
+              <div class="title" style="color:#10b981;">DevDrive v2</div>
+              <span class="item">observers.py</span>
+              <span class="item">reconcile.py</span>
+              <span class="item">actions.py</span>
+              <span class="item">apfs_volume.py</span>
+              <span class="item">migrate_v1.py</span>
+              <span class="item">state module</span>
+            </div>
+            <div class="arch-col">
+              <div class="title" style="color:#f59e0b;">Planned</div>
+              <span class="item">XPC helper (W9)</span>
+              <span class="item">Swift Charts (W8)</span>
+              <span class="item">STFU treemap (W8)</span>
+              <span class="item">Notarization (W10)</span>
+              <span class="item">Sparkle 2.x (W10)</span>
+              <span class="item">DMG packaging (W10)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- C4 Architecture Diagrams -->
+        <div class="card" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="label" style="margin-bottom:0;">C4 Architecture</span>
+            <button onclick="showC4('context')" id="tab-context" style="font-size:10px;padding:2px 8px;border-radius:4px;border:none;cursor:pointer;background:rgba(168,85,247,0.3);color:#d8b4fe;font-weight:600;">L1 Context</button>
+            <button onclick="showC4('containers')" id="tab-containers" style="font-size:10px;padding:2px 8px;border-radius:4px;border:none;cursor:pointer;background:rgba(63,63,70,0.3);color:#71717a;font-weight:600;">L2 Containers</button>
+          </div>
+          <div id="c4-viewer" style="border-radius:6px;overflow:hidden;background:#0a0a0f;">
+            <img id="c4-img" src="../data/projects/lfg/diagrams/context.svg" alt="C4 Level 1 Context" style="width:100%;display:block;" onerror="this.parentElement.innerHTML='<div style=\'padding:16px;text-align:center;color:#52525b;font-size:11px;\'>SVG loading from data/projects/lfg/diagrams/</div>'"/>
+          </div>
+        </div>
+
+        <!-- Feature Waves -->
+        <div class="card">
+          <span class="label">Feature Waves</span>
+          <div id="narratives-content" style="display:flex;flex-direction:column;gap:12px;font-size:12px;"></div>
+        </div>
+
+      </main>
+
+      <!-- Right: Inspector -->
+      <aside>
+        <span class="label">Resource Inspector</span>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+          <span style="width:8px;height:8px;display:inline-block;" class="apm-dot-checking" id="inspector-dot"></span>
+          <span style="font-size:10px;color:#52525b;">Polling APM every 10s</span>
+          <span style="margin-left:auto;font-size:10px;font-family:ui-monospace;color:#52525b;" id="last-poll-time">--</span>
+        </div>
+
+        <!-- Project Stats -->
+        <div class="card" style="margin-bottom:12px;">
+          <span class="label">LFG State</span>
+          <div class="stat-row"><span class="lbl">Version</span><span id="stat-version" style="color:#fcd34d;font-family:ui-monospace;" class="pulse">--</span></div>
+          <div class="stat-row"><span class="lbl">Features</span><span id="stat-features" style="color:#a1a1aa;">--</span></div>
+          <div class="stat-row"><span class="lbl">Waves</span><span id="stat-waves" style="color:#a1a1aa;">--</span></div>
+          <div class="stat-row"><span class="lbl">DevDrive v2</span><span style="color:#10b981;font-family:ui-monospace;">10/10 done</span></div>
+          <div class="stat-row"><span class="lbl">Stack</span><span style="color:#a855f7;font-size:10px;">Bash+Swift+Py</span></div>
+          <div class="stat-row"><span class="lbl">Installer</span><span style="color:#a1a1aa;font-family:ui-monospace;font-size:10px;">LFG.pkg</span></div>
+        </div>
+
+        <!-- APM Status -->
+        <div class="card" style="margin-bottom:12px;">
+          <span class="label">APM Health</span>
+          <div class="stat-row"><span class="lbl">Status</span><span id="apm-health-status" style="color:#a1a1aa;" class="pulse">checking...</span></div>
+          <div class="stat-row"><span class="lbl">Endpoint</span><a href="http://localhost:3032" target="_blank" style="color:#60a5fa;font-family:ui-monospace;font-size:10px;text-decoration:none;">localhost:3032</a></div>
+          <div class="stat-row"><span class="lbl">Version</span><span id="apm-version" style="color:#a1a1aa;font-family:ui-monospace;">--</span></div>
+          <div class="stat-row"><span class="lbl">Uptime</span><span id="apm-uptime" style="color:#a1a1aa;font-family:ui-monospace;">--</span></div>
+          <div class="stat-row"><span class="lbl">Agents</span><span id="apm-agent-count" style="color:#a1a1aa;font-family:ui-monospace;">--</span></div>
+        </div>
+
+        <!-- Wave Progress -->
+        <div class="card" style="margin-bottom:12px;">
+          <span class="label">Wave Progress</span>
+          <div id="wave-progress"></div>
+        </div>
+
+        <!-- APM Notifications -->
+        <div class="card" style="margin-bottom:12px;">
+          <span class="label">APM Notifications</span>
+          <div id="apm-notifications"><span style="font-size:10px;font-family:ui-monospace;color:#52525b;">Polling...</span></div>
+        </div>
+
+        <!-- Live APM Data -->
+        <div class="card" style="margin-bottom:12px;">
+          <span class="label">Live APM Data</span>
+          <pre id="apm-raw-data" style="font-size:10px;font-family:ui-monospace;color:#52525b;white-space:pre-wrap;word-break:break-all;line-height:1.4;">Polling...</pre>
+        </div>
+
+        <!-- Links -->
+        <div>
+          <span class="label">Quick Links</span>
+          <a href="http://localhost:3032/showcase?project=lfg" target="_blank" class="link-item"><span class="link-dot" style="background:#a855f7;"></span>APM Showcase (LFG)</a>
+          <a href="http://localhost:3032" target="_blank" class="link-item"><span class="link-dot" style="background:#3b82f6;"></span>APM Dashboard</a>
+          <a href="http://localhost:3032/api/status" target="_blank" class="link-item"><span class="link-dot" style="background:#3b82f6;"></span>/api/status</a>
+          <a href="http://localhost:3032/api/showcase/lfg" target="_blank" class="link-item"><span class="link-dot" style="background:#a855f7;"></span>/api/showcase/lfg</a>
+          <a href="devdrive-formation.html" target="_blank" class="link-item"><span class="link-dot" style="background:#10b981;"></span>DevDrive Formation</a>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    var APM_BASE = 'http://localhost:3032';
+    var PROJECT = 'lfg';
+
+    function showC4(type) {
+      var base = '../data/projects/lfg/diagrams/';
+      document.getElementById('c4-img').src = base + type + '.svg';
+      document.getElementById('c4-img').alt = type === 'context' ? 'C4 Level 1 Context' : 'C4 Level 2 Containers';
+      document.getElementById('tab-context').style.background = type === 'context' ? 'rgba(168,85,247,0.3)' : 'rgba(63,63,70,0.3)';
+      document.getElementById('tab-context').style.color = type === 'context' ? '#d8b4fe' : '#71717a';
+      document.getElementById('tab-containers').style.background = type === 'containers' ? 'rgba(168,85,247,0.3)' : 'rgba(63,63,70,0.3)';
+      document.getElementById('tab-containers').style.color = type === 'containers' ? '#d8b4fe' : '#71717a';
+    }
+
+    var WAVE_COLORS = {
+      1:  { dot: '#10b981', text: '#10b981', bar: '#10b981', badgeCls: 'badge-emerald' },
+      2:  { dot: '#3b82f6', text: '#60a5fa', bar: '#3b82f6', badgeCls: '' },
+      3:  { dot: '#a855f7', text: '#c084fc', bar: '#a855f7', badgeCls: '' },
+      4:  { dot: '#f59e0b', text: '#fcd34d', bar: '#f59e0b', badgeCls: 'badge-amber' },
+      5:  { dot: '#ef4444', text: '#f87171', bar: '#ef4444', badgeCls: '' },
+      6:  { dot: '#06b6d4', text: '#22d3ee', bar: '#06b6d4', badgeCls: '' },
+      7:  { dot: '#6366f1', text: '#818cf8', bar: '#6366f1', badgeCls: '' },
+      8:  { dot: '#f97316', text: '#fb923c', bar: '#f97316', badgeCls: '' },
+      9:  { dot: '#ec4899', text: '#f472b6', bar: '#ec4899', badgeCls: '' },
+      10: { dot: '#14b8a6', text: '#2dd4bf', bar: '#14b8a6', badgeCls: '' },
+      11: { dot: '#10b981', text: '#10b981', bar: '#10b981', badgeCls: 'badge-emerald' },
+    };
+
+    var WAVE_TITLES = {
+      1:  'Wave 1 — Core Modules (WTFS/DTF/BTAU)',
+      2:  'Wave 2 — Volume Management (DEVDRIVE/SSD/STFU)',
+      3:  'Wave 3 — Native Integration (Finder/Menubar/Inbox)',
+      4:  'Wave 4 — Packaging & Review (PKG/Fixes/Tests/Docs)',
+      5:  'Wave 5 — SwiftUI Port + Formation Showcase',
+      6:  'Wave 6 — Native Services Layer (LFGKit + Async)',
+      7:  'Wave 7 — Permissions + Login Item + Settings',
+      8:  'Wave 8 — Full SwiftUI UI (Charts/Tables/Treemap)',
+      9:  'Wave 9 — XPC Privileged Helper',
+      10: 'Wave 10 — Notarization + DMG + Sparkle',
+      11: 'Wave 11 — DevDrive v2 Self-Correcting Architecture',
+      12: 'Wave 12 — DevDrive Resilience (Disconnect/Fallback/Reconnect)',
+    };
+
+    function wc(wave) { return WAVE_COLORS[wave] || WAVE_COLORS[1]; }
+
+    function groupByWave(features) {
+      var waves = {};
+      (features || []).forEach(function(f) {
+        var w = f.wave || 1;
+        if (!waves[w]) waves[w] = [];
+        waves[w].push(f);
+      });
+      return waves;
+    }
+
+    function isDone(s) { return s === 'shipped' || s === 'complete' || s === 'done'; }
+    function isActive(s) { return s === 'active' || s === 'in_progress'; }
+    function isPending(s) { return !s || s === 'pending' || s === 'planned' || s === 'design'; }
+
+    function resolveWaveStatus(features) {
+      var waves = groupByWave(features);
+      var waveNums = Object.keys(waves).map(Number).sort(function(a,b){return a-b;});
+      return function(waveNum) {
+        var wf = waves[waveNum] || [];
+        if (wf.every(function(f){ return isDone(f.status); })) return 'done';
+        if (wf.some(function(f){ return isActive(f.status); })) return 'active';
+        var firstPending = waveNums.find(function(w) {
+          return (waves[w]||[]).some(function(f){ return isPending(f.status); });
+        });
+        if (waveNum === firstPending) return 'active';
+        if (firstPending && waveNum < firstPending) return 'done';
+        return 'pending';
+      };
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function buildFeatureTree(features) {
+      var waves = groupByWave(features);
+      var waveNums = Object.keys(waves).map(Number).sort(function(a,b){return a-b;});
+      var getStatus = resolveWaveStatus(features);
+      var parts = [];
+
+      waveNums.forEach(function(waveNum, idx) {
+        var wFeatures = waves[waveNum];
+        var c = wc(waveNum);
+        var status = getStatus(waveNum);
+        var done = status === 'done';
+        var active = status === 'active';
+        var isLast = idx === waveNums.length - 1;
+        var connector = isLast ? '\u2514\u2500\u2500' : '\u251C\u2500\u2500';
+        var statusSpan = done
+          ? '<span style="margin-left:auto;font-size:10px;background:rgba(16,185,129,0.15);color:#6ee7b7;padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(16,185,129,0.25);">DONE</span>'
+          : active
+          ? '<span style="margin-left:auto;font-size:10px;background:rgba(245,158,11,0.1);color:#fcd34d;padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(245,158,11,0.3);" class="pulse">ACTIVE</span>'
+          : '<span style="margin-left:auto;font-size:10px;background:rgba(39,39,42,0.6);color:#52525b;padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(63,63,70,0.3);">QUEUED</span>';
+
+        var dotBg = done ? '#10b981' : active ? c.dot : '#3f3f46';
+        var hdrColor = done ? '#10b981' : active ? c.text : '#71717a';
+
+        var html = '<div class="wave-item">';
+        html += '<div class="wave-hdr" style="color:' + hdrColor + ';">';
+        html += '<span style="color:#52525b;">' + connector + '</span>';
+        html += '<span style="width:8px;height:8px;border-radius:50%;background:' + dotBg + ';display:inline-block;flex-shrink:0;' + (active ? 'animation:apm-blink 1.8s ease-in-out infinite;' : '') + '"></span>';
+        html += '<span style="font-weight:500;">W' + waveNum + '</span>';
+        html += statusSpan;
+        html += '</div><div class="wave-features">';
+
+        wFeatures.forEach(function(f, fi) {
+          var ic = fi === wFeatures.length - 1 ? '\u2514\u2500\u2500' : '\u251C\u2500\u2500';
+          var fDone = isDone(f.status);
+          var icon = fDone ? '<span style="color:#10b981;">&#10003;</span>' : '<span style="color:#52525b;">.</span>';
+          var titleColor = fDone ? '#71717a' : (active ? '#a1a1aa' : '#52525b');
+          html += '<div class="story-card ' + (fDone ? 'done' : active ? 'active' : '') + '">';
+          html += '<span style="color:#52525b;">' + ic + '</span> ' + icon;
+          html += ' <span style="font-size:10px;color:' + titleColor + ';">' + esc(f.title || f.id) + '</span>';
+          html += '</div>';
+        });
+
+        html += '</div></div>';
+        parts.push(html);
+      });
+
+      return parts.join('');
+    }
+
+    function buildWaveProgress(features) {
+      var waves = groupByWave(features);
+      var waveNums = Object.keys(waves).map(Number).sort(function(a,b){return a-b;});
+      if (!waveNums.length) return '<span style="font-size:10px;color:#52525b;">No waves</span>';
+      var getStatus = resolveWaveStatus(features);
+      var parts = [];
+
+      waveNums.forEach(function(waveNum) {
+        var c = wc(waveNum);
+        var status = getStatus(waveNum);
+        var done = status === 'done';
+        var active = status === 'active';
+        var barStyle = done
+          ? 'background:' + c.bar + ';width:100%;'
+          : active
+          ? 'background:linear-gradient(90deg,' + c.bar + ' 25%,#fbbf24 50%,' + c.bar + ' 75%);background-size:200% 100%;animation:progress-shimmer 2s linear infinite;width:15%;'
+          : 'width:0%;';
+        var labelColor = done ? '#10b981' : active ? c.text : '#52525b';
+        var label = done ? 'done' : active ? 'active' : 'queued';
+        parts.push(
+          '<div class="prog-row">' +
+          '<div class="prog-track"><div class="prog-fill" style="' + barStyle + '"></div></div>' +
+          '<span style="font-size:10px;color:' + labelColor + ';width:64px;text-align:right;' + (active ? 'animation:pulse-badge 1.8s ease-in-out infinite;' : '') + '">W' + waveNum + ' . ' + label + '</span>' +
+          '</div>'
+        );
+      });
+      return parts.join('');
+    }
+
+    function buildNarratives(features) {
+      var waves = groupByWave(features);
+      var waveNums = Object.keys(waves).map(Number).sort(function(a,b){return a-b;});
+      var getStatus = resolveWaveStatus(features);
+      var parts = [];
+
+      waveNums.forEach(function(waveNum) {
+        var wFeatures = waves[waveNum];
+        var c = wc(waveNum);
+        var status = getStatus(waveNum);
+        var done = status === 'done';
+        var title = WAVE_TITLES[waveNum] || 'Wave ' + waveNum;
+        var featureList = wFeatures.map(function(f){ return esc(f.title); }).join(', ');
+        var dotColor = done ? '#10b981' : c.dot;
+        var titleColor = done ? '#10b981' : c.text;
+        var doneBadge = done ? '<span style="margin-left:auto;font-size:9px;background:rgba(16,185,129,0.1);color:#6ee7b7;padding:1px 6px;border-radius:4px;box-shadow:0 0 0 1px rgba(16,185,129,0.2);">COMPLETE</span>' : '';
+
+        parts.push(
+          '<div>' +
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
+          '<span style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';display:inline-block;flex-shrink:0;"></span>' +
+          '<span style="font-weight:600;font-size:12px;color:' + titleColor + ';">' + esc(title) + '</span>' +
+          doneBadge +
+          '</div>' +
+          '<p style="color:#71717a;line-height:1.5;padding-left:12px;font-size:11px;">' + featureList + '</p>' +
+          '</div>'
+        );
+      });
+
+      return parts.join('') || '<span style="font-size:11px;color:#52525b;">No feature waves found.</span>';
+    }
+
+    // ── Data loading ─────────────────────────────────────────────────────────
+    async function loadData() {
+      try {
+        var res = await fetch(APM_BASE + '/api/showcase/' + PROJECT, {
+          signal: AbortSignal.timeout(3000),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          var data = await res.json();
+          if (data && data.features) return data;
+        }
+      } catch(e) {}
+
+      try {
+        var fRes = await fetch('./data/projects/lfg/features.json', { signal: AbortSignal.timeout(2000) });
+        var nRes = null;
+        try { nRes = await fetch('./data/projects/lfg/narrative-content.json', { signal: AbortSignal.timeout(2000) }); } catch(e) {}
+        if (fRes.ok) {
+          var features = await fRes.json();
+          var narratives = (nRes && nRes.ok) ? await nRes.json() : {};
+          return { features: features, narratives: narratives };
+        }
+      } catch(e) {}
+
+      return { features: [], narratives: {} };
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+    async function init() {
+      var data = await loadData();
+      var rawFeatures = data.features || [];
+      var features = Array.isArray(rawFeatures) ? rawFeatures : (rawFeatures.features || []);
+      var narratives = data.narratives || {};
+      var version = (narratives && narratives.version) || '2.0.0';
+
+      document.getElementById('hdr-version').textContent = version;
+      document.getElementById('hdr-latest-version').textContent = 'v' + version;
+      var featureCount = features.length;
+      if (featureCount) {
+        document.getElementById('hdr-feature-count').textContent = '. ' + featureCount + ' features';
+        document.getElementById('ctr-feature-count').textContent = featureCount + ' features';
+      }
+      document.getElementById('ctr-version').textContent = version;
+
+      var waveNums = Object.keys(groupByWave(features)).map(Number).sort(function(a,b){return a-b;});
+      var getStatus = resolveWaveStatus(features);
+      var doneWaves = waveNums.filter(function(w){ return getStatus(w) === 'done'; });
+      var activeWave = waveNums.find(function(w){ return getStatus(w) === 'active'; });
+
+      if (doneWaves.length) {
+        var prevStr = doneWaves.slice(-3).map(function(w){ return 'W' + w; }).join(' . ');
+        document.getElementById('hdr-wave-status').textContent =
+          prevStr + (activeWave ? ' . Wave ' + activeWave + ' active' : ' . all done');
+      }
+
+      document.getElementById('feature-tree').innerHTML = buildFeatureTree(features);
+      document.getElementById('narratives-content').innerHTML = buildNarratives(features);
+      document.getElementById('stat-version').textContent = version;
+      document.getElementById('stat-features').textContent = '~' + featureCount;
+      document.getElementById('stat-waves').textContent = waveNums.join(', ');
+      document.getElementById('wave-progress').innerHTML = buildWaveProgress(features);
+      document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    // ── APM polling ──────────────────────────────────────────────────────────
+    var statusDot = document.getElementById('apm-status-dot');
+    var statusLabel = document.getElementById('apm-status-label');
+    var inspectorDot = document.getElementById('inspector-dot');
+    var healthStatus = document.getElementById('apm-health-status');
+    var apmVersionEl = document.getElementById('apm-version');
+    var apmUptime = document.getElementById('apm-uptime');
+    var apmAgentCount = document.getElementById('apm-agent-count');
+    var rawData = document.getElementById('apm-raw-data');
+    var lastPollTime = document.getElementById('last-poll-time');
+
+    function formatUptime(s) {
+      if (!s) return '--';
+      var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+      return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+    }
+
+    function setOnline() {
+      [statusDot, inspectorDot].forEach(function(d) {
+        d.className = d.className.replace(/apm-dot-\w+/g, '');
+        d.classList.add('apm-dot-online');
+      });
+      statusLabel.textContent = 'APM online';
+      statusLabel.style.color = '#10b981';
+    }
+
+    function setOffline() {
+      [statusDot, inspectorDot].forEach(function(d) {
+        d.className = d.className.replace(/apm-dot-\w+/g, '');
+        d.classList.add('apm-dot-offline');
+      });
+      statusLabel.textContent = 'APM offline';
+      statusLabel.style.color = '#ef4444';
+      healthStatus.textContent = 'unreachable';
+      rawData.textContent = '// APM not reachable\n// ' + APM_BASE + '/api/status';
+    }
+
+    async function pollAPM() {
+      var now = new Date();
+      lastPollTime.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+      try {
+        var res = await fetch(APM_BASE + '/api/status', { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+        setOnline();
+        healthStatus.textContent = 'online';
+        healthStatus.style.color = '#10b981';
+        var version = data.version || data.app_version || data.vsn || '--';
+        var uptime = data.uptime_seconds || data.uptime || null;
+        var agents = data.agent_count || data.agents_active || data.total_agents || 0;
+        apmVersionEl.textContent = version;
+        apmUptime.textContent = formatUptime(uptime);
+        apmAgentCount.textContent = String(agents);
+        rawData.textContent = JSON.stringify({ status: 'ok', version: version, uptime: uptime, agents: agents, project: 'lfg' }, null, 2);
+      } catch(e) {
+        setOffline();
+      }
+    }
+
+    async function pollNotifications() {
+      var container = document.getElementById('apm-notifications');
+      try {
+        var res = await fetch(APM_BASE + '/api/notifications', { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+        var notifs = Array.isArray(data) ? data : (data.notifications || []);
+        var filtered = notifs.filter(function(n) {
+          var msg = (n.message || n.body || '').toLowerCase();
+          var proj = (n.project || '').toLowerCase();
+          return proj === 'lfg' || msg.includes('lfg') || proj === '';
+        }).slice(0, 5);
+
+        if (!filtered.length) {
+          container.textContent = '';
+          var el = document.createElement('span');
+          el.style.cssText = 'font-size:10px;font-family:ui-monospace;color:#52525b;';
+          el.textContent = 'No recent notifications';
+          container.appendChild(el);
+          return;
+        }
+
+        container.textContent = '';
+        filtered.forEach(function(n) {
+          var time = n.inserted_at || n.timestamp || n.time || '';
+          var msg = n.message || n.body || n.title || '';
+          var shortTime = time ? new Date(time).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '';
+          var card = document.createElement('div');
+          card.className = 'notif-card';
+          var t = document.createElement('div');
+          t.style.cssText = 'font-size:9px;color:#52525b;font-family:ui-monospace;';
+          t.textContent = shortTime;
+          var m = document.createElement('div');
+          m.style.cssText = 'font-size:10px;color:#a1a1aa;';
+          m.textContent = msg;
+          card.appendChild(t);
+          card.appendChild(m);
+          container.appendChild(card);
+        });
+      } catch(e) {
+        container.textContent = '';
+        var el = document.createElement('span');
+        el.style.cssText = 'font-size:10px;font-family:ui-monospace;color:#52525b;';
+        el.textContent = 'APM unavailable';
+        container.appendChild(el);
+      }
+    }
+
+    init();
+    pollAPM();
+    pollNotifications();
+    setInterval(pollAPM, 10000);
+    setInterval(pollNotifications, 10000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="580" fill="#09090b"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" fill="#f4f4f5" font-size="16" font-weight="600">LFG — C4 Level 1: System Context</text>
+  <text x="450" y="54" text-anchor="middle" fill="#71717a" font-size="11">[Software System] Local File Guardian — macOS disk management suite</text>
+
+  <!-- System boundary box -->
+  <rect x="260" y="100" width="380" height="360" rx="8" fill="none" stroke="#3f3f46" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="450" y="475" text-anchor="middle" fill="#52525b" font-size="10">[System Boundary] LFG</text>
+
+  <!-- Person: User -->
+  <g transform="translate(80, 220)">
+    <circle cx="0" cy="-20" r="22" fill="#1d4ed8" filter="url(#shadow)"/>
+    <line x1="0" y1="2" x2="0" y2="38" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="-18" y1="16" x2="18" y2="16" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="0" y1="38" x2="-14" y2="60" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="0" y1="38" x2="14" y2="60" stroke="#1d4ed8" stroke-width="2.5"/>
+    <rect x="-52" y="68" width="104" height="40" rx="4" fill="#1e293b"/>
+    <text x="0" y="84" text-anchor="middle" fill="#f4f4f5" font-size="12" font-weight="600">Developer</text>
+    <text x="0" y="100" text-anchor="middle" fill="#94a3b8" font-size="10">[Person]</text>
+  </g>
+
+  <!-- LFG Core System -->
+  <rect x="290" y="190" width="320" height="100" rx="8" fill="#7e22ce" filter="url(#shadow)"/>
+  <text x="450" y="232" text-anchor="middle" fill="#f4f4f5" font-size="14" font-weight="700">LFG Dispatcher</text>
+  <text x="450" y="250" text-anchor="middle" fill="#d8b4fe" font-size="11">[Software System]</text>
+  <text x="450" y="268" text-anchor="middle" fill="#e9d5ff" font-size="10">9-module macOS disk management CLI</text>
+  <text x="450" y="283" text-anchor="middle" fill="#e9d5ff" font-size="10">+ Swift AppKit viewer + Python3 DevDrive</text>
+
+  <!-- External: CCEM APM -->
+  <rect x="630" y="140" width="200" height="80" rx="6" fill="#18181b" stroke="#3f3f46" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="172" text-anchor="middle" fill="#a1a1aa" font-size="12" font-weight="600">CCEM APM</text>
+  <text x="730" y="188" text-anchor="middle" fill="#71717a" font-size="10">[External System]</text>
+  <text x="730" y="204" text-anchor="middle" fill="#71717a" font-size="10">localhost:3032 · Phoenix/Elixir</text>
+
+  <!-- External: APFS Volumes -->
+  <rect x="630" y="260" width="200" height="80" rx="6" fill="#18181b" stroke="#3f3f46" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="292" text-anchor="middle" fill="#a1a1aa" font-size="12" font-weight="600">APFS Volumes</text>
+  <text x="730" y="308" text-anchor="middle" fill="#71717a" font-size="10">[External System]</text>
+  <text x="730" y="324" text-anchor="middle" fill="#71717a" font-size="10">900–904 series · diskutil managed</text>
+
+  <!-- External: YJ_MORE -->
+  <rect x="630" y="380" width="200" height="80" rx="6" fill="#18181b" stroke="#3f3f46" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="412" text-anchor="middle" fill="#a1a1aa" font-size="12" font-weight="600">YJ_MORE</text>
+  <text x="730" y="428" text-anchor="middle" fill="#71717a" font-size="10">[External Storage]</text>
+  <text x="730" y="444" text-anchor="middle" fill="#71717a" font-size="10">128GB external · sparseimage host</text>
+
+  <!-- External: macOS -->
+  <rect x="290" y="390" width="320" height="70" rx="6" fill="#18181b" stroke="#3f3f46" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="450" y="420" text-anchor="middle" fill="#a1a1aa" font-size="12" font-weight="600">macOS System APIs</text>
+  <text x="450" y="436" text-anchor="middle" fill="#71717a" font-size="10">[External System] hdiutil · diskutil · launchctl · mds</text>
+  <text x="450" y="452" text-anchor="middle" fill="#71717a" font-size="10">Spotlight · NSWorkspace · SMAppService</text>
+
+  <!-- Arrows: User → LFG -->
+  <line x1="134" y1="250" x2="288" y2="240" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="210" y="242" text-anchor="middle" fill="#6b7280" font-size="10">CLI / menubar</text>
+
+  <!-- Arrows: LFG → APM -->
+  <line x1="610" y1="220" x2="628" y2="190" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="640" y="212" fill="#6b7280" font-size="10">telemetry</text>
+
+  <!-- Arrows: LFG → APFS -->
+  <line x1="610" y1="255" x2="628" y2="280" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="618" y="268" fill="#6b7280" font-size="10">mount/manage</text>
+
+  <!-- Arrows: LFG → macOS -->
+  <line x1="450" y1="290" x2="450" y2="388" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="458" y="345" fill="#6b7280" font-size="10">system calls</text>
+
+  <!-- Arrows: APFS → YJ_MORE -->
+  <line x1="730" y1="340" x2="730" y2="378" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="738" y="364" fill="#6b7280" font-size="10">hosted on</text>
+
+  <!-- Legend -->
+  <rect x="30" y="490" width="12" height="12" rx="2" fill="#7e22ce"/>
+  <text x="48" y="501" fill="#71717a" font-size="10">LFG System</text>
+  <rect x="120" y="490" width="12" height="12" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+  <text x="138" y="501" fill="#71717a" font-size="10">External</text>
+  <rect x="195" y="490" width="12" height="12" rx="2" fill="#1d4ed8"/>
+  <text x="213" y="501" fill="#71717a" font-size="10">Person</text>
+</svg>

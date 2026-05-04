@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>lf — Document Forensics Presentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        .toolbar {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 0.6rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .toolbar .title { color: #fff; font-weight: 500; }
+        .toolbar .meta { color: #666; }
+        .toolbar a { color: #6ba3d8; text-decoration: none; margin-left: 1rem; }
+        iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+        }
+        .offline {
+            flex: 1;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            color: #666;
+        }
+        .offline.visible { display: flex; }
+        .offline button {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <span class="title">lf — DETECTION-DEMO:2026</span>
+        <span class="meta">
+            fmt-forensics-001
+            <a href="http://localhost:3040/" target="_blank">↗ Open in tab</a>
+            <a href="http://localhost:3040/presentation/presentation-manifest.json" target="_blank">Manifest</a>
+        </span>
+    </div>
+    <iframe id="frame" src="http://localhost:3040/" title="Document Forensics Presentation"></iframe>
+    <div class="offline" id="offline">
+        <div>Showcase server offline</div>
+        <button onclick="retry()">Retry</button>
+        <code style="font-size:0.8rem; color:#555;">python3 -m http.server 3040 --directory /Users/jeremiah/Developer/lf-presentation</code>
+    </div>
+    <script>
+        const frame = document.getElementById('frame');
+        const offline = document.getElementById('offline');
+        frame.onerror = function() {
+            frame.style.display = 'none';
+            offline.classList.add('visible');
+        };
+        function retry() {
+            frame.style.display = '';
+            offline.classList.remove('visible');
+            frame.src = frame.src;
+        }
+        // Ping server health
+        fetch('http://localhost:3040/')
+            .catch(() => {
+                frame.style.display = 'none';
+                offline.classList.add('visible');
+            });
+    </script>
+</body>
+</html>

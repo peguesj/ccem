@@ -1,7 +1,7 @@
 {
   "name": "@ccem/apm",
-  "version": "2.0.0",
-  "description": "TypeScript client SDK for the CCEM APM server REST API",
+  "version": "3.0.0",
+  "description": "TypeScript client SDK for the CCEM APM v9.1.1 server REST API — auth, coalesce, agent-context, widgets",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -1,0 +1,119 @@
+{
+  "version": "2.0.0",
+  "theme": {
+    "background": "#09090b",
+    "primary": "#3b82f6",
+    "secondary": "#8b5cf6",
+    "accent": "#06b6d4",
+    "text": "#e4e4e7",
+    "muted": "#71717a"
+  },
+  "architecture": {
+    "type": "C4",
+    "title": "VIKI System Architecture",
+    "layers": [
+      {
+        "id": "capture",
+        "name": "CAPTURE LAYER",
+        "y": 20,
+        "color": "#3b82f6",
+        "nodes": [
+          {"id": "rewind", "label": "Rewind MemoryVault", "description": "MP4 chunks + M4A snippets"},
+          {"id": "claude", "label": "Claude Conversations", "description": "JSONL exports + session hooks"},
+          {"id": "omi", "label": "Omi Audio", "description": "Real-time transcripts"},
+          {"id": "osyj", "label": "OSYJ Events", "description": "Life journey tracking"},
+          {"id": "ccem", "label": "CCEM APM Sessions", "description": "Agent telemetry + formations"}
+        ]
+      },
+      {
+        "id": "ingest",
+        "name": "INGESTION LAYER",
+        "y": 110,
+        "color": "#8b5cf6",
+        "nodes": [
+          {"id": "formation", "label": "Backfill Formation", "description": "14 agents, 4 squadrons, 3 waves"},
+          {"id": "eventhub", "label": "Azure Event Hubs", "description": "Kafka-compatible stream"},
+          {"id": "sqlite", "label": "SQLite viki_conversations.db", "description": "331,051 records indexed"},
+          {"id": "claudemem", "label": "claude-mem v10.4.3", "description": "5,487 observations, FTS5+Chroma"}
+        ]
+      },
+      {
+        "id": "storage",
+        "name": "STORAGE LAYER",
+        "y": 200,
+        "color": "#10b981",
+        "nodes": [
+          {"id": "bronze", "label": "Bronze / ADLS Gen2", "description": "Raw Parquet+Zstd, 90-day"},
+          {"id": "silver", "label": "Silver / Validated", "description": "Schema-enforced, deduplicated"},
+          {"id": "gold", "label": "Gold / Analytics", "description": "Pre-aggregated, BI-ready"},
+          {"id": "cosmos", "label": "Cosmos DB", "description": "Operational NoSQL"},
+          {"id": "postgres", "label": "PostgreSQL", "description": "Metadata + analytics"}
+        ]
+      },
+      {
+        "id": "ai",
+        "name": "AI + SEARCH LAYER",
+        "y": 290,
+        "color": "#f59e0b",
+        "nodes": [
+          {"id": "embeddings", "label": "Azure OpenAI", "description": "text-embedding-3-large + gpt-4o"},
+          {"id": "search", "label": "Cognitive Search S1", "description": "HNSW vector + hybrid search"},
+          {"id": "tts", "label": "Azure Speech TTS", "description": "Neural voices, audio/mpeg"},
+          {"id": "avatar", "label": "Neural Avatar", "description": "Avatar synthesis pipeline"}
+        ]
+      },
+      {
+        "id": "apps",
+        "name": "APPLICATION LAYER",
+        "y": 380,
+        "color": "#ef4444",
+        "nodes": [
+          {"id": "phoenix", "label": "Phoenix LiveView", "description": "VIKI Interface, /formation, /memory"},
+          {"id": "vikiagent", "label": "VikiAgent (Swift)", "description": "macOS menubar, passkey, throttle"},
+          {"id": "api", "label": "FastAPI", "description": "REST API + vector search"},
+          {"id": "agui", "label": "AG-UI SSE", "description": "Real-time agent telemetry"}
+        ]
+      }
+    ]
+  },
+  "formation": {
+    "id": "fmt-20260329-viki-backfill-001",
+    "name": "VIKI Backfill Formation",
+    "waves": 3,
+    "squadrons": [
+      {
+        "name": "Alpha Squadron",
+        "wave": 1,
+        "color": "#3b82f6",
+        "agents": ["Hook File Processor", "Session Report Ingester"]
+      },
+      {
+        "name": "Beta Squadron",
+        "wave": 1,
+        "color": "#8b5cf6",
+        "agents": ["FB Research Ingester", "APM/CCEM Backfill"]
+      },
+      {
+        "name": "Gamma Squadron",
+        "wave": 2,
+        "color": "#10b981",
+        "agents": ["SQLite Phase 2-4 Processor", "Deduplication Engine"]
+      },
+      {
+        "name": "Delta Squadron",
+        "wave": 3,
+        "color": "#f59e0b",
+        "agents": ["CC Transcript Processor", "Showcase Updater"]
+      }
+    ],
+    "totals": {
+      "hook_files": 12050,
+      "session_reports": 12630,
+      "fb_research": 929,
+      "apm_ccem": 527,
+      "sqlite_phases_2_4": 10602,
+      "cc_transcripts": 29800,
+      "db_total_rows": 331051
+    }
+  }
+}

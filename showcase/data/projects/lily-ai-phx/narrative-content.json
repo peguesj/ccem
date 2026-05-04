@@ -1,0 +1,43 @@
+{
+  "project": "lily-ai-phx",
+  "stack": "Phoenix 1.8.3 / Elixir 1.19.5",
+  "target": "Azure Container Apps",
+  "bundle_id": "lily-ai-phx",
+  "wave_1": {
+    "title": "Foundation",
+    "description": "Phoenix platform scaffold, authentication system with RBAC + 2FA, seed data pipeline with 109 SVG icons."
+  },
+  "wave_2": {
+    "title": "Core",
+    "description": "Therapist directory, Therapy Connect swipe matching, 72+ self-assessment quizzes, Coach AI wellness coaching with crisis detection."
+  },
+  "wave_3": {
+    "title": "Dashboards",
+    "description": "Admin portal (15 tabs), Organization portal, Therapist dashboard, User dashboard with PERMA-V analytics, RBAC admin-only live session."
+  },
+  "wave_4": {
+    "title": "Tools",
+    "description": "Stripe + PayPal payments, TipTap WYSIWYG editor, real-time messaging with PubSub, Swoosh + SendGrid email system."
+  },
+  "wave_5": {
+    "title": "Integration",
+    "description": "Search autocomplete, org invitation system, beta feature flags, Coach AI crisis detection, Azure CI/CD pipeline, staging environment."
+  },
+  "wave_6": {
+    "title": "Polish",
+    "description": "Quiz > Match funnel gating (Phase 23), quiz option selection bug fix, CTA typewriter animation, live style guide + AG-UI doc panel."
+  },
+  "wave_7": {
+    "title": "Research & Ops",
+    "description": "FB group market research (5,869 posts, 17 groups, 75% PMF), UAT submission system, dev tools panel, OpsDOC 9-wave strategy report with Notion sync."
+  },
+  "technology_mapping": {
+    "Phoenix LiveView": "Real-time UI without JavaScript",
+    "Ecto": "Database layer with binary_id PKs",
+    "Claude API": "Coach AI wellness coaching",
+    "Stripe": "Payment processing",
+    "Azure Container Apps": "Production deployment",
+    "lottie-web": "Animation system",
+    "TipTap": "Rich text editing"
+  }
+}

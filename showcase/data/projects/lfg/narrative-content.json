@@ -1,0 +1,106 @@
+{
+  "project": "lfg",
+  "title": "LFG — Local File Guardian",
+  "subtitle": "Disk management suite with self-correcting DevDrive architecture",
+  "version": "2.0.0",
+  "updated_at": "2026-04-19",
+  "arc": "problem-solution-traction-vision",
+  "arc_sections": [
+    {
+      "id": "problem",
+      "title": "The Problem",
+      "headline": "Macintosh HD at 84% — and growing",
+      "body": "A developer machine accumulates disk pressure from multiple directions: Xcode DerivedData ballooning with each build, iOS Simulator runtimes stacking up, npm and Python caches fragmenting across dozens of projects, and sparseimage-backed volumes consuming internal SSD space that should live on external storage. No single tool addresses all of these. Result: repeated emergency cleanups, corrupt volumes, lost hours.",
+      "stats": [
+        {"label": "Internal disk used", "value": "84%", "color": "red"},
+        {"label": "DTF recovered (Apr 11)", "value": "2.7 GB", "color": "emerald"},
+        {"label": "AppTranslocation cache", "value": "1.1 GB", "color": "amber"},
+        {"label": "Simulator runtimes freed", "value": "8.4 GB", "color": "amber"}
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "The Solution",
+      "headline": "9 specialized modules, one dispatcher",
+      "body": "LFG routes disk management to 9 purpose-built Bash modules via a central dispatcher. WTFS maps disk topology. DTF targets 6 cache categories. BTAU manages sparseimage lifecycle. DEVDRIVE orchestrates native APFS volumes with a self-correcting reconcile loop. SSD suppresses Spotlight CPU pressure. Each module is independently invokable and observable via CCEM APM telemetry.",
+      "stats": [
+        {"label": "Bash modules", "value": "9", "color": "purple"},
+        {"label": "DTF cache categories", "value": "6", "color": "purple"},
+        {"label": "APFS volumes managed", "value": "5", "color": "blue"},
+        {"label": "Lines of code", "value": "~8,000", "color": "zinc"}
+      ]
+    },
+    {
+      "id": "traction",
+      "title": "Traction",
+      "headline": "DevDrive v2 live — 10 stories shipped",
+      "body": "The DevDrive v2 native APFS architecture shipped all 10 user stories (LFG-32..LFG-41) across 5 waves. Self-correcting reconcile loop runs every 5 minutes via LaunchAgent. macFUSE 5.2 FSKit overlay proof-of-concept validated the unified /Developer namespace approach. Native Swift viewer serves the showcase at localhost:8080.",
+      "stats": [
+        {"label": "DevDrive v2 stories", "value": "10/10", "color": "emerald"},
+        {"label": "Drift categories", "value": "8", "color": "blue"},
+        {"label": "Reconcile interval", "value": "5 min", "color": "blue"},
+        {"label": "YJ_MORE available", "value": "118 GB", "color": "emerald"}
+      ]
+    },
+    {
+      "id": "vision",
+      "title": "Vision",
+      "headline": "FSKit overlay — unified /Developer namespace",
+      "body": "Fleet formation fmt-lfg-fleet-20260419 ships showcase v2 + DevDrive remediation as a 17-story, 42-point dual-squadron build. Sparseimage migration to YJ_MORE reclaims ~27GB of internal SSD. CoreSimulator/Devices moves to DDRV901. APM gains a volume health widget. Long-term: FSKit overlay eliminates symlinks entirely with a transparent /Developer namespace.",
+      "stats": [
+        {"label": "Fleet stories", "value": "17", "color": "purple"},
+        {"label": "Formation points", "value": "42", "color": "purple"},
+        {"label": "Internal space to reclaim", "value": "~27 GB", "color": "emerald"},
+        {"label": "Policy window", "value": "24h", "color": "zinc"}
+      ]
+    }
+  ],
+  "waves": [
+    { "num": 1, "title": "Wave 1 — Core Modules (WTFS/DTF/BTAU)", "color": "emerald" },
+    { "num": 2, "title": "Wave 2 — Volume Management (DEVDRIVE/SSD/STFU)", "color": "emerald" },
+    { "num": 3, "title": "Wave 3 — Native Integration (Finder/Menubar/Inbox)", "color": "emerald" },
+    { "num": 4, "title": "Wave 4 — Packaging & Review (PKG/Fixes/Tests/Docs)", "color": "emerald" },
+    { "num": 5, "title": "Wave 5 — SwiftUI Port + Formation Showcase", "color": "emerald" },
+    { "num": 6, "title": "Wave 6 — Native Services Layer (LFGKit + Async)", "color": "emerald" },
+    { "num": 7, "title": "Wave 7 — Permissions + Login Item + Settings", "color": "emerald" },
+    { "num": 8, "title": "Wave 8 — Full SwiftUI UI (Charts/Tables/Treemap)", "color": "amber" },
+    { "num": 9, "title": "Wave 9 — XPC Privileged Helper", "color": "amber" },
+    { "num": 10, "title": "Wave 10 — Notarization + DMG + Sparkle", "color": "amber" },
+    { "num": 11, "title": "Wave 11 — DevDrive v2 Self-Correcting Architecture", "color": "emerald" }
+  ],
+  "sections": [
+    {
+      "heading": "DevDrive v2 — Why",
+      "body": "Current DevDrive uses hdiutil sparseimage wrappers. Problems: monotonic growth (never shrinks automatically), opaque allocation (host sees one big file), double-buffered cache, no drift detection hooks, band files in sparsebundles are individually corruptible. Observed pathology: disk fluctuates 50GB -> 20GB -> 30GB during dev sessions — root cause is APFS purgeable space management racing compile-time writes, compounded by sparseimage inability to release space.",
+      "stats": [
+        { "label": "Sparseimage compaction", "value": "manual only" },
+        { "label": "Drift detection", "value": "none" },
+        { "label": "Kernel integration", "value": "host-level shim" }
+      ]
+    },
+    {
+      "heading": "DevDrive v2 — How",
+      "body": "Move to native APFS volumes in the root container via diskutil apfs addVolume -quota. Shared free-space pool. Native snapshots, CoW, TRIM. No mount/attach dance — volumes are always present. Reconcile loop reads authoritative state from diskutil. Rejected macFUSE (kext deprecated on Apple Silicon), fuse-t (NFS shim latency), ZFS (out-of-tree installation friction) in favor of kernel-native APFS.",
+      "stats": [
+        { "label": "Drift categories", "value": "8 (idempotent)" },
+        { "label": "State source", "value": "~/.config/lfg/devdrive_state.json" },
+        { "label": "Build waves", "value": "6" }
+      ]
+    },
+    {
+      "heading": "DevDrive v2 — Reconcile Loop",
+      "body": "Observe → Classify → Act → Record. Eight drift categories map to deterministic fix actions: MISSING_LINK (recreate), STALE_TARGET (repoint), REAL_DIR_DRIFT (move to volume + link), UNMOUNTED_VOL (mount or alert), OVERSIZED (prompt or shrink), BAND_BLOAT (schedule compact for legacy), SNAPSHOT_LOCKED (thin if pressure), SWAP_PRESSURE (escalate to menubar). All actions idempotent and safe to call on every loop tick. Runs via LaunchAgent io.lfg.devdrive-reconcile.",
+      "stats": [
+        { "label": "Cadence", "value": "N-minute LaunchAgent" },
+        { "label": "Rollback window", "value": "24h (default)" },
+        { "label": "Sawtooth discrimination", "value": "dF/dt ring buffer" }
+      ]
+    }
+  ],
+  "references": [
+    { "label": "DevDrive v2 Design Doc", "url": "file:///Users/jeremiah/tools/@yj/lfg/DEVDRIVE_V2_DESIGN.md", "type": "design" },
+    { "label": "Current DevDrive shell wrapper", "url": "file:///Users/jeremiah/tools/@yj/lfg/lib/devdrive.sh", "type": "source" },
+    { "label": "btau.core.devdrive (forest)", "url": "file:///Users/jeremiah/tools/yj-devdrive/btau/core/devdrive.py", "type": "source" },
+    { "label": "btau.core.sparse (legacy backend)", "url": "file:///Users/jeremiah/tools/yj-devdrive/btau/core/sparse.py", "type": "source" }
+  ]
+}

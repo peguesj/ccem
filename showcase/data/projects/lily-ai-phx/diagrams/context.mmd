@@ -1,0 +1,29 @@
+graph TB
+    User["User<br/>(Patient)"]
+    Therapist["Therapist<br/>(Licensed Professional)"]
+    Admin["Admin<br/>(Operations)"]
+    
+    System["Lily Platform<br/>(Mental Health SaaS)"]
+    
+    Supabase["Supabase Auth<br/>(User Management)"]
+    Stripe["Stripe<br/>(Payments)"]
+    PayPal["PayPal<br/>(Payments)"]
+    Email["SendGrid<br/>(Notifications)"]
+    Claude["Claude AI<br/>(Coaching)"]
+    Azure["Azure Container Apps<br/>(Hosting)"]
+    
+    User -->|Quizzes, Matching, Messaging| System
+    Therapist -->|Profile, Availability, Schedule| System
+    Admin -->|CMS, Settings, Analytics| System
+    
+    System -->|Auth| Supabase
+    System -->|Subscriptions| Stripe
+    System -->|Payments| PayPal
+    System -->|2FA, Alerts| Email
+    System -->|Wellness Coaching| Claude
+    System -->|Runs On| Azure
+    
+    style System fill:#4F46E5,stroke:#312E81,stroke-width:3px,color:#fff
+    style User fill:#06B6D4,stroke:#0E7490,stroke-width:2px,color:#fff
+    style Therapist fill:#8B5CF6,stroke:#5B21B6,stroke-width:2px,color:#fff
+    style Admin fill:#EC4899,stroke:#831843,stroke-width:2px,color:#fff

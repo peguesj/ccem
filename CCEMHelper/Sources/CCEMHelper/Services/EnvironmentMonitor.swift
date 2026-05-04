@@ -26,6 +26,7 @@ final class EnvironmentMonitor {
     var authorizationSummary: AuthorizationSummary?
     var pendingDecisions: [PendingDecision] = []
 
+    private var knownServerVersion: String?
     private var lastNotificationTimestamp: String?
     private var seenNotificationIds: Set<String> = []
     private var notificationPollTask: Task<Void, Never>?
@@ -42,8 +43,18 @@ final class EnvironmentMonitor {
     static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
     static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
     static let agentlockCategory = "io.pegues.agent-j.labs.ccem.helper.agentlock"
+    static let apmVersionUpdateCategory = "io.pegues.agent-j.labs.ccem.helper.version-update"
+    static let apmRestartCategory = "io.pegues.agent-j.labs.ccem.helper.restart"
+    /// Dedicated category for pending AgentLock approval decisions.
+    /// Approve/Deny actions are registered in CCEMHelperApp.init().
+    /// userInfo["pending_id"] carries the request_id for decision submission.
+    static let agentlockApprovalCategory = "AGENTLOCK_APPROVAL"
+    static let agentlockGroupedApprovalCategory = "AGENTLOCK_GROUPED_APPROVAL"
     static let approveActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
     static let denyActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
+    static let approveAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve_all"
+    static let denyAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny_all"
+    static let reviewActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.review"
 
     var filteredEnvironments: [APMEnvironment] {
         switch filter {
@@ -112,14 +123,9 @@ final class EnvironmentMonitor {
     }
 
     func requestNotificationPermission() {
-        // Categories are already registered in CCEMHelperApp.init() — do not re-register here
-        // as it can race with the initial setup and clobber the agentlock category's actions.
-        // This method is retained for the requestAuthorization call only.
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error {
-                print("[CCEMHelper] Notification permission error: \(error.localizedDescription)")
-            }
-        }
+        // NOOP: Authorization already requested in CCEMHelperApp.init().
+        // The OS only processes the first requestAuthorization call; subsequent calls are ignored.
+        // This method is kept for API compatibility but does nothing.
     }
 
     func refresh() async {
@@ -129,6 +135,14 @@ final class EnvironmentMonitor {
             let health = try await client.checkHealth()
             healthStatus = health
             connectionState = health.isHealthy ? .connected : .disconnected
+
+            // Detect APM version changes and fire a macOS notification with Restart action
+            if let newVersion = health.serverVersion, !newVersion.isEmpty {
+                if let previousVersion = knownServerVersion, previousVersion != newVersion {
+                    await postVersionUpdateNotification(from: previousVersion, to: newVersion)
+                }
+                knownServerVersion = newVersion
+            }
         } catch {
             connectionState = .disconnected
             lastError = error.localizedDescription
@@ -243,6 +257,12 @@ final class EnvironmentMonitor {
                       category == "agent" || category == "formation" else {
                     continue
                 }
+                // Detect APM-sourced restart requests
+                if notification.type == "restart" || notification.category == "restart" {
+                    await postRestartRequestNotification(notification)
+                    continue
+                }
+
                 // Respect per-category notification toggles from Settings
                 if category == "formation" {
                     guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyFormation") else { continue }
@@ -253,6 +273,52 @@ final class EnvironmentMonitor {
             }
         } catch {
             // Non-critical: silently skip notification poll failures
+        }
+    }
+
+    // MARK: - Version Update Notification
+
+    private func postVersionUpdateNotification(from oldVersion: String, to newVersion: String) async {
+        let content = UNMutableNotificationContent()
+        content.title = "CCEM APM Updated"
+        content.body = "v\(oldVersion) → v\(newVersion) — restart to load new version"
+        content.sound = .default
+        content.categoryIdentifier = Self.apmRestartCategory
+        content.threadIdentifier = "ccem-version"
+        content.userInfo = ["action": "version_update", "new_version": newVersion]
+
+        let request = UNNotificationRequest(
+            identifier: "ccem-version-update-\(newVersion)",
+            content: content,
+            trigger: nil
+        )
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            Self.osascriptNotify(title: content.title, body: content.body)
+        }
+    }
+
+    // MARK: - Restart Request Notification
+
+    private func postRestartRequestNotification(_ notification: APMNotification) async {
+        let content = UNMutableNotificationContent()
+        content.title = notification.title.isEmpty ? "CCEM APM Restart Requested" : notification.title
+        content.body = notification.message.isEmpty ? "Tap to restart the APM server." : notification.message
+        content.sound = .default
+        content.categoryIdentifier = Self.apmRestartCategory
+        content.threadIdentifier = "ccem-restart"
+        content.userInfo = ["action": "restart_requested"]
+
+        let request = UNNotificationRequest(
+            identifier: notification.id,
+            content: content,
+            trigger: nil
+        )
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            Self.osascriptNotify(title: content.title, body: content.body)
         }
     }
 
@@ -296,8 +362,30 @@ final class EnvironmentMonitor {
         do {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
-            print("[CCEMHelper] Failed to post notification: \(error.localizedDescription)")
+            print("[CCEMHelper] UN failed: \(error.localizedDescription) — falling back to osascript")
+            Self.osascriptNotify(title: content.title, subtitle: content.subtitle, body: content.body)
         }
+    }
+
+    /// Fallback notification delivery via osascript when UNUserNotificationCenter fails
+    /// (e.g., unsigned app without notification permissions).
+    static func osascriptNotify(title: String, subtitle: String = "", body: String) {
+        let escapedTitle = title.replacingOccurrences(of: "\"", with: "\\\"")
+        let escapedSubtitle = subtitle.replacingOccurrences(of: "\"", with: "\\\"")
+        let escapedBody = body.replacingOccurrences(of: "\"", with: "\\\"")
+
+        var script = "display notification \"\(escapedBody)\" with title \"\(escapedTitle)\""
+        if !subtitle.isEmpty {
+            script += " subtitle \"\(escapedSubtitle)\""
+        }
+        script += " sound name \"default\""
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = ["-e", script]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        try? process.run()
     }
 
     // MARK: - AgentLock Audit Polling
@@ -366,7 +454,7 @@ final class EnvironmentMonitor {
         do {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
-            print("[CCEMHelper] Failed to post AgentLock notification: \(error.localizedDescription)")
+            Self.osascriptNotify(title: content.title, body: content.body)
         }
     }
 
@@ -393,8 +481,14 @@ final class EnvironmentMonitor {
             }
 
             guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLock") else { return }
-            for decision in newDecisions {
-                await postPendingDecisionNotification(decision)
+
+            // Grouped notification when multiple pending decisions arrive
+            if newDecisions.count > 1 {
+                await postGroupedPendingNotification(newDecisions)
+            } else {
+                for decision in newDecisions {
+                    await postPendingDecisionNotification(decision)
+                }
             }
         } catch {
             // Non-critical: silently skip pending poll failures
@@ -403,13 +497,27 @@ final class EnvironmentMonitor {
 
     private func postPendingDecisionNotification(_ decision: PendingDecision) async {
         let content = UNMutableNotificationContent()
-        content.title = decision.notificationTitle
-        content.body = decision.notificationBody
-        content.categoryIdentifier = Self.agentlockCategory
+
+        // Title: "AgentLock: [displayName]" using human-readable label when available.
+        let displayName = decision.displayName ?? String(decision.agentId.suffix(8))
+        content.title = "AgentLock: \(displayName)"
+
+        // Body: "[tool] requires approval" with risk context.
+        content.body = "\(decision.toolName) requires approval · \(decision.riskLevel) risk"
+
+        // Use the dedicated AGENTLOCK_APPROVAL category so Approve/Deny actions appear.
+        content.categoryIdentifier = Self.agentlockApprovalCategory
         content.threadIdentifier = "ccem-agentlock-pending"
         content.sound = UNNotificationSound.defaultCritical
-        // Embed request_id so the action handler can submit the decision
-        content.userInfo = ["request_id": decision.requestId, "type": "agentlock_pending"]
+
+        // Embed pending_id (per US-001 spec) AND request_id (legacy compat) so the
+        // action handler in APMNotificationReceiver can submit the decision to APM.
+        content.userInfo = [
+            "pending_id": decision.requestId,
+            "request_id": decision.requestId,
+            "tool_name": decision.toolName,
+            "type": "agentlock_pending"
+        ]
 
         let request = UNNotificationRequest(
             identifier: "pending-\(decision.requestId)",
@@ -420,7 +528,41 @@ final class EnvironmentMonitor {
         do {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
-            print("[CCEMHelper] Failed to post pending decision notification: \(error.localizedDescription)")
+            Self.osascriptNotify(title: content.title, body: content.body)
+        }
+    }
+
+    private func postGroupedPendingNotification(_ decisions: [PendingDecision]) async {
+        let content = UNMutableNotificationContent()
+        content.title = "AgentLock: \(decisions.count) approvals pending"
+
+        // Show first few tool names as summary
+        let toolSummary = decisions.prefix(3).map { $0.toolName }.joined(separator: ", ")
+        let suffix = decisions.count > 3 ? " + \(decisions.count - 3) more" : ""
+        content.body = "\(toolSummary)\(suffix)"
+
+        content.categoryIdentifier = Self.agentlockGroupedApprovalCategory
+        content.threadIdentifier = "ccem-agentlock-pending"
+        content.sound = UNNotificationSound.defaultCritical
+
+        // Embed all pending IDs so approve-all/deny-all can resolve them
+        let pendingIds = decisions.map { $0.requestId }
+        content.userInfo = [
+            "pending_ids": pendingIds,
+            "type": "agentlock_grouped_pending",
+            "count": decisions.count
+        ]
+
+        let request = UNNotificationRequest(
+            identifier: "grouped-pending-\(Date().timeIntervalSince1970)",
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            Self.osascriptNotify(title: content.title, body: content.body)
         }
     }
 

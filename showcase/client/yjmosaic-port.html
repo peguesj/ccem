@@ -37,8 +37,9 @@
   <header class="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
     <div class="flex items-center gap-3">
       <span class="text-sm font-bold text-zinc-100">YJMosaic</span>
-      <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30">v0.1.0</span>
-      <span class="text-xs text-zinc-500">Port Gap Analysis</span>
+      <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30">v0.9.0</span>
+      <span class="text-xs text-zinc-500">macOS + iOS/iPadOS Port</span>
+      <span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20 font-mono">ralph/yjmosaic-ios</span>
     </div>
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-1.5">
@@ -92,8 +93,66 @@
       </div>
     </section>
 
-    <!-- Right: Resource Inspector -->
+    <!-- Right: Inspector + DocsMax -->
     <section class="w-[320px] flex flex-col">
+      <!-- iOS Port Progress -->
+      <div class="px-3 py-2 border-b border-zinc-800 flex items-center justify-between">
+        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">iOS/iPadOS Port</span>
+        <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">15/15 CPs</span>
+      </div>
+      <div class="px-3 py-2 space-y-1 border-b border-zinc-800">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-400">Build</span>
+          <span class="text-emerald-400 font-mono">swift build ✓</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-400">Simulators</span>
+          <span class="text-emerald-400">iPhone 16 Pro · iPad Pro M4</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-400">iPad layout</span>
+          <span class="text-emerald-400">NavigationSplitView · full-screen</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-400">Tile import</span>
+          <span class="text-emerald-400">shared TileCollectionManager ✓</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-400">JXL support</span>
+          <span class="text-emerald-400">jxl-coder-swift v1.9.1 ✓</span>
+        </div>
+        <div class="w-full bg-zinc-800 rounded-full h-1 mt-1">
+          <div class="bg-emerald-500 h-1 rounded-full" style="width:100%"></div>
+        </div>
+      </div>
+      <!-- DocsMax Panel -->
+      <div class="px-3 py-2 border-b border-zinc-800 flex items-center justify-between">
+        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">DocsMax</span>
+        <span id="docsmax-badge" class="text-xs px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400 ring-1 ring-zinc-600/30">polling…</span>
+      </div>
+      <div id="docsmax-panel" class="px-3 py-2 space-y-1 border-b border-zinc-800">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">github</span>
+          <span id="dm-github" class="text-zinc-600">—</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">plane/wiki</span>
+          <span id="dm-plane" class="text-zinc-600">—</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">notion</span>
+          <span id="dm-notion" class="text-zinc-600">—</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-zinc-500">wiki</span>
+          <span id="dm-wiki" class="text-zinc-600">—</span>
+        </div>
+        <div class="flex items-center justify-between text-xs mt-1 pt-1 border-t border-zinc-800/50">
+          <span class="text-zinc-600 text-[10px]">last run</span>
+          <span id="dm-lastrun" class="text-zinc-600 text-[10px] font-mono">—</span>
+        </div>
+      </div>
+      <!-- Resource Inspector -->
       <div class="px-3 py-2 border-b border-zinc-800">
         <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Original Binary Inspector</span>
       </div>
@@ -511,6 +570,50 @@ AVI/VFW codecs ───────────────▶ AVFoundation</pr
       .then(r => r.ok ? r.json() : null)
       .then(plan => { window._planData = plan; })
       .catch(() => {});
+
+    // === DocsMax Panel ===
+    const DOCSMAX_STATE_FILE = '/data/projects/yjmosaic-port/docsmax-status.json';
+    const statusColors = {
+      'in-sync': 'text-emerald-400', 'diverged': 'text-amber-400',
+      'unconfigured': 'text-zinc-600', 'error': 'text-red-400',
+      'unreachable': 'text-red-400'
+    };
+    function renderDocsmaxPanel(d) {
+      const p = d.providers || {};
+      const badge = document.getElementById('docsmax-badge');
+      const pending = Object.values(p).filter(v => v.status === 'diverged').length;
+      const unconf = Object.values(p).every(v => v.status === 'unconfigured');
+      if (unconf) {
+        badge.textContent = 'not init'; badge.className = 'text-xs px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-500 ring-1 ring-zinc-600/30';
+      } else if (pending) {
+        badge.textContent = pending + ' diverged'; badge.className = 'text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20';
+      } else {
+        badge.textContent = 'in sync'; badge.className = 'text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20';
+      }
+      ['github','plane','notion','wiki'].forEach(key => {
+        const el = document.getElementById('dm-' + (key === 'plane' ? 'plane' : key));
+        if (!el) return;
+        const prov = p[key] || p[key === 'plane' ? 'plane' : key] || {};
+        const st = prov.status || 'unconfigured';
+        const color = statusColors[st] || 'text-zinc-600';
+        const extra = prov.pending ? ` (${prov.pending} pending)` : prov.sections ? ` · ${prov.sections} §` : '';
+        el.textContent = st + extra; el.className = color;
+      });
+      const lr = document.getElementById('dm-lastrun');
+      if (d.last_run) { const t = new Date(d.last_run); lr.textContent = t.toLocaleTimeString('en', {hour12:false}); }
+    }
+    function pollDocsmax() {
+      // Try APM showcase panel first, fall back to state file
+      fetch(APM_BASE + '/api/showcase/panel?panel=docsmax', {cache:'no-store'})
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) { renderDocsmaxPanel(d); return; }
+          return fetch(DOCSMAX_STATE_FILE, {cache:'no-store'}).then(r => r.ok ? r.json() : null);
+        })
+        .then(d => { if (d) renderDocsmaxPanel(d); })
+        .catch(() => {});
+    }
+    pollDocsmax();
+    setInterval(pollDocsmax, 15000);
   </script>
 </body>
 </html>

@@ -47,3 +47,58 @@ struct UsageSummaryResponse: Codable {
     let ok: Bool
     let summary: UsageSummary
 }
+
+/// Model capabilities for a single Claude model variant.
+struct ModelCapabilities: Codable {
+    let contextWindow: Int?
+    let maxOutputTokens: Int?
+    let vision: Bool?
+    let toolUse: Bool?
+    let computerUse: Bool?
+    let extendedThinking: Bool?
+    let tier: String?
+
+    enum CodingKeys: String, CodingKey {
+        case contextWindow = "context_window"
+        case maxOutputTokens = "max_output_tokens"
+        case vision
+        case toolUse = "tool_use"
+        case computerUse = "computer_use"
+        case extendedThinking = "extended_thinking"
+        case tier
+    }
+}
+
+/// Single model limit entry from GET /api/usage/limits.
+struct ModelLimit: Codable {
+    let model: String
+    let capabilities: ModelCapabilities?
+    let utilizationPct: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case model
+        case capabilities
+        case utilizationPct = "utilization_pct"
+    }
+
+    /// Human-readable context window.
+    var contextFormatted: String {
+        guard let ctx = capabilities?.contextWindow else { return "N/A" }
+        if ctx >= 1_000_000 { return String(format: "%.0fM", Double(ctx) / 1_000_000) }
+        if ctx >= 1_000 { return String(format: "%.0fK", Double(ctx) / 1_000) }
+        return "\(ctx)"
+    }
+}
+
+/// Wrapper for GET /api/usage/limits response envelope.
+struct UsageLimitsResponse: Codable {
+    let ok: Bool
+    let limits: [ModelLimit]
+    let modelCount: Int
+
+    enum CodingKeys: String, CodingKey {
+        case ok
+        case limits
+        case modelCount = "model_count"
+    }
+}

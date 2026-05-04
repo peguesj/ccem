@@ -1,0 +1,114 @@
+{
+  "expansion_name": "Showcase Queryable Interface + Diagram Engine",
+  "version": "2.1.0",
+  "date": "2026-03-30",
+  "audience": ["internal", "product-demo"],
+  "scope": "QueryableLive + DiagramEngine + AnimationSystem",
+  "narrative_arc": "upgrade_story",
+  "diagrams": ["context", "container", "data_flow", "process_flow", "formation_topology"],
+  "redaction_level": "light",
+  "output_formats": ["interactive_html", "opsdoc"],
+  "features": [
+    {
+      "id": "queryable-tabs",
+      "name": "Queryable Tab Interface",
+      "description": "docsmax-style tabbed interface for market research, competitive analysis, docs",
+      "wave": 1,
+      "files": [
+        "client/tabs/tabs.js",
+        "client/tabs/query-engine.js",
+        "client/tabs/tab-registry.json"
+      ]
+    },
+    {
+      "id": "diagram-engine",
+      "name": "Diagram Rendering Engine",
+      "description": "Runtime Mermaid/PlantUML rendering with SVG output",
+      "wave": 2,
+      "files": [
+        "client/diagrams/mermaid-engine.js",
+        "client/diagrams/diagram-renderer.js",
+        "data/diagram-design-system.json"
+      ]
+    },
+    {
+      "id": "animation-system",
+      "name": "Diagram Animation System",
+      "description": "anime.js progressive reveal + Lottie transitions",
+      "wave": 2,
+      "files": [
+        "client/animations/animator.js",
+        "client/animations/timeline-controller.js",
+        "data/animation-presets.json"
+      ]
+    },
+    {
+      "id": "data-layer",
+      "name": "Queryable Data Layer",
+      "description": "ETS-backed or JSON API for live data binding",
+      "wave": 2,
+      "files": [
+        "client/data/query-api.js",
+        "client/data/data-store.js"
+      ]
+    },
+    {
+      "id": "search-filter",
+      "name": "Search & Filter System",
+      "description": "200ms debounced search across all tabs",
+      "wave": 3,
+      "files": [
+        "client/search/filter-engine.js",
+        "client/search/debounce.js"
+      ]
+    },
+    {
+      "id": "ui-prototype",
+      "name": "Interactive HTML Prototype",
+      "description": "Updated index.html with queryable tabs, diagram container, animation controls",
+      "wave": 3,
+      "files": [
+        "client/index.html"
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "Showcase Integration",
+      "description": "Wire queryable interface into ShowcaseLive, showcase.js",
+      "wave": 4,
+      "files": [
+        "client/showcase.js"
+      ]
+    },
+    {
+      "id": "specification",
+      "name": "OpsDOC Specification",
+      "description": "Architecture docs, data schemas, animation presets",
+      "wave": 4,
+      "files": [
+        "QUERYABLE_INTERFACE_SPEC.md",
+        "DIAGRAM_ENGINE_SPEC.md",
+        "ANIMATION_SYSTEM_SPEC.md"
+      ]
+    }
+  ],
+  "dependencies": {
+    "mermaid": "v11",
+    "anime.js": "v4",
+    "lottie-player": "latest"
+  },
+  "integration_points": {
+    "apm": "showcases/:id/tabs, diagrams",
+    "upm": "wave progress + feature data",
+    "ralph": "feature list for queryable tabs",
+    "formation": "formation topology diagram"
+  },
+  "success_criteria": [
+    "All 8 features deployed",
+    "Queryable tabs rendering with search",
+    "Diagrams render at runtime",
+    "Animations execute on timeline",
+    "Zero compilation errors",
+    "Git commit with feature tags"
+  ]
+}

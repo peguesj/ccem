@@ -1,0 +1,93 @@
+{
+  "project": "lily-ai-phx",
+  "name": "Lily AI - Phoenix Mental Health Platform",
+  "status": "Open Beta - Production Ready",
+  "version": "1.15.1",
+  "release_date": "2026-03-30",
+  "repository": {
+    "url": "https://github.com/peguesj/lily-ai-phx",
+    "branch": "main",
+    "commit": "019a3c3"
+  },
+  "deployment": {
+    "production_url": "https://lily-ai-app.yellowocean-031a09f8.eastus2.azurecontainerapps.io",
+    "staging_url": "https://lily-ai-app-staging.gentletree-f65e7f15.eastus2.azurecontainerapps.io",
+    "dev_port": 4010
+  },
+  "stack": {
+    "backend": "Phoenix 1.8.3 / Elixir 1.19.5",
+    "database": "PostgreSQL",
+    "frontend": "React 18.3.1 (ported source)",
+    "deployment": "Azure Container Apps",
+    "ci_cd": "GitHub Actions"
+  },
+  "features": {
+    "core": [
+      "Therapy Connect - Tinder-style swipe matching",
+      "Directory Search - Google-style therapist discovery",
+      "Coach AI - AI-powered wellness coaching",
+      "Quizzes - 72+ self-assessment tools"
+    ],
+    "portals": [
+      "Admin Portal - 15 management tabs",
+      "Organization Portal - Calendar, messaging, directory, SSO, HIPAA",
+      "Therapist Dashboard - Schedule, availability, roster, notes",
+      "User Dashboard - Analytics, messaging, favorites, coaching"
+    ],
+    "admin_features": [
+      "AI Research with bulk enrichment",
+      "CMS asset library",
+      "Lottie animation manager",
+      "API management",
+      "Webhook integrations",
+      "Real-time compliance audits",
+      "Feature flags",
+      "RACI matrix",
+      "2FA settings"
+    ]
+  },
+  "release_notes": {
+    "version": "1.15.1",
+    "date": "2026-03-30",
+    "type": "Bug Fix Release",
+    "highlights": [
+      "Quiz System: Fixed persistent bug where option selection would always highlight first option",
+      "Quiz System: Switched from value-based to index-based option reconciliation",
+      "Bug affected all assessment types (PHQ-9, GAD-7, PSS-10, Burnout, ADHD, PCL-5, ISI, SPIN, Resilience, WHO-5)",
+      "All quiz result calculations and crisis modal detection now work correctly"
+    ],
+    "pr_merged": "#64",
+    "tests_passing": "134/134"
+  },
+  "routing": {
+    "discovery_paths": [
+      {
+        "path": "Quiz > Match",
+        "status": "primary",
+        "description": "Users complete assessment quiz first, then view matched therapists"
+      },
+      {
+        "path": "Directory > Group",
+        "status": "gated",
+        "description": "Directory access gated after quiz completion"
+      },
+      {
+        "path": "Coach AI",
+        "status": "independent",
+        "description": "AI coaching available as independent discovery path"
+      }
+    ]
+  },
+  "upcoming": {
+    "phase": "Planning",
+    "focus": "Funnel refactor and routing optimization",
+    "description": "Implementing Quiz>Match as primary funnel with gated Directory access to improve user outcomes"
+  },
+  "quality_metrics": {
+    "tests_passing": "134/134",
+    "build_warnings": 0,
+    "coverage_target": "95%",
+    "test_framework": "ExUnit"
+  },
+  "last_updated": "2026-03-30T06:45:00Z"
+}
