@@ -350,3 +350,94 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - [x] **CP-157**: Integration tests — typed edges, channel notifications, DOT endpoint (US-432)
 - [x] **CP-158**: Final compile gate and LILY-554 closure (US-433)
 - After Wave 3: `mix test --only testmaxxing` ✓ AND `mix compile --warnings-as-errors` ✓
+
+---
+
+## CCEM APM Full Redesign — ccem_apm_redesign (v9.2.0)
+
+**Branch**: `ralph/ccem-apm-redesign` | **Input**: Claude Design handoff `CCEM APM (1).zip`
+**Worktree**: `.claude/worktrees/ccem-apm-redesign`
+**Formation**: `fmt-20260504-ccem-redesign` | **UPM Session**: `upm-ccem-apm-redesign-20260504`
+
+### Wave 1: Design System Foundation — Tokens + Primitives + Scaffolding (8 stories, independent)
+- [x] **CP-159**: DS: tokens.css → Phoenix CSS layer + Geist fonts (US-434)
+- [x] **CP-160**: DS: Button LiveComponent (5 variants × 4 sizes) (US-435)
+- [x] **CP-161**: DS: Badge + Dot primitives (7 tones, presence animation) (US-436)
+- [x] **CP-162**: DS: Input + Kbd chip primitives (US-437)
+- [x] **CP-163**: DS: Card + Stat tile + Table primitives (US-438)
+- [x] **CP-164**: DS: Segmented control + Toggle primitives (US-439)
+- [x] **CP-165**: DS: Scaffolding — Sidebar nav (10 groups, collapsible) (US-440)
+- [x] **CP-166**: DS: Scaffolding — Top bar (project switcher, ⌘K trigger, presence) (US-441)
+- After Wave 1: `mix compile --warnings-as-errors` required
+
+### Wave 2: AI-Native Components + Layout Shell + DS TDD (8 stories, depends on Wave 1)
+- [x] **CP-167**: DS AI: Sparkline + Bars (live 60-point window, animated trailing dot) (US-442)
+- [x] **CP-168**: DS AI: StreamingText + Skeleton shimmer (US-443)
+- [x] **CP-169**: DS AI: Waveform + Gauge LiveComponents (US-444)
+- [x] **CP-170**: DS AI: AgentCard LiveComponent (identicon, sparkline, skill badges) (US-445)
+- [x] **CP-171**: DS AI: CommandBar ⌘K (global, focus trap, groups, AI streaming) (US-446)
+- [x] **CP-172**: DS AI: GraphNode + Edge (D3.js, animated live edges, PubSub 3s TTL) (US-447)
+- [x] **CP-173**: DS AI: Presence stack + Right inspector panel scaffolding (US-448)
+- [x] **CP-174**: DS: Motion constants, scanline, page layout shell + DS TDD suite (US-449)
+- After Wave 2: `mix compile --warnings-as-errors` required AND `mix test --only design_system` ✓
+
+### Wave 3: Observe Primary + Authorization v9 (4 stories, depends on Wave 2)
+- [x] **CP-175**: Observe: Dashboard LiveView (6-up metrics, formation graph, fleet table) (US-450)
+- [x] **CP-176**: Observe: Fleet LiveView (agent grid/list, AgentCard, filter rail) (US-451)
+- [x] **CP-177**: Observe: Session Detail LiveView (JSONL viewer, tool call trace) (US-452)
+- [x] **CP-178**: Govern: Authorization v9 LiveView (20s TTL countdown, policy rules) (US-453)
+- After Wave 3: `mix compile --warnings-as-errors` required
+
+### Wave 4: Observe Secondary + TDD (5 stories, depends on Wave 3)
+- [ ] **CP-179**: Observe: Formations LiveView (tree + matrix + list + dot layout modes) (US-454)
+- [ ] **CP-180**: Observe: Timeline LiveView (swim-lane, 15m→24h window) (US-455)
+- [ ] **CP-181**: Observe: Conversations LiveView (live transcript, CoWork split) (US-456)
+- [ ] **CP-182**: Observe: Tool Calls + A2A + Architecture LiveViews (US-457)
+- [ ] **CP-183**: Observe Wave 3 TDD suite (Dashboard, Fleet, Session Detail, Auth v9) (US-458)
+- After Wave 4: `mix compile --warnings-as-errors` required AND `mix test --only observe_wave3` ✓
+
+### Wave 5: Measure Section (3 stories, parallel with Wave 6, depends on Wave 2)
+- [ ] **CP-184**: Measure: Analytics + Usage + Health LiveViews (US-459)
+- [ ] **CP-185**: Measure: Ports + Tasks + Actions + Scanner LiveViews (US-460)
+- [ ] **CP-186**: Measure: UAT + DRTW LiveViews (US-461)
+- After Wave 5: `mix compile --warnings-as-errors` required
+
+### Wave 6: Intelligence Section (3 stories, parallel with Wave 5, depends on Wave 2)
+- [ ] **CP-187**: Intelligence: Skills + Skill Drift LiveViews (US-462)
+- [ ] **CP-188**: Intelligence: Library + Memory LiveViews (US-463)
+- [ ] **CP-189**: Intelligence: Orchestration + Intake + Alignment LiveViews (US-464)
+- After Wave 6: `mix compile --warnings-as-errors` required
+
+### Wave 7: Govern Remaining + TDD (2 stories, depends on Wave 3)
+- [ ] **CP-190**: Govern: Approvals + Routing + Coalesce + UPM LiveViews (US-465)
+- [ ] **CP-191**: Govern + Intelligence TDD suite (US-466)
+- After Wave 7: `mix compile --warnings-as-errors` required AND `mix test --only govern_intelligence` ✓
+
+### Wave 8: Extend Section (2 stories, depends on Wave 2)
+- [ ] **CP-192**: Extend: Plugins + Integrations + AG-UI + Notifications LiveViews (US-467)
+- [ ] **CP-193**: Extend: Showcase + Docs LiveViews (US-468)
+- After Wave 8: `mix compile --warnings-as-errors` required
+
+### Wave 9: Platform + AI Platform + Final Gate (5 stories, depends on all above)
+- [ ] **CP-194**: Platform: Architecture + DRTW + UAT LiveViews (US-469)
+- [ ] **CP-195**: AI Platform: LVM Integration LiveView (Claude model cards) (US-470)
+- [ ] **CP-196**: AI Platform: Claude Code Discovery + Ralph Plugin LiveViews (US-471)
+- [ ] **CP-197**: AI Platform: AG-UI Plugin + Authorization v9 deep page (US-472)
+- [ ] **CP-198**: Final: Extend + Platform + AI Platform TDD suite + v9.2.0 compile gate (US-473)
+- After Wave 9: `mix test --only platform` ✓ AND `mix compile --warnings-as-errors` ✓ AND version → v9.2.0
+
+---
+
+## Claude Code Harness Plugin — claude_harness_plugin (v9.1.2)
+
+**Branch**: `ralph/harness-plugin` | **Worktree**: main working tree
+**Worktree ID**: `wt_e0fd7a08e1adf8de` | **apm-v4 commit**: `68bc331`
+
+### Wave 1: Core GenServers + Plugin + LiveView + API (all independent, deployed in parallel)
+- [x] **CP-199**: HarnessPlugin (`:ccem` scope) + HarnessMonitor GenServer (15s session.json poll, PubSub `"harness:state"`) + HookTelemetryBuffer ETS ring buffer (500 cap, subscribes `"apm:hooks"`)
+- [x] **CP-200**: HarnessLive at `/plugins/harness` — 3-tab (health/hooks/session), PubSub-subscribed, graceful dead-process handling
+- [x] **CP-201**: HarnessController at `/api/v2/harness/*` — 5 endpoints (health, hooks, session, plans, settings) with 503 on dead GenServer
+
+### Wave 2: Integration Wiring (depends on Wave 1, all in single pass)
+- [x] **CP-202**: plugin_registry @default_plugins + application.ex supervision + router LiveView + API routes + hook_registry harness hooks + dashboard_live.ex tone helpers fix
+- After Wave 2: `mix compile --warnings-as-errors` ✓ (0 errors, 68bc331)
