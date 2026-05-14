@@ -113,7 +113,7 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - `GET http://localhost:3032/api/v2/openapi.json` (canonical)
 - `GET http://localhost:3032/api/openapi.json` (v1 alias)
 
-## Current Version: v9.1.1
+## Current Version: v9.2.0
 
 
 ## Implementation Checkpoints
@@ -353,7 +353,7 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 
 ---
 
-## CCEM APM Full Redesign — ccem_apm_redesign (v9.2.0)
+## CCEM APM Full Redesign — ccem_apm_redesign (shipped v9.1.3)
 
 **Branch**: `ralph/ccem-apm-redesign` | **Input**: Claude Design handoff `CCEM APM (1).zip`
 **Worktree**: `.claude/worktrees/ccem-apm-redesign`
@@ -409,22 +409,22 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 - After Wave 6: `mix compile --warnings-as-errors` required
 
 ### Wave 7: Govern Remaining + TDD (2 stories, depends on Wave 3)
-- [ ] **CP-190**: Govern: Approvals + Routing + Coalesce + UPM LiveViews (US-465)
-- [ ] **CP-191**: Govern + Intelligence TDD suite (US-466)
-- After Wave 7: `mix compile --warnings-as-errors` required AND `mix test --only govern_intelligence` ✓
+- [x] **CP-190**: Govern: Approvals + Routing + Coalesce + UPM LiveViews (US-465)
+- [x] **CP-191**: Govern + Intelligence TDD suite (US-466)
+- After Wave 7: `mix compile --warnings-as-errors` required AND `mix test --only govern_intelligence` ✓ (29/29)
 
 ### Wave 8: Extend Section (2 stories, depends on Wave 2)
-- [ ] **CP-192**: Extend: Plugins + Integrations + AG-UI + Notifications LiveViews (US-467)
-- [ ] **CP-193**: Extend: Showcase + Docs LiveViews (US-468)
+- [x] **CP-192**: Extend: Plugins + Integrations + AG-UI + Notifications LiveViews (US-467)
+- [x] **CP-193**: Extend: Showcase + Docs LiveViews (US-468)
 - After Wave 8: `mix compile --warnings-as-errors` required
 
 ### Wave 9: Platform + AI Platform + Final Gate (5 stories, depends on all above)
-- [ ] **CP-194**: Platform: Architecture + DRTW + UAT LiveViews (US-469)
-- [ ] **CP-195**: AI Platform: LVM Integration LiveView (Claude model cards) (US-470)
-- [ ] **CP-196**: AI Platform: Claude Code Discovery + Ralph Plugin LiveViews (US-471)
-- [ ] **CP-197**: AI Platform: AG-UI Plugin + Authorization v9 deep page (US-472)
-- [ ] **CP-198**: Final: Extend + Platform + AI Platform TDD suite + v9.2.0 compile gate (US-473)
-- After Wave 9: `mix test --only platform` ✓ AND `mix compile --warnings-as-errors` ✓ AND version → v9.2.0
+- [x] **CP-194**: Platform: Architecture + DRTW + UAT LiveViews (US-469)
+- [x] **CP-195**: AI Platform: LVM Integration LiveView (Claude model cards) (US-470)
+- [x] **CP-196**: AI Platform: Claude Code Discovery + Ralph Plugin LiveViews (US-471)
+- [x] **CP-197**: AI Platform: AG-UI Plugin + Authorization v9 deep page (US-472)
+- [x] **CP-198**: Final: Extend + Platform + AI Platform TDD suite + compile gate (US-473) — shipped as v9.1.3
+- After Wave 9: `mix test --only platform` ✓ (34/34) AND `mix compile --warnings-as-errors` ✓ AND version → v9.1.3 (shipped as v9.1.3, tag pushed)
 
 ---
 
@@ -441,3 +441,40 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 ### Wave 2: Integration Wiring (depends on Wave 1, all in single pass)
 - [x] **CP-202**: plugin_registry @default_plugins + application.ex supervision + router LiveView + API routes + hook_registry harness hooks + dashboard_live.ex tone helpers fix
 - After Wave 2: `mix compile --warnings-as-errors` ✓ (0 errors, 68bc331)
+
+---
+
+## Hook Filesystem Repair — repair_hooks (v9.1.2 maintenance)
+
+**Branch**: main | **Formation**: `fmt-20260504-repair-hooks`
+**Plane Issue**: CCEM-528 | **Root Cause**: DevDrive DDRV902 disconnect → disk fill → sudo-touch artifacts
+
+### Wave 1: Repair Infrastructure (independent, deployed in single session)
+- [x] **CP-203**: ActionEngine: add `repair_hooks` action to @catalog (category: hooks, icon: wrench) + execute_action/3 dispatch — runs repair_hooks.sh, detects root-owned .remember dirs via `find -not -user`, emits APM notification with sudo_command field (US-356 / CCEM-528)
+- [x] **CP-204**: Create `~/.claude/skills/repair-hooks/SKILL.md` — native /repair-hooks Claude Code skill with check|fix|fix-sudo|status subcommands, APM action reference, self-healing hook pattern, root cause documentation (US-356 / CCEM-528)
+- [x] **CP-205**: Create `~/Developer/ccem/apm/hooks/repair_hooks.sh` — idempotent scan of all ~/Developer project dirs, creates missing .remember/logs/hook-errors.log, detects root-owned paths and reports them (US-356 / CCEM-528)
+- After Wave 1: `mix compile` ✓ (0 errors) | 6 root-owned .remember dirs still need: `sudo chown -R jeremiah:staff ~/Developer/.remember ~/Developer/ccem/.remember ~/Developer/Dossier/.remember ~/Developer/lily-ai-phx/.remember ~/Developer/claude-expertise/.remember ~/Developer/plane/.remember`
+
+---
+
+## v9.2.0 SSOT Confluence — v920_confluence (shipped 2026-05-14)
+
+### Wave 1: Discovery (3 stories, parallel)
+- [x] CP-206: sqlite-vec KB at ~/Developer/ccem/.ssot/ccem.sqlite (242 chunks, fallback BLOB cosine)
+- [x] CP-207: Nav tree inventory → docs/sprint-v9.2.0/nav-tree.md
+- [x] CP-208: Feature graph w/ referential integrity → docs/sprint-v9.2.0/feature-graph.{md,mmd,json}
+
+### Wave 2: Foundation (3 stories, parallel)
+- [x] CP-209: apm-api-reference SKILL.md auto-generated from OpenAPI snapshot (113 endpoints)
+- [x] CP-210: page_layout.ex restructure — top-nav PARENT of row(sidebar, main, inspector)
+- [x] CP-211: Version bump v9.1.4 → v9.2.0 across mix.exs + AppVersion + CLAUDE.md SSOT
+
+### Wave 3: Hook Propagation (1 story)
+- [x] CP-212: Hook sync across ~/Developer/** + ~/tools/** + user scope ~/.claude/hooks/
+
+### Wave 4: Skill Sweep (2 stories)
+- [x] CP-213: 15 APM-touching skills updated to v9.2.0 endpoints + payloads
+- [x] CP-214: /coalesce + /showcase cross-sync, features.json entry added
+
+### Wave 5: Verify & Ship (1 story)
+- [x] CP-215: Compile gate + commits + tag v9.2.0 (unpushed)

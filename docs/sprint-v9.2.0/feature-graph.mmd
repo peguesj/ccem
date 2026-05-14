@@ -1,0 +1,98 @@
+graph LR
+  ccem_apm["CCEM APM (root)"]
+  observe["Observe"]
+  fleet["Fleet & Agents"]
+  sessions["Sessions"]
+  conversations["Conversations"]
+  formations["Formations"]
+  timeline["Timeline"]
+  tool_calls["Tool Calls & A2A"]
+  architecture["Architecture"]
+  govern["Govern"]
+  authorization["Authorization v9 (AgentLock)"]
+  routing["Routing"]
+  approvals["Approvals"]
+  coalesce["Coalesce"]
+  upm["UPM"]
+  measure["Measure"]
+  analytics["Analytics"]
+  usage["Usage"]
+  health["Health"]
+  ports["Ports"]
+  tasks["Tasks"]
+  actions["Actions"]
+  scanner["Scanner"]
+  uat["UAT"]
+  drtw["DRTW"]
+  intelligence["Intelligence"]
+  skills["Skills"]
+  library["Library"]
+  memory["Memory"]
+  orchestration["Orchestration"]
+  intake["Intake"]
+  alignment["Alignment"]
+  extend["Extend"]
+  plugins["Plugins"]
+  integrations["Integrations"]
+  notifications["Notifications"]
+  showcase["Showcase"]
+  docs["Docs"]
+  ai_platform["AI Platform"]
+  harness["Claude Code Harness"]
+  ag_ui["AG-UI"]
+  ralph_plugin["Ralph Plugin"]
+  ccem_apm --> observe
+  ccem_apm --> govern
+  ccem_apm --> measure
+  ccem_apm --> intelligence
+  ccem_apm --> extend
+  ccem_apm --> ai_platform
+  observe --> fleet
+  observe --> sessions
+  observe --> conversations
+  observe --> formations
+  observe --> timeline
+  observe --> tool_calls
+  observe --> architecture
+  govern --> authorization
+  govern --> routing
+  govern --> approvals
+  govern --> coalesce
+  govern --> upm
+  measure --> analytics
+  measure --> usage
+  measure --> health
+  measure --> ports
+  measure --> tasks
+  measure --> actions
+  measure --> scanner
+  measure --> uat
+  measure --> drtw
+  intelligence --> skills
+  intelligence --> library
+  intelligence --> memory
+  intelligence --> orchestration
+  intelligence --> intake
+  intelligence --> alignment
+  extend --> plugins
+  extend --> integrations
+  extend --> notifications
+  extend --> showcase
+  extend --> docs
+  plugins --> harness
+  plugins --> ag_ui
+  plugins --> ralph_plugin
+  sessions -.depends.-> fleet
+  conversations -.depends.-> sessions
+  formations -.depends.-> fleet
+  timeline -.depends.-> sessions
+  tool_calls -.depends.-> sessions
+  routing -.depends.-> fleet
+  approvals -.depends.-> authorization
+  upm -.depends.-> formations
+  library -.depends.-> memory
+  orchestration -.depends.-> formations
+  orchestration -.depends.-> upm
+  alignment -.depends.-> actions
+  integrations -.depends.-> plugins
+  ralph_plugin -.depends.-> upm

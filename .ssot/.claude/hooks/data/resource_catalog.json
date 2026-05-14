@@ -1,0 +1,845 @@
+{
+  "project": "idfwu",
+  "catalog_started": "2026-05-14T15:51:23.292549",
+  "entries": [
+    {
+      "timestamp": "2026-05-14T15:51:23.292482",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:49:14.410100",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 181,
+              "modified": "2026-05-14T15:51:23.281134",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 1
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            }
+          ],
+          "total_dirs": 2,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 6,
+          "total_size_bytes": 1272465,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 0,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "9820a20f62b8a87019faabf7924633f8"
+    },
+    {
+      "timestamp": "2026-05-14T15:51:23.364110",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            },
+            {
+              "path": ".claude/hooks/data/resource_catalog.json",
+              "size": 2555,
+              "modified": "2026-05-14T15:51:23.292968",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:49:14.410100",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 727,
+              "modified": "2026-05-14T15:51:23.337369",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/data",
+              "depth": 3,
+              "file_count": 1
+            }
+          ],
+          "total_dirs": 3,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 7,
+          "total_size_bytes": 1275566,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 0,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "eb2e6d6fef4bbc4c24c012f68bd84e3d"
+    },
+    {
+      "timestamp": "2026-05-14T15:58:06.144356",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            },
+            {
+              "path": ".claude/hooks/data/resource_catalog.json",
+              "size": 5359,
+              "modified": "2026-05-14T15:51:23.365531",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "KB.md",
+              "size": 5980,
+              "modified": "2026-05-14T15:55:28.296368",
+              "extension": ".md"
+            }
+          ],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:53:24.343094",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/session_end.sh",
+              "size": 1032,
+              "modified": "2026-05-14T15:57:29.129523",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_context.sh",
+              "size": 645,
+              "modified": "2026-05-14T15:57:29.210241",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_stop.sh",
+              "size": 708,
+              "modified": "2026-05-14T15:57:29.187196",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_pre_tool.sh",
+              "size": 1391,
+              "modified": "2026-05-14T15:57:29.223790",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/post_tool_use.sh",
+              "size": 771,
+              "modified": "2026-05-14T15:57:29.156594",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_start.sh",
+              "size": 734,
+              "modified": "2026-05-14T15:57:29.169713",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/pre_tool_use.sh",
+              "size": 608,
+              "modified": "2026-05-14T15:57:29.142959",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/session_init.sh",
+              "size": 1365,
+              "modified": "2026-05-14T15:57:29.114806",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_post_tool.sh",
+              "size": 803,
+              "modified": "2026-05-14T15:57:29.233131",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 1273,
+              "modified": "2026-05-14T15:58:06.139584",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 11
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/data",
+              "depth": 3,
+              "file_count": 1
+            }
+          ],
+          "total_dirs": 3,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 17,
+          "total_size_bytes": 1292953,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 1,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "243392a3aa2768a0da313b96ca6421da"
+    },
+    {
+      "timestamp": "2026-05-14T15:58:13.995259",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            },
+            {
+              "path": ".claude/hooks/data/resource_catalog.json",
+              "size": 10177,
+              "modified": "2026-05-14T15:58:06.144966",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "KB.md",
+              "size": 5980,
+              "modified": "2026-05-14T15:55:28.296368",
+              "extension": ".md"
+            }
+          ],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:53:24.343094",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/session_end.sh",
+              "size": 1032,
+              "modified": "2026-05-14T15:57:29.129523",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_context.sh",
+              "size": 645,
+              "modified": "2026-05-14T15:57:29.210241",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_stop.sh",
+              "size": 708,
+              "modified": "2026-05-14T15:57:29.187196",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_pre_tool.sh",
+              "size": 1391,
+              "modified": "2026-05-14T15:57:29.223790",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/post_tool_use.sh",
+              "size": 771,
+              "modified": "2026-05-14T15:57:29.156594",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_start.sh",
+              "size": 734,
+              "modified": "2026-05-14T15:57:29.169713",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/pre_tool_use.sh",
+              "size": 608,
+              "modified": "2026-05-14T15:57:29.142959",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/session_init.sh",
+              "size": 1365,
+              "modified": "2026-05-14T15:57:29.114806",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_post_tool.sh",
+              "size": 803,
+              "modified": "2026-05-14T15:57:29.233131",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 1819,
+              "modified": "2026-05-14T15:58:13.991254",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 11
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/data",
+              "depth": 3,
+              "file_count": 1
+            }
+          ],
+          "total_dirs": 3,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 17,
+          "total_size_bytes": 1298317,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 1,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "51c33d0c7da96ff9828d18d5d2475a0a"
+    },
+    {
+      "timestamp": "2026-05-14T15:58:42.887106",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            },
+            {
+              "path": ".claude/hooks/data/resource_catalog.json",
+              "size": 14996,
+              "modified": "2026-05-14T15:58:13.995846",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "KB.md",
+              "size": 5980,
+              "modified": "2026-05-14T15:55:28.296368",
+              "extension": ".md"
+            }
+          ],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:53:24.343094",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/session_end.sh",
+              "size": 1032,
+              "modified": "2026-05-14T15:57:29.129523",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_context.sh",
+              "size": 645,
+              "modified": "2026-05-14T15:57:29.210241",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_stop.sh",
+              "size": 708,
+              "modified": "2026-05-14T15:57:29.187196",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_pre_tool.sh",
+              "size": 1391,
+              "modified": "2026-05-14T15:57:29.223790",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/post_tool_use.sh",
+              "size": 771,
+              "modified": "2026-05-14T15:57:29.156594",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_start.sh",
+              "size": 734,
+              "modified": "2026-05-14T15:57:29.169713",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/pre_tool_use.sh",
+              "size": 608,
+              "modified": "2026-05-14T15:57:29.142959",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/session_init.sh",
+              "size": 1365,
+              "modified": "2026-05-14T15:57:29.114806",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_post_tool.sh",
+              "size": 803,
+              "modified": "2026-05-14T15:57:29.233131",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 2365,
+              "modified": "2026-05-14T15:58:42.881112",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 11
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/data",
+              "depth": 3,
+              "file_count": 1
+            }
+          ],
+          "total_dirs": 3,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 17,
+          "total_size_bytes": 1303682,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 1,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "d807db5d49805ebb3f922ff0aba8d807"
+    },
+    {
+      "timestamp": "2026-05-14T16:00:51.380837",
+      "project": "idfwu",
+      "catalog_data": {
+        "files": {
+          "source_files": [
+            {
+              "path": "search_kb.py",
+              "size": 2937,
+              "modified": "2026-05-14T15:47:06.207541",
+              "extension": ".py"
+            },
+            {
+              "path": "build_kb.py",
+              "size": 7726,
+              "modified": "2026-05-14T15:41:59.609197",
+              "extension": ".py"
+            }
+          ],
+          "config_files": [
+            {
+              "path": "openapi.snapshot.json",
+              "size": 64790,
+              "modified": "2026-05-14T14:45:08.580743",
+              "extension": ".json"
+            },
+            {
+              "path": ".claude/hooks/data/resource_catalog.json",
+              "size": 19815,
+              "modified": "2026-05-14T15:58:42.888528",
+              "extension": ".json"
+            }
+          ],
+          "documentation": [
+            {
+              "path": "KB.md",
+              "size": 5980,
+              "modified": "2026-05-14T15:55:28.296368",
+              "extension": ".md"
+            }
+          ],
+          "schemas": [],
+          "tests": [],
+          "assets": [],
+          "generated": [
+            {
+              "path": "ccem.sqlite",
+              "size": 1196032,
+              "modified": "2026-05-14T15:53:24.343094",
+              "extension": ".sqlite"
+            },
+            {
+              "path": ".claude/hooks/session_end.sh",
+              "size": 1032,
+              "modified": "2026-05-14T15:57:29.129523",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_context.sh",
+              "size": 645,
+              "modified": "2026-05-14T15:57:29.210241",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_stop.sh",
+              "size": 708,
+              "modified": "2026-05-14T15:57:29.187196",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_pre_tool.sh",
+              "size": 1391,
+              "modified": "2026-05-14T15:57:29.223790",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/post_tool_use.sh",
+              "size": 771,
+              "modified": "2026-05-14T15:57:29.156594",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/subagent_start.sh",
+              "size": 734,
+              "modified": "2026-05-14T15:57:29.169713",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/pre_tool_use.sh",
+              "size": 608,
+              "modified": "2026-05-14T15:57:29.142959",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/session_init.sh",
+              "size": 1365,
+              "modified": "2026-05-14T15:57:29.114806",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/agentlock_post_tool.sh",
+              "size": 803,
+              "modified": "2026-05-14T15:57:29.233131",
+              "extension": ".sh"
+            },
+            {
+              "path": ".claude/hooks/logs/resource_cataloger.log",
+              "size": 2911,
+              "modified": "2026-05-14T16:00:51.372999",
+              "extension": ".log"
+            },
+            {
+              "path": ".claude/hooks/logs/linear_pre_hook.log",
+              "size": 799,
+              "modified": "2026-05-14T15:50:43.718695",
+              "extension": ".log"
+            }
+          ]
+        },
+        "structure": {
+          "directories": [
+            {
+              "path": ".claude/hooks",
+              "depth": 2,
+              "file_count": 11
+            },
+            {
+              "path": ".claude/hooks/logs",
+              "depth": 3,
+              "file_count": 2
+            },
+            {
+              "path": ".claude/hooks/data",
+              "depth": 3,
+              "file_count": 1
+            }
+          ],
+          "total_dirs": 3,
+          "max_depth": 3
+        },
+        "dependencies": {
+          "python": [],
+          "node": [],
+          "system": [],
+          "internal": []
+        },
+        "apis": {
+          "linear_mcp": [],
+          "internal_apis": [],
+          "external_apis": []
+        },
+        "metrics": {
+          "total_files": 17,
+          "total_size_bytes": 1309047,
+          "code_files": 2,
+          "test_coverage_files": 0,
+          "documentation_files": 1,
+          "complexity_score": 0.0775
+        }
+      },
+      "checksum": "939eafecbdd20ef52bac16a9649f8fa3"
+    }
+  ]
+}

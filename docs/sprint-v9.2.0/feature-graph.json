@@ -1,0 +1,1062 @@
+{
+  "version": "9.1.4",
+  "generated_at": "2026-05-14",
+  "features": {
+    "ccem-apm": {
+      "name": "CCEM APM (root)",
+      "parent_id": null,
+      "children": [
+        "observe",
+        "govern",
+        "measure",
+        "intelligence",
+        "extend",
+        "ai-platform"
+      ],
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "ccem-apm",
+        "apm"
+      ],
+      "liveviews": [
+        "DashboardLive"
+      ],
+      "plugins": [],
+      "id": "ccem-apm",
+      "exposes_endpoints_full": [
+        "POST /api/plane/update",
+        "GET /ccem",
+        "POST /api/config/reload",
+        "GET /api/showcase",
+        "POST /api/environments/{name}/session/stop",
+        "GET /api/showcase/{project}",
+        "GET /showcase",
+        "GET /api/environments/{name}",
+        "GET /showcase/{project}",
+        "POST /api/reload",
+        "GET /api/commands",
+        "POST /api/commands",
+        "POST /api/environments/{name}/session/start",
+        "POST /api/v2/import",
+        "GET /api/environments",
+        "GET /ports",
+        "GET /api/projects",
+        "PATCH /api/projects",
+        "GET /api/data",
+        "POST /api/environments/{name}/exec",
+        "GET /api/v2/export",
+        "POST /api/showcase/{project}/reload"
+      ]
+    },
+    "observe": {
+      "name": "Observe",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm",
+        "apm-telemetry"
+      ],
+      "liveviews": [
+        "DashboardLive",
+        "FleetLive",
+        "SessionManagerLive",
+        "SessionDetailLive",
+        "ConversationMonitorLive",
+        "FormationLive",
+        "FormationsLive",
+        "SessionTimelineLive",
+        "ToolCallLive",
+        "A2ALive",
+        "ArchitectureLive"
+      ],
+      "plugins": [],
+      "children": [
+        "fleet",
+        "sessions",
+        "conversations",
+        "formations",
+        "timeline",
+        "tool-calls",
+        "architecture"
+      ],
+      "id": "observe"
+    },
+    "fleet": {
+      "name": "Fleet & Agents",
+      "parent_id": "observe",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/agents",
+        "GET /api/v2/agents",
+        "POST /api/agents/register",
+        "GET /api/agents/discover",
+        "GET /api/v2/agents/{id}",
+        "GET /api/agents/{id}"
+      ],
+      "related_skills": [
+        "formation",
+        "orchestrator",
+        "apm"
+      ],
+      "liveviews": [
+        "FleetLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "fleet",
+      "exposes_endpoints_full": [
+        "POST /api/register",
+        "POST /api/agents/update",
+        "GET /api/agents",
+        "GET /api/v2/agents",
+        "GET /api/v2/agents/contexts",
+        "GET /api/v2/agents/{id}/context",
+        "GET /api/v2/agents/{id}",
+        "POST /api/heartbeat",
+        "GET /api/agents/discover",
+        "GET /api/v2/agents/{id}/context/events",
+        "POST /api/agents/register"
+      ]
+    },
+    "sessions": {
+      "name": "Sessions",
+      "parent_id": "observe",
+      "depends_on": [
+        "fleet"
+      ],
+      "exposes_endpoints": [
+        "GET /api/sessions",
+        "GET /api/v2/sessions/{id}"
+      ],
+      "related_skills": [
+        "conversation-mgmt",
+        "apm"
+      ],
+      "liveviews": [
+        "SessionManagerLive",
+        "SessionDetailLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "sessions",
+      "exposes_endpoints_full": [
+        "GET /api/v2/sessions"
+      ]
+    },
+    "conversations": {
+      "name": "Conversations",
+      "parent_id": "observe",
+      "depends_on": [
+        "sessions"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "conversation-mgmt"
+      ],
+      "liveviews": [
+        "ConversationMonitorLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "conversations"
+    },
+    "formations": {
+      "name": "Formations",
+      "parent_id": "observe",
+      "depends_on": [
+        "fleet"
+      ],
+      "exposes_endpoints": [
+        "GET /api/v2/formations",
+        "GET /api/v2/formations/{id}"
+      ],
+      "related_skills": [
+        "formation",
+        "orchestrator",
+        "specialize"
+      ],
+      "liveviews": [
+        "FormationLive",
+        "FormationsLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "formations"
+    },
+    "timeline": {
+      "name": "Timeline",
+      "parent_id": "observe",
+      "depends_on": [
+        "sessions"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm-telemetry"
+      ],
+      "liveviews": [
+        "SessionTimelineLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "timeline"
+    },
+    "tool-calls": {
+      "name": "Tool Calls & A2A",
+      "parent_id": "observe",
+      "depends_on": [
+        "sessions"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm-telemetry"
+      ],
+      "liveviews": [
+        "ToolCallLive",
+        "A2ALive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "tool-calls"
+    },
+    "architecture": {
+      "name": "Architecture",
+      "parent_id": "observe",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/v2/manifest"
+      ],
+      "related_skills": [
+        "doctor"
+      ],
+      "liveviews": [
+        "ArchitectureLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "architecture",
+      "exposes_endpoints_full": [
+        "GET /api/v2/manifest"
+      ]
+    },
+    "govern": {
+      "name": "Govern",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm-auth",
+        "coalesce",
+        "upm"
+      ],
+      "liveviews": [
+        "AuthorizationLive",
+        "RoutingLive",
+        "ApprovalHistoryLive",
+        "CoalesceLive",
+        "UpmLive"
+      ],
+      "plugins": [],
+      "children": [
+        "authorization",
+        "routing",
+        "approvals",
+        "coalesce",
+        "upm"
+      ],
+      "id": "govern"
+    },
+    "authorization": {
+      "name": "Authorization v9 (AgentLock)",
+      "parent_id": "govern",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/v2/auth/*"
+      ],
+      "related_skills": [
+        "apm-auth",
+        "safesecret"
+      ],
+      "liveviews": [
+        "AuthorizationLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "authorization",
+      "exposes_endpoints_full": [
+        "POST /api/v2/auth/authorize",
+        "GET /api/v2/auth/tokens/{id}",
+        "POST /api/v2/auth/redact",
+        "POST /api/v2/auth/memory/authorize-read",
+        "GET /api/v2/auth/audit",
+        "GET /api/v2/auth/tools",
+        "POST /api/v2/auth/tools",
+        "POST /api/v2/auth/execute",
+        "GET /api/v2/audit",
+        "POST /api/v2/auth/tokens/{id}/revoke",
+        "GET /api/v2/auth/rate-limits",
+        "GET /api/v2/auth/context/trust",
+        "GET /api/v2/auth/summary",
+        "GET /api/v2/auth/sessions",
+        "POST /api/v2/auth/sessions",
+        "POST /api/v2/auth/context/write",
+        "DELETE /api/v2/auth/sessions/{id}",
+        "GET /api/v2/auth/sessions/{id}",
+        "POST /api/v2/auth/memory/authorize-write"
+      ]
+    },
+    "routing": {
+      "name": "Routing",
+      "parent_id": "govern",
+      "depends_on": [
+        "fleet"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "formation"
+      ],
+      "liveviews": [
+        "RoutingLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "routing"
+    },
+    "approvals": {
+      "name": "Approvals",
+      "parent_id": "govern",
+      "depends_on": [
+        "authorization"
+      ],
+      "exposes_endpoints": [
+        "* /api/v2/approvals*"
+      ],
+      "related_skills": [
+        "apm-auth"
+      ],
+      "liveviews": [
+        "ApprovalHistoryLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "approvals",
+      "exposes_endpoints_full": [
+        "GET /api/v2/approvals/{id}",
+        "GET /api/v2/approvals/history",
+        "POST /api/v2/approvals/log",
+        "GET /api/v2/approvals",
+        "POST /api/v2/approvals",
+        "POST /api/v2/approvals/{id}/approve",
+        "POST /api/v2/approvals/{id}/reject"
+      ]
+    },
+    "coalesce": {
+      "name": "Coalesce",
+      "parent_id": "govern",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/v2/coalesce*"
+      ],
+      "related_skills": [
+        "coalesce"
+      ],
+      "liveviews": [
+        "CoalesceLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "coalesce",
+      "exposes_endpoints_full": [
+        "DELETE /api/v2/coalesce/{id}",
+        "GET /api/v2/coalesce/{id}",
+        "POST /api/v2/coalesce/{id}/gate/{gate_id}/decide",
+        "POST /api/v2/coalesce/start",
+        "GET /api/v2/coalesce/{id}/diff",
+        "POST /api/v2/coalesce/{id}/apply",
+        "GET /api/v2/coalesce",
+        "POST /api/v2/coalesce/preview"
+      ]
+    },
+    "upm": {
+      "name": "UPM",
+      "parent_id": "govern",
+      "depends_on": [
+        "formations"
+      ],
+      "exposes_endpoints": [
+        "* /api/upm/*",
+        "* /api/v2/upm/*"
+      ],
+      "related_skills": [
+        "upm",
+        "plane-pm",
+        "ralph",
+        "ship"
+      ],
+      "liveviews": [
+        "UpmLive",
+        "WorkflowLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "upm",
+      "exposes_endpoints_full": [
+        "GET /api/upm/status",
+        "POST /api/v2/upm/gate/{id}/reject",
+        "GET /api/formations/{id}/agents",
+        "POST /api/v2/upm/gate/{id}/approve",
+        "POST /api/upm/register",
+        "GET /api/v2/upm/gate/{id}",
+        "POST /api/upm/sessions/from_design_handoff",
+        "POST /api/upm/event",
+        "GET /api/v2/widgets",
+        "GET /api/v2/dashboard/layout",
+        "POST /api/v2/dashboard/layout",
+        "POST /api/upm/agent",
+        "POST /api/v2/upm/gate",
+        "POST /api/v2/dashboard/pin",
+        "GET /api/formations",
+        "POST /api/formations",
+        "PATCH /api/v2/widgets/{id}/config",
+        "GET /api/v2/upm/gates",
+        "GET /api/formations/{id}",
+        "PATCH /api/formations/{id}"
+      ]
+    },
+    "measure": {
+      "name": "Measure",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm-usage",
+        "doctor"
+      ],
+      "liveviews": [
+        "AnalyticsLive",
+        "UsageLive",
+        "HealthCheckLive",
+        "PortsLive",
+        "TasksLive",
+        "ActionsLive",
+        "ScannerLive",
+        "UatLive",
+        "DrtwLive"
+      ],
+      "plugins": [],
+      "children": [
+        "analytics",
+        "usage",
+        "health",
+        "ports",
+        "tasks",
+        "actions",
+        "scanner",
+        "uat",
+        "drtw"
+      ],
+      "id": "measure"
+    },
+    "analytics": {
+      "name": "Analytics",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/v2/metrics",
+        "GET /api/v2/metrics/{agent_id}"
+      ],
+      "related_skills": [
+        "apm-telemetry"
+      ],
+      "liveviews": [
+        "AnalyticsLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "analytics",
+      "exposes_endpoints_full": [
+        "GET /api/v2/alerts/rules",
+        "POST /api/v2/alerts/rules",
+        "GET /api/v2/metrics",
+        "GET /api/v2/alerts",
+        "GET /api/v2/metrics/{agent_id}",
+        "GET /api/v2/slos",
+        "GET /api/v2/slos/{name}"
+      ]
+    },
+    "usage": {
+      "name": "Usage",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "apm-usage"
+      ],
+      "liveviews": [
+        "UsageLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "usage"
+    },
+    "health": {
+      "name": "Health",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /health",
+        "GET /api/status"
+      ],
+      "related_skills": [
+        "doctor",
+        "repair-hooks"
+      ],
+      "liveviews": [
+        "HealthCheckLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "health",
+      "exposes_endpoints_full": [
+        "GET /health",
+        "GET /api/v2/openapi.json",
+        "GET /api/status",
+        "GET /api/openapi.json"
+      ]
+    },
+    "ports": {
+      "name": "Ports",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/ports",
+        "GET /api/ports/clashes"
+      ],
+      "related_skills": [
+        "doctor"
+      ],
+      "liveviews": [
+        "PortsLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "ports",
+      "exposes_endpoints_full": [
+        "POST /api/ports/assign",
+        "GET /api/ports",
+        "GET /api/ports/clashes",
+        "POST /api/ports/set-primary",
+        "POST /api/ports/scan"
+      ]
+    },
+    "tasks": {
+      "name": "Tasks",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/v2/tasks*"
+      ],
+      "related_skills": [],
+      "liveviews": [
+        "TasksLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "tasks",
+      "exposes_endpoints_full": [
+        "GET /api/input/pending",
+        "POST /api/input/respond",
+        "POST /api/tasks/sync",
+        "POST /api/input/request"
+      ]
+    },
+    "actions": {
+      "name": "Actions",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "repair-hooks"
+      ],
+      "liveviews": [
+        "ActionsLive",
+        "AlignmentLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "actions"
+    },
+    "scanner": {
+      "name": "Scanner",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "doctor"
+      ],
+      "liveviews": [
+        "ScannerLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "scanner"
+    },
+    "uat": {
+      "name": "UAT",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "live-integration-testing"
+      ],
+      "liveviews": [
+        "UatLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "uat"
+    },
+    "drtw": {
+      "name": "DRTW",
+      "parent_id": "measure",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "drtw"
+      ],
+      "liveviews": [
+        "DrtwLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "drtw"
+    },
+    "intelligence": {
+      "name": "Intelligence",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "upm",
+        "ralph",
+        "specialize"
+      ],
+      "liveviews": [
+        "SkillsLive",
+        "SkillDriftLive",
+        "LibraryLive",
+        "MemoryLive",
+        "OrchestrationLive",
+        "IntakeLive",
+        "AlignmentLive"
+      ],
+      "plugins": [],
+      "children": [
+        "skills",
+        "library",
+        "memory",
+        "orchestration",
+        "intake",
+        "alignment"
+      ],
+      "id": "intelligence"
+    },
+    "skills": {
+      "name": "Skills",
+      "parent_id": "intelligence",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/skills"
+      ],
+      "related_skills": [
+        "showcase",
+        "drtw"
+      ],
+      "liveviews": [
+        "SkillsLive",
+        "SkillDriftLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "skills",
+      "exposes_endpoints_full": [
+        "GET /api/skills",
+        "POST /api/skills/track"
+      ]
+    },
+    "library": {
+      "name": "Library",
+      "parent_id": "intelligence",
+      "depends_on": [
+        "memory"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "claude-mem",
+        "conversation-mgmt"
+      ],
+      "liveviews": [
+        "LibraryLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "library"
+    },
+    "memory": {
+      "name": "Memory",
+      "parent_id": "intelligence",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/v2/memory/*"
+      ],
+      "related_skills": [
+        "claude-mem",
+        "memory"
+      ],
+      "liveviews": [
+        "MemoryLive"
+      ],
+      "plugins": [
+        "MemoryPlugin"
+      ],
+      "children": [],
+      "id": "memory",
+      "exposes_endpoints_full": [
+        "GET /api/v2/memory/search",
+        "GET /api/v2/memory/observations",
+        "GET /api/v2/memory/timeline",
+        "GET /api/v2/memory/observations/{id}",
+        "GET /api/v2/memory/health"
+      ]
+    },
+    "orchestration": {
+      "name": "Orchestration",
+      "parent_id": "intelligence",
+      "depends_on": [
+        "formations",
+        "upm"
+      ],
+      "exposes_endpoints": [
+        "* /api/v2/orchestrations*"
+      ],
+      "related_skills": [
+        "orchestrator",
+        "formation",
+        "ralph",
+        "upm"
+      ],
+      "liveviews": [
+        "OrchestrationLive"
+      ],
+      "plugins": [
+        "OrchestrationPlugin"
+      ],
+      "children": [],
+      "id": "orchestration"
+    },
+    "intake": {
+      "name": "Intake",
+      "parent_id": "intelligence",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "upm",
+        "specialize"
+      ],
+      "liveviews": [
+        "IntakeLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "intake"
+    },
+    "alignment": {
+      "name": "Alignment",
+      "parent_id": "intelligence",
+      "depends_on": [
+        "actions"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "coalesce"
+      ],
+      "liveviews": [
+        "AlignmentLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "alignment"
+    },
+    "extend": {
+      "name": "Extend",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [],
+      "liveviews": [
+        "PluginDashboardLive",
+        "NotificationLive",
+        "ShowcaseLive",
+        "DocsLive"
+      ],
+      "plugins": [],
+      "children": [
+        "plugins",
+        "integrations",
+        "notifications",
+        "showcase",
+        "docs"
+      ],
+      "id": "extend"
+    },
+    "plugins": {
+      "name": "Plugins",
+      "parent_id": "extend",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [],
+      "liveviews": [
+        "PluginDashboardLive",
+        "RalphPluginLive",
+        "AgUiPluginLive",
+        "ClaudeCodeDiscoveryLive",
+        "HarnessLive",
+        "OpenDesignLive",
+        "ComposioLive",
+        "BuilderLive"
+      ],
+      "plugins": [
+        "RalphPlugin",
+        "AgUiPlugin",
+        "HarnessPlugin",
+        "OpenDesignPlugin",
+        "ClaudeCodeDiscoveryPlugin",
+        "ComposioPlugin",
+        "BuilderPlugin",
+        "MemoryPlugin",
+        "OrchestrationPlugin",
+        "SecurityGuidancePlugin"
+      ],
+      "children": [
+        "harness",
+        "ag-ui",
+        "ralph-plugin"
+      ],
+      "id": "plugins"
+    },
+    "integrations": {
+      "name": "Integrations",
+      "parent_id": "extend",
+      "depends_on": [
+        "plugins"
+      ],
+      "exposes_endpoints": [],
+      "related_skills": [],
+      "liveviews": [
+        "PluginDashboardLive",
+        "AgUiLive",
+        "RalphFlowchartLive",
+        "LvmStatusLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "integrations"
+    },
+    "notifications": {
+      "name": "Notifications",
+      "parent_id": "extend",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/notifications*",
+        "POST /api/notify"
+      ],
+      "related_skills": [],
+      "liveviews": [
+        "NotificationLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "notifications",
+      "exposes_endpoints_full": [
+        "POST /api/notifications/read-all",
+        "POST /api/notify",
+        "POST /api/notifications/add",
+        "GET /api/notifications"
+      ]
+    },
+    "showcase": {
+      "name": "Showcase",
+      "parent_id": "extend",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/showcase",
+        "GET /api/showcase/{project}",
+        "GET /showcase",
+        "GET /showcase/{project}"
+      ],
+      "related_skills": [
+        "showcase"
+      ],
+      "liveviews": [
+        "ShowcaseLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "showcase"
+    },
+    "docs": {
+      "name": "Docs",
+      "parent_id": "extend",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [
+        "docsmax"
+      ],
+      "liveviews": [
+        "DocsLive"
+      ],
+      "plugins": [],
+      "children": [],
+      "id": "docs"
+    },
+    "ai-platform": {
+      "name": "AI Platform",
+      "parent_id": "ccem-apm",
+      "depends_on": [],
+      "exposes_endpoints": [],
+      "related_skills": [],
+      "liveviews": [
+        "AllProjectsLive",
+        "AgUiLive",
+        "RalphFlowchartLive",
+        "GenerativeUILive",
+        "LvmStatusLive"
+      ],
+      "plugins": [
+        "RalphPlugin",
+        "AgUiPlugin"
+      ],
+      "children": [],
+      "id": "ai-platform"
+    },
+    "harness": {
+      "name": "Claude Code Harness",
+      "parent_id": "plugins",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "* /api/v2/harness/*"
+      ],
+      "related_skills": [
+        "claude-code-harness"
+      ],
+      "liveviews": [
+        "HarnessLive"
+      ],
+      "plugins": [
+        "HarnessPlugin"
+      ],
+      "children": [],
+      "id": "harness"
+    },
+    "ag-ui": {
+      "name": "AG-UI",
+      "parent_id": "plugins",
+      "depends_on": [],
+      "exposes_endpoints": [
+        "GET /api/ag-ui/events",
+        "GET /api/a2ui/components"
+      ],
+      "related_skills": [
+        "ag-ui"
+      ],
+      "liveviews": [
+        "AgUiLive",
+        "AgUiPluginLive"
+      ],
+      "plugins": [
+        "AgUiPlugin"
+      ],
+      "children": [],
+      "id": "ag-ui",
+      "exposes_endpoints_full": [
+        "GET /api/a2ui/components",
+        "GET /api/ag-ui/events"
+      ]
+    },
+    "ralph-plugin": {
+      "name": "Ralph Plugin",
+      "parent_id": "plugins",
+      "depends_on": [
+        "upm"
+      ],
+      "exposes_endpoints": [
+        "* /api/v2/ralph/*"
+      ],
+      "related_skills": [
+        "ralph"
+      ],
+      "liveviews": [
+        "RalphPluginLive",
+        "RalphFlowchartLive"
+      ],
+      "plugins": [
+        "RalphPlugin"
+      ],
+      "children": [],
+      "id": "ralph-plugin",
+      "exposes_endpoints_full": [
+        "GET /api/ralph/flowchart",
+        "GET /api/ralph"
+      ]
+    }
+  },
+  "stats": {
+    "feature_count": 42,
+    "endpoint_count": 124,
+    "endpoints_per_feature": {
+      "ccem-apm": 22,
+      "observe": 0,
+      "fleet": 11,
+      "sessions": 1,
+      "conversations": 0,
+      "formations": 0,
+      "timeline": 0,
+      "tool-calls": 0,
+      "architecture": 1,
+      "govern": 0,
+      "authorization": 19,
+      "routing": 0,
+      "approvals": 7,
+      "coalesce": 8,
+      "upm": 20,
+      "measure": 0,
+      "analytics": 7,
+      "usage": 0,
+      "health": 4,
+      "ports": 5,
+      "tasks": 4,
+      "actions": 0,
+      "scanner": 0,
+      "uat": 0,
+      "drtw": 0,
+      "intelligence": 0,
+      "skills": 2,
+      "library": 0,
+      "memory": 5,
+      "orchestration": 0,
+      "intake": 0,
+      "alignment": 0,
+      "extend": 0,
+      "plugins": 0,
+      "integrations": 0,
+      "notifications": 4,
+      "showcase": 0,
+      "docs": 0,
+      "ai-platform": 0,
+      "harness": 0,
+      "ag-ui": 2,
+      "ralph-plugin": 2
+    }
+  }
+}
