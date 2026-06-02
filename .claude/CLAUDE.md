@@ -561,18 +561,27 @@ Bundle ingested from Claude Design at `~/Downloads/CCEM APM (2).zip` → staged 
 - `ralph/v11.0.0-phase2-gold-pages` → PR #26 (draft, stacked on #25)
 
 ### Wave 4: Phase 3 Foundations (2026-06-02)
-- [x] **CP-317**: Skills permissive list + MCP Market repository management API (US-497) — `apm`, `apm-auth`, `ccem`, `ccem-apm` permissive on boot; `/api/skills/permissive` + `/api/skills/repositories` endpoints live; dead router routes removed
-- [x] **CP-318**: Fix 14 test regressions — `function_exported?` load-order (8 LiveView), JWT Ed25519 base64 padding bypass, Bypass async contention (US-498) — 811/0 on seeds 0 and 42
-- [ ] **CP-319**: 6 JS motion hooks — CountdownRing, SwipeDecide, DrawerSlide, ModalTrap, CountUp, SparklineDot (US-499) — in-flight: branch v11/p3-js-hooks
-- [ ] **CP-320**: Live section /live/* route aliases (US-500) — in-flight: branch v11/p3-section-live
-- [ ] **CP-321**: Decide + Investigate section remaining route wiring (US-501) — in-flight: branch v11/p3-section-decide
+- [x] **CP-317**: Skills permissive list + MCP Market repository management API (US-497, CCEM-694)
+- [x] **CP-318**: Fix 14 test regressions — function_exported? load-order, JWT padding bypass, Bypass contention (US-498, CCEM-695) — 811/0
+- [x] **CP-319**: 6 JS motion hooks — CountdownRing, SwipeDecide, DrawerSlide, ModalTrap, CountUp, SparklineDot (US-499, CCEM-696)
+- [x] **CP-320**: Live section /live/* route aliases — 4 routes (US-500, CCEM-697)
+- [x] **CP-321**: Decide + Investigate section route wiring — 7 routes (US-501, CCEM-698)
 
-### Deferred to Phase 3+ (remaining)
-- Icon sprite migration (currently inline SVG)
-- Drawer swipe gesture for mobile
-- DecisionModal sticky-policy-rule backend wiring
-- PageShell live pending badge count via shared on_mount hook
-- Phases 4-7 per-section migration (Tune → Operate)
-- ~~CCEMHelper bundle id flip (io.pegues.agent-j.labs.ccem.helper → .apm.helper)~~ — DONE (US-504 CP-324)
-- npm scope rename @ccem/* → @agent-j/*
+### Wave 5: Phase 4-5 Features + Section Migrations (2026-06-02)
+**UPM session**: `upm-v11-p4-1780432138` | **Fleet**: `formation-83` | **Plane**: CCEM-699–707
+- [x] **CP-322**: DecisionModal sticky-policy backend — PolicyRulesStore.add_rule/3 wired (US-502, CCEM-699)
+- [x] **CP-323**: PageShell live pending badge count — ApmWeb.Hooks.PendingCountHook on_mount (US-503, CCEM-700)
+- [x] **CP-324**: CCEMHelper bundle-id flip ccem.helper → apm.helper (US-504, CCEM-701)
+- [x] **CP-325**: Tune section /tune/* route aliases — 5 routes (US-505, CCEM-702)
+- [x] **CP-326**: Operate section /operate/* route aliases — 5 routes (US-506, CCEM-703)
+- [x] **CP-327**: Icon sprite migration — 26+1 icons → priv/static/images/apm-sprite.svg (US-507, CCEM-704)
+- [x] **CP-328**: Live section e2e drift validation — 4/4 /live/* routes pass (US-508, CCEM-705)
+- [x] **CP-329**: Decide+Investigate section drift validation — 6/6 routes pass (US-509, CCEM-706)
+- [x] **CP-330**: All v11 routes smoke-test post-restart — 24/24 routes pass (US-510, CCEM-707)
+After Wave 5: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` 811/0 | apm-v4 HEAD: `00bcedd`
+
+### Deferred to Phase 6+ (remaining)
+- Drawer swipe gesture for mobile (requires native touch API work)
+- Phases 6-7 Tune sub-page implementations (currently aliased to existing pages)
+- npm scope rename @ccem/* → @agent-j/* (npm publish coordination required)
 
