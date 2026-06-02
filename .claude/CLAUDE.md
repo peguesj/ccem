@@ -478,3 +478,101 @@ Both serve the full 103+ path OpenAPI 3.0.3 spec:
 
 ### Wave 5: Verify & Ship (1 story)
 - [x] CP-215: Compile gate + commits + tag v9.2.0 (unpushed)
+
+---
+
+## v9.3.0 Governance Foundation — v930_governance_foundation (shipped 2026-05-28)
+
+Integration branch: `ralph/v9.3.0-governance-foundation` (off v9.2.1). Tag `v9.3.0` = `77cf3410ca6e593140a687a59de5d709f064ef5a`.
+
+### Wave 1-7 (48 stories, 4 tracks, 4 parallel worktrees)
+- [x] CP-216..CP-220: obs-s1 OTel SDK + obs-s2 peep + obs-s3 traceparent + obs-s4 Tracing + obs-s5 Grafana
+- [x] CP-221..CP-226: audit-s3 unified schema + s4 merge + s5 logger_json + s6 retention + s7 sink + s8 cursor
+- [x] CP-227..CP-236: auth-s1 PolicyDecisionStore + comp-gov3/gov4/map1/map2/ms1/ms2/mg1/mg2/mg3
+- [x] CP-237..CP-243: rl-s2 hammer + rl-s3 fuse + rl-s4 plug_attack + rl-s5..s8 + rl-headers/adaptive/widget
+- [x] CP-244..CP-249: wf-s1 digraph + s2 FSM + s3 WAL + s4 reactor + s5 approval + s6 timeout
+- [x] CP-250..CP-254: hc-s1 RFC 8615 + s2..s4 K8s probes + s5 VM checks
+- [x] CP-255..CP-259: coord-b1 TaskStore + b2 bridge + c1 FIPA + c2 FileLockRegistry + c3 ArtifactVersionStore
+- [x] CP-260..CP-263: api-s3 zod + s4 ts + s5 spex + s6 contract tests
+
+### Integration notes (2026-05-28)
+- 4 merge conflicts resolved (mix.exs deps union, mix.lock regen, application.ex/router.ex supervisor and pipeline union, audit_log.ex field union, telemetry.ex moduledoc union, api_spec.ex rewrite favoring api-gov Wave 1 implementation, auth_supervisor.ex union).
+- open_api_spex CastAndValidate moved from router :api pipeline INTO the 4 annotated controllers (ApiV2Controller, AuthController, AgentControlController, ApprovalController) because the plug requires :phoenix_controller in conn.private (only set after dispatch). Added `def open_api_operation(_), do: nil` catch-all to each to override OpenApiSpex.ControllerSpecs.before_compile's IO.warn default (which returns :ok and crashes the plug).
+- Tests: 333 total, 3 failures (pre-existing DocsFreshness baseline — needs separate docs refresh PR). 0 net-new regressions vs v9.2.1 baseline (FormationPersistenceStore isolation test passed after restart).
+- 16 new hex deps installed: opentelemetry stack (7), peep, logger_json, cloak, hammer, fuse, plug_attack, reactor, exqlite (was optional).
+- Endpoints verified: /api/status (v9.3.0), /api/v2/governance/controls (13), /metrics (peep), /healthz, /.well-known/agent-card.json (v9.3.0). /api/health "fail" only due to dev-box ETS size 7.5GB threshold (not a v9.3.0 regression).
+- Skills coalesced to v9.3.0: apm, apm-api-reference, apm-auth, orchestrator, ccem-apm. Formation skill keeps "Known APM v9.2.0 quirks" heading as historical (those quirks remain valid).
+- mix.exs SSOT bump 9.2.1 → 9.3.0 (single source — ApmV5.AppVersion reads from app spec).
+- Plane cycle 9411c1d9 description updated with shipped marker.
+
+---
+
+## v9.3.1 → v10.3.0 Integration — final-integration-lead (2026-05-28)
+
+**Branch**: `ralph/v10.3.0-endpoint` | **Formation**: `formation-final-integration`
+**Merged**: 14 branches (4 v9.3.1 + 6 v9.4.0 + 4 v10.x)
+**Total merge conflicts**: 9 resolved
+
+| CP | Version | Story | Tag SHA |
+|----|---------|-------|---------|
+| CP-264..CP-272 | v9.3.1 | 11 stories: rl-s9/s10 (rate-limit top-agents + heatmap), api-s6p..s10 (ETS fixtures, contract tests, DeprecationPlug, AsyncAPI, Schemathesis), cleanup-1/2, docfix-1, showcase-5/7 | `98a0bb82` |
+| CP-273..CP-286 | v9.4.0 | 14 stories: KeyStore Ed25519, DIDProvider did:key, ArtifactAttestation, ProvExporter PROV-DM, AgentRoleIndex, LineageTracker, DelegationChain, OTel gen_ai spans, PolicyRulesStore versioning, PolicyPredicate DSL, EventStore opt-in, api-spec build_spec/0 deletion (1433 LOC) | `deb7a376` |
+| CP-287..CP-291 | v10.0.0 (BREAKING) | 3 stories: RFC 7523 JWT Bearer Assertions (LINCHPIN), DelegationToken OWASP MCP02, Horde+libcluster staged | `50e1beae` |
+| CP-292..CP-295 | v10.1.0 | 4 stories: OpaClient :httpc, 4 Rego policies, GET /api/v2/auth/policy/rego, PolicyPriorityResolver (deny-wins/most-specific/first-match) | `6e743a16` |
+| CP-296..CP-297 | v10.2.0 | 2 stories: hammer_backend_redis swap, assent OIDC SessionStore + JWKS cache | `87af8ce3` |
+| CP-298..CP-300 | v10.3.0 GOAL CLOSED | 3 stories: wax_ WebAuthn FIDO2 on /approve gate, SLSA Provenance v1.0 DSSE PAE, W3C Verifiable Credentials JWT-VC | `0eae31de` |
+
+**Net new hex deps**: 4 (assent, req, jose, wax_) — vs DRTW research's 23-dep recommendation.
+**Test baseline**: 374 (v9.3.1) → 545 (v9.4.0) → 665 (v10.0.0) → 679 (v10.2.0) → 728 (v10.3.0). All pre-existing failures only.
+**Conflict resolutions**: agent_registry do_register_agent refactor (2x), policy_engine aliases union, policy_rules_store to_rego insertion, auth_controller policy_history+rego_export both kept, mix.exs dep unions (2x), mix.lock entry ordering (2x), router.ex provenance+slsa routes, provenance_controller show/2 added to existing module.
+**Plane cycles updated**: v9.3.1, v9.4.0, v10.0.0, v10.1.0, v10.2.0, v10.3.0 — all marked shipped 2026-05-28.
+**Skills coalesced**: apm, apm-auth, ccem-apm, orchestrator, apm-api-reference (all bumped to v10.3.0 strings). OpenAPI snapshot refreshed.
+
+---
+
+## v11.0.0 Design Intake + Phase 0+1+2 Implementation — v110_design_intake (2026-05-29 → 2026-06-02)
+
+Bundle ingested from Claude Design at `~/Downloads/CCEM APM (2).zip` → staged at `~/Developer/ccem/design-intake/v11.0.0/from-designer/`. Three stacked PRs landed all Phase 0 foundations + Phase 1 stubs + Phase 2 gold-standard pages.
+
+### Wave 1: Phase 0 Foundations (additive, additive, BREAKING, additive)
+- [x] **CP-311**: Phase 0.1 — apply v11 --apm-* tokens with --ccem-* alias bridge (US-491)
+- [x] **CP-312**: Phase 0.2 — canonicalize 5-tone severity vocab + Credo check (US-492)
+- [x] **CP-313**: Phase 0.4 — wiring monitor LiveView at /health/wiring (US-493)
+- [x] **CP-314**: Phase 0.3 — ApmV5.* → Apm.* module rename + 12 deprecation shims [BREAKING] (US-494)
+
+### Wave 2: Phase 1 Component Library (additive)
+- [x] **CP-315**: Phase 1 — 36 .proposed.exs stubs across 5 tiers (US-495)
+  - Tier 1 Primitives (8): button, badge, dot, input, kbd, icon, logo, skeleton
+  - Tier 2 Composites (7): field, card, stat_tile, segmented, toggle, search_box, page_header
+  - Tier 3 Data (8, empty/loading/error required): data_table, sparkline, gauge, json_viewer, streaming_text, graph, timeline, loading_screen
+  - Tier 4 Feedback (8): toast, modal, drawer, command_bar, countdown_ring, empty_state, error_inline, swipe_card
+  - Tier 5 Templates (5): page_shell, queue_page, detail_page, split_view, dashboard_grid
+
+### Wave 3: Phase 2 Gold-Standard Pages (additive)
+- [x] **CP-316**: Phase 2 — promote 28 stubs + ApmWeb.DecidePendingLive + ApmWeb.InvestigateSessionLive (US-496)
+  - 3 context facades: Apm.Decisions, Apm.Sessions, Apm.ToolCalls
+  - ApmWeb.IconHelpers (inline SVG, 26 icons)
+  - 3 301 redirects: /approvals → /decide/pending, /approvals-history → ?status=resolved, /sessions/:id → /investigate/sessions/:id
+  - Tests: 60/60 pass for new LVs; full suite 811/1/2 (1 net-new failure in deprecation_plug_test.exs:100 — indirect cause flagged)
+
+### Branches + PRs
+- `ralph/v11.0.0-phase0+1` → PR #24 (draft, Phase 0.1+0.2+0.4 + Phase 1)
+- `ralph/v11.0.0-phase0.3-module-rename` → PR #25 (draft, stacked on #24, BREAKING)
+- `ralph/v11.0.0-phase2-gold-pages` → PR #26 (draft, stacked on #25)
+
+### Wave 4: Phase 3 Foundations (2026-06-02)
+- [x] **CP-317**: Skills permissive list + MCP Market repository management API (US-497) — `apm`, `apm-auth`, `ccem`, `ccem-apm` permissive on boot; `/api/skills/permissive` + `/api/skills/repositories` endpoints live; dead router routes removed
+- [x] **CP-318**: Fix 14 test regressions — `function_exported?` load-order (8 LiveView), JWT Ed25519 base64 padding bypass, Bypass async contention (US-498) — 811/0 on seeds 0 and 42
+- [ ] **CP-319**: 6 JS motion hooks — CountdownRing, SwipeDecide, DrawerSlide, ModalTrap, CountUp, SparklineDot (US-499) — in-flight: branch v11/p3-js-hooks
+- [ ] **CP-320**: Live section /live/* route aliases (US-500) — in-flight: branch v11/p3-section-live
+- [ ] **CP-321**: Decide + Investigate section remaining route wiring (US-501) — in-flight: branch v11/p3-section-decide
+
+### Deferred to Phase 3+ (remaining)
+- Icon sprite migration (currently inline SVG)
+- Drawer swipe gesture for mobile
+- DecisionModal sticky-policy-rule backend wiring
+- PageShell live pending badge count via shared on_mount hook
+- Phases 4-7 per-section migration (Tune → Operate)
+- CCEMHelper bundle id flip (io.pegues.agent-j.labs.ccem.helper → .apm.helper)
+- npm scope rename @ccem/* → @agent-j/*
+
