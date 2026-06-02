@@ -251,25 +251,32 @@ final class EnvironmentMonitor {
                 .prefix(50)
                 .map { $0 }
 
-            // Post macOS notifications for agent and formation lifecycle events only
+            // Post macOS notifications for lifecycle, agentlock, and formation events
             for notification in newNotifications {
-                guard let category = notification.category,
-                      category == "agent" || category == "formation" else {
-                    continue
-                }
-                // Detect APM-sourced restart requests
+                // Detect APM-sourced restart requests (any category)
                 if notification.type == "restart" || notification.category == "restart" {
                     await postRestartRequestNotification(notification)
                     continue
                 }
 
-                // Respect per-category notification toggles from Settings
-                if category == "formation" {
+                guard let category = notification.category else { continue }
+
+                switch category {
+                case "formation":
                     guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyFormation") else { continue }
-                } else {
+                    await postLifecycleNotification(notification)
+
+                case "agent":
                     guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLifecycle") else { continue }
+                    await postLifecycleNotification(notification)
+
+                case "agentlock", "authorization":
+                    guard UserDefaults.standard.bool(forKey: "io.pegues.ccem.notifyAgentLock") else { continue }
+                    await postLifecycleNotification(notification)
+
+                default:
+                    continue
                 }
-                await postLifecycleNotification(notification)
             }
         } catch {
             // Non-critical: silently skip notification poll failures
@@ -466,15 +473,15 @@ final class EnvironmentMonitor {
         do {
             let decisions = try await client.fetchPendingDecisions()
 
-            // Update observable list (only pending items)
+            // Update observable list (only pending items — server filters but belt-and-suspenders)
             pendingDecisions = decisions.filter { $0.isPending }
 
-            // Notify for newly seen pending decisions
-            let newDecisions = decisions.filter { $0.isPending && !seenPendingIds.contains($0.requestId) }
+            // Notify for newly seen pending decisions (keyed on gate_id)
+            let newDecisions = decisions.filter { $0.isPending && !seenPendingIds.contains($0.gateId) }
             guard !newDecisions.isEmpty else { return }
 
             for decision in newDecisions {
-                seenPendingIds.insert(decision.requestId)
+                seenPendingIds.insert(decision.gateId)
             }
             if seenPendingIds.count > 500 {
                 seenPendingIds = Set(seenPendingIds.prefix(250))
@@ -498,29 +505,30 @@ final class EnvironmentMonitor {
     private func postPendingDecisionNotification(_ decision: PendingDecision) async {
         let content = UNMutableNotificationContent()
 
-        // Title: "AgentLock: [displayName]" using human-readable label when available.
+        // Title: "Approval: [agent]" using human-readable label when available.
         let displayName = decision.displayName ?? String(decision.agentId.suffix(8))
-        content.title = "AgentLock: \(displayName)"
+        content.title = "Approval: \(displayName)"
 
-        // Body: "[tool] requires approval" with risk context.
-        content.body = "\(decision.toolName) requires approval · \(decision.riskLevel) risk"
+        // Body: tool label + risk context
+        content.body = decision.notificationBody + " · requires approval"
 
         // Use the dedicated AGENTLOCK_APPROVAL category so Approve/Deny actions appear.
         content.categoryIdentifier = Self.agentlockApprovalCategory
         content.threadIdentifier = "ccem-agentlock-pending"
         content.sound = UNNotificationSound.defaultCritical
 
-        // Embed pending_id (per US-001 spec) AND request_id (legacy compat) so the
-        // action handler in APMNotificationReceiver can submit the decision to APM.
+        // v9.2.0: embed gate_id as the primary identifier for approve/reject endpoints.
+        // Keep "pending_id" and "request_id" aliases for legacy action handler compat.
         content.userInfo = [
-            "pending_id": decision.requestId,
-            "request_id": decision.requestId,
-            "tool_name": decision.toolName,
+            "gate_id": decision.gateId,
+            "pending_id": decision.gateId,
+            "request_id": decision.gateId,
+            "tool_name": decision.toolLabel,
             "type": "agentlock_pending"
         ]
 
         let request = UNNotificationRequest(
-            identifier: "pending-\(decision.requestId)",
+            identifier: "pending-\(decision.gateId)",
             content: content,
             trigger: nil
         )
@@ -534,10 +542,10 @@ final class EnvironmentMonitor {
 
     private func postGroupedPendingNotification(_ decisions: [PendingDecision]) async {
         let content = UNMutableNotificationContent()
-        content.title = "AgentLock: \(decisions.count) approvals pending"
+        content.title = "\(decisions.count) approvals pending"
 
-        // Show first few tool names as summary
-        let toolSummary = decisions.prefix(3).map { $0.toolName }.joined(separator: ", ")
+        // Show first few tool labels as summary
+        let toolSummary = decisions.prefix(3).map { $0.toolLabel }.joined(separator: ", ")
         let suffix = decisions.count > 3 ? " + \(decisions.count - 3) more" : ""
         content.body = "\(toolSummary)\(suffix)"
 
@@ -545,10 +553,10 @@ final class EnvironmentMonitor {
         content.threadIdentifier = "ccem-agentlock-pending"
         content.sound = UNNotificationSound.defaultCritical
 
-        // Embed all pending IDs so approve-all/deny-all can resolve them
-        let pendingIds = decisions.map { $0.requestId }
+        // v9.2.0: embed all gate_ids so approve-all/deny-all can resolve them
+        let gateIds = decisions.map { $0.gateId }
         content.userInfo = [
-            "pending_ids": pendingIds,
+            "pending_ids": gateIds,
             "type": "agentlock_grouped_pending",
             "count": decisions.count
         ]

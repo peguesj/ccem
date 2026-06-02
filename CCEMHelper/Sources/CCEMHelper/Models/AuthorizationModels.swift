@@ -231,55 +231,69 @@ struct AuthAuditResponse: Codable {
     let count: Int
 }
 
-// MARK: - AgentLock Pending Decisions (v7.0.0 W6)
+// MARK: - Approvals (v9.2.0)
 
-/// Pending authorization decision awaiting human approval from GET /api/v2/auth/pending
+/// Pending approval request from GET /api/v2/approvals
+/// Maps to the actual v9.2.0 response schema (gate_id, agent_id, description, status).
 struct PendingDecision: Codable, Identifiable {
-    let requestId: String
-    let toolName: String
-    let sessionId: String
+    /// The gate identifier — used in approve/reject endpoint URLs.
+    let gateId: String
     let agentId: String
-    let riskLevel: String
-    let params: [String: AnyCodable]?
+    let description: String
     let status: String
-    let decision: String?
-    let decidedAt: String?
-    let insertedAt: String
-    let expiresAt: String
-    var displayName: String?  // human-readable label from APM, may be nil
+    let requestedAt: String
+    let resolvedAt: String?
+    let approver: String?
+    let rejectReason: String?
+    let timeoutMs: Int?
+    // v9.2.0 may include these fields when present
+    let toolName: String?
+    let riskLevel: String?
+    let displayName: String?
 
-    var id: String { requestId }
+    var id: String { gateId }
+
+    /// Legacy accessor so existing call sites that read `.requestId` still compile.
+    var requestId: String { gateId }
 
     enum CodingKeys: String, CodingKey {
-        case requestId = "request_id"
-        case toolName = "tool_name"
-        case sessionId = "session_id"
+        case gateId = "gate_id"
         case agentId = "agent_id"
-        case riskLevel = "risk_level"
-        case params
+        case description
         case status
-        case decision
-        case decidedAt = "decided_at"
-        case insertedAt = "inserted_at"
-        case expiresAt = "expires_at"
+        case requestedAt = "requested_at"
+        case resolvedAt = "resolved_at"
+        case approver
+        case rejectReason = "reject_reason"
+        case timeoutMs = "timeout_ms"
+        case toolName = "tool_name"
+        case riskLevel = "risk_level"
         case displayName = "display_name"
     }
 
     var isPending: Bool { status == "pending" }
 
-    var notificationTitle: String { "[AgentLock] Approval Required" }
+    /// Human-readable tool label — falls back to description when tool_name absent.
+    var toolLabel: String { toolName ?? description }
+
+    var notificationTitle: String { "Approval Required" }
 
     var notificationBody: String {
         let agentDisplay = displayName ?? String(agentId.suffix(8))
-        return "\(toolName) · \(agentDisplay) — \(riskLevel) risk"
+        if let risk = riskLevel {
+            return "\(toolLabel) · \(agentDisplay) — \(risk) risk"
+        }
+        return "\(toolLabel) · \(agentDisplay)"
     }
 }
 
-/// Response wrapper for GET /api/v2/auth/pending
+/// Response wrapper for GET /api/v2/approvals
 struct PendingDecisionsResponse: Codable {
-    let ok: Bool
-    let pending: [PendingDecision]
-    let count: Int
+    let approvals: [PendingDecision]
+
+    enum CodingKeys: String, CodingKey {
+        case approvals
+    }
 }
 
 // MARK: - AgentLock Decision (notification surface)

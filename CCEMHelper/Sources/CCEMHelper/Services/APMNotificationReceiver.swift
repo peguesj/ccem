@@ -60,7 +60,8 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
     }
 
     /// Called when the user interacts with a delivered notification.
-    /// Handles AgentLock approve/deny actions; all other taps open the /authorization tab.
+    /// Handles approval approve/reject actions mapped to v9.2.0 endpoints.
+    /// All other taps open the /govern/approvals tab.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -73,80 +74,88 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
         let restartId = "io.pegues.agent-j.labs.ccem.helper.restart.now"
         let notificationType = userInfo["type"] as? String
 
-        // Handle grouped approve-all / deny-all actions
+        // Handle grouped approve-all / deny-all actions (v9.2.0: gate_id based)
         if notificationType == "agentlock_grouped_pending",
            let pendingIds = userInfo["pending_ids"] as? [String],
            actionId.hasPrefix(prefix) {
             let action = String(actionId.dropFirst(prefix.count))
-            let decision = (action == "deny_all" || action == "deny") ? "deny" : "approve"
+            let isApprove = !(action == "deny_all" || action == "deny")
             Task {
                 let apmClient = APMClient()
-                for reqId in pendingIds {
-                    try? await apmClient.submitDecision(requestId: reqId, decision: decision)
+                for gateId in pendingIds {
+                    do {
+                        if isApprove {
+                            try await apmClient.approveDecision(gateId: gateId)
+                        } else {
+                            try await apmClient.rejectDecision(gateId: gateId)
+                        }
+                    } catch APMClientError.decisionExpired {
+                        // Already decided or timed out — safe to skip
+                        print("[CCEMHelper] Gate \(gateId) already decided or expired")
+                    } catch {
+                        print("[CCEMHelper] Gate decision error: \(error.localizedDescription)")
+                    }
                 }
                 await MainActor.run {
-                    APMWindowManager.shared.openDashboard(path: "/authorization")
+                    APMWindowManager.shared.openDashboard(path: "/govern/approvals")
                 }
             }
             completionHandler()
             return
         }
 
-        // Accept both "pending_id" (US-001 AGENTLOCK_APPROVAL category) and legacy "request_id"
-        let resolvedRequestId = (userInfo["pending_id"] as? String) ?? (userInfo["request_id"] as? String)
-        let toolName = userInfo["tool_name"] as? String
+        // Accept "gate_id" (v9.2.0), "pending_id" (legacy alias), and "request_id" (older builds)
+        let resolvedGateId = (userInfo["gate_id"] as? String)
+            ?? (userInfo["pending_id"] as? String)
+            ?? (userInfo["request_id"] as? String)
 
-        if actionId.hasPrefix(prefix), let requestId = resolvedRequestId {
+        if actionId.hasPrefix(prefix), let gateId = resolvedGateId {
             let action = String(actionId.dropFirst(prefix.count))
             Task {
                 let apmClient = APMClient()
 
-                switch action {
-                case "approve":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                do {
+                    switch action {
+                    case "approve", "allow5min", "allow30min", "always_allow":
+                        // v9.2.0: approve endpoint; time-limited policies no longer exist —
+                        // approve is a single-shot decision. Open dashboard for further management.
+                        try await apmClient.approveDecision(gateId: gateId)
 
-                case "allow5min":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
-                    if let tool = toolName {
-                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 5)
+                    case "deny", "always_deny":
+                        try await apmClient.rejectDecision(gateId: gateId)
+
+                    default:
+                        try await apmClient.approveDecision(gateId: gateId)
                     }
-
-                case "allow30min":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
-                    if let tool = toolName {
-                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 30)
-                    }
-
-                case "always_allow":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
-                    if let tool = toolName {
-                        try? await apmClient.createAutoApprovalPolicy(toolName: tool, minutes: 1440)
-                    }
-
-                case "deny":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "deny")
-
-                case "always_deny":
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "deny")
-                    if let tool = toolName {
-                        try? await apmClient.createPolicyRule(toolName: tool, rule: "always_deny")
-                    }
-
-                default:
-                    try? await apmClient.submitDecision(requestId: requestId, decision: "approve")
+                } catch APMClientError.decisionExpired {
+                    // Post a brief "expired" info notification so the user knows the action was a no-op
+                    let expiredContent = UNMutableNotificationContent()
+                    expiredContent.title = "Decision Expired"
+                    expiredContent.body = "This approval gate was already decided or timed out."
+                    expiredContent.sound = .default
+                    // Use the literal string to avoid crossing isolation boundaries from nonisolated context
+                    expiredContent.categoryIdentifier = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
+                    let req = UNNotificationRequest(
+                        identifier: "expired-\(gateId)",
+                        content: expiredContent,
+                        trigger: nil
+                    )
+                    try? await UNUserNotificationCenter.current().add(req)
+                } catch {
+                    print("[CCEMHelper] Decision submit error: \(error.localizedDescription)")
                 }
 
                 await MainActor.run {
-                    APMWindowManager.shared.openDashboard(path: "/authorization")
+                    APMWindowManager.shared.openDashboard(path: "/govern/approvals")
                 }
             }
         } else if actionId == restartId {
             // User tapped "Restart APM" on a version-update or restart-request notification
             NotificationCenter.default.post(name: .apmRestartRequested, object: nil)
         } else {
-            // Default tap (no action button) — open authorization tab directly.
+            // Default tap (no action button) — open approvals tab directly.
             Task { @MainActor in
-                APMWindowManager.shared.openDashboard(path: "/authorization")
+                APMWindowManager.shared.openDashboard(path: "/govern/approvals")
             }
         }
         completionHandler()

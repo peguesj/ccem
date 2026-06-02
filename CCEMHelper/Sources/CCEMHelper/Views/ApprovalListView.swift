@@ -100,11 +100,11 @@ struct ApprovalListView: View {
                 ForEach(items) { decision in
                     ApprovalRow(
                         decision: decision,
-                        isSelected: selectedId == decision.requestId,
-                        onApprove: { onApprove(decision.requestId) },
-                        onDeny: { onDeny(decision.requestId) }
+                        isSelected: selectedId == decision.gateId,
+                        onApprove: { onApprove(decision.gateId) },
+                        onDeny: { onDeny(decision.gateId) }
                     )
-                    .onTapGesture { selectedId = decision.requestId }
+                    .onTapGesture { selectedId = decision.gateId }
                 }
             }
             .padding(.horizontal, 12)
@@ -118,7 +118,7 @@ struct ApprovalListView: View {
         if let id = selectedId {
             onApprove(id)
         } else if let first = decisions.first {
-            onApprove(first.requestId)
+            onApprove(first.gateId)
         }
     }
 
@@ -126,7 +126,7 @@ struct ApprovalListView: View {
         if let id = selectedId {
             onDeny(id)
         } else if let first = decisions.first {
-            onDeny(first.requestId)
+            onDeny(first.gateId)
         }
     }
 }
@@ -147,11 +147,12 @@ private struct ApprovalRow: View {
                 .frame(width: 8, height: 8)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(decision.toolName)
+                Text(decision.toolLabel)
                     .font(.system(.body, design: .monospaced))
                     .fontWeight(.medium)
                 let agentLabel = decision.displayName ?? String(decision.agentId.suffix(8))
-                Text("\(agentLabel) - \(decision.riskLevel) risk")
+                let riskSuffix = decision.riskLevel.map { " - \($0) risk" } ?? ""
+                Text("\(agentLabel)\(riskSuffix)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -187,7 +188,7 @@ private struct ApprovalRow: View {
         case "high": return .orange
         case "medium": return .yellow
         case "low": return .blue
-        default: return .green
+        case .none, _: return .green
         }
     }
 }

@@ -316,59 +316,61 @@ actor APMClient {
         return wrapper.summary
     }
 
-    // MARK: - AgentLock Pending Decisions (v7.0.0 W6)
+    // MARK: - Approvals (v9.2.0)
 
+    /// Fetch pending approvals from GET /api/v2/approvals?status=pending
     func fetchPendingDecisions() async throws -> [PendingDecision] {
-        let url = baseURL.appendingPathComponent("api/v2/auth/pending")
-        let (data, response) = try await session.data(from: url)
+        var components = URLComponents(string: "\(baseURL.absoluteString)/api/v2/approvals")!
+        components.queryItems = [URLQueryItem(name: "status", value: "pending")]
+        let (data, response) = try await session.data(from: components.url!)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             throw APMClientError.badResponse
         }
         let wrapper = try decoder.decode(PendingDecisionsResponse.self, from: data)
-        return wrapper.pending
+        return wrapper.approvals.filter { $0.isPending }
     }
 
+    /// Approve a pending gate via POST /api/v2/approvals/{gate_id}/approve
+    func approveDecision(gateId: String) async throws {
+        let url = baseURL.appendingPathComponent("api/v2/approvals/\(gateId)/approve")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = "{}".data(using: .utf8)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            if let http = httpResponse as? HTTPURLResponse, http.statusCode == 404 {
+                throw APMClientError.decisionExpired
+            }
+            throw APMClientError.badResponse
+        }
+    }
+
+    /// Reject a pending gate via POST /api/v2/approvals/{gate_id}/reject
+    func rejectDecision(gateId: String, reason: String? = nil) async throws {
+        let url = baseURL.appendingPathComponent("api/v2/approvals/\(gateId)/reject")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        var body: [String: Any] = [:]
+        if let reason { body["reason"] = reason }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (_, httpResponse) = try await session.data(for: request)
+        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
+            if let http = httpResponse as? HTTPURLResponse, http.statusCode == 404 {
+                throw APMClientError.decisionExpired
+            }
+            throw APMClientError.badResponse
+        }
+    }
+
+    /// Legacy shim — routes approve/deny by decision string to v9.2.0 endpoints.
+    /// Call sites that previously used submitDecision(requestId:decision:) can migrate gradually.
     func submitDecision(requestId: String, decision: String) async throws {
-        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/decide"))
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: String] = ["request_id": requestId, "decision": decision]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        let (_, httpResponse) = try await session.data(for: request)
-        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            throw APMClientError.badResponse
-        }
-    }
-
-    /// Create a time-limited auto-approval policy for a tool
-    func createAutoApprovalPolicy(toolName: String, minutes: Int) async throws {
-        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/auto-approval-policies"))
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = [
-            "allowed_tools": [toolName],
-            "allowed_risk_levels": "all",
-            "ttl_minutes": minutes,
-            "created_by": "ccemhelper",
-            "reason": "Allowed \(toolName) for \(minutes)min via macOS notification"
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        let (_, httpResponse) = try await session.data(for: request)
-        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            throw APMClientError.badResponse
-        }
-    }
-
-    /// Create a permanent policy rule (always_allow or always_deny)
-    func createPolicyRule(toolName: String, rule: String) async throws {
-        var request = URLRequest(url: baseURL.appendingPathComponent("api/v2/auth/policy-rules"))
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: String] = ["tool_name": toolName, "rule": rule]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        let (_, httpResponse) = try await session.data(for: request)
-        guard let http = httpResponse as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            throw APMClientError.badResponse
+        if decision == "approve" {
+            try await approveDecision(gateId: requestId)
+        } else {
+            try await rejectDecision(gateId: requestId)
         }
     }
 
@@ -391,11 +393,14 @@ actor APMClient {
 enum APMClientError: Error, LocalizedError {
     case badResponse
     case decodingFailed
+    /// The approval gate was not found — expired or already decided.
+    case decisionExpired
 
     var errorDescription: String? {
         switch self {
         case .badResponse: return "Bad response from APM server"
         case .decodingFailed: return "Failed to decode APM response"
+        case .decisionExpired: return "Approval decision expired or already decided"
         }
     }
 }
