@@ -61,32 +61,32 @@ struct CCEMHelperApp: App {
         // Register categories on every launch — the OS does not persist them.
         // AgentLock notification actions — graduated approve/deny
         let approveAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.approve",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.approve",
             title: "Approve",
             options: [.foreground]
         )
         let allow5minAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.allow5min",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.allow5min",
             title: "Allow 5min",
             options: []
         )
         let allow30minAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.allow30min",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.allow30min",
             title: "Allow 30min",
             options: []
         )
         let alwaysAllowAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.always_allow",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.always_allow",
             title: "Always Allow",
             options: []
         )
         let denyAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.deny",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.deny",
             title: "Deny",
             options: [.destructive]
         )
         let alwaysDenyAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.agentlock.always_deny",
+            identifier: "io.pegues.agent-j.labs.apm.helper.agentlock.always_deny",
             title: "Always Deny",
             options: [.destructive]
         )
@@ -139,7 +139,7 @@ struct CCEMHelperApp: App {
             options: []
         )
         let restartAction = UNNotificationAction(
-            identifier: "io.pegues.agent-j.labs.ccem.helper.restart.now",
+            identifier: "io.pegues.agent-j.labs.apm.helper.restart.now",
             title: "Restart APM",
             options: [.foreground]
         )

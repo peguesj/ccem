@@ -70,8 +70,8 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
         let actionId = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo
 
-        let prefix = "io.pegues.agent-j.labs.ccem.helper.agentlock."
-        let restartId = "io.pegues.agent-j.labs.ccem.helper.restart.now"
+        let prefix = "io.pegues.agent-j.labs.apm.helper.agentlock."
+        let restartId = "io.pegues.agent-j.labs.apm.helper.restart.now"
         let notificationType = userInfo["type"] as? String
 
         // Handle grouped approve-all / deny-all actions (v9.2.0: gate_id based)
@@ -134,7 +134,7 @@ extension APMNotificationReceiver: UNUserNotificationCenterDelegate {
                     expiredContent.body = "This approval gate was already decided or timed out."
                     expiredContent.sound = .default
                     // Use the literal string to avoid crossing isolation boundaries from nonisolated context
-                    expiredContent.categoryIdentifier = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
+                    expiredContent.categoryIdentifier = "io.pegues.agent-j.labs.apm.helper.lifecycle"
                     let req = UNNotificationRequest(
                         identifier: "expired-\(gateId)",
                         content: expiredContent,

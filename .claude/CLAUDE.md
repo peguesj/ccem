@@ -7,7 +7,7 @@
 - **Reverse-DNS Identifier Prefix**: `io.pegues.agent-j.labs`
 - **launchd Labels**:
   - APM Server: `io.pegues.agent-j.labs.ccem.apm-server`
-  - CCEMHelper: `io.pegues.agent-j.labs.ccem.helper`
+  - CCEMHelper: `io.pegues.agent-j.labs.apm.helper`
 - **Use this prefix** for all launchd plists, bundle identifiers, and reverse-DNS identifiers across CCEM and related projects.
 
 ## APM Server Lifecycle Rules
@@ -573,6 +573,6 @@ Bundle ingested from Claude Design at `~/Downloads/CCEM APM (2).zip` → staged 
 - DecisionModal sticky-policy-rule backend wiring
 - PageShell live pending badge count via shared on_mount hook
 - Phases 4-7 per-section migration (Tune → Operate)
-- CCEMHelper bundle id flip (io.pegues.agent-j.labs.ccem.helper → .apm.helper)
+- ~~CCEMHelper bundle id flip (io.pegues.agent-j.labs.ccem.helper → .apm.helper)~~ — DONE (US-504 CP-324)
 - npm scope rename @ccem/* → @agent-j/*
 

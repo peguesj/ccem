@@ -40,21 +40,21 @@ final class EnvironmentMonitor {
     private var seenPendingIds: Set<String> = []
     private var pendingPollTask: Task<Void, Never>?
 
-    static let agentLifecycleCategory = "io.pegues.agent-j.labs.ccem.helper.lifecycle"
+    static let agentLifecycleCategory = "io.pegues.agent-j.labs.apm.helper.lifecycle"
     static let formationLifecycleCategory = "io.pegues.agent-j.labs.ccem.formation.lifecycle"
-    static let agentlockCategory = "io.pegues.agent-j.labs.ccem.helper.agentlock"
-    static let apmVersionUpdateCategory = "io.pegues.agent-j.labs.ccem.helper.version-update"
-    static let apmRestartCategory = "io.pegues.agent-j.labs.ccem.helper.restart"
+    static let agentlockCategory = "io.pegues.agent-j.labs.apm.helper.agentlock"
+    static let apmVersionUpdateCategory = "io.pegues.agent-j.labs.apm.helper.version-update"
+    static let apmRestartCategory = "io.pegues.agent-j.labs.apm.helper.restart"
     /// Dedicated category for pending AgentLock approval decisions.
     /// Approve/Deny actions are registered in CCEMHelperApp.init().
     /// userInfo["pending_id"] carries the request_id for decision submission.
     static let agentlockApprovalCategory = "AGENTLOCK_APPROVAL"
     static let agentlockGroupedApprovalCategory = "AGENTLOCK_GROUPED_APPROVAL"
-    static let approveActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve"
-    static let denyActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny"
-    static let approveAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.approve_all"
-    static let denyAllActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.deny_all"
-    static let reviewActionIdentifier = "io.pegues.agent-j.labs.ccem.helper.agentlock.review"
+    static let approveActionIdentifier = "io.pegues.agent-j.labs.apm.helper.agentlock.approve"
+    static let denyActionIdentifier = "io.pegues.agent-j.labs.apm.helper.agentlock.deny"
+    static let approveAllActionIdentifier = "io.pegues.agent-j.labs.apm.helper.agentlock.approve_all"
+    static let denyAllActionIdentifier = "io.pegues.agent-j.labs.apm.helper.agentlock.deny_all"
+    static let reviewActionIdentifier = "io.pegues.agent-j.labs.apm.helper.agentlock.review"
 
     var filteredEnvironments: [APMEnvironment] {
         switch filter {

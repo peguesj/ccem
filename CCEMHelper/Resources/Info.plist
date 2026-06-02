@@ -5,7 +5,7 @@
     <key>CFBundleName</key>
     <string>CCEM Helper</string>
     <key>CFBundleIdentifier</key>
-    <string>io.pegues.agent-j.labs.ccem.helper</string>
+    <string>io.pegues.agent-j.labs.apm.helper</string>
     <key>CFBundleVersion</key>
     <string>7.0.0</string>
     <key>CFBundleShortVersionString</key>

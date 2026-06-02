@@ -43,7 +43,7 @@ public actor UnixSocketTransport {
     private static let maxFrameBytes = 16 * 1024 * 1024  // 16MB hard cap
 
     private let socketPath: String
-    private let logger = Logger(subsystem: "io.pegues.ccem.helper", category: "UnixSocketTransport")
+    private let logger = Logger(subsystem: "io.pegues.apm.helper", category: "UnixSocketTransport")
     private var connection: NWConnection?
     private var frameContinuation: AsyncStream<TransportFrame>.Continuation?
     public nonisolated let frames: AsyncStream<TransportFrame>
