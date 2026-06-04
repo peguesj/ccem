@@ -580,6 +580,17 @@ Bundle ingested from Claude Design at `~/Downloads/CCEM APM (2).zip` → staged 
 - [x] **CP-330**: All v11 routes smoke-test post-restart — 24/24 routes pass (US-510, CCEM-707)
 After Wave 5: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` 811/0 | apm-v4 HEAD: `00bcedd`
 
+### Wave 6: F-V11.3-HOTFIX — Post-ship dashboard UI bundle (2026-06-03)
+**Formation**: `formation-3909` (specialize-staged, 18 agents, 3 squadrons: alpha-diagnose / bravo-fix / charlie-verify).
+**Goal**: 6 visual + data defects observed in localhost:3032 dashboard post-CP-330 ship.
+- [x] **CP-331**: Doubled "CCEM APM" wordmark — sidebar_nav.ex brand header removed; top_bar.ex canonical (post-CP-210); project switcher suppresses label when name == brand (US-511, CCEM-708)
+- [x] **CP-332**: Skills nav badge "red 44" — resolved transitively by CP-335 daisyUI mapping; badge is `badge-primary` (blue), always was (US-512, CCEM-709)
+- [x] **CP-333**: SESSIONS=0 — `count_config_sessions/1` (counts never-hydrated `apm_config.json` array) → `live_session_count/1` → `Apm.SessionManager.list_sessions/0` (US-513, CCEM-710)
+- [x] **CP-334**: Fleet table empty despite AGENTS>0 — agent_panel.ex hardened with safe map-accessors `agent[:field]`; single malformed agent no longer crashes `:for` (US-514, CCEM-711)
+- [x] **CP-335**: Sidebar dim styling — apm_tokens_aliases.css adds daisyUI compat: `--color-base-content`, `--color-primary`, `--color-base-100/200/300`, `--color-success/warning/error/info` all → `--apm-*` (US-515, CCEM-712)
+- [x] **CP-336**: Formation graph cramped labels — d3 tree `nodeSize` bumped `[90,200]/[170,110]` → `[120,250]/[200,140]` (LR/TD), +33% h +25-30% v (US-516, CCEM-713)
+After Wave 6: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` **816/0** + 2 skipped | `mix test test/apm_web/hotfix_v11_3_test.exs` **5/5** | Headed Playwright at localhost:3032 — A:1 wordmark ✓ B:badge-primary ✓ C:SESSIONS=5289 ✓ D:fleet 4 rows ✓ E:--color-base-content resolved ✓ F:0 label overlaps ✓ | apm-v4 HEAD: `39f41f8` | ccem submodule bump: `b7204ce`
+
 ### Deferred to Phase 6+ (remaining)
 - Drawer swipe gesture for mobile (requires native touch API work)
 - Phases 6-7 Tune sub-page implementations (currently aliased to existing pages)

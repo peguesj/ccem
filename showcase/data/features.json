@@ -631,7 +631,7 @@
   },
   {
     "id": "US-474",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Vectorize CCEM/APM knowledge",
     "category": "ssot",
     "status": "in-progress",
@@ -640,7 +640,7 @@
   },
   {
     "id": "US-475",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Nav inventory tree",
     "category": "ssot",
     "status": "in-progress",
@@ -649,7 +649,7 @@
   },
   {
     "id": "US-476",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Feature graph with referential integrity",
     "category": "ssot",
     "status": "in-progress",
@@ -658,7 +658,7 @@
   },
   {
     "id": "US-477",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Rewrite apm-api-reference skill",
     "category": "skills",
     "status": "in-progress",
@@ -667,7 +667,7 @@
   },
   {
     "id": "US-478",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Refactor page_layout.ex",
     "category": "design-system",
     "status": "in-progress",
@@ -676,7 +676,7 @@
   },
   {
     "id": "US-479",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Bump SSOT version v9.1.3 \u2192 v9.2.0",
     "category": "ship",
     "status": "in-progress",
@@ -685,7 +685,7 @@
   },
   {
     "id": "US-480",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Propagate hooks v9.1.4 across projects",
     "category": "hooks",
     "status": "in-progress",
@@ -694,7 +694,7 @@
   },
   {
     "id": "US-481",
-    "wave": "ssot-confluence",
+    "wave": 20,
     "title": "Skill drift audit + sweep",
     "category": "skills",
     "status": "in-progress",
@@ -715,5 +715,165 @@
       "feature_graph": "/Users/jeremiah/Developer/ccem/docs/sprint-v9.2.0/feature-graph.md",
       "openapi_snapshot": "/Users/jeremiah/Developer/ccem/.ssot/openapi.snapshot.json"
     }
+  },
+  {
+    "id": "US-501",
+    "wave": 7,
+    "title": "v9.3.0 Governance Foundation \u2014 wf-s3 work_item stories",
+    "category": "governance",
+    "status": "shipped",
+    "version": "9.3.0",
+    "description": "Work-item story tracker landing in wave 7 of v9.3.0."
+  },
+  {
+    "id": "US-502",
+    "wave": 7,
+    "title": "v9.3.0 \u2014 wf-s4 hierarchy compaction",
+    "category": "governance",
+    "status": "shipped",
+    "version": "9.3.0",
+    "description": "Hierarchy compaction story landing in wave 7 of v9.3.0."
+  },
+  {
+    "id": "US-503",
+    "wave": 7,
+    "title": "v9.3.0 \u2014 wf-s5 wave-coordination contract",
+    "category": "governance",
+    "status": "shipped",
+    "version": "9.3.0",
+    "description": "Wave-coordination contract story landing in wave 7 of v9.3.0."
+  },
+  {
+    "id": "US-504",
+    "wave": 7,
+    "title": "v9.3.0 \u2014 wf-s6 squadron retro",
+    "category": "governance",
+    "status": "shipped",
+    "version": "9.3.0",
+    "description": "Squadron retro story landing in wave 7 of v9.3.0."
+  },
+  {
+    "id": "US-505",
+    "wave": 7,
+    "title": "v9.3.0 \u2014 coord-c2 cross-squadron channel",
+    "category": "governance",
+    "status": "in-progress",
+    "version": "9.3.0",
+    "description": "Cross-squadron coordination channel; final wave 7 story."
+  },
+  {
+    "id": "US-506",
+    "wave": 7,
+    "title": "v9.3.0 \u2014 Showcase IPC + daemon (parallel)",
+    "category": "tooling",
+    "status": "in-progress",
+    "version": "9.3.0",
+    "description": "tooling:showcase-ipc Plane module; concurrent with v9.3.0 wave 7, not part of governance scope."
+  },
+  {
+    "id": "v11-design-intake",
+    "wave": 21,
+    "title": "v11 clean-slate redesign \u2014 5-section workflow IA",
+    "category": "design-system",
+    "status": "in-progress",
+    "version": "11.0.0-phase2",
+    "description": "v11 Design Intake from Claude Design: 71 tokens, 36 components, 28 promoted, 2 gold-standard pages live (Dashboard + Fleet). 5-section workflow IA: Observe / Measure / Intelligence / Govern / Extend. PRs #24, #25, #26 in review. Source: design-intake/v11.0.0/from-designer/.",
+    "prs": [
+      "#24",
+      "#25",
+      "#26"
+    ],
+    "date_range": "2026-05-29 to 2026-06-02",
+    "source": "design-intake/v11.0.0/from-designer/"
+  },
+  {
+    "id": "US-507",
+    "wave": 22,
+    "title": "Icon sprite migration",
+    "category": "design-system",
+    "status": "shipped",
+    "version": "11.0.0-phase4-5",
+    "description": "26+1 inline SVG icons consolidated into priv/static/images/apm-sprite.svg with <use href> references. Reduces DOM weight on dense LiveView pages. CP-327."
+  },
+  {
+    "id": "US-508",
+    "wave": 22,
+    "title": "Live section e2e drift validation",
+    "category": "verification",
+    "status": "shipped",
+    "version": "11.0.0-phase4-5",
+    "description": "4/4 /live/* routes pass live-integration-testing browser drift checks against design intake. CP-328."
+  },
+  {
+    "id": "US-509",
+    "wave": 22,
+    "title": "Decide+Investigate section drift validation",
+    "category": "verification",
+    "status": "shipped",
+    "version": "11.0.0-phase4-5",
+    "description": "6/6 /decide/* + /investigate/* routes pass drift validation. CP-329."
+  },
+  {
+    "id": "US-510",
+    "wave": 22,
+    "title": "All v11 routes smoke-test post-restart",
+    "category": "verification",
+    "status": "shipped",
+    "version": "11.0.0-phase4-5",
+    "description": "24/24 routes smoke-tested after Phoenix restart \u2014 full Phase 4-5 ship gate. CP-330. apm-v4 HEAD 00bcedd."
+  },
+  {
+    "id": "US-511",
+    "wave": 23,
+    "title": "Defect A doubled wordmark fix",
+    "category": "ui-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "sidebar_nav.ex brand header removed (canonical in top_bar.ex post-CP-210). Project switcher suppresses label when name matches brand. CP-331."
+  },
+  {
+    "id": "US-512",
+    "wave": 23,
+    "title": "Defect B Skills badge fix",
+    "category": "ui-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "Badge tone always was badge-primary (blue); perceived red caused by daisyUI --color-primary unmapped. Resolved by CP-335. CP-332."
+  },
+  {
+    "id": "US-513",
+    "wave": 23,
+    "title": "Defect C SESSIONS=0 fix",
+    "category": "data-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "Stat tile now reads Apm.SessionManager.list_sessions/0 (disk-backed, real-time) instead of never-hydrated config array. CP-333."
+  },
+  {
+    "id": "US-514",
+    "wave": 23,
+    "title": "Defect D Fleet empty fix",
+    "category": "data-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "agent_panel.ex hardened with safe map-accessors agent[:field]; one malformed agent no longer crashes :for comprehension. CP-334."
+  },
+  {
+    "id": "US-515",
+    "wave": 23,
+    "title": "Defect E sidebar dim fix",
+    "category": "tokens-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "apm_tokens_aliases.css adds daisyUI compat tokens: --color-base-content, --color-primary, --color-base-* all map to --apm-*. CP-335."
+  },
+  {
+    "id": "US-516",
+    "wave": 23,
+    "title": "Defect F graph cramped fix",
+    "category": "ui-hotfix",
+    "status": "shipped",
+    "version": "11.0.0-hotfix",
+    "description": "d3 formation tree nodeSize bumped [90,200]/[170,110] \u2192 [120,250]/[200,140] (LR/TD). +33% h +25-30% v. CP-336."
   }
 ]
