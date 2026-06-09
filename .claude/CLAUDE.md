@@ -595,6 +595,10 @@ After Wave 6: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` **81
 - [x] **CP-337**: Restore sidebar brand wordmark + hide top-bar project switcher chip cleanly. CP-331 over-de-duplicated: stripped sidebar wordmark wholesale (leaving empty header zone with orphaned v11.0.0 + lone chevron) AND rendered literal "Project" placeholder text in the top-bar chip when project name matched the brand. Real fix: sidebar product identity ≠ top-bar page context (both can coexist); when project name ∈ {CCEM APM, CCEM_APM, ccem-apm, ccem, ""}, omit the entire `<details>` switcher (US-517, CCEM-714)
 After Wave 6.1: `mix compile --warnings-as-errors` ✓ | Playwright headed verify ✓ | apm-v4 HEAD: `78c75b3` | ccem HEAD: `7685967` (pushed)
 
+### Wave 6.2: CP-338 — /api/v2/formations cold-start race (2026-06-09)
+- [x] **CP-338**: Cold-start race fix — three unguarded `:ets.tab2list/1` calls in the formations list path raised ArgumentError when the named ETS table did not exist (the window between Phoenix endpoint boot and supervisor children boot). DashboardLive mount → /api/v2/formations → 500. Diagnosed via parallel /quality background agent (formation-961/charlie-quality, 4min turnaround). Fixed three public read paths (AgentRegistry.get_notifications/0 + .list_agents/0, UpmStore.list_formations/0) with `rescue ArgumentError -> []`. Secondary sort_by guard on :name → Map.get(f, :name, f.id) for heterogeneous formation lists. TDD-first: 4 new tests in `test/apm/cold_start_resilience_test.exs` (RED → GREEN), full suite 820/0/2 skipped. Live verify: `curl /api/v2/formations` returns 200 on first cold request post-restart. (US-518, CCEM-715)
+After Wave 6.2: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` **820/0** + 2 skipped | live cold-curl HTTP 200 ✓ | apm-v4 HEAD: `fd418e2` (pushed) | Formation `formation-961` ccem-showcase-live-team active w/ 7 leaf agents, 4 A2A channels (showcase.story, defects.diagnosis, quality.findings, agui.broadcast)
+
 ### Deferred to Phase 6+ (remaining)
 - Drawer swipe gesture for mobile (requires native touch API work)
 - Phases 6-7 Tune sub-page implementations (currently aliased to existing pages)
