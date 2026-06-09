@@ -591,6 +591,10 @@ After Wave 5: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` 811/
 - [x] **CP-336**: Formation graph cramped labels — d3 tree `nodeSize` bumped `[90,200]/[170,110]` → `[120,250]/[200,140]` (LR/TD), +33% h +25-30% v (US-516, CCEM-713)
 After Wave 6: `mix compile --warnings-as-errors` ✓ | `mix test --seed 42` **816/0** + 2 skipped | `mix test test/apm_web/hotfix_v11_3_test.exs` **5/5** | Headed Playwright at localhost:3032 — A:1 wordmark ✓ B:badge-primary ✓ C:SESSIONS=5289 ✓ D:fleet 4 rows ✓ E:--color-base-content resolved ✓ F:0 label overlaps ✓ | apm-v4 HEAD: `39f41f8` | ccem submodule bump: `b7204ce`
 
+### Wave 6.1: CP-337 — CP-331 regression repair (2026-06-09)
+- [x] **CP-337**: Restore sidebar brand wordmark + hide top-bar project switcher chip cleanly. CP-331 over-de-duplicated: stripped sidebar wordmark wholesale (leaving empty header zone with orphaned v11.0.0 + lone chevron) AND rendered literal "Project" placeholder text in the top-bar chip when project name matched the brand. Real fix: sidebar product identity ≠ top-bar page context (both can coexist); when project name ∈ {CCEM APM, CCEM_APM, ccem-apm, ccem, ""}, omit the entire `<details>` switcher (US-517, CCEM-714)
+After Wave 6.1: `mix compile --warnings-as-errors` ✓ | Playwright headed verify ✓ | apm-v4 HEAD: `78c75b3` | ccem HEAD: `7685967` (pushed)
+
 ### Deferred to Phase 6+ (remaining)
 - Drawer swipe gesture for mobile (requires native touch API work)
 - Phases 6-7 Tune sub-page implementations (currently aliased to existing pages)
